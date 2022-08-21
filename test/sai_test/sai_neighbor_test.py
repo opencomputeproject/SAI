@@ -4,42 +4,29 @@ from sai_utils import *
 
 class NoHostRouteTest(T0TestBase):
     """
-    Verifies if IPv4 host route is not created according to
-    SAI_NEIGHBOR_ENTRY_ATTR_NO_HOST_ROUTE attribute value
+    Verify if no_host is false, neighbor can be used directly for forwarding.
     """
 
     def setUp(self):
         """
-        Test the basic setup process.
+        Set up test.
         """
         T0TestBase.setUp(self)
-
-        self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                            virtual_router_id=self.dut.default_vrf,
-                                                            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                            port_id=self.dut.port_obj_list[1].oid)
-        self.dev_port1 = self.dut.port_obj_list[1].dev_port_index
-        self.ipv4_addr = "10.1.1.10"
-        self.mac_addr = "00:10:10:10:10:10"
-        self.nbr_entry_v4 = sai_thrift_neighbor_entry_t(
-            rif_id=self.dut.lag_list[0].rif_list[0],
-            ip_address=sai_ipaddress(self.ipv4_addr))
-        status = sai_thrift_create_neighbor_entry(
-            self.client,
-            self.nbr_entry_v4,
-            dst_mac_address=self.mac_addr,
-            no_host_route=True)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
-    def noHostRouteNeighborTest(self):
+    def runTest(self):
         '''
-        Add a neighbor for IP 10.1.1.10 on the LAG1 Route interface and a new MACX
-        Send packet on port1 with DMAC: SWITCH_MAC DIP:10.1.1.10
-        verify packet received on one of LAG1 member
+        1. Use existing LAG1 ``host`` (no_host = false) neighbor 
+        2. Check vlan interface(svi added)
+        3. Send packet on port5 with ``DMAC: SWITCH_MAC`` and using LAG1 neighbor IP as dest IP
+        4. verify packet received on one of LAG1 member
         '''
-        print("\nnoHostRouteNeighborTest()")
+        print("\nHostNeighborTest")
 
         print("Sending IPv4 packet when host route not exists")
+        self.ipv4_addr = self.t1_list[1][100].ipv4
+        self.mac_addr =  self.t1_list[1][100].mac
+        self.dev_port1 = self.dut.port_obj_list[5].dev_port_index
 
         pkt = simple_udp_packet(eth_dst=ROUTER_MAC,
                                 ip_dst=self.ipv4_addr,
@@ -49,16 +36,10 @@ class NoHostRouteTest(T0TestBase):
         verify_no_other_packets(self)
         print("Packet dropped")
 
-    def runTest(self):
-        try:
-            self.noHostRouteNeighborTest()
-        finally:
-            pass
-
     def tearDown(self):
-        sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_v4)
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        """
+        TearDown process
+        """
         super().tearDown()
 
 
@@ -70,14 +51,10 @@ class NoHostRouteTestV6(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process.
+        Set up test.
         """
         T0TestBase.setUp(self)
 
-        self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                            virtual_router_id=self.dut.default_vrf,
-                                                            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                            port_id=self.dut.port_obj_list[1].oid)
         self.dev_port1 = self.dut.port_obj_list[1].dev_port_index
         self.ipv6_addr = "2001:0db8::1:10"
         self.mac_addr = "00:10:10:10:10:10"
@@ -116,9 +93,10 @@ class NoHostRouteTestV6(T0TestBase):
             pass
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_v6)
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -130,14 +108,10 @@ class AddHostRouteTest(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process.
+        Set up test.
         """
         T0TestBase.setUp(self)
 
-        self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                            virtual_router_id=self.dut.default_vrf,
-                                                            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                            port_id=self.dut.port_obj_list[1].oid)
         self.dev_port1 = self.dut.port_obj_list[1].dev_port_index
         self.ipv4_addr = "10.1.1.10"
         self.mac_addr = "00:10:10:10:10:10"
@@ -158,6 +132,8 @@ class AddHostRouteTest(T0TestBase):
         Verify no packet was received on any port
         '''
         print("\naddHostRouteIpv4NeighborTest()")
+        self.ipv4_addr = self.t1_list[1][100].ipv4
+        self.mac_addr =  self.t1_list[1][100].mac
 
         pkt = simple_udp_packet(eth_dst=ROUTER_MAC,
                                 ip_dst=self.ipv4_addr,
@@ -180,9 +156,10 @@ class AddHostRouteTest(T0TestBase):
             pass
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_v4)
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -194,14 +171,10 @@ class AddHostRouteTestV6(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process.
+        Set up test.
         """
         T0TestBase.setUp(self)
 
-        self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                            virtual_router_id=self.dut.default_vrf,
-                                                            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                            port_id=self.dut.port_obj_list[1].oid)
         self.dev_port1 = self.dut.port_obj_list[1].dev_port_index
         self.ipv6_addr = "2001:0db8::1:10"
         self.mac_addr = "00:10:10:10:10:10"
@@ -245,9 +218,10 @@ class AddHostRouteTestV6(T0TestBase):
             pass
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_v6)
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -259,14 +233,10 @@ class RemoveAddNeighborTestIPV4(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process.
+        Set up test.
         """
         T0TestBase.setUp(self)
 
-        self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                            virtual_router_id=self.dut.default_vrf,
-                                                            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                            port_id=self.dut.port_obj_list[1].oid)
         self.dev_port1 = self.dut.port_obj_list[1].dev_port_index
         self.ipv4_addr = "10.1.1.10"
         self.mac_addr = "00:10:10:10:10:10"
@@ -344,10 +314,11 @@ class RemoveAddNeighborTestIPV4(T0TestBase):
             pass
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         sai_thrift_remove_route_entry(self.client, self.net_route)
         sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_v4)
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -358,14 +329,10 @@ class RemoveAddNeighborTestIPV6(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process.
+        Set up test.
         """
         T0TestBase.setUp(self)
 
-        self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                            virtual_router_id=self.dut.default_vrf,
-                                                            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                            port_id=self.dut.port_obj_list[1].oid)
         self.dev_port1 = self.dut.port_obj_list[1].dev_port_index
         self.ipv6_addr = "2001:0db8::1:10"
         self.mac_addr = "00:10:10:10:10:10"
@@ -443,10 +410,11 @@ class RemoveAddNeighborTestIPV6(T0TestBase):
             pass
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         sai_thrift_remove_route_entry(self.client, self.net_route)
         sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_v6)
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -457,7 +425,7 @@ class NhopDiffPrefixRemoveLonger(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process.
+        Set up test.
         """
         T0TestBase.setUp(self)
 
@@ -503,6 +471,9 @@ class NhopDiffPrefixRemoveLonger(T0TestBase):
             pass
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_v4)
         super().tearDown()
 
@@ -514,7 +485,7 @@ class NhopDiffPrefixRemoveLongerV6(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process.
+        Set up test.
         """
         T0TestBase.setUp(self)
 
@@ -559,6 +530,9 @@ class NhopDiffPrefixRemoveLongerV6(T0TestBase):
             pass
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_128)
         super().tearDown()
 
@@ -570,7 +544,7 @@ class NhopDiffPrefixRemoveShorter(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process.
+        Set up test.
         """
         T0TestBase.setUp(self)
 
@@ -617,6 +591,9 @@ class NhopDiffPrefixRemoveShorter(T0TestBase):
             pass
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry)
         super().tearDown()
 
@@ -628,7 +605,7 @@ class NhopDiffPrefixRemoveShorterV6(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process.
+        Set up test.
         """
         T0TestBase.setUp(self)
 
@@ -674,5 +651,8 @@ class NhopDiffPrefixRemoveShorterV6(T0TestBase):
             pass
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_128)
         super().tearDown()

@@ -37,10 +37,22 @@ if TYPE_CHECKING:
     from sai_test_base import T0TestBase
 
 
-def t0_route_config_helper(test_obj: 'T0TestBase', is_create_default_route=True, is_create_default_loopback_interface=False, is_create_route_for_lag=True):
+def t0_route_config_helper(
+    test_obj: 'T0TestBase', 
+    is_create_default_route=True, 
+    is_create_default_loopback_interface=False, 
+    is_create_route_for_lag=True,
+    is_create_vlan_interface=True):
     """
     Make t0 route configurations base on the configuration in the test plan.
     Set the configuration in test directly.
+
+    Attrs:
+        test_obj: Sub class from T0TestBase
+        is_create_default_route: defaule is true
+        is_create_default_loopback_interface: defaule is true
+        is_create_route_for_lag: defaule is true
+        is_create_vlan_interface: defaule is true
 
     Set the following test_obj attributes:
         int: default_vrf
@@ -50,45 +62,61 @@ def t0_route_config_helper(test_obj: 'T0TestBase', is_create_default_route=True,
     """
     route_configer = RouteConfiger(test_obj)
     if is_create_default_route:
+        print("Create default route")
         route_configer.create_default_route()
         route_configer.create_router_interface_by_port_idx(port_idx=0)
 
     if is_create_default_loopback_interface:
+        print("Create loopback interface")
         route_configer.create_default_loopback_interface()
 
+    if is_create_vlan_interface:
+        for vlan_name in test_obj.dut.vlans:
+            print("Create vlan interface for vlan {}".format(vlan_name))
+            route_configer.create_router_interface(netItf=test_obj.dut.vlans[vlan_name])
+
     if is_create_route_for_lag:
+        print("Create route for server with in ip {}/{}".format(test_obj.servers[11][0].ip_prefix, 24))
         test_obj.servers[11][0].ip_prefix = '24'
         test_obj.servers[11][0].ip_prefix_v6 = '112'
         rif = route_configer.create_router_interface(
             netItf=test_obj.dut.lag_list[0])
         route_configer.create_neighbor_by_rif(rif=rif,
-                                              nexthop_device=test_obj.t1_list[1][100])
+                                              nexthop_device=test_obj.t1_list[1][100],
+                                              no_host=False)
         nhv4, nhv6 = route_configer.create_nexthop_by_rif(rif=rif,
                                                           nexthop_device=test_obj.t1_list[1][100])
         route_configer.create_route_by_nexthop(
             dest_device=test_obj.servers[11][0],
             nexthopv4=nhv4,
             nexthopv6=nhv6)
+        #set expected dest server
         for item in test_obj.servers[11]:
             item.l3_lag_obj = test_obj.dut.lag_list[0]
-            item.l3_lag_obj.neighbor_mac_list.append(test_obj.t1_list[1][100].mac)
+            item.l3_lag_obj.neighbor_mac = test_obj.t1_list[1][100].mac
+        #set expected dest T1
+        test_obj.t1_list[1][100].l3_lag_obj = test_obj.dut.lag_list[0]
 
+        print("Create route for server with in ip {}/{}".format(test_obj.servers[12][0].ip_prefix, 24))
         test_obj.servers[12][0].ip_prefix = '24'
         test_obj.servers[12][0].ip_prefix_v6 = '112'
         rif = route_configer.create_router_interface(
             netItf=test_obj.dut.lag_list[1])
         route_configer.create_neighbor_by_rif(rif=rif,
-                                              nexthop_device=test_obj.t1_list[2][100])
+                                              nexthop_device=test_obj.t1_list[2][100],
+                                              no_host=False)
         nhv4, nhv6 = route_configer.create_nexthop_by_rif(rif=rif,
                                                           nexthop_device=test_obj.t1_list[2][100])
         route_configer.create_route_by_nexthop(
             dest_device=test_obj.servers[12][0],
             nexthopv4=nhv4,
             nexthopv6=nhv6)
+        #set expected dest server
         for item in test_obj.servers[12]:
             item.l3_lag_obj = test_obj.dut.lag_list[1]
-            item.l3_lag_obj.neighbor_mac_list.append(test_obj.t1_list[2][100].mac)
-
+            item.l3_lag_obj.neighbor_mac = test_obj.t1_list[2][100].mac
+        #set expected dest T1
+        test_obj.t1_list[2][100].l3_lag_obj = test_obj.dut.lag_list[1]
 
 
 class RouteConfiger(object):
@@ -321,7 +349,7 @@ class RouteConfiger(object):
             is_bridge: is a bridge port, only used for port
         return rif
         """
-        if not reuse or not netItf.rif_list or len(netItf.rif_list) == 0:
+        if not reuse or not (netItf.rif_list and len(netItf.rif_list) != 0):
             vr_id = self.choice_virtual_route(virtual_router)
             if not netItf:
                 rif = sai_thrift_create_router_interface(self.client,
@@ -352,7 +380,11 @@ class RouteConfiger(object):
 
             self.test_obj.assertEqual(
                 self.test_obj.status(), SAI_STATUS_SUCCESS)
+            if not netItf.rif_list:
+                netItf.rif_list = []
             netItf.rif_list.append(rif)
+            if not self.test_obj.dut.rif_list:
+                self.test_obj.dut.rif_list = []
             self.test_obj.dut.rif_list.append(rif)
         return netItf.rif_list[-1]
 

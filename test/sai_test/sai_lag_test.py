@@ -32,10 +32,6 @@ class LagConfigTest(T0TestBase):
         Test the basic setup process.
         """
         T0TestBase.setUp(self)
-        self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                            virtual_router_id=self.dut.default_vrf,
-                                                            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                            port_id=self.dut.port_obj_list[1].oid)
 
     def load_balance_on_src_ip(self):
         
@@ -52,13 +48,13 @@ class LagConfigTest(T0TestBase):
                                  ip_src=self.servers[2][1].ipv4,
                                  ip_id=105,
                                  ip_ttl=64)
-        exp_pkt1 = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac_list[0],
+        exp_pkt1 = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                      eth_src=ROUTER_MAC,
                                      ip_dst=ip_dst,
                                      ip_src=self.servers[1][1].ipv4,
                                      ip_id=105,
                                      ip_ttl=63)
-        exp_pkt2 = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac_list[0],
+        exp_pkt2 = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                      eth_src=ROUTER_MAC,
                                      ip_dst=ip_dst,
                                      ip_src=self.servers[2][1].ipv4,
@@ -78,8 +74,6 @@ class LagConfigTest(T0TestBase):
             pass
 
     def tearDown(self):
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -93,10 +87,6 @@ class LoadbalanceOnSrcPortTest(T0TestBase):
         Test the basic setup process
         """
         T0TestBase.setUp(self)
-        self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.port_obj_list[1].oid)
 
     def runTest(self):
         """
@@ -119,7 +109,7 @@ class LoadbalanceOnSrcPortTest(T0TestBase):
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
-                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac_list[0],
+                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                             eth_src=ROUTER_MAC,
                                             ip_dst=self.servers[11][1].ipv4,
                                             ip_src=self.servers[1][1].ipv4,
@@ -139,8 +129,6 @@ class LoadbalanceOnSrcPortTest(T0TestBase):
             pass
 
     def tearDown(self):
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -154,10 +142,6 @@ class LoadbalanceOnDesPortTest(T0TestBase):
         Test the basic setup process
         """
         T0TestBase.setUp(self)
-        self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.port_obj_list[1].oid)
 
     def runTest(self):
         """
@@ -180,7 +164,7 @@ class LoadbalanceOnDesPortTest(T0TestBase):
                                         tcp_dport=des_port,
                                         ip_id=105,
                                         ip_ttl=64)
-                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac_list[0],
+                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                             eth_src=ROUTER_MAC,
                                             ip_dst=self.servers[11][1].ipv4,
                                             ip_src=self.servers[1][1].ipv4,
@@ -201,8 +185,6 @@ class LoadbalanceOnDesPortTest(T0TestBase):
             pass
 
     def tearDown(self):
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -216,10 +198,6 @@ class LoadbalanceOnSrcIPTest(T0TestBase):
         Test the basic setup process
         """
         T0TestBase.setUp(self)
-        self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.port_obj_list[1].oid)
 
     def runTest(self):
         """
@@ -239,7 +217,7 @@ class LoadbalanceOnSrcIPTest(T0TestBase):
                                         ip_src=self.servers[1][i].ipv4,
                                         ip_id=105,
                                         ip_ttl=64)
-                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac_list[0],
+                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                             eth_src=ROUTER_MAC,
                                             ip_dst=self.servers[11][1].ipv4,
                                             ip_src=self.servers[1][i].ipv4,
@@ -260,8 +238,6 @@ class LoadbalanceOnSrcIPTest(T0TestBase):
             pass
 
     def tearDown(self):
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -275,10 +251,6 @@ class LoadbalanceOnDesIPTest(T0TestBase):
         Test the basic setup process
         """
         T0TestBase.setUp(self)
-        self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.port_obj_list[1].oid)
 
     def runTest(self):
         """
@@ -298,7 +270,7 @@ class LoadbalanceOnDesIPTest(T0TestBase):
                                         ip_src=self.servers[1][1].ipv4,
                                         ip_id=105,
                                         ip_ttl=64)
-                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac_list[0],
+                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                             eth_src=ROUTER_MAC,
                                             ip_dst=self.servers[11][i].ipv4,
                                             ip_src=self.servers[1][1].ipv4,
@@ -319,8 +291,6 @@ class LoadbalanceOnDesIPTest(T0TestBase):
             pass
 
     def tearDown(self):
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -339,10 +309,6 @@ class LoadbalanceOnProtocolTest(T0TestBase):
         Test the basic setup process
         """
         T0TestBase.setUp(self)
-        self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.port_obj_list[1].oid)
 
     def runTest(self):
         """
@@ -363,7 +329,7 @@ class LoadbalanceOnProtocolTest(T0TestBase):
                                             ip_src=self.servers[1][1].ipv4,
                                             ip_id=105,
                                             ip_ttl=64)
-                    exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac_list[0],
+                    exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                                 eth_src=ROUTER_MAC,
                                                 ip_dst=self.servers[11][1].ipv4,
                                                 ip_src=self.servers[1][1].ipv4,
@@ -377,7 +343,7 @@ class LoadbalanceOnProtocolTest(T0TestBase):
                                              ip_src=self.servers[1][1].ipv4,
                                              ip_id=105,
                                              ip_ttl=64)
-                    exp_pkt = simple_icmp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac_list[0],
+                    exp_pkt = simple_icmp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                                  eth_src=ROUTER_MAC,
                                                  ip_dst=self.servers[11][1].ipv4,
                                                  ip_src=self.servers[1][1].ipv4,
@@ -398,8 +364,6 @@ class LoadbalanceOnProtocolTest(T0TestBase):
             pass
 
     def tearDown(self):
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -413,10 +377,6 @@ class DisableEgressTest(T0TestBase):
         Test the basic setup process
         """
         T0TestBase.setUp(self)
-        self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.port_obj_list[1].oid)
 
     def runTest(self):
         """
@@ -443,7 +403,7 @@ class DisableEgressTest(T0TestBase):
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
-                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac_list[0],
+                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                             eth_src=ROUTER_MAC,
                                             ip_dst=self.servers[11][1].ipv4,
                                             ip_src=self.servers[1][1].ipv4,
@@ -472,7 +432,7 @@ class DisableEgressTest(T0TestBase):
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
-                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac_list[0],
+                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                             eth_src=ROUTER_MAC,
                                             ip_dst=self.servers[11][1].ipv4,
                                             ip_src=self.servers[1][1].ipv4,
@@ -487,8 +447,6 @@ class DisableEgressTest(T0TestBase):
             pass
 
     def tearDown(self):
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -506,10 +464,6 @@ class DisableIngressTest(T0TestBase):
         Test the basic setup process
         """
         T0TestBase.setUp(self)
-        self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.servers[11][1].l3_lag_obj.oid)
 
     def runTest(self):
         """
@@ -529,7 +483,7 @@ class DisableIngressTest(T0TestBase):
             for i in range(0, pkts_num):
                 src_port = begin_port + i
                 pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                        eth_src=self.servers[11][1].l3_lag_obj.neighbor_mac_list[0],
+                                        eth_src=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                         ip_dst=self.servers[1][1].ipv4,
                                         ip_src=self.servers[11][1].ipv4,
                                         tcp_sport=src_port,
@@ -553,7 +507,7 @@ class DisableIngressTest(T0TestBase):
             for i in range(0, pkts_num):
                 src_port = begin_port + i
                 pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                        eth_src=self.servers[11][1].l3_lag_obj.neighbor_mac_list[0],
+                                        eth_src=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                         ip_dst=self.servers[1][1].ipv4,
                                         ip_src=self.servers[11][1].ipv4,
                                         tcp_sport=src_port,
@@ -572,8 +526,6 @@ class DisableIngressTest(T0TestBase):
             pass
 
     def tearDown(self):
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -587,10 +539,6 @@ class RemoveLagMemberTest(T0TestBase):
         Test the basic setup process
         """
         T0TestBase.setUp(self)
-        self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.port_obj_list[1].oid)
 
     def runTest(self):
         """
@@ -617,7 +565,7 @@ class RemoveLagMemberTest(T0TestBase):
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
-                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac_list[0],
+                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                             eth_src=ROUTER_MAC,
                                             ip_dst=self.servers[11][1].ipv4,
                                             ip_src=self.servers[1][1].ipv4,
@@ -640,7 +588,7 @@ class RemoveLagMemberTest(T0TestBase):
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
-                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac_list[0],
+                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                             eth_src=ROUTER_MAC,
                                             ip_dst=self.servers[11][1].ipv4,
                                             ip_src=self.servers[1][1].ipv4,
@@ -655,8 +603,6 @@ class RemoveLagMemberTest(T0TestBase):
             pass
 
     def tearDown(self):
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -670,10 +616,6 @@ class AddLagMemberTest(T0TestBase):
         set up configurations
         """
         T0TestBase.setUp(self)
-        self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.port_obj_list[1].oid)
 
     def runTest(self):
         """
@@ -700,7 +642,7 @@ class AddLagMemberTest(T0TestBase):
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
-                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac_list[0],
+                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                             eth_src=ROUTER_MAC,
                                             ip_dst=self.servers[11][1].ipv4,
                                             ip_src=self.servers[1][1].ipv4,
@@ -722,7 +664,7 @@ class AddLagMemberTest(T0TestBase):
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
-                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac_list[0],
+                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                             eth_src=ROUTER_MAC,
                                             ip_dst=self.servers[11][1].ipv4,
                                             ip_src=self.servers[1][1].ipv4,
@@ -742,8 +684,6 @@ class AddLagMemberTest(T0TestBase):
             pass
 
     def tearDown(self):
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -770,7 +710,7 @@ class IndifferenceIngressPortTest(T0TestBase):
                                     ip_src=self.servers[1][1].ipv4,
                                     ip_id=105,
                                     ip_ttl=64)
-            exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac_list[0],
+            exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                         eth_src=ROUTER_MAC,
                                         ip_dst=self.servers[11][1].ipv4,
                                         ip_src=self.servers[1][1].ipv4,

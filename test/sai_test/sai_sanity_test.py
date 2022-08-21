@@ -32,7 +32,7 @@ class SaiSanityTest(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup proecss
+        Setup proecss
         """
         T0TestBase.setUp(self,
                          is_reset_default_vlan=False,
@@ -46,7 +46,7 @@ class SaiSanityTest(T0TestBase):
 
     def tearDown(self):
         """
-        Test the basic tearDown process
+        TearDown process
         """
         pass
 

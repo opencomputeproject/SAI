@@ -36,7 +36,7 @@ class L2PortForwardingTest(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process
+        Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
@@ -66,7 +66,7 @@ class L2PortForwardingTest(T0TestBase):
 
     def tearDown(self):
         """
-        Test the basic tearDown process
+        TearDown process
         """
         sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
@@ -85,7 +85,7 @@ class VlanLearnDisableTest(T0TestBase):
     @skip("skip for broadcom")
     def setUp(self):
         """
-        Test the basic setup process
+        Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         status = sai_thrift_flush_fdb_entries(
@@ -140,6 +140,9 @@ class VlanLearnDisableTest(T0TestBase):
         print("Verification complete")
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
 
@@ -155,7 +158,7 @@ class BridgePortLearnDisableTest(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process
+        Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         status = sai_thrift_flush_fdb_entries(
@@ -226,6 +229,9 @@ class BridgePortLearnDisableTest(T0TestBase):
         print("Verification complete")
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
 
@@ -248,7 +254,7 @@ class NonBridgePortNoLearnTest(T0TestBase):
     @skip("Skip test for broadcom, non bridge port still can learn.")
     def setUp(self):
         """
-        Test the basic setup process
+        Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         status = sai_thrift_flush_fdb_entries(
@@ -310,6 +316,9 @@ class NonBridgePortNoLearnTest(T0TestBase):
         print("Verification complete")
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
         
@@ -341,7 +350,7 @@ class NewVlanmemberLearnTest(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process
+        Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         self.new_vlan10_member = sai_thrift_create_vlan_member(self.client,
@@ -390,6 +399,9 @@ class NewVlanmemberLearnTest(T0TestBase):
         print("Verification complete")
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
         sai_thrift_remove_vlan_member(self.client, self.new_vlan10_member)
@@ -402,7 +414,7 @@ class RemoveVlanmemberLearnTest(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process
+        Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         sai_thrift_remove_vlan_member(
@@ -446,6 +458,9 @@ class RemoveVlanmemberLearnTest(T0TestBase):
         print("Verification complete")
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
         self.dut.vlans[10].vlan_mport_oids[1] = sai_thrift_create_vlan_member(self.client,
@@ -460,7 +475,7 @@ class InvalidateVlanmemberNoLearnTest(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process
+        Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
@@ -499,6 +514,9 @@ class InvalidateVlanmemberNoLearnTest(T0TestBase):
         print("Verification complete")
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         pass
 
 
@@ -509,7 +527,7 @@ class BroadcastNoLearnTest(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process
+        Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
@@ -546,6 +564,9 @@ class BroadcastNoLearnTest(T0TestBase):
         print("Verification complete")
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         pass
 
 
@@ -556,7 +577,7 @@ class MulticastNoLearnTest(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process
+        Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
@@ -596,6 +617,9 @@ class MulticastNoLearnTest(T0TestBase):
         print("Verification complete")
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         pass
 
 
@@ -606,7 +630,7 @@ class FdbAgingTest(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process
+        Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         sw_attr = sai_thrift_get_switch_attribute(
@@ -675,6 +699,9 @@ class FdbAgingTest(T0TestBase):
         print("\tVerification complete")
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC)
         status = sai_thrift_set_switch_attribute(
@@ -689,7 +716,7 @@ class FdbAgingAfterMoveTest(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process
+        Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         sw_attr = sai_thrift_get_switch_attribute(
@@ -786,6 +813,9 @@ class FdbAgingAfterMoveTest(T0TestBase):
         print("\tVerification complete")
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC)
         status = sai_thrift_set_switch_attribute(
@@ -800,7 +830,7 @@ class FdbMacMovingAfterAgingTest(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process
+        Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         sw_attr = sai_thrift_get_switch_attribute(
@@ -884,6 +914,9 @@ class FdbMacMovingAfterAgingTest(T0TestBase):
         print("\tVerification complete")
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC)
         status = sai_thrift_set_switch_attribute(
@@ -903,7 +936,7 @@ class FdbFlushVlanStaticTest(T0TestBase):
     @skip("Static flush Not support by broadcom")
     def setUp(self):
         """
-        Test the basic setup process
+        Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         status = sai_thrift_flush_fdb_entries(
@@ -935,6 +968,9 @@ class FdbFlushVlanStaticTest(T0TestBase):
         print("\tVerification complete")
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         self.t0_fdb_tear_down_helper()
         self.t0_fdb_config_helper()
 
@@ -951,7 +987,7 @@ class FdbFlushPortStaticTest(T0TestBase):
     @skip("Static flush Not support by broadcom")
     def setUp(self):
         """
-        Test the basic setup process
+        Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         sai_thrift_flush_fdb_entries(
@@ -982,6 +1018,9 @@ class FdbFlushPortStaticTest(T0TestBase):
         print("\tVerification complete")
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         self.restore_fdb_config()
 
 
@@ -998,7 +1037,7 @@ class FdbFlushAllStaticTest(T0TestBase):
     @skip("Static flush Not support by broadcom")
     def setUp(self):
         """
-        Test the basic setup process
+        Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         sai_thrift_flush_fdb_entries(
@@ -1029,6 +1068,9 @@ class FdbFlushAllStaticTest(T0TestBase):
         print("\tVerification complete")
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         self.restore_fdb_config()
 
 
@@ -1039,7 +1081,7 @@ class FdbFlushVlanDynamicTest(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process
+        Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
@@ -1104,6 +1146,9 @@ class FdbFlushVlanDynamicTest(T0TestBase):
         print("\tVerification complete")
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         pass
 
 
@@ -1114,7 +1159,7 @@ class FdbFlushPortDynamicTest(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process
+        Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
@@ -1179,6 +1224,9 @@ class FdbFlushPortDynamicTest(T0TestBase):
         print("\tVerification complete")
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         pass
 
 
@@ -1189,7 +1237,7 @@ class FdbFlushAllDynamicTest(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process
+        Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
@@ -1254,6 +1302,9 @@ class FdbFlushAllDynamicTest(T0TestBase):
         print("\tVerification complete")
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         pass
 
 
@@ -1269,7 +1320,7 @@ class FdbFlushAllTest(T0TestBase):
     @skip("static not support")
     def setUp(self):
         """
-        Test the basic setup process
+        Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
@@ -1334,6 +1385,9 @@ class FdbFlushAllTest(T0TestBase):
         print("\tVerification complete")
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         self.restore_fdb_config()
 
 
@@ -1344,7 +1398,7 @@ class FdbDisableMacMoveDropTest(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process
+        Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         self.fdb_entry = sai_thrift_fdb_entry_t(switch_id=self.dut.switch_id,
@@ -1377,6 +1431,9 @@ class FdbDisableMacMoveDropTest(T0TestBase):
         print("\tVerification complete")
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         sai_thrift_remove_fdb_entry(self.client, self.fdb_entry)
         status = sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC)
@@ -1390,7 +1447,7 @@ class FdbDynamicMacMoveTest(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process
+        Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         sai_thrift_flush_fdb_entries(
@@ -1439,6 +1496,9 @@ class FdbDynamicMacMoveTest(T0TestBase):
         print("\tVerification complete")
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         sai_thrift_remove_fdb_entry(self.client, self.moving_fdb_entry)
         status = sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC)
@@ -1452,7 +1512,7 @@ class FdbStaticMacMoveTest(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process
+        Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         sai_thrift_flush_fdb_entries(
@@ -1513,6 +1573,9 @@ class FdbStaticMacMoveTest(T0TestBase):
         print("\tVerification complete")
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         sai_thrift_remove_fdb_entry(self.client, self.fdb_entry1)
         sai_thrift_remove_fdb_entry(self.client, self.fdb_entry2)
         sai_thrift_remove_fdb_entry(self.client, self.moving_fdb_entry)

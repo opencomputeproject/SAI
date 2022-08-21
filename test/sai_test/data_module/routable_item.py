@@ -42,5 +42,14 @@ class route_item(data_item):
         super().__init__(oid=oid)
         self.rif_list = rif_list
         self.nexthopv4_list = nexthopv4_list
+        """
+        Next hop device for v4 ip, use to retrieve the nexthop ipv4
+        """
         self.nexthopv6_list = nexthopv6_list
-        self.neighbor_mac_list = []
+        """
+        Next hop device for v6 ip, use to retrieve the nexthop ipv6
+        """
+        self.neighbor_mac = None
+        """
+        Next hop device mac, expect it should be a unique one
+        """
