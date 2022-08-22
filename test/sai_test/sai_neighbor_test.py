@@ -24,15 +24,14 @@ class NoHostRouteTest(T0TestBase):
         print("\nHostNeighborTest")
 
         print("Sending IPv4 packet when host route not exists")
-        self.ipv4_addr = self.t1_list[1][100].ipv4
-        self.mac_addr =  self.t1_list[1][100].mac
-        self.dev_port1 = self.dut.port_obj_list[5].dev_port_index
+        self.dest_dev = self.t1_list[1][100]
+        self.send_port = self.dut.port_obj_list[5].dev_port_index
 
         pkt = simple_udp_packet(eth_dst=ROUTER_MAC,
-                                ip_dst=self.ipv4_addr,
+                                ip_dst=self.dest_dev.ipv4,
                                 ip_ttl=64)
 
-        send_packet(self, self.dev_port1, pkt)
+        send_packet(self, self.send_port, pkt)
         verify_no_other_packets(self)
         print("Packet dropped")
 

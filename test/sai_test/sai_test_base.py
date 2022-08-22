@@ -477,6 +477,23 @@ class T0TestBase(ThriftInterfaceDataPlane):
         """
         self.route_configer.create_router_interface(lag, reuse)
 
+    def get_dev_port_index(self, port_index):
+        """
+        port_index: port index
+        return dev port index from port index
+        """
+        return self.dut.port_obj_list[port_index].dev_port_index
+
+    def get_dev_port_indexes(self, port_indexes:List):
+        """
+        port_indexes: port index list
+        return dev port indexes from port indexes
+        """
+        dev_port_indexes = []
+        for port_index in port_indexes:
+            dev_port_indexes.append(self.dut.port_obj_list[port_index].dev_port_index)
+        return dev_port_indexes
+
     def tearDown(self):
         '''
         tear down

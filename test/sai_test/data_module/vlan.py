@@ -67,6 +67,8 @@ class Vlan(route_item):
         """
         vlan member object ids
         """
+        self.port_idx_list = []
+
 
     def create_vlan_interface(self, test_object: 'T0TestBase', reuse=True):
         """

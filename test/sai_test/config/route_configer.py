@@ -73,14 +73,14 @@ def t0_route_config_helper(
     if is_create_vlan_interface:
         for vlan_name in test_obj.dut.vlans:
             print("Create vlan interface for vlan {}".format(vlan_name))
-            route_configer.create_router_interface(netItf=test_obj.dut.vlans[vlan_name])
+            route_configer.create_router_interface(net_interface=test_obj.dut.vlans[vlan_name])
 
     if is_create_route_for_lag:
-        print("Create route for server with in ip {}/{}".format(test_obj.servers[11][0].ip_prefix, 24))
+        print("Create route for server with in ip {}/{}".format(test_obj.servers[11][0].ipv4, 24))
         test_obj.servers[11][0].ip_prefix = '24'
         test_obj.servers[11][0].ip_prefix_v6 = '112'
         rif = route_configer.create_router_interface(
-            netItf=test_obj.dut.lag_list[0])
+            net_interface=test_obj.dut.lag_list[0])
         route_configer.create_neighbor_by_rif(rif=rif,
                                               nexthop_device=test_obj.t1_list[1][100],
                                               no_host=False)
@@ -97,11 +97,11 @@ def t0_route_config_helper(
         #set expected dest T1
         test_obj.t1_list[1][100].l3_lag_obj = test_obj.dut.lag_list[0]
 
-        print("Create route for server with in ip {}/{}".format(test_obj.servers[12][0].ip_prefix, 24))
+        print("Create route for server with in ip {}/{}".format(test_obj.servers[12][0].ipv4, 24))
         test_obj.servers[12][0].ip_prefix = '24'
         test_obj.servers[12][0].ip_prefix_v6 = '112'
         rif = route_configer.create_router_interface(
-            netItf=test_obj.dut.lag_list[1])
+            net_interface=test_obj.dut.lag_list[1])
         route_configer.create_neighbor_by_rif(rif=rif,
                                               nexthop_device=test_obj.t1_list[2][100],
                                               no_host=False)
@@ -329,64 +329,64 @@ class RouteConfiger(object):
         return: route interface
         """
         net_intf = self.test_obj.dut.port_obj_list[port_idx]
-        return self.create_router_interface(netItf=net_intf, virtual_router=virtual_router, reuse=reuse, is_bridge=is_bridge)
+        return self.create_router_interface(net_interface=net_intf, virtual_router=virtual_router, reuse=reuse, is_bridge=is_bridge)
 
-    def create_router_interface(self, netItf: route_item, virtual_router=None, reuse=True, is_bridge=False):
+    def create_router_interface(self, net_interface: route_item, virtual_router=None, reuse=True, is_bridge=False):
         """
         Create intreface.
         It will check if the net interface already created on a route interface. If 'reuse',
         it will return the last one created for this net interface, if not 'reuse', it will create a new one,
         and store it with this net interface and dut object.
 
-        If netItf is None, then will create a loopback rif.
+        If net_interface is None, then will create a loopback rif.
 
-        Set netItf attribute oid.
+        Set net_interface attribute oid.
 
         Attrs:
-            netItf: route_item object that this interface mapping
+            net_interface: route_item object that this interface mapping
             virtual_router_id: virtual route id, if not defined, will use default route
             reuse: reuse the existing rif which is binding to the net interfaces
             is_bridge: is a bridge port, only used for port
         return rif
         """
-        if not reuse or not (netItf.rif_list and len(netItf.rif_list) != 0):
+        if not reuse or not (net_interface.rif_list and len(net_interface.rif_list) != 0):
             vr_id = self.choice_virtual_route(virtual_router)
-            if not netItf:
+            if not net_interface:
                 rif = sai_thrift_create_router_interface(self.client,
                                                          virtual_router_id=vr_id,
                                                          type=SAI_ROUTER_INTERFACE_TYPE_LOOPBACK)
             else:
                 # Checks
                 if is_bridge:
-                    if not isinstance(netItf, Port):
+                    if not isinstance(net_interface, Port):
                         raise ValueError(
                             'is_bridge attribute can only be True when net interface is a Port!')
-                if isinstance(netItf, Vlan):
+                if isinstance(net_interface, Vlan):
                     rif = sai_thrift_create_router_interface(self.client,
                                                              virtual_router_id=vr_id,
                                                              type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
-                                                             vlan_id=netItf.oid)
+                                                             vlan_id=net_interface.oid)
                 else:  # include port, vlan and lag
                     if is_bridge:
                         rif = sai_thrift_create_router_interface(self.client,
                                                                  virtual_router_id=vr_id,
                                                                  type=SAI_ROUTER_INTERFACE_TYPE_BRIDGE,
-                                                                 bridge_id=netItf.oid)
+                                                                 bridge_id=net_interface.oid)
                     else:
                         rif = sai_thrift_create_router_interface(self.client,
                                                                  virtual_router_id=vr_id,
                                                                  type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                 port_id=netItf.oid)
+                                                                 port_id=net_interface.oid)
 
             self.test_obj.assertEqual(
                 self.test_obj.status(), SAI_STATUS_SUCCESS)
-            if not netItf.rif_list:
-                netItf.rif_list = []
-            netItf.rif_list.append(rif)
+            if not net_interface.rif_list:
+                net_interface.rif_list = []
+            net_interface.rif_list.append(rif)
             if not self.test_obj.dut.rif_list:
                 self.test_obj.dut.rif_list = []
             self.test_obj.dut.rif_list.append(rif)
-        return netItf.rif_list[-1]
+        return net_interface.rif_list[-1]
 
     def create_nexthop_by_rif(self, rif, nexthop_device: Device):
         """

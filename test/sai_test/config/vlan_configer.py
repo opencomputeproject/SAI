@@ -120,6 +120,7 @@ class VlanConfiger(object):
         vlan.vlan_id = vlan_id
         vlan.vlan_mport_oids = members
         vlan.oid = vlan_oid
+        vlan.port_idx_list = vlan_port_idxs
         return vlan
 
     def create_vlan_member(self, vlan_oid, vlan_ports, vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED):
