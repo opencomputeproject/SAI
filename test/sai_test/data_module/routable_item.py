@@ -19,39 +19,37 @@
 #
 
 from typing import List
-from data_module.routable_item import route_item
 from typing import TYPE_CHECKING
+from data_module.data_obj import data_item
 if TYPE_CHECKING:
+    from sai_test_base import T0TestBase
     from data_module.nexthop import Nexthop
 
 
-class Ecmp(object):
+class route_item(data_item):
     """
-    Represent the ecmp(next hop group) object.
+    Represent the route item data object.
     Attrs:
-        ecmp_id: ecmp id(nexthop group id)
-        ecmp_members: ecmp members(next hops)
-        member_port_indexs: ecmp port member indexes
+        rif: related route interface
     """
 
-    def __init__(self, ecmp_id=None, ecmp_members: List['Nexthop'] = [], member_port_indexs: List = []):
+    def __init__(self, oid=None, rif_list:List=[], nexthopv4_list:List['Nexthop'] = [], nexthopv6_list:List['Nexthop'] = []):
         """
-        Init ecmp Object
+        Init Lag Object
         Init following attrs:
-            ecmp_id
-            ecmp_members
-            member_port_indexs
-            lags
+            rif
         """
-        self.ecmp_id = None
+        super().__init__(oid=oid)
+        self.rif_list = rif_list
+        self.nexthopv4_list = nexthopv4_list
         """
-        ecmp id (nexthop group id)
+        Next hop device for v4 ip, use to retrieve the nexthop ipv4
         """
-        self.ecmp_members: List[Nexthop] = ecmp_members
+        self.nexthopv6_list = nexthopv6_list
         """
-        ecmp members(next hop ids)
+        Next hop device for v6 ip, use to retrieve the nexthop ipv6
         """
-        self.member_port_indexs: List = member_port_indexs
+        self.neighbor_mac = None
         """
-        ecmp port member indexes
+        Next hop device mac, expect it should be a unique one
         """

@@ -34,10 +34,7 @@ class LagConfigTest(T0TestBase):
         T0TestBase.setUp(self)
 
     def load_balance_on_src_ip(self):
-        self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                            virtual_router_id=self.dut.default_vrf,
-                                                            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                            port_id=self.dut.port_list[1])
+        
         ip_dst = self.servers[11][1].ipv4
         pkt1 = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                  eth_src=self.servers[1][1].mac,
@@ -51,13 +48,13 @@ class LagConfigTest(T0TestBase):
                                  ip_src=self.servers[2][1].ipv4,
                                  ip_id=105,
                                  ip_ttl=64)
-        exp_pkt1 = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+        exp_pkt1 = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                      eth_src=ROUTER_MAC,
                                      ip_dst=ip_dst,
                                      ip_src=self.servers[1][1].ipv4,
                                      ip_id=105,
                                      ip_ttl=63)
-        exp_pkt2 = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+        exp_pkt2 = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                      eth_src=ROUTER_MAC,
                                      ip_dst=ip_dst,
                                      ip_src=self.servers[2][1].ipv4,
@@ -65,10 +62,10 @@ class LagConfigTest(T0TestBase):
                                      ip_ttl=63)
         send_packet(self, 1, pkt1)
         verify_packet_any_port(
-            self, exp_pkt1, self.dut.lag1.member_port_indexs)
+            self, exp_pkt1, self.servers[11][1].l3_lag_obj.member_port_indexs)
         send_packet(self, 1, pkt2)
         verify_packet_any_port(
-            self, exp_pkt2, self.dut.lag1.member_port_indexs)
+            self, exp_pkt2, self.servers[11][1].l3_lag_obj.member_port_indexs)
 
     def runTest(self):
         try:
@@ -77,8 +74,6 @@ class LagConfigTest(T0TestBase):
             pass
 
     def tearDown(self):
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -101,10 +96,7 @@ class LoadbalanceOnSrcPortTest(T0TestBase):
         """
         try:
             print("Lag l3 load balancing test based on src port")
-            self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.port_list[1])
+            
             max_itrs = 99
             begin_port = 2000
             rcv_count = [0, 0]
@@ -117,7 +109,7 @@ class LoadbalanceOnSrcPortTest(T0TestBase):
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
-                exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                             eth_src=ROUTER_MAC,
                                             ip_dst=self.servers[11][1].ipv4,
                                             ip_src=self.servers[1][1].ipv4,
@@ -126,7 +118,7 @@ class LoadbalanceOnSrcPortTest(T0TestBase):
                                             ip_ttl=63)
                 send_packet(self, 1, pkt)
                 rcv_idx, _ = verify_packet_any_port(
-                    self, exp_pkt, self.dut.lag1.member_port_indexs)
+                    self, exp_pkt, self.servers[11][1].l3_lag_obj.member_port_indexs)
                 print('src_port={}, rcv_port={}'.format(src_port, rcv_idx))
                 rcv_count[rcv_idx] += 1
             print(rcv_count)
@@ -137,8 +129,6 @@ class LoadbalanceOnSrcPortTest(T0TestBase):
             pass
 
     def tearDown(self):
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -161,10 +151,7 @@ class LoadbalanceOnDesPortTest(T0TestBase):
         """
         try:
             print("Lag l3 load balancing test based on des port")
-            self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.port_list[1])
+            
             max_itrs = 99
             begin_port = 2000
             rcv_count = [0, 0]
@@ -177,7 +164,7 @@ class LoadbalanceOnDesPortTest(T0TestBase):
                                         tcp_dport=des_port,
                                         ip_id=105,
                                         ip_ttl=64)
-                exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                             eth_src=ROUTER_MAC,
                                             ip_dst=self.servers[11][1].ipv4,
                                             ip_src=self.servers[1][1].ipv4,
@@ -186,7 +173,7 @@ class LoadbalanceOnDesPortTest(T0TestBase):
                                             ip_ttl=63)
                 send_packet(self, 1, pkt)
                 rcv_idx, _ = verify_packet_any_port(
-                    self, exp_pkt, self.dut.lag1.member_port_indexs)
+                    self, exp_pkt, self.servers[11][1].l3_lag_obj.member_port_indexs)
                 print('des_port={}, rcv_port={}'.format(des_port, rcv_idx))
                 rcv_count[rcv_idx] += 1
 
@@ -198,8 +185,6 @@ class LoadbalanceOnDesPortTest(T0TestBase):
             pass
 
     def tearDown(self):
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -222,10 +207,7 @@ class LoadbalanceOnSrcIPTest(T0TestBase):
         """
         try:
             print("Lag l3 load balancing test based on src IP")
-            self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.port_list[1])
+            
             max_itrs = 99
             rcv_count = [0, 0]
             for i in range(1, max_itrs):
@@ -235,7 +217,7 @@ class LoadbalanceOnSrcIPTest(T0TestBase):
                                         ip_src=self.servers[1][i].ipv4,
                                         ip_id=105,
                                         ip_ttl=64)
-                exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                             eth_src=ROUTER_MAC,
                                             ip_dst=self.servers[11][1].ipv4,
                                             ip_src=self.servers[1][i].ipv4,
@@ -243,7 +225,7 @@ class LoadbalanceOnSrcIPTest(T0TestBase):
                                             ip_ttl=63)
                 send_packet(self, 1, pkt)
                 rcv_idx, _ = verify_packet_any_port(
-                    self, exp_pkt, self.dut.lag1.member_port_indexs)
+                    self, exp_pkt, self.servers[11][1].l3_lag_obj.member_port_indexs)
                 print('ip_src={}, rcv_port={}'.format(
                     self.servers[1][i].ipv4, rcv_idx))
                 rcv_count[rcv_idx] += 1
@@ -256,8 +238,6 @@ class LoadbalanceOnSrcIPTest(T0TestBase):
             pass
 
     def tearDown(self):
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -280,10 +260,7 @@ class LoadbalanceOnDesIPTest(T0TestBase):
         """
         try:
             print("Lag l3 load balancing test based on des IP")
-            self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.port_list[1])
+            
             max_itrs = 99
             rcv_count = [0, 0]
             for i in range(1, max_itrs):
@@ -293,7 +270,7 @@ class LoadbalanceOnDesIPTest(T0TestBase):
                                         ip_src=self.servers[1][1].ipv4,
                                         ip_id=105,
                                         ip_ttl=64)
-                exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                             eth_src=ROUTER_MAC,
                                             ip_dst=self.servers[11][i].ipv4,
                                             ip_src=self.servers[1][1].ipv4,
@@ -301,7 +278,7 @@ class LoadbalanceOnDesIPTest(T0TestBase):
                                             ip_ttl=63)
                 send_packet(self, 1, pkt)
                 rcv_idx, _ = verify_packet_any_port(
-                    self, exp_pkt, self.dut.lag1.member_port_indexs)
+                    self, exp_pkt, self.servers[11][1].l3_lag_obj.member_port_indexs)
                 print('des_src={}, rcv_port={}'.format(
                     self.servers[1][1].ipv4, rcv_idx))
                 rcv_count[rcv_idx] += 1
@@ -314,8 +291,6 @@ class LoadbalanceOnDesIPTest(T0TestBase):
             pass
 
     def tearDown(self):
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -343,10 +318,7 @@ class LoadbalanceOnProtocolTest(T0TestBase):
         """
         try:
             print("Lag l3 load balancing test based on protocol")
-            self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.port_list[1])
+            
             max_itrs = 99
             rcv_count = [0, 0]
             for i in range(0, max_itrs):
@@ -357,7 +329,7 @@ class LoadbalanceOnProtocolTest(T0TestBase):
                                             ip_src=self.servers[1][1].ipv4,
                                             ip_id=105,
                                             ip_ttl=64)
-                    exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+                    exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                                 eth_src=ROUTER_MAC,
                                                 ip_dst=self.servers[11][1].ipv4,
                                                 ip_src=self.servers[1][1].ipv4,
@@ -371,7 +343,7 @@ class LoadbalanceOnProtocolTest(T0TestBase):
                                              ip_src=self.servers[1][1].ipv4,
                                              ip_id=105,
                                              ip_ttl=64)
-                    exp_pkt = simple_icmp_packet(eth_dst=self.t1_list[1][100].mac,
+                    exp_pkt = simple_icmp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                                  eth_src=ROUTER_MAC,
                                                  ip_dst=self.servers[11][1].ipv4,
                                                  ip_src=self.servers[1][1].ipv4,
@@ -379,7 +351,7 @@ class LoadbalanceOnProtocolTest(T0TestBase):
                                                  ip_ttl=63)
                 send_packet(self, 1, pkt)
                 rcv_idx, _ = verify_packet_any_port(
-                    self, exp_pkt, self.dut.lag1.member_port_indexs)
+                    self, exp_pkt, self.servers[11][1].l3_lag_obj.member_port_indexs)
                 print('des_src={}, rcv_port={}'.format(
                     self.servers[1][1].ipv4, rcv_idx))
                 rcv_count[rcv_idx] += 1
@@ -392,8 +364,6 @@ class LoadbalanceOnProtocolTest(T0TestBase):
             pass
 
     def tearDown(self):
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -420,10 +390,7 @@ class DisableEgressTest(T0TestBase):
         """
         try:
             print("Lag disable egress lag member test")
-            self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.port_list[1])
+            
             pkts_num = 10
             begin_port = 2000
             exp_drop = []
@@ -436,7 +403,7 @@ class DisableEgressTest(T0TestBase):
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
-                exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                             eth_src=ROUTER_MAC,
                                             ip_dst=self.servers[11][1].ipv4,
                                             ip_src=self.servers[1][1].ipv4,
@@ -445,14 +412,14 @@ class DisableEgressTest(T0TestBase):
                                             ip_ttl=63)
                 send_packet(self, 1, pkt)
                 rcv_idx, _ = verify_packet_any_port(
-                    self, exp_pkt, self.dut.lag1.member_port_indexs)
+                    self, exp_pkt, self.servers[11][1].l3_lag_obj.member_port_indexs)
                 if rcv_idx == 18:
                     exp_drop.append(src_port)
 
             # disable egress of lag member: port18
             print("disable port18 egress")
             status = sai_thrift_set_lag_member_attribute(self.client,
-                                                         self.dut.lag1.lag_members[1],
+                                                         self.servers[11][1].l3_lag_obj.lag_members[1],
                                                          egress_disable=True)
             self.assertEqual(status, SAI_STATUS_SUCCESS)
 
@@ -465,7 +432,7 @@ class DisableEgressTest(T0TestBase):
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
-                exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                             eth_src=ROUTER_MAC,
                                             ip_dst=self.servers[11][1].ipv4,
                                             ip_src=self.servers[1][1].ipv4,
@@ -480,8 +447,6 @@ class DisableEgressTest(T0TestBase):
             pass
 
     def tearDown(self):
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -512,16 +477,13 @@ class DisableIngressTest(T0TestBase):
         """
         try:
             print("Lag disable ingress lag member test")
-            self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.lag1.lag_id)
+            
             pkts_num = 10
             begin_port = 2000
             for i in range(0, pkts_num):
                 src_port = begin_port + i
                 pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                        eth_src=self.t1_list[1][100].mac,
+                                        eth_src=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                         ip_dst=self.servers[1][1].ipv4,
                                         ip_src=self.servers[11][1].ipv4,
                                         tcp_sport=src_port,
@@ -539,13 +501,13 @@ class DisableIngressTest(T0TestBase):
             # git disable ingress of lag member: port18
             print("disable port18 ingress")
             status = sai_thrift_set_lag_member_attribute(
-                self.client, self.lag1.lag_members[1], ingress_disable=True)
+                self.client, self.lag_list[0].lag_members[1], ingress_disable=True)
             self.assertEqual(status, SAI_STATUS_SUCCESS)
 
             for i in range(0, pkts_num):
                 src_port = begin_port + i
                 pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                        eth_src=self.t1_list[1][100].mac,
+                                        eth_src=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                         ip_dst=self.servers[1][1].ipv4,
                                         ip_src=self.servers[11][1].ipv4,
                                         tcp_sport=src_port,
@@ -564,8 +526,6 @@ class DisableIngressTest(T0TestBase):
             pass
 
     def tearDown(self):
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -592,10 +552,7 @@ class RemoveLagMemberTest(T0TestBase):
         """
         try:
             print("Lag remove lag member test")
-            self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.port_list[1])
+            
 
             pkts_num = 10
             begin_port = 2000
@@ -608,7 +565,7 @@ class RemoveLagMemberTest(T0TestBase):
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
-                exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                             eth_src=ROUTER_MAC,
                                             ip_dst=self.servers[11][1].ipv4,
                                             ip_src=self.servers[1][1].ipv4,
@@ -617,10 +574,10 @@ class RemoveLagMemberTest(T0TestBase):
                                             ip_ttl=63)
                 send_packet(self, 1, pkt)
                 verify_packet_any_port(
-                    self, exp_pkt, self.dut.lag1.member_port_indexs)
+                    self, exp_pkt, self.servers[11][1].l3_lag_obj.member_port_indexs)
 
             self.lag_configer.remove_lag_member_by_port_idx(
-                lag_obj=self.dut.lag1, port_idx=18)
+                lag_obj=self.servers[11][1].l3_lag_obj, port_idx=18)
 
             for i in range(0, pkts_num):
                 src_port = begin_port + i
@@ -631,7 +588,7 @@ class RemoveLagMemberTest(T0TestBase):
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
-                exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                             eth_src=ROUTER_MAC,
                                             ip_dst=self.servers[11][1].ipv4,
                                             ip_src=self.servers[1][1].ipv4,
@@ -640,14 +597,12 @@ class RemoveLagMemberTest(T0TestBase):
                                             ip_ttl=63)
                 send_packet(self, 1, pkt)
                 verify_no_packet(self, exp_pkt, 18)
-            self.lag_configer.create_lag_member(lag_obj=self.dut.lag1,
+            self.lag_configer.create_lag_member(lag_obj=self.servers[11][1].l3_lag_obj,
                                                 lag_port_idxs=range(18, 19))
         finally:
             pass
 
     def tearDown(self):
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -674,10 +629,7 @@ class AddLagMemberTest(T0TestBase):
         """
         try:
             print("Lag add lag member test")
-            self.port1_rif = sai_thrift_create_router_interface(self.client,
-                                                                virtual_router_id=self.dut.default_vrf,
-                                                                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-                                                                port_id=self.dut.port_list[1])
+            
             pkts_num = 10
             begin_port = 2000
             rcv_count = [0, 0, 0]
@@ -690,7 +642,7 @@ class AddLagMemberTest(T0TestBase):
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
-                exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                             eth_src=ROUTER_MAC,
                                             ip_dst=self.servers[11][1].ipv4,
                                             ip_src=self.servers[1][1].ipv4,
@@ -699,9 +651,9 @@ class AddLagMemberTest(T0TestBase):
                                             ip_ttl=63)
                 send_packet(self, 1, pkt)
                 verify_packet_any_port(
-                    self, exp_pkt, self.dut.lag1.member_port_indexs)
+                    self, exp_pkt, self.servers[11][1].l3_lag_obj.member_port_indexs)
             print("add port21 into lag1")
-            self.lag_configer.create_lag_member(lag_obj=self.dut.lag1,
+            self.lag_configer.create_lag_member(lag_obj=self.servers[11][1].l3_lag_obj,
                                                 lag_port_idxs=range(21, 22))
             for i in range(0, pkts_num):
                 src_port = begin_port + i
@@ -712,7 +664,7 @@ class AddLagMemberTest(T0TestBase):
                                         tcp_sport=src_port,
                                         ip_id=105,
                                         ip_ttl=64)
-                exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+                exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                             eth_src=ROUTER_MAC,
                                             ip_dst=self.servers[11][1].ipv4,
                                             ip_src=self.servers[1][1].ipv4,
@@ -721,19 +673,17 @@ class AddLagMemberTest(T0TestBase):
                                             ip_ttl=63)
                 send_packet(self, 1, pkt)
                 rcv_idx, _ = verify_packet_any_port(
-                    self, exp_pkt, self.dut.lag1.member_port_indexs)
+                    self, exp_pkt, self.servers[11][1].l3_lag_obj.member_port_indexs)
                 rcv_count[rcv_idx] += 1
             for cnt in rcv_count:
                 self.assertGreater(
                     cnt, 0, "each member in lag1 should receive pkt")
             self.lag_configer.remove_lag_member_by_port_idx(
-                lag_obj=self.dut.lag1, port_idx=21)
+                lag_obj=self.servers[11][1].l3_lag_obj, port_idx=21)
         finally:
             pass
 
     def tearDown(self):
-        sai_thrift_remove_router_interface(self.client, self.port1_rif)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
@@ -746,20 +696,21 @@ class IndifferenceIngressPortTest(T0TestBase):
 
     def setUp(self):
         T0TestBase.setUp(self)
-
-    def runTest(self):
-        try:
-            self.vlan10_rif = sai_thrift_create_router_interface(self.client,
+        self.vlan10_rif = sai_thrift_create_router_interface(self.client,
                                                                 virtual_router_id=self.dut.default_vrf,
                                                                 type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
                                                                 vlan_id=10)
+
+    def runTest(self):
+        try:
+            
             pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                     eth_src=self.servers[1][1].mac,
                                     ip_dst=self.servers[11][1].ipv4,
                                     ip_src=self.servers[1][1].ipv4,
                                     ip_id=105,
                                     ip_ttl=64)
-            exp_pkt = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+            exp_pkt = simple_tcp_packet(eth_dst=self.servers[11][1].l3_lag_obj.neighbor_mac,
                                         eth_src=ROUTER_MAC,
                                         ip_dst=self.servers[11][1].ipv4,
                                         ip_src=self.servers[1][1].ipv4,
@@ -767,7 +718,7 @@ class IndifferenceIngressPortTest(T0TestBase):
                                         ip_ttl=63)
 
             exp_port_idx = -1
-            exp_port_list = self.dut.lag1.member_port_indexs
+            exp_port_list = self.servers[11][1].l3_lag_obj.member_port_indexs
             for i in range(1, 9):
                 send_packet(self, i, pkt)
                 if exp_port_idx == -1:

@@ -25,41 +25,52 @@ if TYPE_CHECKING:
     from sai_test_base import T0TestBase
     from data_module.nexthop import Nexthop
 
+from data_module.routable_item import route_item
 
-class Vlan(object):
+class Vlan(route_item):
     """
     Represent the vlan object
 
     Attrs:
-        vlan_id: vlan id
-        vlan_oid: vlan ojbect id
+        oid: vlan ojbect id
         vlan_moids: vlan member object ids
-        rif: vlan related route interface
-        nexthopv4: vlan related nexthop
-        nexthopv6: vlan related nexthop
+    Attrs from super:
+        oid: object id
+        rif: lag related route interface
+        nexthopv4: related nexthop list
+        nexthopv6: related nexthop list
 
     """
 
-    def __init__(self, vlan_id=None, vlan_oid=None, vlan_moids: List = [], rif=None, nexthopv4: 'Nexthop' = None, nexthopv6: 'Nexthop' = None):
+    def __init__(self, vlan_id=None, oid=None, vlan_moids: List = [], rif_list:List=[], nexthopv4_list:List['Nexthop'] = [], nexthopv6_list:List['Nexthop'] = []):
         """
         Init Vlan object.
 
         Init following attrs:
             vlan_id
-            vlan_oid
+            oid
             vlan_mport_oids
-            rif
-            nexthopv4
-            nexthopv6
+            rif_list
+            nexthopv4_list
+            nexthopv6_list
         """
+        super().__init__(oid=oid, rif_list=rif_list, nexthopv4_list=nexthopv4_list, nexthopv6_list=nexthopv6_list)
         self.vlan_id = vlan_id
-        self.vlan_oid = vlan_oid
+        """
+        vlan id
+        """
+        self.oid = oid
+        """
+        vlan ojbect id
+        """
         self.vlan_mport_oids: List = vlan_moids
-        self.rif = rif
-        self.nexthopv4 = nexthopv4
-        self.nexthopv6 = nexthopv6
+        """
+        vlan member object ids
+        """
+        self.port_idx_list = []
 
-    def create_vlan_interface(self, test_object: 'T0TestBase'):
+
+    def create_vlan_interface(self, test_object: 'T0TestBase', reuse=True):
         """
         Create vlan interface for this vlan object
 
@@ -67,4 +78,4 @@ class Vlan(object):
             test_object: test object contains the method for creating the interface
         """
 
-        self.rif = test_object.create_vlan_interface(self)
+        test_object.create_vlan_interface(self)

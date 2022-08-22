@@ -375,11 +375,6 @@ class T0TestBase(ThriftInterfaceDataPlane):
                 test_obj=self,
                 is_create_hostIf=is_create_hostIf,
                 is_recreate_bridge=is_recreate_bridge)
-            # init port rif list
-            self.dut.port_rif_list = [None] * len(self.dut.dev_port_list)
-            # init bridge port rif list
-            self.dut.bridge_port_rif_list = [
-                None] * len(self.dut.bridge_port_list)
             t0_vlan_config_helper(
                 test_obj=self,
                 is_reset_default_vlan=is_reset_default_vlan,
@@ -464,23 +459,40 @@ class T0TestBase(ThriftInterfaceDataPlane):
             self.t1_list[t1_grp_idx] = [Device(DeviceType.t1, index, t1_grp_idx)
                                         for index in range(0, self.num_device_each_group)]
 
-    def create_vlan_interface(self, vlan: Vlan):
+    def create_vlan_interface(self, vlan: Vlan, reuse=True):
         """
         Create vlan route interface.
 
         Attrs:
             Vlan: vlan for the route interface
         """
-        self.route_configer.create_router_interface_by_vlan(vlan)
+        self.route_configer.create_router_interface(vlan, reuse)
 
-    def create_lag_interface(self, lag: Lag):
+    def create_lag_interface(self, lag: Lag, reuse=True):
         """
         Create lag route interface.
 
         Attrs:
             Lag: lag for the route interface
         """
-        self.route_configer.create_router_interface_by_lag(lag)
+        self.route_configer.create_router_interface(lag, reuse)
+
+    def get_dev_port_index(self, port_index):
+        """
+        port_index: port index
+        return dev port index from port index
+        """
+        return self.dut.port_obj_list[port_index].dev_port_index
+
+    def get_dev_port_indexes(self, port_indexes:List):
+        """
+        port_indexes: port index list
+        return dev port indexes from port indexes
+        """
+        dev_port_indexes = []
+        for port_index in port_indexes:
+            dev_port_indexes.append(self.dut.port_obj_list[port_index].dev_port_index)
+        return dev_port_indexes
 
     def tearDown(self):
         '''

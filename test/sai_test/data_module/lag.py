@@ -23,43 +23,47 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from sai_test_base import T0TestBase
     from data_module.nexthop import Nexthop
+from data_module.routable_item import route_item
 
-
-class Lag():
+class Lag(route_item):
     """
     Represent the lag object.
-    Attrs:
-        lag_id: lag id
+    Attrs:        
         lag_members: lag members
         member_port_indexs: lag port member indexes
-        rif: lag related route interface
-        nexthopv4: lag related nexthop
-        nexthopv6: lag related nexthop
+    Attrs from super:
+        oid: object id
+        rif_list: lag related route interface
+        nexthopv4: related nexthop list
+        nexthopv6: related nexthop list
     """
 
-    def __init__(self, lag_id=None, lag_members: List = [], member_port_indexs: List = [], rif=None, nexthopv4: 'Nexthop' = None, nexthopv6: 'Nexthop' = None):
+    def __init__(self, oid=None, lag_members: List = [], member_port_indexs: List = [], rif_list:List=[], nexthopv4_list:List['Nexthop'] = [], nexthopv6_list:List['Nexthop'] = []):
         """
         Init Lag Object
         Init following attrs:
-            lag_id
+            oid
             lag_members
             member_port_indexs
             rif
             nexthopv4
             nexthopv6
         """
-        self.lag_id = lag_id
+        super().__init__(oid=oid, rif_list=rif_list, nexthopv4_list=nexthopv4_list, nexthopv6_list=nexthopv6_list)
         self.lag_members: List = lag_members
+        """
+        lag members
+        """
         self.member_port_indexs: List = member_port_indexs
-        self.rif = rif
-        self.nexthopv4 = nexthopv4
-        self.nexthopv6 = nexthopv6
+        """
+        lag port member indexes
+        """
 
-    def create_lag_interface(self, test_object: 'T0TestBase'):
+    def create_lag_interface(self, test_object: 'T0TestBase', reuse=True):
         """
         Create vlan interface for this vlan object
 
         Attrs:
             test_object: test object contains the method for creating the interface
         """
-        self.rif = test_object.create_lag_interface(self)
+        test_object.create_lag_interface(self, reuse)
