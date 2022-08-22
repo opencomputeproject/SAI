@@ -40,7 +40,7 @@ class IngressMacUpdateTest(T0TestBase):
         1. Generate Packets, with ``SIP:192.168.0.1`` ``DIP:10.1.1.100`` ``DMAC:SWITCH_MAC``
         2. Send packet on Port5
         3. Verify packet received on one of the LAG1's member
-        4. Set RIF mac to ``MacX``, the RIF related to Port5
+        4. Set RIF mac to ``MacX``, the RIF related to Port5 VLAN interface
         5. Send packet on Port5 
         6. Verify no packet was received on any LAG1 member
         """
@@ -72,10 +72,10 @@ class IngressMacUpdateTest(T0TestBase):
 
         print("Updating src_mac_address to %s" % (new_router_mac))
         sai_thrift_set_router_interface_attribute(
-            self.client, self.dut.port_obj_list[0].rif_list[-1], src_mac_address=new_router_mac)
+            self.client, self.dut.vlans[10].rif_list[-1], src_mac_address=new_router_mac)
         time.sleep(3)
         attrs = sai_thrift_get_router_interface_attribute(
-            self.client, self.dut.port_obj_list[0].rif_list[-1], src_mac_address=True)
+            self.client, self.dut.vlans[10].rif_list[-1], src_mac_address=True)
         self.assertEqual(attrs["src_mac_address"], new_router_mac)
 
         send_packet(self, send_port.dev_port_index, pkt)
@@ -89,10 +89,10 @@ class IngressMacUpdateTest(T0TestBase):
         Test the basic tearDown process
         """
         sai_thrift_set_router_interface_attribute(
-            self.client, self.dut.port_obj_list[0].rif_list[-1], src_mac_address=ROUTER_MAC)
+            self.client, self.dut.vlans[10].rif_list[-1], src_mac_address=ROUTER_MAC)
         time.sleep(3)
         attrs = sai_thrift_get_router_interface_attribute(
-            self.client, self.dut.port_obj_list[0].rif_list[-1], src_mac_address=True)
+            self.client, self.dut.vlans[10].rif_list[-1], src_mac_address=True)
         self.assertEqual(attrs["src_mac_address"], ROUTER_MAC)
         super().tearDown()
 
@@ -113,7 +113,7 @@ class IngressMacUpdateTestV6(T0TestBase):
         1. Generate Packets, with ``SIP:192.168.0.1`` ``DIP:10.1.1.100`` ``DMAC:SWITCH_MAC``
         2. Send packet on Port5
         3. Verify packet received on one of the LAG1's member
-        4. Set RIF mac to ``MacX``, the RIF related to Port5
+        4. Set RIF mac to ``MacX``, the RIF related to Port5 VLAN interface
         5. Send packet on Port5 
         6. Verify no packet was received on any LAG1 member
         """
@@ -143,10 +143,10 @@ class IngressMacUpdateTestV6(T0TestBase):
 
         print("Updating src_mac_address to %s" % (new_router_mac))
         sai_thrift_set_router_interface_attribute(
-            self.client, self.dut.port_obj_list[0].rif_list[-1], src_mac_address=new_router_mac)
+            self.client, self.dut.vlans[10].rif_list[-1], src_mac_address=new_router_mac)
         time.sleep(3)
         attrs = sai_thrift_get_router_interface_attribute(
-            self.client, self.dut.port_obj_list[0].rif_list[-1], src_mac_address=True)
+            self.client, self.dut.vlans[10].rif_list[-1], src_mac_address=True)
         self.assertEqual(attrs["src_mac_address"], new_router_mac)
 
         send_packet(self, send_port.dev_port_index, pkt)
@@ -160,10 +160,10 @@ class IngressMacUpdateTestV6(T0TestBase):
         Test the basic tearDown process
         """
         sai_thrift_set_router_interface_attribute(
-            self.client, self.dut.port_obj_list[0].rif_list[-1], src_mac_address=ROUTER_MAC)
+            self.client, self.dut.vlans[10].rif_list[-1], src_mac_address=ROUTER_MAC)
         time.sleep(3)
         attrs = sai_thrift_get_router_interface_attribute(
-            self.client, self.dut.port_obj_list[0].rif_list[-1], src_mac_address=True)
+            self.client, self.dut.vlans[10].rif_list[-1], src_mac_address=True)
         self.assertEqual(attrs["src_mac_address"], ROUTER_MAC)
         super().tearDown()
 
@@ -191,8 +191,6 @@ class IngressDisableTestV4(T0TestBase):
         src_dev = self.servers[0][1]
         target_dev = self.t1_list[1][100]
         send_port = self.dut.port_obj_list[5]
-        recv_dev_ports = self.get_dev_port_indexes(
-            list(filter(lambda item: item != 1, target_dev.l3_lag_obj.member_port_indexs)))
 
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                 eth_src=src_dev.mac,
@@ -201,29 +199,8 @@ class IngressDisableTestV4(T0TestBase):
                                 ip_id=105,
                                 ip_ttl=64)
 
-        exp_pkt = simple_tcp_packet(eth_dst=target_dev.l3_lag_obj.neighbor_mac,
-                                    eth_src=ROUTER_MAC,
-                                    ip_dst=target_dev.ipv4,
-                                    ip_src=src_dev.ipv4,
-                                    ip_id=105,
-                                    ip_ttl=63)
-
-        send_packet(self, send_port.dev_port_index, pkt)
-        verify_packet_any_port(self, exp_pkt, recv_dev_ports)
-
-        print("Disable IPv4 on ingress RIF")
-        sai_thrift_set_router_interface_attribute(
-            self.client, self.dut.port_obj_list[0].rif_list[-1], admin_v4_state=False)
-        time.sleep(3)
         send_packet(self, send_port.dev_port_index, pkt)
         verify_no_other_packets(self, timeout=3)
-
-        print("Enable IPv4 on ingress RIF")
-        sai_thrift_set_router_interface_attribute(
-            self.client, self.dut.port_obj_list[0].rif_list[-1], admin_v4_state=True)
-        time.sleep(3)
-        send_packet(self, send_port.dev_port_index, pkt)
-        verify_packet_any_port(self, exp_pkt, recv_dev_ports)
 
     def runTest(self):
         self.test_ingress_disable_ipv4()
@@ -258,8 +235,6 @@ class IngressDisableTestV6(T0TestBase):
         src_dev = self.servers[0][1]
         target_dev = self.t1_list[1][100]
         send_port = self.dut.port_obj_list[5]
-        recv_dev_ports = self.get_dev_port_indexes(
-            list(filter(lambda item: item != 1, target_dev.l3_lag_obj.member_port_indexs)))
 
         pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
                                   eth_src=src_dev.mac,
@@ -267,28 +242,8 @@ class IngressDisableTestV6(T0TestBase):
                                   ipv6_src=src_dev.ipv6,
                                   ipv6_hlim=64)
 
-        exp_pkt = simple_tcpv6_packet(eth_dst=target_dev.l3_lag_obj.neighbor_mac,
-                                      eth_src=ROUTER_MAC,
-                                      ipv6_dst=target_dev.ipv6,
-                                      ipv6_src=src_dev.ipv6,
-                                      ipv6_hlim=63)
-
-        send_packet(self, send_port.dev_port_index, pkt)
-        verify_packet_any_port(self, exp_pkt, recv_dev_ports)
-
-        print("Disable IPv6 on ingress RIF")
-        sai_thrift_set_router_interface_attribute(
-            self.client, self.dut.port_obj_list[0].rif_list[-1], admin_v6_state=False)
-        time.sleep(3)
         send_packet(self, send_port.dev_port_index, pkt)
         verify_no_other_packets(self, timeout=3)
-
-        print("Enable IPv6 on ingress RIF")
-        sai_thrift_set_router_interface_attribute(
-            self.client, self.dut.port_obj_list[0].rif_list[-1], admin_v6_state=True)
-        time.sleep(3)
-        send_packet(self, send_port.dev_port_index, pkt)
-        verify_packet_any_port(self, exp_pkt, recv_dev_ports)
 
     def runTest(self):
         self.test_ingress_disable_ipv6()
@@ -310,13 +265,6 @@ class IngressMtuTestV4(T0TestBase):
         Set up test.
         """
         T0TestBase.setUp(self)
-
-        # set MTU to 200 for vlan interface
-        self.mtu_Vlan10_rif = sai_thrift_get_router_interface_attribute(
-            self.client, self.dut.vlans[10].rif_list[0], mtu=True)
-
-        sai_thrift_set_router_interface_attribute(
-            self.client, self.dut.vlans[10].rif_list[0], mtu=200)
 
     def test_ingress_mtu(self):
         """
@@ -356,6 +304,12 @@ class IngressMtuTestV4(T0TestBase):
 
         send_packet(self, send_port.dev_port_index, pkt)
         verify_packet_any_port(self, exp_pkt, recv_dev_ports)
+
+        print("set MTU to 200 for Port5 VLAN interface")
+        self.mtu_Vlan10_rif = sai_thrift_get_router_interface_attribute(
+            self.client, self.dut.vlans[10].rif_list[0], mtu=True)
+        sai_thrift_set_router_interface_attribute(
+            self.client, self.dut.vlans[10].rif_list[0], mtu=200)
 
         print("Max MTU is 200, send pkt size 201, dropped")
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
@@ -402,13 +356,6 @@ class IngressMtuTestV6(T0TestBase):
         """
         T0TestBase.setUp(self)
 
-        # set MTU to 200 for port1
-        self.mtu_port10_rif = sai_thrift_get_router_interface_attribute(
-            self.client, self.dut.port_obj_list[0].rif_list[-1], mtu=True)
-
-        sai_thrift_set_router_interface_attribute(
-            self.client, self.dut.port_obj_list[0].rif_list[-1], mtu=200)
-
     def test_ingress_mtu_v6(self):
         """
         1. Generate Packets, with ``SIP:192.168.0.1`` ``DIP:10.1.1.100`` ``DMAC:SWITCH_MAC``
@@ -446,6 +393,12 @@ class IngressMtuTestV6(T0TestBase):
         send_packet(self, send_port.dev_port_index, pkt)
         verify_packet_any_port(self, exp_pkt, recv_dev_ports)
 
+        print("set MTU to 200 for Port5 VLAN interface")
+        self.mtu_port10_rif = sai_thrift_get_router_interface_attribute(
+            self.client, self.dut.vlans[10].rif_list[-1], mtu=True)
+        sai_thrift_set_router_interface_attribute(
+            self.client, self.dut.vlans[10].rif_list[-1], mtu=200)
+
         print("Max MTU is 200, send pkt size 201, dropped")
         pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
                                     eth_src=src_dev.mac,
@@ -472,6 +425,6 @@ class IngressMtuTestV6(T0TestBase):
         Test the basic tearDown process
         """
         sai_thrift_set_router_interface_attribute(
-                self.client, self.dut.port_obj_list[0].rif_list[-1], mtu=self.mtu_port10_rif['mtu'])
+                self.client, self.dut.vlans[10].rif_list[-1], mtu=self.mtu_port10_rif['mtu'])
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
