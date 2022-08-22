@@ -37,7 +37,7 @@ class Vlan_Domain_Forwarding_Test(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup process
+        Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
@@ -50,35 +50,38 @@ class Vlan_Domain_Forwarding_Test(T0TestBase):
             for index in range(2, 9):
                 print("Forwarding in VLAN {} from {} to port: {}".format(
                     10,
-                    self.dut.dev_port_list[1],
-                    self.dut.dev_port_list[index]))
+                    self.dut.port_obj_list[1].dev_port_index,
+                    self.dut.port_obj_list[index].dev_port_index))
                 pkt = simple_udp_packet(eth_dst=self.servers[1][index].mac,
                                         eth_src=self.servers[1][1].mac,
                                         vlan_vid=10,
                                         ip_id=101,
                                         ip_ttl=64)
 
-                send_packet(self, self.dut.dev_port_list[1], pkt)
-                verify_packet(self, pkt, self.dut.dev_port_list[index])
+                send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
+                verify_packet(self, pkt, self.dut.port_obj_list[index].dev_port_index)
                 verify_no_other_packets(self, timeout=1)
 
             for index in range(10, 17):
                 print("Forwarding in VLAN {} from {} to port: {}".format(
                     20,
-                    self.dut.dev_port_list[9],
-                    self.dut.dev_port_list[index]))
+                    self.dut.port_obj_list[9].dev_port_index,
+                    self.dut.port_obj_list[index].dev_port_index))
                 pkt = simple_udp_packet(eth_dst=self.servers[1][index].mac,
                                         eth_src=self.servers[1][9].mac,
                                         vlan_vid=20,
                                         ip_id=101,
                                         ip_ttl=64)
-                send_packet(self, self.dut.dev_port_list[9], pkt)
-                verify_packet(self, pkt, self.dut.dev_port_list[index])
+                send_packet(self, self.dut.port_obj_list[9].dev_port_index, pkt)
+                verify_packet(self, pkt, self.dut.port_obj_list[index].dev_port_index)
                 verify_no_other_packets(self, timeout=1)
         finally:
             pass
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         super().tearDown()
 
 
@@ -98,30 +101,33 @@ class UntagAccessToAccessTest(T0TestBase):
         try:
             for index in range(2, 9):
                 print("Sending untagged packet from vlan10 tagged port {} to vlan10 tagged port: {}".format(
-                    self.dut.dev_port_list[1],
-                    self.dut.dev_port_list[index]))
+                    self.dut.port_obj_list[1].dev_port_index,
+                    self.dut.port_obj_list[index].dev_port_index))
                 pkt = simple_udp_packet(eth_dst=self.servers[1][index].mac,
                                         eth_src=self.servers[1][1].mac,
                                         ip_id=101,
                                         ip_ttl=64)
-                send_packet(self, self.dut.dev_port_list[1], pkt)
-                verify_packet(self, pkt, self.dut.dev_port_list[index])
+                send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
+                verify_packet(self, pkt, self.dut.port_obj_list[index].dev_port_index)
                 verify_no_other_packets(self, timeout=2)
             for index in range(10, 17):
                 print("Sending untagged packet from vlan20 tagged port {} to vlan20 tagged port: {}".format(
-                    self.dut.dev_port_list[9],
-                    self.dut.dev_port_list[index]))
+                    self.dut.port_obj_list[9].dev_port_index,
+                    self.dut.port_obj_list[index].dev_port_index))
                 pkt = simple_udp_packet(eth_dst=self.servers[1][index].mac,
                                         eth_src=self.servers[1][9].mac,
                                         ip_id=101,
                                         ip_ttl=64)
-                send_packet(self, self.dut.dev_port_list[9], pkt)
-                verify_packet(self, pkt, self.dut.dev_port_list[index])
+                send_packet(self, self.dut.port_obj_list[9].dev_port_index, pkt)
+                verify_packet(self, pkt, self.dut.port_obj_list[index].dev_port_index)
                 verify_no_other_packets(self, timeout=2)
         finally:
             pass
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         super().tearDown()
 
 
@@ -141,30 +147,33 @@ class MismatchDropTest(T0TestBase):
         try:
             for index in range(1, 9):
                 print("Sending vlan20 tagged packet from vlan20 tagged port {} to vlan10 tagged port: {}".format(
-                    self.dut.dev_port_list[9],
-                    self.dut.dev_port_list[index]))
+                    self.dut.port_obj_list[9].dev_port_index,
+                    self.dut.port_obj_list[index].dev_port_index))
                 pkt = simple_udp_packet(eth_dst=self.servers[1][index].mac,
                                         eth_src=self.servers[1][9].mac,
                                         vlan_vid=20,
                                         ip_id=101,
                                         ip_ttl=64)
-                send_packet(self, self.dut.dev_port_list[9], pkt)
+                send_packet(self, self.dut.port_obj_list[9].dev_port_index, pkt)
                 verify_no_other_packets(self, timeout=2)
             for index in range(9, 17):
                 print("Sending vlan10 tagged packet from {} to vlan20 tagged port: {}".format(
-                    self.dut.dev_port_list[1],
-                    self.dut.dev_port_list[index]))
+                    self.dut.port_obj_list[1].dev_port_index,
+                    self.dut.port_obj_list[index].dev_port_index))
                 pkt = simple_udp_packet(eth_dst=self.servers[1][index].mac,
                                         eth_src=self.servers[1][1].mac,
                                         vlan_vid=10,
                                         ip_id=101,
                                         ip_ttl=64)
-                send_packet(self, self.dut.dev_port_list[1], pkt)
+                send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
                 verify_no_other_packets(self, timeout=2)
         finally:
             pass
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         super().tearDown()
 
 
@@ -183,7 +192,7 @@ class TaggedFrameFilteringTest(T0TestBase):
             switch_id=self.dut.switch_id,
             server_list=self.tmp_server_list,
             port_idxs=[1, 1],
-            vlan_oid=self.dut.vlans[10].vlan_oid)
+            vlan_oid=self.dut.vlans[10].oid)
 
     def runTest(self):
         print("\nTaggedFrameFilteringTest")
@@ -194,12 +203,15 @@ class TaggedFrameFilteringTest(T0TestBase):
                                         vlan_vid=10,
                                         ip_id=101,
                                         ip_ttl=64)
-                send_packet(self, self.dut.dev_port_list[1], pkt)
+                send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
                 verify_no_other_packets(self, timeout=1)
         finally:
             pass
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         super().tearDown()
 
 
@@ -219,7 +231,7 @@ class UnTaggedFrameFilteringTest(T0TestBase):
             switch_id=self.dut.switch_id,
             server_list=self.tmp_server_list,
             port_idxs=[1, 1],
-            vlan_oid=self.dut.vlans[10].vlan_oid)
+            vlan_oid=self.dut.vlans[10].oid)
 
     def runTest(self):
         print("\nUnTaggedFrameFilteringTest")
@@ -229,12 +241,15 @@ class UnTaggedFrameFilteringTest(T0TestBase):
                                         eth_src=self.servers[1][1].mac,
                                         ip_id=101,
                                         ip_ttl=64)
-                send_packet(self, self.dut.dev_port_list[1], pkt)
+                send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
                 verify_no_other_packets(self, timeout=1)
         finally:
             pass
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         super().tearDown()
 
 
@@ -257,13 +272,16 @@ class TaggedVlanFloodingTest(T0TestBase):
                                     vlan_vid=10,
                                     ip_id=101,
                                     ip_ttl=64)
-            send_packet(self, self.dut.dev_port_list[1], pkt)
-            other_ports = self.dut.dev_port_list[1:8]
+            send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
+            other_ports = [item.dev_port_index for item in self.dut.port_obj_list[1:8]]
             verify_packet_any_port(self, pkt, other_ports)
         finally:
             pass
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         super().tearDown()
 
 
@@ -286,13 +304,16 @@ class UnTaggedVlanFloodingTest(T0TestBase):
                                     eth_src=self.servers[1][1].mac,
                                     ip_id=101,
                                     ip_ttl=64)
-            send_packet(self, self.dut.dev_port_list[1], pkt)
-            other_ports = self.dut.dev_port_list[1:8]
+            send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
+            other_ports = [item.dev_port_index for item in self.dut.port_obj_list[1:8]]
             verify_packet_any_port(self, pkt, other_ports)
         finally:
             pass
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         super().tearDown()
 
 
@@ -314,8 +335,8 @@ class BroadcastTest(T0TestBase):
                                              eth_src=self.servers[1][1].mac,
                                              ip_id=101,
                                              ip_ttl=64)
-            send_packet(self, self.dut.dev_port_list[1], untagged_pkt)
-            other_ports = self.dut.dev_port_list[1:8]
+            send_packet(self, self.dut.port_obj_list[1].dev_port_index, untagged_pkt)
+            other_ports = [item.dev_port_index for item in self.dut.port_obj_list[1:8]]
             verify_packet_any_port(self, untagged_pkt, other_ports)
             # tag
             tagged_pkt = simple_udp_packet(eth_dst=macX,
@@ -323,13 +344,16 @@ class BroadcastTest(T0TestBase):
                                            vlan_vid=10,
                                            ip_id=101,
                                            ip_ttl=64)
-            send_packet(self, self.dut.dev_port_list[1], tagged_pkt)
-            other_ports = self.dut.dev_port_list[1:8]
+            send_packet(self, self.dut.port_obj_list[1].dev_port_index, tagged_pkt)
+            other_ports = [item.dev_port_index for item in self.dut.port_obj_list[1:8]]
             verify_packet_any_port(self, tagged_pkt, other_ports)
         finally:
             pass
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         super().tearDown()
 
 
@@ -355,8 +379,8 @@ class UntaggedMacLearningTest(T0TestBase):
                                              eth_src=macX,
                                              ip_id=101,
                                              ip_ttl=64)
-            send_packet(self, self.dut.dev_port_list[1], untagged_pkt)
-            verify_packet(self, untagged_pkt, self.dut.dev_port_list[2])
+            send_packet(self, self.dut.port_obj_list[1].dev_port_index, untagged_pkt)
+            verify_packet(self, untagged_pkt, self.dut.port_obj_list[2].dev_port_index)
             verify_no_other_packets(self, timeout=2)
             sleep(2)  # wait for add mac entry
             available_fdb_entry_cnt_now = sai_thrift_get_switch_attribute(
@@ -368,6 +392,9 @@ class UntaggedMacLearningTest(T0TestBase):
             pass
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC)
         sleep(2)
@@ -396,8 +423,8 @@ class TaggedMacLearningTest(T0TestBase):
                                            vlan_vid=10,
                                            ip_id=101,
                                            ip_ttl=64)
-            send_packet(self, self.dut.dev_port_list[1], tagged_pkt)
-            verify_packet(self, tagged_pkt, self.dut.dev_port_list[2])
+            send_packet(self, self.dut.port_obj_list[1].dev_port_index, tagged_pkt)
+            verify_packet(self, tagged_pkt, self.dut.port_obj_list[2].dev_port_index)
             verify_no_other_packets(self, timeout=2)
             sleep(2)  # wait for add mac entry
             available_fdb_entry_cnt_now = sai_thrift_get_switch_attribute(
@@ -409,6 +436,9 @@ class TaggedMacLearningTest(T0TestBase):
             pass
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC)
         sleep(2)
@@ -427,9 +457,9 @@ class VlanMemberListTest(T0TestBase):
         print("VlanMemberListTest")
         mbr_list = []
         mbr_list.extend(self.vlan_configer.get_vlan_member(
-            self.dut.vlans[10].vlan_oid))
+            self.dut.vlans[10].oid))
         mbr_list.extend(self.vlan_configer.get_vlan_member(
-            self.dut.vlans[20].vlan_oid))
+            self.dut.vlans[20].oid))
         self.assertEqual(len(mbr_list), 16)
 
         for i in range(0, 8):
@@ -442,15 +472,15 @@ class VlanMemberListTest(T0TestBase):
         # Adding vlan members and veryfing vlan member list
         new_vlan_member = sai_thrift_create_vlan_member(
             self.client,
-            vlan_id=self.dut.vlans[10].vlan_oid,
-            bridge_port_id=self.dut.bridge_port_list[17],
+            vlan_id=self.dut.vlans[10].oid,
+            bridge_port_id=self.dut.port_obj_list[17].bridge_port_oid,
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
 
         mbr_list = []
         mbr_list.extend(self.vlan_configer.get_vlan_member(
-            self.dut.vlans[10].vlan_oid))
+            self.dut.vlans[10].oid))
         mbr_list.extend(self.vlan_configer.get_vlan_member(
-            self.dut.vlans[20].vlan_oid))
+            self.dut.vlans[20].oid))
         self.assertEqual(len(mbr_list), 17)
 
         # Adding vlan members and veryfing vlan member list
@@ -467,9 +497,9 @@ class VlanMemberListTest(T0TestBase):
 
         mbr_list = []
         mbr_list.extend(self.vlan_configer.get_vlan_member(
-            self.dut.vlans[10].vlan_oid))
+            self.dut.vlans[10].oid))
         mbr_list.extend(self.vlan_configer.get_vlan_member(
-            self.dut.vlans[20].vlan_oid))
+            self.dut.vlans[20].oid))
         self.assertEqual(len(mbr_list), 16)
 
         for i in range(0, 8):
@@ -480,6 +510,9 @@ class VlanMemberListTest(T0TestBase):
                 self.dut.vlans[20].vlan_mport_oids[i - 8], mbr_list[i])
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         super().tearDown()
 
 
@@ -497,11 +530,14 @@ class VlanMemberInvalidTest(T0TestBase):
         incorrect_member = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=11,
-            bridge_port_id=self.dut.bridge_port_list[17],
+            bridge_port_id=self.dut.port_obj_list[17].bridge_port_oid,
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_TAGGED)
         self.assertEqual(incorrect_member, 0)
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         super().tearDown()
 
 
@@ -514,7 +550,7 @@ class DisableMacLearningTaggedTest(T0TestBase):
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         print("DisableMacLearningTaggedTest")
         sai_thrift_set_vlan_attribute(
-            self.client, self.dut.vlans[10].vlan_oid, learn_disable=True)
+            self.client, self.dut.vlans[10].oid, learn_disable=True)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
         print("MAC Learning disabled on VLAN")
 
@@ -530,11 +566,14 @@ class DisableMacLearningTaggedTest(T0TestBase):
                                 ip_ttl=64)
         send_packet(self, 1, pkt)
         verify_each_packet_on_multiple_port_lists(
-            self, [pkt], [self.dut.dev_port_list[2:9]])
+            self, [pkt], [[item.dev_port_index for item in self.dut.port_obj_list[2:9]]])
 
         self.assertEqual(attr["available_fdb_entry"] - current_fdb_entry, 0)
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         super().tearDown()
 
 
@@ -547,7 +586,7 @@ class DisableMacLearningUntaggedTest(T0TestBase):
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         print("DisableMacLearningUntaggedTest")
         sai_thrift_set_vlan_attribute(
-            self.client, self.dut.vlans[10].vlan_oid, learn_disable=True)
+            self.client, self.dut.vlans[10].oid, learn_disable=True)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
         print("MAC Learning disabled on VLAN")
 
@@ -560,13 +599,16 @@ class DisableMacLearningUntaggedTest(T0TestBase):
                                 eth_src=self.servers[1][1].mac,
                                 ip_id=101,
                                 ip_ttl=64)
-        send_packet(self, self.dut.dev_port_list[1], pkt)
+        send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
         verify_each_packet_on_multiple_port_lists(
-            self, [pkt], [self.dut.dev_port_list[2:9]])
+            self, [pkt], [[item.dev_port_index for item in self.dut.port_obj_list[2:9]]])
 
         self.assertEqual(attr["available_fdb_entry"] - current_fdb_entry, 0)
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         super().tearDown()
 
 
@@ -586,11 +628,14 @@ class ArpRequestFloodingTest(T0TestBase):
 
     def runTest(self):
         print("ArpRequestFloodingTest")
-        send_packet(self, self.dut.dev_port_list[1], self.arp_request)
+        send_packet(self, self.dut.port_obj_list[1].dev_port_index, self.arp_request)
         verify_each_packet_on_multiple_port_lists(
-            self, [self.arp_request], [self.dut.dev_port_list[2:9]])
+            self, [self.arp_request], [[item.dev_port_index for item in self.dut.port_obj_list[2:9]]])
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         super().tearDown()
 
 
@@ -615,11 +660,14 @@ class ArpRequestLearningTest(T0TestBase):
 
     def runTest(self):
         print("ArpRequestLearningTest")
-        send_packet(self, self.dut.dev_port_list[2], self.arp_response)
-        verify_packet(self, self.arp_response, self.dut.dev_port_list[1])
+        send_packet(self, self.dut.port_obj_list[2].dev_port_index, self.arp_response)
+        verify_packet(self, self.arp_response, self.dut.port_obj_list[1].dev_port_index)
         verify_no_other_packets(self)
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC)
         sleep(2)
@@ -641,7 +689,7 @@ class TaggedVlanStatusTest(T0TestBase):
     def runTest(self):
         print("TaggedVlanStatusTest")
         stats = sai_thrift_get_vlan_stats(
-            self.client, self.dut.vlans[10].vlan_oid)
+            self.client, self.dut.vlans[10].oid)
 
         in_bytes_pre = stats["SAI_VLAN_STAT_IN_OCTETS"]
         out_bytes_pre = stats["SAI_VLAN_STAT_OUT_OCTETS"]
@@ -651,11 +699,11 @@ class TaggedVlanStatusTest(T0TestBase):
         out_ucast_packets_pre = stats["SAI_VLAN_STAT_OUT_UCAST_PKTS"]
 
         print("Sending L2 packet port 1 -> port 2")
-        send_packet(self, self.dut.dev_port_list[1], self.tagged_pkt)
-        verify_packet(self, self.tagged_pkt, self.dut.dev_port_list[2])
+        send_packet(self, self.dut.port_obj_list[1].dev_port_index, self.tagged_pkt)
+        verify_packet(self, self.tagged_pkt, self.dut.port_obj_list[2].dev_port_index)
 
         stats = sai_thrift_get_vlan_stats(
-            self.client, self.dut.vlans[10].vlan_oid)
+            self.client, self.dut.vlans[10].oid)
         in_bytes = stats["SAI_VLAN_STAT_IN_OCTETS"]
         out_bytes = stats["SAI_VLAN_STAT_OUT_OCTETS"]
         in_packets = stats["SAI_VLAN_STAT_IN_PACKETS"]
@@ -683,15 +731,15 @@ class TaggedVlanStatusTest(T0TestBase):
         #                 'vlan OUT bytes counter is 0')
 
         print("Sending L2 packet port 1 -> port 2")
-        send_packet(self, self.dut.dev_port_list[1], self.tagged_pkt)
-        verify_packet(self, self.tagged_pkt, self.dut.dev_port_list[2])
+        send_packet(self, self.dut.port_obj_list[1].dev_port_index, self.tagged_pkt)
+        verify_packet(self, self.tagged_pkt, self.dut.port_obj_list[2].dev_port_index)
 
         # Clear bytes and packets counter
-        sai_thrift_clear_vlan_stats(self.client, self.dut.vlans[10].vlan_oid)
+        sai_thrift_clear_vlan_stats(self.client, self.dut.vlans[10].oid)
 
         # Check counters
         stats = sai_thrift_get_vlan_stats(
-            self.client, self.dut.vlans[10].vlan_oid)
+            self.client, self.dut.vlans[10].oid)
         in_bytes = stats["SAI_VLAN_STAT_IN_OCTETS"]
         out_bytes = stats["SAI_VLAN_STAT_OUT_OCTETS"]
         in_packets = stats["SAI_VLAN_STAT_IN_PACKETS"]
@@ -710,6 +758,9 @@ class TaggedVlanStatusTest(T0TestBase):
         # self.assertEqual(out_bytes, 0, 'vlan OUT bytes counter is not 0')
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         super().tearDown()
 
 
@@ -728,7 +779,7 @@ class UntaggedVlanStatusTest(T0TestBase):
 
     def runTest(self):
         print("UntaggedVlanStatusTest")
-        stats = sai_thrift_get_vlan_stats(self.client, self.dut.port_list[1])
+        stats = sai_thrift_get_vlan_stats(self.client, self.dut.vlans[10].oid)
 
         in_bytes_pre = stats["SAI_VLAN_STAT_IN_OCTETS"]
         out_bytes_pre = stats["SAI_VLAN_STAT_OUT_OCTETS"]
@@ -738,12 +789,12 @@ class UntaggedVlanStatusTest(T0TestBase):
         out_ucast_packets_pre = stats["SAI_VLAN_STAT_OUT_UCAST_PKTS"]
 
         print("Sending L2 packet port 1 -> port 2 [access vlan=10])")
-        send_packet(self, self.dut.dev_port_list[1], self.untagged_pkt)
-        verify_packet(self, self.untagged_pkt, self.dut.dev_port_list[2])
+        send_packet(self, self.dut.port_obj_list[1].dev_port_index, self.untagged_pkt)
+        verify_packet(self, self.untagged_pkt, self.dut.port_obj_list[2].dev_port_index)
 
         time.sleep(1)
         stats = sai_thrift_get_vlan_stats(
-            self.client, self.dut.vlans[10].vlan_oid)
+            self.client, self.dut.vlans[10].oid)
         in_bytes = stats["SAI_VLAN_STAT_IN_OCTETS"]
         out_bytes = stats["SAI_VLAN_STAT_OUT_OCTETS"]
         in_packets = stats["SAI_VLAN_STAT_IN_PACKETS"]
@@ -771,15 +822,15 @@ class UntaggedVlanStatusTest(T0TestBase):
         #                 'vlan OUT bytes counter is 0')
 
         print("Sending L2 packet port 1 -> port 2 [access vlan=10])")
-        send_packet(self, self.dut.dev_port_list[1], self.untagged_pkt)
-        verify_packet(self, self.untagged_pkt, self.dut.dev_port_list[2])
+        send_packet(self, self.dut.port_obj_list[1].dev_port_index, self.untagged_pkt)
+        verify_packet(self, self.untagged_pkt, self.dut.port_obj_list[2].dev_port_index)
 
         # Clear bytes and packets counter
-        sai_thrift_clear_vlan_stats(self.client, self.dut.vlans[10].vlan_oid)
+        sai_thrift_clear_vlan_stats(self.client, self.dut.vlans[10].oid)
         # Check counters
 
         stats = sai_thrift_get_vlan_stats(
-            self.client, self.dut.vlans[10].vlan_oid)
+            self.client, self.dut.vlans[10].oid)
         in_bytes = stats["SAI_VLAN_STAT_IN_OCTETS"]
         out_bytes = stats["SAI_VLAN_STAT_OUT_OCTETS"]
         in_packets = stats["SAI_VLAN_STAT_IN_PACKETS"]
@@ -798,4 +849,7 @@ class UntaggedVlanStatusTest(T0TestBase):
         # self.assertEqual(out_bytes, 0, 'vlan OUT bytes counter is not 0')
 
     def tearDown(self):
+        """
+        TearDown process
+        """
         super().tearDown()

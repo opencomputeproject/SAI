@@ -23,50 +23,36 @@ from enum import Enum
 from typing import List
 
 from typing import TYPE_CHECKING
+from data_module.routable_item import data_item
 if TYPE_CHECKING:
     from data_module.device import Device
 
 
-class Nexthop(object):
+class Nexthop(data_item):
     """
     Represent the Nexthopobject.
     Attrs:
-        nexthop_id: Nexthop id
+        oid: Nexthop object id
         nexthop_device: nexthop_device
-        rif_id: router interface id
-        port_idx: related port idx (optional, need to check if None)
-        lag: related lag (optional, need to check if None)
-        tunnel_idx: related tunnel idx (optional, need to check if None)
+        rif_id: router referenced rif object id
     """
 
-    def __init__(self, nexthop_id=None, nexthop_device: 'Device' = None, rif_id=None, port_idx=None, lag=None, tunnel_idx=None):
+    def __init__(self, oid=None, nexthop_device: 'Device' = None, rif_id=None):
         """
         Init Nexthop Object
         Init following attrs:
-            nexthop_id
+            oid
             nexthop_device
             rif_id
-            port_idx
-            lag
-            tunnel_idx
         """
-        self.nexthop_id = nexthop_id
-        """
-        Nexthop id
-        """
+        super().__init__(oid=oid)
         self.nexthop_device = nexthop_device
-        self.port_idx = port_idx
         """
-        related port idx (optional, need to check if None)
+        nexthop_device
         """
         self.rif_id = rif_id
-        self.lag = lag
         """
-        related lag (optional, need to check if None)
-        """
-        self.tunnel_idx = tunnel_idx
-        """
-        related tunnel idx (optional, need to check if None)
+        referenced rif object id
         """
 
 

@@ -76,9 +76,9 @@ def t0_vlan_tear_down_helper(test_obj: 'T0TestBase'):
    # configer.remove_vlan(default_vlan_id)
 
     for _, vlan in test_obj.dut.vlans.items():
-        members = configer.get_vlan_member(vlan.vlan_oid)
+        members = configer.get_vlan_member(vlan.oid)
         configer.remove_vlan_members(members)
-        configer.remove_vlan(vlan.vlan_oid)
+        configer.remove_vlan(vlan.oid)
     test_obj.dut.vlans.clear()
 
 
@@ -119,7 +119,8 @@ class VlanConfiger(object):
             vlan_oid, vlan_port_idxs, vlan_tagging_mode)
         vlan.vlan_id = vlan_id
         vlan.vlan_mport_oids = members
-        vlan.vlan_oid = vlan_oid
+        vlan.oid = vlan_oid
+        vlan.port_idx_list = vlan_port_idxs
         return vlan
 
     def create_vlan_member(self, vlan_oid, vlan_ports, vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED):
@@ -141,12 +142,11 @@ class VlanConfiger(object):
         for port_index in vlan_ports:
             vlan_member = sai_thrift_create_vlan_member(self.client,
                                                         vlan_id=vlan_oid,
-                                                        bridge_port_id=self.test_obj.dut.bridge_port_list[
-                                                            port_index],
+                                                        bridge_port_id=self.test_obj.dut.port_obj_list[port_index].bridge_port_oid,
                                                         vlan_tagging_mode=vlan_tagging_mode)
             vlan_members.append(vlan_member)
             sai_thrift_set_port_attribute(
-                self.client, self.test_obj.dut.port_list[port_index], port_vlan_id=vlan_id)
+                self.client, self.test_obj.dut.port_obj_list[port_index].oid, port_vlan_id=vlan_id)
         return vlan_members
 
     def get_default_vlan(self):
