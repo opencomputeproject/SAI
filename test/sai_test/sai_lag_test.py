@@ -447,6 +447,10 @@ class DisableEgressTest(T0TestBase):
             pass
 
     def tearDown(self):
+        status = sai_thrift_set_lag_member_attribute(self.client,
+                                                     self.servers[11][1].l3_lag_obj.lag_members[1],
+                                                     egress_disable=False)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
