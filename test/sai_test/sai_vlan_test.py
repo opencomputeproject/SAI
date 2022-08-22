@@ -285,8 +285,9 @@ class TaggedVlanFloodingTest(T0TestBase):
                                     ip_id=101,
                                     ip_ttl=64)
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
-            verify_packet_any_port(self, pkt, self.get_dev_port_indexes(
-                list(filter(lambda item: item != 1, self.dut.vlans[10].port_idx_list))))
+            print(self.dut.vlans[10].port_idx_list)
+            verify_each_packet_on_multiple_port_lists(self, [pkt], [self.get_dev_port_indexes(
+                list(filter(lambda item: item != 1, self.dut.vlans[10].port_idx_list)))])
         finally:
             pass
 
@@ -317,8 +318,8 @@ class UnTaggedVlanFloodingTest(T0TestBase):
                                     ip_id=101,
                                     ip_ttl=64)
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
-            verify_packet_any_port(self, pkt, self.get_dev_port_indexes(
-                list(filter(lambda item: item != 1, self.dut.vlans[10].port_idx_list))))
+            verify_each_packet_on_multiple_port_lists(self, [pkt], [self.get_dev_port_indexes(
+                list(filter(lambda item: item != 1, self.dut.vlans[10].port_idx_list)))])
         finally:
             pass
 
@@ -349,8 +350,8 @@ class BroadcastTest(T0TestBase):
                                              ip_ttl=64)
             send_packet(
                 self, self.dut.port_obj_list[1].dev_port_index, untagged_pkt)
-            verify_packet_any_port(self, untagged_pkt, self.get_dev_port_indexes(
-                list(filter(lambda item: item != 1, self.dut.vlans[10].port_idx_list))))
+            verify_each_packet_on_multiple_port_lists(self, [untagged_pkt], [self.get_dev_port_indexes(
+                list(filter(lambda item: item != 1, self.dut.vlans[10].port_idx_list)))])
             # tag
             tagged_pkt = simple_udp_packet(eth_dst=macX,
                                            eth_src=self.servers[1][1].mac,
@@ -359,8 +360,8 @@ class BroadcastTest(T0TestBase):
                                            ip_ttl=64)
             send_packet(
                 self, self.dut.port_obj_list[1].dev_port_index, tagged_pkt)
-            verify_packet_any_port(self, tagged_pkt, self.get_dev_port_indexes(
-                list(filter(lambda item: item != 1, self.dut.vlans[10].port_idx_list))))
+            verify_each_packet_on_multiple_port_lists(self, [tagged_pkt], [self.get_dev_port_indexes(
+                list(filter(lambda item: item != 1, self.dut.vlans[10].port_idx_list)))])
         finally:
             pass
 
