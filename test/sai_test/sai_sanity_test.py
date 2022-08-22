@@ -63,7 +63,8 @@ class SaiSanityTest(T0TestBase):
         try:
             # Unknown mac, flooding to all the other ports.
             print("Sanity test, check all the ports be flooded.")
-            send_packet(self, 1, pkt)
+            send_packet(
+                self, self.dut.port_obj_list[1].dev_port_index, pkt)
             verify_each_packet_on_multiple_port_lists(
                 self, [pkt], [[item.dev_port_index for item in self.dut.port_obj_list[2:]]])
         finally:
