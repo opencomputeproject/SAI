@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from data_module.vlan import Vlan
     from data_module.lag import Lag
     from data_module.nexthop import Nexthop
-    from data_module.ecmp import Ecmp
+    from data_module.nexthop_group import NexthopGroup
     from data_module.port import Port
 
 
@@ -142,8 +142,8 @@ class Dut(object):
         self.lag_list: List[Lag] = []
 
         # ecmp
-        self.ecmpv4_list: List[Ecmp] = []
-        self.ecmpv6_list: List[Ecmp] = []
+        self.ecmpv4_list: List[NexthopGroup] = []
+        self.ecmpv6_list: List[NexthopGroup] = []
         """
         Ecmp list, contains ecmp objects
         """

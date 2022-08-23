@@ -25,7 +25,7 @@ if TYPE_CHECKING:
     from data_module.nexthop import Nexthop
 
 
-class Ecmp(object):
+class NexthopGroup(object):
     """
     Represent the ecmp(next hop group) object.
     Attrs:
