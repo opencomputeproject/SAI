@@ -23,7 +23,7 @@ from constant import *
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from data_module.nexthop import Nexthop
-    from data_module.ecmp import Ecmp
+    from data_module.nexthop_group import NexthopGroup
     from data_module.lag import Lag
 
 
@@ -130,7 +130,7 @@ class Device(object):
         """
         L3 destination lag object, defined in route configer
         """
-        self.ecmp : Ecmp = None
+        self.ecmp : NexthopGroup = None
         """
         L3 destination ecmp object, defined in route configer
         """

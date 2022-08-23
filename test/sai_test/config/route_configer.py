@@ -32,7 +32,7 @@ from data_module.routable_item import route_item
 from typing import Dict, List
 
 from data_module.nexthop import Nexthop
-from data_module.ecmp import Ecmp
+from data_module.nexthop_group import NexthopGroup
 
 if TYPE_CHECKING:
     from sai_test_base import T0TestBase
@@ -304,7 +304,7 @@ class RouteConfiger(object):
         return net_routev4, net_routev6
 
     def create_route_by_nexthop_group(
-            self, dest_device: Device, nexthop_groupv4: Ecmp, nexthop_groupv6: Ecmp, virtual_router=None):
+            self, dest_device: Device, nexthop_groupv4: NexthopGroup, nexthop_groupv6: NexthopGroup, virtual_router=None):
         """
         Create a complete route path to a dest_device device, via nexthop group.
 
@@ -327,7 +327,7 @@ class RouteConfiger(object):
             net_routev4 = sai_thrift_route_entry_t(
                 vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv4+'/32'))
         status = sai_thrift_create_route_entry(
-            self.client, net_routev4, next_hop_id=nexthop_groupv4.ecmp_id)
+            self.client, net_routev4, next_hop_id=nexthop_groupv4.nhop_group_id)
         self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
 
         if dest_device.ip_prefix_v6:
@@ -338,7 +338,7 @@ class RouteConfiger(object):
             net_routev6 = sai_thrift_route_entry_t(
                 vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv6+'/128'))
         status = sai_thrift_create_route_entry(
-            self.client, net_routev6, next_hop_id=nexthop_groupv6.ecmp_id)
+            self.client, net_routev6, next_hop_id=nexthop_groupv6.nhop_group_id)
         self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
 
         self.test_obj.dut.routev4_list.append(net_routev4)
@@ -549,11 +549,11 @@ class RouteConfiger(object):
             next_hop_group_id=nhop_groupv6_id,
             next_hop_id=lag_list[0].nexthopv4_list[0].oid)
 
-        next_hop_groupv4: Ecmp = Ecmp(nhop_groupv4_id, nh_groupv4_member, [19, 20, 21, 22])
-        next_hop_groupv6: Ecmp = Ecmp(nhop_groupv6_id, nh_groupv6_member, [19, 20, 21, 22])
+        next_hop_groupv4: NexthopGroup = NexthopGroup(nhop_groupv4_id, nh_groupv4_member, [19, 20, 21, 22])
+        next_hop_groupv6: NexthopGroup = NexthopGroup(nhop_groupv6_id, nh_groupv6_member, [19, 20, 21, 22])
 
-        self.test_obj.dut.ecmpv4_list.append(next_hop_groupv4)
-        self.test_obj.dut.ecmpv6_list.append(next_hop_groupv6)
+        self.test_obj.dut.nhop_groupv4_list.append(next_hop_groupv4)
+        self.test_obj.dut.nhop_groupv6_list.append(next_hop_groupv6)
         self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
         self.create_route_by_nexthop_group(dest_device, next_hop_groupv4, next_hop_groupv6)
         return next_hop_groupv4, next_hop_groupv6
