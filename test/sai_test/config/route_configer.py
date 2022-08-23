@@ -32,6 +32,7 @@ from data_module.routable_item import route_item
 from typing import Dict, List
 
 from data_module.nexthop import Nexthop
+from data_module.ecmp import Ecmp
 
 if TYPE_CHECKING:
     from sai_test_base import T0TestBase
@@ -90,11 +91,11 @@ def t0_route_config_helper(
             dest_device=test_obj.servers[11][0],
             nexthopv4=nhv4,
             nexthopv6=nhv6)
-        #set expected dest server
+        # set expected dest server
         for item in test_obj.servers[11]:
             item.l3_lag_obj = test_obj.dut.lag_list[0]
             item.l3_lag_obj.neighbor_mac = test_obj.t1_list[1][100].mac
-        #set expected dest T1
+        # set expected dest T1
         test_obj.t1_list[1][100].l3_lag_obj = test_obj.dut.lag_list[0]
 
         print("Create route for server with in ip {}/{}".format(test_obj.servers[12][0].ipv4, 24))
@@ -111,12 +112,45 @@ def t0_route_config_helper(
             dest_device=test_obj.servers[12][0],
             nexthopv4=nhv4,
             nexthopv6=nhv6)
-        #set expected dest server
+        # set expected dest server
         for item in test_obj.servers[12]:
             item.l3_lag_obj = test_obj.dut.lag_list[1]
             item.l3_lag_obj.neighbor_mac = test_obj.t1_list[2][100].mac
-        #set expected dest T1
+        # set expected dest T1
         test_obj.t1_list[2][100].l3_lag_obj = test_obj.dut.lag_list[1]
+
+        print("Create route for server with in ip {}/{}".format(test_obj.servers[13][0].ipv4, 24))
+        test_obj.servers[13][0].ip_prefix = '24'
+        test_obj.servers[13][0].ip_prefix_v6 = '112'
+        rif = route_configer.create_router_interface(
+            net_interface=test_obj.dut.lag_list[2])
+        route_configer.create_neighbor_by_rif(rif=rif,
+                                              nexthop_device=test_obj.t1_list[3][100],
+                                              no_host=False)
+        nhv4, nhv6 = route_configer.create_nexthop_by_rif(rif=rif,
+                                                          nexthop_device=test_obj.t1_list[3][100])
+        route_configer.create_route_by_nexthop(
+            dest_device=test_obj.servers[13][0],
+            nexthopv4=nhv4,
+            nexthopv6=nhv6)
+        # set expected dest server
+        for item in test_obj.servers[13]:
+            item.l3_lag_obj = test_obj.dut.lag_list[2]
+            item.l3_lag_obj.neighbor_mac = test_obj.t1_list[3][100].mac
+        # set expected dest T1
+        test_obj.t1_list[3][100].l3_lag_obj = test_obj.dut.lag_list[2]
+
+        # create nexthop
+        route_configer.create_nexthops_by_lags(
+            lag_list=[test_obj.dut.lag_list[1], test_obj.dut.lag_list[2]],
+            nexthop_device_list=[test_obj.t1_list[2][100], test_obj.t1_list[3][100]])
+        # create nexthop group
+        print("Create route for server with in ip {}/{}".format(test_obj.servers[60][0].ipv4, 24))
+        test_obj.servers[60][0].ip_prefix = '24'
+        test_obj.servers[60][0].ip_prefix_v6 = '112'
+        route_configer.create_nexthop_group_by_nexthops(
+            lag_list=[test_obj.dut.lag_list[1], test_obj.dut.lag_list[2]],
+            dest_device=test_obj.servers[60][0])
 
 
 class RouteConfiger(object):
@@ -262,6 +296,49 @@ class RouteConfiger(object):
                 vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv6+'/128'))
         status = sai_thrift_create_route_entry(
             self.client, net_routev6, next_hop_id=nexthopv6.oid)
+        self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
+
+        self.test_obj.dut.routev4_list.append(net_routev4)
+        self.test_obj.dut.routev6_list.append(net_routev6)
+
+        return net_routev4, net_routev6
+
+    def create_route_by_nexthop_group(
+            self, dest_device: Device, nexthop_groupv4: Ecmp, nexthop_groupv6: Ecmp, virtual_router=None):
+        """
+        Create a complete route path to a dest_device device, via nexthop group.
+
+        Set Device attribute: routev4, routev6
+
+        Attrs:
+            dest_device: Simulating the destinate device that this dut direct connect to.
+            nexthop_groupv4: nexthop_groupv4
+            nexthop_groupv6: nexthop_groupv6
+            virtual_router_id: virtual route id, if not defined, will use default route
+
+        Return: routev4, routev6
+        """
+        vr_id = self.choice_virtual_route(virtual_router)
+        if dest_device.ip_prefix:
+            net_routev4 = sai_thrift_route_entry_t(
+                vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv4+'/'+dest_device.ip_prefix))
+        else:
+            # destination cannot use sai_ipaddress
+            net_routev4 = sai_thrift_route_entry_t(
+                vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv4+'/32'))
+        status = sai_thrift_create_route_entry(
+            self.client, net_routev4, next_hop_id=nexthop_groupv4.ecmp_id)
+        self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
+
+        if dest_device.ip_prefix_v6:
+            net_routev6 = sai_thrift_route_entry_t(
+                vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv6+'/'+dest_device.ip_prefix_v6))
+        else:
+            # destination cannot use sai_ipaddress
+            net_routev6 = sai_thrift_route_entry_t(
+                vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv6+'/128'))
+        status = sai_thrift_create_route_entry(
+            self.client, net_routev6, next_hop_id=nexthop_groupv6.ecmp_id)
         self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
 
         self.test_obj.dut.routev4_list.append(net_routev4)
@@ -425,6 +502,61 @@ class RouteConfiger(object):
         self.test_obj.dut.nexthopv6_list.append(nhopv6)
 
         return nhopv4, nhopv6
+
+    def create_nexthops_by_lags(self, lag_list: List[Lag], nexthop_device_list: List[Device], virtual_router=None):
+        """
+        Create nexthops by a list of lags. Each element in all lists corresponds one by one.
+
+        Set dut attribute: nexthopv4_list, nexthopv6_list
+        Set device attribute: nexthop_device_list
+
+        Attrs:
+            rif: route interface id
+            nexthop_device: Simulating the bypass device, use this device to get the ipaddress, ipprefix_v4 and ipprefix_v6
+            virtual_router_id: virtual route id, if not defined, will use default route
+
+        return nexthop object for v4 and nexthop object for v6 
+        """
+        v4_list, v6_list = [], []
+        for lag, nexthop_device in zip(lag_list, nexthop_device_list):
+            rif = self.create_router_interface(lag, virtual_router)
+            v4, v6 = self.create_nexthop_by_rif(rif, nexthop_device)
+            v4.rif_id = rif
+            v6.rif_id = rif
+            v4.nexthop_device.l3_lag_obj = lag
+            v6.nexthop_device.l3_lag_obj = lag
+            lag.nexthopv4_list.append(v4)
+            lag.nexthopv6_list.append(v6)
+            v4_list.append(v4)
+            v6_list.append(v6)
+        return v4_list, v6_list
+
+    def create_nexthop_group_by_nexthops(self, lag_list: List[Lag], dest_device: Device):
+        """
+        Create nexthop group by nexthops. Each element in all lists corresponds one by one.
+
+        return nexthop group for v4 and nexthop group for v6 
+        """
+        nhop_groupv4_id = sai_thrift_create_next_hop_group(self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+        nhop_groupv6_id = sai_thrift_create_next_hop_group(self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+
+        nh_groupv4_member = sai_thrift_create_next_hop_group_member(
+            self.client,
+            next_hop_group_id=nhop_groupv4_id,
+            next_hop_id=lag_list[0].nexthopv4_list[0].oid)
+        nh_groupv6_member = sai_thrift_create_next_hop_group_member(
+            self.client,
+            next_hop_group_id=nhop_groupv6_id,
+            next_hop_id=lag_list[0].nexthopv4_list[0].oid)
+
+        next_hop_groupv4: Ecmp = Ecmp(nhop_groupv4_id, nh_groupv4_member, [19, 20, 21, 22])
+        next_hop_groupv6: Ecmp = Ecmp(nhop_groupv6_id, nh_groupv6_member, [19, 20, 21, 22])
+
+        self.test_obj.dut.ecmpv4_list.append(next_hop_groupv4)
+        self.test_obj.dut.ecmpv6_list.append(next_hop_groupv6)
+        self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
+        self.create_route_by_nexthop_group(dest_device, next_hop_groupv4, next_hop_groupv6)
+        return next_hop_groupv4, next_hop_groupv6
 
     def choice_virtual_route(self, virtual_router=None):
         """

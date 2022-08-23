@@ -43,7 +43,7 @@ class Ecmp(object):
             member_port_indexs
             lags
         """
-        self.ecmp_id = None
+        self.ecmp_id = ecmp_id
         """
         ecmp id (nexthop group id)
         """
