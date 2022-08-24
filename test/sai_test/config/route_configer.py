@@ -153,9 +153,17 @@ def t0_route_config_helper(
 
         test_obj.servers[1][0].ip_prefix = '24'
         test_obj.servers[1][0].ip_prefix_v6 = '112'
-        route_configer.create_route_by_rif(
+        test_obj.servers[1][1].ip_prefix = '24'
+        test_obj.servers[1][1].ip_prefix_v6 = '112'
+        nhopv4, nhopv6 = route_configer.create_nexthop_by_rif(
+            rif=test_obj.dut.vlans[10].rif_list[0],
+            nexthop_device=test_obj.servers[1][1])
+        test_obj.dut.vlans[10].nexthopv4_list.append(nhopv4)
+        test_obj.dut.vlans[10].nexthopv6_list.append(nhopv6)
+        route_configer.create_route_by_nexthop(
             dest_device=test_obj.servers[1][0],
-            rif=test_obj.dut.vlans[10].rif_list[0])
+            nexthopv4=nhopv4,
+            nexthopv6=nhopv6)
         print("Create route for server with in ip {}/{}".format(test_obj.servers[1][0].ipv4, 24))
 
         test_obj.vlan20_neighbor_device = Device(device_type=DeviceType.server, id=255, group_id=2)
