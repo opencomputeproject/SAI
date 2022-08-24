@@ -127,15 +127,7 @@ class PortConfiger(object):
                 type=SAI_BRIDGE_PORT_TYPE_PORT,
                 admin_state=True)
             bp_list.append(port_bp)
-            # debug code will be removed
-            # item.bridge_port_oid = port_bp
-            # vlan_oid = sai_thrift_create_vlan(self.client, vlan_id=10)
-            # sai_thrift_create_vlan_member(self.client,
-            #                               vlan_id=vlan_oid,
-            #                               bridge_port_id=port_bp)
-            # port_list = sai_thrift_object_list_t(count=100)
-            # attr = sai_thrift_get_port_attribute(
-            #     self.client, port_oid=item.oid, hw_lane_list=port_list)
+            item.bridge_port_oid = port_bp
         return bp_list
 
     def create_host_intf(self, port_list: List['Port'], trap_group=None):
