@@ -38,12 +38,12 @@ if TYPE_CHECKING:
 
 
 def t0_route_config_helper(
-    test_obj: 'T0TestBase', 
-    is_create_default_route=True, 
-    is_create_default_loopback_interface=False, 
-    is_create_route_for_lag=True,
-    is_create_vlan_interface=True,
-    is_create_route_for_vlan=True):
+        test_obj: 'T0TestBase',
+        is_create_default_route=True,
+        is_create_default_loopback_interface=False,
+        is_create_route_for_lag=True,
+        is_create_vlan_interface=True,
+        is_create_route_for_vlan=True):
     """
     Make t0 route configurations base on the configuration in the test plan.
     Set the configuration in test directly.
@@ -74,10 +74,12 @@ def t0_route_config_helper(
     if is_create_vlan_interface:
         for vlan_name in test_obj.dut.vlans:
             print("Create vlan interface for vlan {}".format(vlan_name))
-            route_configer.create_router_interface(net_interface=test_obj.dut.vlans[vlan_name])
+            route_configer.create_router_interface(
+                net_interface=test_obj.dut.vlans[vlan_name])
 
     if is_create_route_for_lag:
-        print("Create route for server with in ip {}/{}".format(test_obj.servers[11][0].ipv4, 24))
+        print(
+            "Create route for server with in ip {}/{}".format(test_obj.servers[11][0].ipv4, 24))
         test_obj.servers[11][0].ip_prefix = '24'
         test_obj.servers[11][0].ip_prefix_v6 = '112'
         rif = route_configer.create_router_interface(
@@ -93,26 +95,28 @@ def t0_route_config_helper(
             dest_device=test_obj.servers[11][0],
             nexthopv4=nhv4,
             nexthopv6=nhv6)
-        #set expected dest server
+        # set expected dest server
         for item in test_obj.servers[11]:
             item.l3_lag_obj = test_obj.dut.lag_list[0]
             item.l3_lag_obj.neighbor_mac = test_obj.t1_list[1][100].mac
-        #set expected dest T1
+        # set expected dest T1
         test_obj.t1_list[1][100].l3_lag_obj = test_obj.dut.lag_list[0]
 
-        print("Create route for server with in ip {}/{}".format(test_obj.servers[21][0].ipv4, 24))
+        print(
+            "Create route for server with in ip {}/{}".format(test_obj.servers[21][0].ipv4, 24))
         test_obj.servers[21][0].ip_prefix = '24'
         test_obj.servers[21][0].ip_prefix_v6 = '112'
         route_configer.create_route_by_nexthop(
             dest_device=test_obj.servers[21][0],
             nexthopv4=nhv4,
             nexthopv6=nhv6)
-        #set expected dest server
+        # set expected dest server
         for item in test_obj.servers[21]:
             item.l3_lag_obj = test_obj.dut.lag_list[0]
             item.l3_lag_obj.neighbor_mac = test_obj.t1_list[1][100].mac
 
-        print("Create route for server with in ip {}/{}".format(test_obj.servers[12][0].ipv4, 24))
+        print(
+            "Create route for server with in ip {}/{}".format(test_obj.servers[12][0].ipv4, 24))
         test_obj.servers[12][0].ip_prefix = '24'
         test_obj.servers[12][0].ip_prefix_v6 = '112'
         rif = route_configer.create_router_interface(
@@ -128,19 +132,21 @@ def t0_route_config_helper(
             dest_device=test_obj.servers[12][0],
             nexthopv4=nhv4,
             nexthopv6=nhv6)
-        #set expected dest server
+        # set expected dest server
         for item in test_obj.servers[12]:
             item.l3_lag_obj = test_obj.dut.lag_list[1]
             item.l3_lag_obj.neighbor_mac = test_obj.t1_list[2][100].mac
-        #set expected dest T1
+        # set expected dest T1
         test_obj.t1_list[2][100].l3_lag_obj = test_obj.dut.lag_list[1]
 
     if is_create_route_for_vlan:
-        test_obj.vlan10_neighbor_device = Device(device_type=DeviceType.server, id=255, group_id=1)
-        test_obj.vlan10_neighbor_device.mac = BROADCAST_MAC
-        test_obj.vlan10_neighbor_device.ipv6 = None
+        print("Config route for vlan...")
+        test_obj.dut.vlans[10].broadcast_neighbor_device = Device(
+            device_type=DeviceType.server, id=255, group_id=1)
+        test_obj.dut.vlans[10].broadcast_neighbor_device.mac = BROADCAST_MAC
+        test_obj.dut.vlans[10].broadcast_neighbor_device.ipv6 = None
         route_configer.create_neighbor_by_rif(
-            nexthop_device=test_obj.vlan10_neighbor_device,
+            nexthop_device=test_obj.dut.vlans[10].broadcast_neighbor_device,
             rif=test_obj.dut.vlans[10].rif_list[0],
             no_host=False)
         for index in range(1, 9):
@@ -164,13 +170,15 @@ def t0_route_config_helper(
             dest_device=test_obj.servers[1][0],
             nexthopv4=nhopv4,
             nexthopv6=nhopv6)
-        print("Create route for server with in ip {}/{}".format(test_obj.servers[1][0].ipv4, 24))
+        print(
+            "Create route for server with in ip {}/{}".format(test_obj.servers[1][0].ipv4, 24))
 
-        test_obj.vlan20_neighbor_device = Device(device_type=DeviceType.server, id=255, group_id=2)
-        test_obj.vlan20_neighbor_device.mac = BROADCAST_MAC
-        test_obj.vlan20_neighbor_device.ipv6 = None
+        test_obj.dut.vlans[20].broadcast_neighbor_device = Device(
+            device_type=DeviceType.server, id=255, group_id=2)
+        test_obj.dut.vlans[20].broadcast_neighbor_device.mac = BROADCAST_MAC
+        test_obj.dut.vlans[20].broadcast_neighbor_device.ipv6 = None
         route_configer.create_neighbor_by_rif(
-            nexthop_device=test_obj.vlan20_neighbor_device,
+            nexthop_device=test_obj.dut.vlans[20].broadcast_neighbor_device,
             rif=test_obj.dut.vlans[20].rif_list[0],
             no_host=False)
         for index in range(0, 8):
@@ -186,7 +194,13 @@ def t0_route_config_helper(
         route_configer.create_route_by_rif(
             dest_device=test_obj.servers[2][0],
             rif=test_obj.dut.vlans[20].rif_list[0])
-        print("Create route for server with in ip {}/{}".format(test_obj.servers[2][0].ipv4, 24))
+        test_obj.dut.vlans[20].nexthopv4_list.append(Nexthop(
+            nexthop_device=test_obj.dut.vlans[20], rif_id=test_obj.dut.vlans[20].rif_list[0]))
+        test_obj.dut.vlans[20].nexthopv6_list.append(Nexthop(
+            nexthop_device=test_obj.dut.vlans[20], rif_id=test_obj.dut.vlans[20].rif_list[0]))
+        print(
+            "Create route for server with in ip {}/{}".format(test_obj.servers[2][0].ipv4, 24))
+
 
 class RouteConfiger(object):
     """
