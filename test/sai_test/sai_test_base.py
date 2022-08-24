@@ -19,48 +19,34 @@
 #
 
 import os
+import time
+from collections import OrderedDict
 from threading import Thread
-
-from ptf import config
-from ptf.base_tests import BaseTest
-
-from thrift.transport import TSocket
-from thrift.transport import TTransport
-from thrift.protocol import TBinaryProtocol
-
-from sai_thrift import sai_rpc
+from typing import Dict, List
 
 import sai_thrift.sai_adapter as adapter
+from ptf import config
+from ptf.base_tests import BaseTest
+from sai_thrift import sai_rpc
 from sai_thrift.sai_adapter import *
-from sai_utils import *
+from thrift.protocol import TBinaryProtocol
+from thrift.transport import TSocket, TTransport
 
-import time
-
-from config.port_configer import t0_port_config_helper
-from config.port_configer import t0_port_tear_down_helper
-from config.port_configer import PortConfiger
-from config.switch_configer import t0_switch_config_helper
-from config.switch_configer import SwitchConfiger
-from config.vlan_configer import t0_vlan_config_helper
-from config.vlan_configer import t0_vlan_tear_down_helper
-from config.vlan_configer import VlanConfiger
-from config.fdb_configer import t0_fdb_config_helper
-from config.fdb_configer import t0_fdb_tear_down_helper
-from config.vlan_configer import VlanConfiger
-from config.fdb_configer import t0_fdb_config_helper
-from config.fdb_configer import FdbConfiger
-from config.lag_configer import t0_lag_config_helper
-from config.lag_configer import LagConfiger
-from config.route_configer import t0_route_config_helper
-from config.route_configer import RouteConfiger
+from config.fdb_configer import (FdbConfiger, t0_fdb_config_helper,
+                                 t0_fdb_tear_down_helper)
+from config.lag_configer import LagConfiger, t0_lag_config_helper
+from config.port_configer import (PortConfiger, t0_port_config_helper,
+                                  t0_port_tear_down_helper)
+from config.route_configer import RouteConfiger, t0_route_config_helper
+from config.switch_configer import SwitchConfiger, t0_switch_config_helper
+from config.vlan_configer import (VlanConfiger, t0_vlan_config_helper,
+                                  t0_vlan_tear_down_helper)
+from data_module.device import Device, DeviceType
 from data_module.dut import Dut
-from data_module.vlan import Vlan
 from data_module.lag import Lag
-from data_module.device import Device
-from data_module.device import DeviceType
 from data_module.persist import PersistHelper
-from typing import List
-from typing import Dict
+from data_module.vlan import Vlan
+from sai_utils import *
 
 THRIFT_PORT = 9092
 
@@ -346,6 +332,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
         Value: List, servers
         """
         self.persist_helper = PersistHelper()
+        self.ports_config = None
 
     def setUp(self,
               force_config=False,
@@ -360,6 +347,10 @@ class T0TestBase(ThriftInterfaceDataPlane):
               is_create_route_for_lag=True,
               wait_sec=5):
         super(T0TestBase, self).setUp()
+
+        # parse the port_config.ini, will create port, bridge port and host interface base on that file
+        if 'port_config_ini' in self.test_params:
+            self.ports_config = self.parsePortConfig(self.test_params['port_config_ini'])        
 
         self.port_configer = PortConfiger(self)
         self.switch_configer = SwitchConfiger(self)
@@ -409,6 +400,62 @@ class T0TestBase(ThriftInterfaceDataPlane):
         """
         t0_fdb_tear_down_helper(self)
         t0_fdb_config_helper(test_obj=self)
+
+
+    def parsePortConfig(self, port_config_file):
+        """
+        Parse port_config.ini file
+
+        Example of supported format for port_config.ini:
+        # name        lanes       alias       index    speed    autoneg   fec
+        Ethernet0       0         Ethernet0     1      25000      off     none
+        Ethernet1       1         Ethernet1     1      25000      off     none
+        Ethernet2       2         Ethernet2     1      25000      off     none
+        Ethernet3       3         Ethernet3     1      25000      off     none
+        Ethernet4       4         Ethernet4     2      25000      off     none
+        Ethernet5       5         Ethernet5     2      25000      off     none
+        Ethernet6       6         Ethernet6     2      25000      off     none
+        Ethernet7       7         Ethernet7     2      25000      off     none
+        Ethernet8       8         Ethernet8     3      25000      off     none
+        Ethernet9       9         Ethernet9     3      25000      off     none
+        Ethernet10      10        Ethernet10    3      25000      off     none
+        Ethernet11      11        Ethernet11    3      25000      off     none
+        etc
+
+        Args:
+            port_config_file (string): path to port config file
+
+        Returns:
+            dict: port configuation from file
+
+        Raises:
+            e: exit if file not found
+        """
+        ports = OrderedDict()
+        try:
+            with open(port_config_file) as conf:
+                for line in conf:
+                    if line.startswith('#'):
+                        if "name" in line:
+                            titles = line.strip('#').split()
+                        continue
+                    tokens = line.split()
+                    if len(tokens) < 2:
+                        continue
+                    name_index = titles.index('name')
+                    name = tokens[name_index]
+                    data = {}
+                    for i, item in enumerate(tokens):
+                        if i == name_index:
+                            continue
+                        data[titles[i]] = item
+                    data['lanes'] = [int(lane)
+                                     for lane in data['lanes'].split(',')]
+                    data['speed'] = int(data['speed'])
+                    ports[name] = data
+            return ports
+        except Exception as e:
+            raise e
 
     def shell(self):
         '''

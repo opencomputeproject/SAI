@@ -20,12 +20,13 @@
 
 from typing import List, Dict
 from typing import TYPE_CHECKING
+from data_module.data_obj import auto_str
 if TYPE_CHECKING:
     from sai_test_base import T0TestBase
     from data_module.nexthop import Nexthop
 from data_module.routable_item import route_item
 
-
+@auto_str
 class Port(route_item):
     """
     Represent the port object.
@@ -81,7 +82,11 @@ class Port(route_item):
         bridge port object id
         """
         self.port_config:Dict = {}
-        self.host_itf = None
+        self.host_itf_idx = None
         """
-        Port binded host interface
+        Port binded host interface index, the object saved in dut.hostif_list
+        """
+        self.default_lane_list = []
+        """
+        default lane list after switch init.
         """

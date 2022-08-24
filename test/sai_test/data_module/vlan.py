@@ -20,6 +20,7 @@
 
 from typing import List
 from typing import TYPE_CHECKING
+from data_module.data_obj import auto_str
 
 if TYPE_CHECKING:
     from sai_test_base import T0TestBase
@@ -27,6 +28,7 @@ if TYPE_CHECKING:
 
 from data_module.routable_item import route_item
 
+@auto_str
 class Vlan(route_item):
     """
     Represent the vlan object
