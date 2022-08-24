@@ -315,6 +315,33 @@ typedef enum _sai_next_hop_group_member_attr_t
     SAI_NEXT_HOP_GROUP_MEMBER_ATTR_COUNTER_ID,
 
     /**
+     * @brief Quality threshold for least cost ARS paths. Crossing down the threshold will result in using the non least cost sub optimal path.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 16
+     */
+    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_ARS_PRIMARY_PATH_QUALITY_THRESHOLD,
+
+    /**
+     * @brief Cost of switching over to non least cost ARS paths
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_ARS_ALTERNATE_PATH_COST,
+
+    /**
+     * @brief Indicates the bias in favor of alternate path
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_ARS_ALTERNATE_PATH_BIAS,
+
+    /**
      * @brief End of attributes
      */
     SAI_NEXT_HOP_GROUP_MEMBER_ATTR_END,
