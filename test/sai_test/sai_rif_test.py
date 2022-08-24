@@ -72,10 +72,10 @@ class IngressMacUpdateTest(T0TestBase):
 
         print("Updating src_mac_address to %s" % (new_router_mac))
         sai_thrift_set_router_interface_attribute(
-            self.client, self.dut.vlans[10].rif_list[-1], src_mac_address=new_router_mac)
+            self.client, self.dut.vlans[10].rif_list[0], src_mac_address=new_router_mac)
         time.sleep(3)
         attrs = sai_thrift_get_router_interface_attribute(
-            self.client, self.dut.vlans[10].rif_list[-1], src_mac_address=True)
+            self.client, self.dut.vlans[10].rif_list[0], src_mac_address=True)
         self.assertEqual(attrs["src_mac_address"], new_router_mac)
 
         send_packet(self, send_port.dev_port_index, pkt)
@@ -89,10 +89,10 @@ class IngressMacUpdateTest(T0TestBase):
         Test the basic tearDown process
         """
         sai_thrift_set_router_interface_attribute(
-            self.client, self.dut.vlans[10].rif_list[-1], src_mac_address=ROUTER_MAC)
+            self.client, self.dut.vlans[10].rif_list[0], src_mac_address=ROUTER_MAC)
         time.sleep(3)
         attrs = sai_thrift_get_router_interface_attribute(
-            self.client, self.dut.vlans[10].rif_list[-1], src_mac_address=True)
+            self.client, self.dut.vlans[10].rif_list[0], src_mac_address=True)
         self.assertEqual(attrs["src_mac_address"], ROUTER_MAC)
         super().tearDown()
 
@@ -143,10 +143,10 @@ class IngressMacUpdateTestV6(T0TestBase):
 
         print("Updating src_mac_address to %s" % (new_router_mac))
         sai_thrift_set_router_interface_attribute(
-            self.client, self.dut.vlans[10].rif_list[-1], src_mac_address=new_router_mac)
+            self.client, self.dut.vlans[10].rif_list[0], src_mac_address=new_router_mac)
         time.sleep(3)
         attrs = sai_thrift_get_router_interface_attribute(
-            self.client, self.dut.vlans[10].rif_list[-1], src_mac_address=True)
+            self.client, self.dut.vlans[10].rif_list[0], src_mac_address=True)
         self.assertEqual(attrs["src_mac_address"], new_router_mac)
 
         send_packet(self, send_port.dev_port_index, pkt)
@@ -160,10 +160,10 @@ class IngressMacUpdateTestV6(T0TestBase):
         Test the basic tearDown process
         """
         sai_thrift_set_router_interface_attribute(
-            self.client, self.dut.vlans[10].rif_list[-1], src_mac_address=ROUTER_MAC)
+            self.client, self.dut.vlans[10].rif_list[0], src_mac_address=ROUTER_MAC)
         time.sleep(3)
         attrs = sai_thrift_get_router_interface_attribute(
-            self.client, self.dut.vlans[10].rif_list[-1], src_mac_address=True)
+            self.client, self.dut.vlans[10].rif_list[0], src_mac_address=True)
         self.assertEqual(attrs["src_mac_address"], ROUTER_MAC)
         super().tearDown()
 
@@ -395,9 +395,9 @@ class IngressMtuTestV6(T0TestBase):
 
         print("set MTU to 200 for Port5 VLAN interface")
         self.mtu_port10_rif = sai_thrift_get_router_interface_attribute(
-            self.client, self.dut.vlans[10].rif_list[-1], mtu=True)
+            self.client, self.dut.vlans[10].rif_list[0], mtu=True)
         sai_thrift_set_router_interface_attribute(
-            self.client, self.dut.vlans[10].rif_list[-1], mtu=200)
+            self.client, self.dut.vlans[10].rif_list[0], mtu=200)
 
         print("Max MTU is 200, send pkt size 201, dropped")
         pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
@@ -425,6 +425,6 @@ class IngressMtuTestV6(T0TestBase):
         Test the basic tearDown process
         """
         sai_thrift_set_router_interface_attribute(
-                self.client, self.dut.vlans[10].rif_list[-1], mtu=self.mtu_port10_rif['mtu'])
+                self.client, self.dut.vlans[10].rif_list[0], mtu=self.mtu_port10_rif['mtu'])
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         super().tearDown()
