@@ -11,7 +11,7 @@ class NhopGroupConfigTestV4(T0TestBase):
         """
         Test the basic setup process
         """
-        T0TestBase.setUp(self)
+        T0TestBase.setUp(self, is_create_route_for_nhopgrp=True)
         
     def test_nhopgrp_configv4(self):
         """
@@ -99,7 +99,7 @@ class NhopGroupConfigTestV6(T0TestBase):
         """
         Test the basic setup process
         """
-        T0TestBase.setUp(self)
+        T0TestBase.setUp(self, is_create_route_for_nhopgrp=True)
         
     def test_nhopgrp_configv6(self):
         """
