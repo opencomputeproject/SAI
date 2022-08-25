@@ -63,7 +63,6 @@ def t0_route_config_helper(
         default_ipv4_route_entry
         neighbor and route for lag
     """
-    print('hi', is_create_route_for_nhopgrp)
     route_configer = RouteConfiger(test_obj)
     if is_create_default_route:
         print("Create default route")
