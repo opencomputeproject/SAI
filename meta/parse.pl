@@ -2066,7 +2066,7 @@ sub ProcessIsPrimitive
 {
     my ($attr, $type) = @_;
 
-    return "false" if $type =~ /(_list_t|acl_capability_t)/;
+    return "false" if $type =~ /(_list_t|acl_capability_t|_json_t)/;
 
     return "true";
 }
