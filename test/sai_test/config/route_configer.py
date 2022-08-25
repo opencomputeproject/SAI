@@ -90,6 +90,10 @@ def t0_route_config_helper(
                                               no_host=False)
         nhv4, nhv6 = route_configer.create_nexthop_by_rif(rif=rif,
                                                           nexthop_device=test_obj.t1_list[1][100])
+        
+        lag_nhv4_list.append(nhv4)
+        lag_nhv6_list.append(nhv6)
+
         route_configer.create_route_by_nexthop(
             dest_device=test_obj.servers[11][0],
             nexthopv4=nhv4,
@@ -151,6 +155,31 @@ def t0_route_config_helper(
         # set expected dest T1
         test_obj.t1_list[3][100].l3_lag_obj = test_obj.dut.lag_list[2]
 
+        print("Create route for server with in ip {}/{}".format(test_obj.servers[14][0].ipv4, 24))
+        test_obj.servers[14][0].ip_prefix = '24'
+        test_obj.servers[14][0].ip_prefix_v6 = '112'
+        rif = route_configer.create_router_interface(
+            net_interface=test_obj.dut.lag_list[3])
+        route_configer.create_neighbor_by_rif(rif=rif,
+                                              nexthop_device=test_obj.t1_list[4][100],
+                                              no_host=False)
+        nhv4, nhv6 = route_configer.create_nexthop_by_rif(rif=rif,
+                                                          nexthop_device=test_obj.t1_list[4][100])
+        
+        lag_nhv4_list.append(nhv4)
+        lag_nhv6_list.append(nhv6)
+
+        route_configer.create_route_by_nexthop(
+            dest_device=test_obj.servers[14][0],
+            nexthopv4=nhv4,
+            nexthopv6=nhv6)
+        # set expected dest server
+        for item in test_obj.servers[14]:
+            item.l3_lag_obj = test_obj.dut.lag_list[3]
+            item.l3_lag_obj.neighbor_mac = test_obj.t1_list[4][100].mac
+        # set expected dest T1
+        test_obj.t1_list[4][100].l3_lag_obj = test_obj.dut.lag_list[3]
+
         # create nexthop group
         print("Create route for server with in ip {}/{}".format(test_obj.servers[60][0].ipv4, 24))
         test_obj.servers[60][0].ip_prefix = '24'
@@ -158,10 +187,9 @@ def t0_route_config_helper(
         route_configer.create_nexthop_group_by_nexthops(
             nexthopv4_list=lag_nhv4_list,
             nexthopv6_list=lag_nhv6_list,
-            lag_list = [test_obj.dut.lag_list[1], test_obj.dut.lag_list[2]],
+            lag_list = test_obj.dut.lag_list,
             dest_device=test_obj.servers[60][0],
             )
-
 
 class RouteConfiger(object):
     """
@@ -538,7 +566,7 @@ class RouteConfiger(object):
         for lag in lag_list:
             for index in lag.member_port_indexs:
                 member_port_indexs.append(index)
-        print(member_port_indexs)
+
         next_hop_groupv4: NexthopGroup = NexthopGroup(nhop_groupv4_id, nexthopv4_list, member_port_indexs)
         next_hop_groupv6: NexthopGroup = NexthopGroup(nhop_groupv6_id, nexthopv6_list, member_port_indexs)
 
