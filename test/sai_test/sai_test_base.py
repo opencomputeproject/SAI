@@ -151,13 +151,16 @@ class ThriftInterface(BaseTest):
         self.loadCommonConfigured()
         self.loadTestRebootMode()
         self.loadPortMap()
-        self.createRpcClient()
+        self.needRPCOp = not (self.test_reboot_mode == 'warm' and self.test_reboot_stage == 'rebooting')
+        if self.needRPCOp:
+            self.createRpcClient()
 
     def tearDown(self):
         """
         Clean up all the test env
         """
-        self.transport.close()
+        if self.needRPCOp:
+            self.transport.close()
 
         super(ThriftInterface, self).tearDown()
 
