@@ -39,7 +39,7 @@ class Lag(route_item):
         nexthopv6: related nexthop list
     """
 
-    def __init__(self, oid=None, lag_members: List = [], member_port_indexs: List = [], rif_list: List=[], nexthopv4_list: List['Nexthop'] = [], nexthopv6_list: List['Nexthop'] = [], nexthop_group: NexthopGroup = None):
+    def __init__(self, oid=None, lag_members: List = [], member_port_indexs: List = [], rif_list: List=[], nexthopv4_list: List['Nexthop'] = [], nexthopv6_list: List['Nexthop'] = [], nexthop_groupv4: NexthopGroup = None, nexthop_groupv6: NexthopGroup = None):
         """
         Init Lag Object
         Init following attrs:
@@ -49,6 +49,8 @@ class Lag(route_item):
             rif
             nexthopv4
             nexthopv6
+            nexthop_groupv4
+            nexthop_groupv6
         """
         super().__init__(oid=oid, rif_list=rif_list, nexthopv4_list=nexthopv4_list, nexthopv6_list=nexthopv6_list)
         self.lag_members: List = lag_members
@@ -59,9 +61,13 @@ class Lag(route_item):
         """
         lag port member indexes
         """
-        self.nexthop_group = nexthop_group
+        self.nexthop_groupv4 = nexthop_groupv4
         """
-        lag belongs to which nexthop group
+        lag belongs to which nexthop group ipv4
+        """
+        self.nexthop_groupv6 = nexthop_groupv6
+        """
+        lag belongs to which nexthop group ipv6
         """
 
     def create_lag_interface(self, test_object: 'T0TestBase', reuse=True):

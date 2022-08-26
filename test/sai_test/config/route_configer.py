@@ -544,6 +544,7 @@ class RouteConfiger(object):
         return nexthop group for v4 and nexthop group for v6 
         """
         nhop_groupv4_id = sai_thrift_create_next_hop_group(self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+        self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
         nhop_groupv6_id = sai_thrift_create_next_hop_group(self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
         self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
 
@@ -552,6 +553,7 @@ class RouteConfiger(object):
                 self.client,
                 next_hop_group_id=nhop_groupv4_id,
                 next_hop_id=nexthopv4.oid)
+            self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
             sai_thrift_create_next_hop_group_member(
                 self.client,
                 next_hop_group_id=nhop_groupv6_id,
@@ -565,6 +567,10 @@ class RouteConfiger(object):
 
         next_hop_groupv4: NexthopGroup = NexthopGroup(nhop_groupv4_id, nexthopv4_list, member_port_indexs)
         next_hop_groupv6: NexthopGroup = NexthopGroup(nhop_groupv6_id, nexthopv6_list, member_port_indexs)
+
+        for lag in lag_list:
+            lag.nexthop_groupv4 = next_hop_groupv4
+            lag.nexthop_groupv6 = next_hop_groupv6
 
         self.test_obj.dut.nhop_groupv4_list.append(next_hop_groupv4)
         self.test_obj.dut.nhop_groupv6_list.append(next_hop_groupv6)
