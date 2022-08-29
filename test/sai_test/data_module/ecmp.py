@@ -20,11 +20,12 @@
 
 from typing import List
 from data_module.routable_item import route_item
+from data_module.data_obj import auto_str
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from data_module.nexthop import Nexthop
 
-
+@auto_str
 class Ecmp(object):
     """
     Represent the ecmp(next hop group) object.

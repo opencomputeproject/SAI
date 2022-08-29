@@ -21,11 +21,12 @@
 from typing import List
 from typing import TYPE_CHECKING
 from data_module.data_obj import data_item
+from data_module.data_obj import auto_str
 if TYPE_CHECKING:
     from sai_test_base import T0TestBase
     from data_module.nexthop import Nexthop
 
-
+@auto_str
 class route_item(data_item):
     """
     Represent the route item data object.

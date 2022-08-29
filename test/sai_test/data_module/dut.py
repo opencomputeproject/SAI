@@ -129,10 +129,27 @@ class Dut(object):
         """
         Port object list
         """
+        self.port_id_list = []
+        """
+        port id list, use to present all the port ids
+        """
         self.hostif_list = None
         """
         Host interface list
         """
+        self.default_bridge_port_list = []
+        """
+        Default bridge port list
+        """
+        self.host_if_port_idx_map = []
+        """
+        list in order of the host interface create sequence, and with the value for port index
+        """
+        self.host_if_name_list = []
+        """
+        List of the interface name
+        """
+
         self.rif_list: List = []
         """
         Rif list. save the rif object id.

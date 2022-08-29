@@ -24,7 +24,22 @@ if TYPE_CHECKING:
     from sai_test_base import T0TestBase
     from data_module.nexthop import Nexthop
 
+def auto_str(cls):
+    """
+    class decorator for auto generate the __str__ method for all the class attributes.
+    """
+    def __str__(self):
+        """
+        auto generate __str__ for all the class atrributes.
+        """
+        return '%s(%s)' % (
+            type(self).__name__,
+            ', '.join('%s=%s' % item for item in vars(self).items())
+        )
+    cls.__str__ = __str__
+    return cls
 
+@auto_str
 class data_item():
     """
     Represent the basic data object.
