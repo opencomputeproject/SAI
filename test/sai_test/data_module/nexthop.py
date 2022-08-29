@@ -24,10 +24,11 @@ from typing import List
 
 from typing import TYPE_CHECKING
 from data_module.routable_item import data_item
+from data_module.data_obj import auto_str
 if TYPE_CHECKING:
     from data_module.device import Device
 
-
+@auto_str
 class Nexthop(data_item):
     """
     Represent the Nexthopobject.

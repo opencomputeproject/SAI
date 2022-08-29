@@ -20,11 +20,13 @@
 
 from typing import List
 from typing import TYPE_CHECKING
+from data_module.data_obj import auto_str
 if TYPE_CHECKING:
     from sai_test_base import T0TestBase
     from data_module.nexthop import Nexthop
 from data_module.routable_item import route_item
 
+@auto_str
 class Lag(route_item):
     """
     Represent the lag object.
