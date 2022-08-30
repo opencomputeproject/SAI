@@ -26,7 +26,7 @@ from ptf import config
 from ptf.testutils import *
 from ptf.thriftutils import *
 from sai_utils import *
-
+from config.fdb_configer import t0_fdb_tear_down_helper
 
 class Vlan_Domain_Forwarding_Test(T0TestBase):
     """
@@ -194,10 +194,8 @@ class TaggedFrameFilteringTest(T0TestBase):
 
     def setUp(self):
         super().setUp()
-        sai_thrift_flush_fdb_entries(
-            self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
+        t0_fdb_tear_down_helper(self)
         self.tmp_server_list = [self.servers[1][i] for i in [1, 5]]
-        self.mac_action = SAI_PACKET_ACTION_FORWARD
         self.fdb_configer.create_fdb_entries(
             switch_id=self.dut.switch_id,
             server_list=self.tmp_server_list,
@@ -223,6 +221,7 @@ class TaggedFrameFilteringTest(T0TestBase):
         """
         TearDown process
         """
+        t0_fdb_tear_down_helper(self)
         super().tearDown()
 
 
@@ -234,10 +233,8 @@ class UnTaggedFrameFilteringTest(T0TestBase):
 
     def setUp(self):
         super().setUp()
-        sai_thrift_flush_fdb_entries(
-            self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
+        t0_fdb_tear_down_helper(self)
         self.tmp_server_list = [self.servers[1][i] for i in [1, 5]]
-        self.mac_action = SAI_PACKET_ACTION_FORWARD
         self.fdb_configer.create_fdb_entries(
             switch_id=self.dut.switch_id,
             server_list=self.tmp_server_list,
@@ -262,6 +259,7 @@ class UnTaggedFrameFilteringTest(T0TestBase):
         """
         TearDown process
         """
+        t0_fdb_tear_down_helper(self)
         super().tearDown()
 
 
@@ -593,6 +591,10 @@ class DisableMacLearningTaggedTest(T0TestBase):
         """
         TearDown process
         """
+        sai_thrift_set_vlan_attribute(
+            self.client, self.dut.vlans[10].oid, learn_disable=False)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        sleep(2)
         super().tearDown()
 
 
@@ -628,6 +630,9 @@ class DisableMacLearningUntaggedTest(T0TestBase):
         """
         TearDown process
         """
+        sai_thrift_set_vlan_attribute(
+            self.client, self.dut.vlans[10].oid, learn_disable=False)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
         super().tearDown()
 
 
