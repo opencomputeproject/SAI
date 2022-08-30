@@ -103,7 +103,6 @@ def t0_route_config_helper(
         # set expected dest T1
         test_obj.t1_list[1][100].l3_lag_obj = test_obj.dut.lag_list[0]
 
-    if is_create_route_for_nhopgrp:
         print("Create route for server with in ip {}/{}".format(test_obj.servers[12][0].ipv4, 24))
         test_obj.servers[12][0].ip_prefix = '24'
         test_obj.servers[12][0].ip_prefix_v6 = '112'
@@ -128,6 +127,7 @@ def t0_route_config_helper(
         # set expected dest T1
         test_obj.t1_list[2][100].l3_lag_obj = test_obj.dut.lag_list[1]
 
+    if is_create_route_for_nhopgrp:
         print("Create route for server with in ip {}/{}".format(test_obj.servers[13][0].ipv4, 24))
         test_obj.servers[13][0].ip_prefix = '24'
         test_obj.servers[13][0].ip_prefix_v6 = '112'
