@@ -18,8 +18,6 @@
 #
 #
 
-from time import sleep
-from unittest import skip
 from sai_test_base import T0TestBase
 from sai_thrift.sai_headers import *
 from ptf import config
@@ -87,12 +85,14 @@ class VlanLearnDisableTest(T0TestBase):
     """
     Verify if MAC addresses are not learned on the port when bridge port learning is disabled
     """
-    @skip("skip for broadcom")
     def setUp(self):
         """
         Set up test
         """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(
+            self, 
+            is_reset_default_vlan=False, 
+            skip_reason = "SKIP! Skip test for broadcom, learn_disable, report error code -196608, no error log. Item: 15000933")
         status = sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
@@ -260,7 +260,7 @@ class BridgePortLearnDisableTest(T0TestBase):
 
 
 """
-Skip test for broadcom, non bridge port still can learn.
+Skip test for broadcom, non bridge port still can learn. Item: 15000950
 """
 
 
@@ -268,12 +268,14 @@ class NonBridgePortNoLearnTest(T0TestBase):
     """
     Verify if MAC addresses are not learned on the non-bridge port
     """
-    @skip("Skip test for broadcom, non bridge port still can learn.")
     def setUp(self):
         """
         Set up test
         """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(
+            self, 
+            is_reset_default_vlan=False,
+            skip_reason ="SKIP! Skip test for broadcom, non bridge port still can learn. Item: 15000950")
         status = sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
 
@@ -982,12 +984,14 @@ class FdbFlushVlanStaticTest(T0TestBase):
     '''
     Verify flushing of static MAC entries on VLAN
     '''
-    @skip("Static flush Not support by broadcom")
     def setUp(self):
         """
         Set up test
         """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(
+            self, 
+            is_reset_default_vlan=False,
+            skip_reason ="SKIP! Static flush Not support by broadcom. Item:15419274")
         status = sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_STATIC)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
@@ -1033,12 +1037,14 @@ class FdbFlushPortStaticTest(T0TestBase):
     '''
     Verify flushing of static MAC entries on Port
     '''
-    @skip("Static flush Not support by broadcom")
     def setUp(self):
         """
         Set up test
-        """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        """ 
+        T0TestBase.setUp(
+            self, 
+            is_reset_default_vlan=False,
+            skip_reason ="SKIP! Static flush Not support by broadcom. Item:15419274")
         sai_thrift_flush_fdb_entries(
             self.client, bridge_port_id=self.dut.port_obj_list[1].bridge_port_oid, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_STATIC)
 
@@ -1083,12 +1089,14 @@ class FdbFlushAllStaticTest(T0TestBase):
     Verify flushing all of the static MAC entries.
     '''
 
-    @skip("Static flush Not support by broadcom")
     def setUp(self):
         """
         Set up test
-        """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        """      
+        T0TestBase.setUp(
+            self, 
+            is_reset_default_vlan=False,
+            skip_reason = "SKIP! Static flush Not support by broadcom. Item:15419274")
         sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_STATIC)
 
@@ -1376,12 +1384,14 @@ class FdbFlushAllTest(T0TestBase):
     '''
     Verify flushing all  MAC entries.
     '''
-    @skip("static not support")
     def setUp(self):
         """
         Set up test
-        """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        """     
+        T0TestBase.setUp(
+            self, 
+            is_reset_default_vlan=False,
+            skip_reason = "SKIP! Unstable, flood cannot be recovered. Item:15002648")
 
     def runTest(self):
         """
