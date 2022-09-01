@@ -17,7 +17,7 @@
 #    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
 #
 #
-from unittest import skip
+
 from sai_test_base import T0TestBase
 from sai_utils import *
 
@@ -299,20 +299,20 @@ class LoadbalanceOnDesIPTest(T0TestBase):
 
 
 """
-Skip test for broadcom, can't load balance on protocol such as tcp and udp
-Item: 15023123
+Skip test for broadcom, can't load balance on protocol such as tcp and udp.Item: 15023123
 """
 
 class LoadbalanceOnProtocolTest(T0TestBase):
     """
     Test load balance of l3 by protocol.
     """
-    @skip("skip for broadcom")
     def setUp(self):
         """
         Test the basic setup process
-        """
-        T0TestBase.setUp(self)
+        """                  
+        T0TestBase.setUp(
+            self,
+            skip_reason ="SKIP! Skip test for broadcom, can't load balance on protocol such as tcp and udp.Item: 15023123")
 
     def runTest(self):
         """
@@ -468,12 +468,14 @@ class DisableIngressTest(T0TestBase):
     """
     When disable ingress on a lag member, we expect traffic drop on the disabled lag member.
     """
-    @skip("skip test for broadcom")
+
     def setUp(self):
         """
         Test the basic setup process
-        """
-        T0TestBase.setUp(self)
+        """                        
+        T0TestBase.setUp(
+            self,
+            skip_reason = "SKIP! Skip test for broadcom, can't disable ingress of lag member. Item: 14988584")
 
     def runTest(self):
         """
