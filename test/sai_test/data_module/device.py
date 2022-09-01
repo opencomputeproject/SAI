@@ -23,7 +23,7 @@ from constant import *
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from data_module.nexthop import Nexthop
-    from data_module.ecmp import Ecmp
+    from data_module.nexthop_group import NexthopGroup
     from data_module.lag import Lag
 
 
@@ -65,7 +65,7 @@ class Device(object):
             l2_egress_port_idx
             l3_port_idx
             l3_lag_obj
-            ecmp
+            nhp_grp
 
         Server:
             self.ip_pattern: SERVER_IPV4_PATTERN
@@ -130,9 +130,9 @@ class Device(object):
         """
         L3 destination lag object, defined in route configer
         """
-        self.ecmp : Ecmp = None
+        self.nhp_grp : NexthopGroup = None
         """
-        L3 destination ecmp object, defined in route configer
+        L3 destination nexthop group object, defined in route configer
         """
 
 

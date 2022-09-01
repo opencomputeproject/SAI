@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from data_module.vlan import Vlan
     from data_module.lag import Lag
     from data_module.nexthop import Nexthop
-    from data_module.ecmp import Ecmp
+    from data_module.nexthop_group import NexthopGroup
     from data_module.port import Port
 
 
@@ -70,8 +70,9 @@ class Dut(object):
             neighborv4_list
             neighborv6_list
 
-            # ecmp
-            ecmp_list:  Ecmp list, contains ecmp objects
+            # nexthop group
+            nhp_grpv4_list: Nexthop group list, contains exthopv4 objects
+            nhp_grpv6_list: Nexthop group list, contains exthopv6 objects
     """
 
     def __init__(self):
@@ -158,8 +159,12 @@ class Dut(object):
         # lag
         self.lag_list: List[Lag] = []
 
-        # ecmp
-        self.ecmp_list: List[Ecmp] = []
+        # nexthop group
+        self.nhp_grpv4_list: List[NexthopGroup] = []
         """
-        Ecmp list, contains ecmp objects
+        Nexthop group list, contains nexthop ipv4 objects
+        """
+        self.nhp_grpv6_list: List[NexthopGroup] = []
+        """
+        Nexthop group list, contains nexthop ipv6 objects
         """
