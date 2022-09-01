@@ -27,6 +27,13 @@ from typing import Dict, List
 import sai_thrift.sai_adapter as adapter
 from ptf import config
 from ptf.base_tests import BaseTest
+from ptf import testutils
+from unittest import SkipTest
+
+from thrift.transport import TSocket
+from thrift.transport import TTransport
+from thrift.protocol import TBinaryProtocol
+
 from sai_thrift import sai_rpc
 from sai_thrift.sai_adapter import *
 from thrift.protocol import TBinaryProtocol
@@ -127,10 +134,15 @@ class ThriftInterface(BaseTest):
         RPC client which used in Thrift
         """
 
-    def setUp(self):
+    def setUp(self, skip_reason = None):
         """
         Set up the test env.
         """
+        if skip_reason:
+            print("SkipTest as {}".format(skip_reason))
+            testutils.skipped_test_count=1
+            raise SkipTest(skip_reason)
+
         super(ThriftInterface, self).setUp()
 
         self.test_params = test_params_get()
@@ -257,11 +269,11 @@ class ThriftInterfaceDataPlane(ThriftInterface):
         Represent the dataplane used in test, pcap to manipulate the data
         """
 
-    def setUp(self):
+    def setUp(self, skip_reason = None):
         """
         Setup the ThriftInterfaceDataPlane.
         """
-        super(ThriftInterfaceDataPlane, self).setUp()
+        super(ThriftInterfaceDataPlane, self).setUp(skip_reason = skip_reason)
 
         self.dataplane = ptf.dataplane_instance
         if self.dataplane is not None:
@@ -345,8 +357,9 @@ class T0TestBase(ThriftInterfaceDataPlane):
               is_create_default_loopback_interface=False,
               is_create_lag=True,
               is_create_route_for_lag=True,
-              wait_sec=5):
-        super(T0TestBase, self).setUp()
+              wait_sec=5,
+              skip_reason = None):
+        super(T0TestBase, self).setUp(skip_reason = skip_reason)
 
         # parse the port_config.ini, will create port, bridge port and host interface base on that file
         if 'port_config_ini' in self.test_params:
