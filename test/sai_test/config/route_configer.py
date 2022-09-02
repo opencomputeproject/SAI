@@ -546,25 +546,29 @@ class RouteConfiger(object):
         nhop_groupv6_id = sai_thrift_create_next_hop_group(self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
         self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
 
+        nhp_grpv4_members, nhp_grpv6_members = [], []
         for nexthopv4, nexthopv6 in zip(nexthopv4_list, nexthopv6_list):
-            sai_thrift_create_next_hop_group_member(
+            nhp_grpv4_member = sai_thrift_create_next_hop_group_member(
                 self.client,
                 next_hop_group_id=nhop_groupv4_id,
                 next_hop_id=nexthopv4.oid)
             self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
-            sai_thrift_create_next_hop_group_member(
+            nhp_grpv6_member = sai_thrift_create_next_hop_group_member(
                 self.client,
                 next_hop_group_id=nhop_groupv6_id,
                 next_hop_id=nexthopv6.oid)
             self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
+
+            nhp_grpv4_members.append(nhp_grpv4_member)
+            nhp_grpv6_members.append(nhp_grpv6_member)
 
         member_port_indexs = []
         for lag in lag_list:
             for index in lag.member_port_indexs:
                 member_port_indexs.append(index)
 
-        nhp_grpv4: NexthopGroup = NexthopGroup(nhop_groupv4_id, nexthopv4_list, member_port_indexs)
-        nhp_grpv6: NexthopGroup = NexthopGroup(nhop_groupv6_id, nexthopv6_list, member_port_indexs)
+        nhp_grpv4: NexthopGroup = NexthopGroup(nhop_groupv4_id, nhp_grpv4_members, member_port_indexs)
+        nhp_grpv6: NexthopGroup = NexthopGroup(nhop_groupv6_id, nhp_grpv6_members, member_port_indexs)
 
         for lag in lag_list:
             lag.nexthop_groupv4 = nhp_grpv4
@@ -589,3 +593,13 @@ class RouteConfiger(object):
             return self.test_obj.dut.default_vrf
 
         return virtual_router
+
+    def remove_nhop_member_by_lag_idx(self, nhp_grp_obj, lag_idx):
+        nhp_grp: NexthopGroup = nhp_grp_obj
+        index = lag_idx - 1
+        port_indexs = self.test_obj.dut.lag_list[index].member_port_indexs
+        sai_thrift_remove_next_hop_group_member(self.client, nhp_grp.nhp_grp_members[index])
+        self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
+        nhp_grp.nhp_grp_members.remove(nhp_grp.nhp_grp_members[index])
+        for port_index in port_indexs:
+            nhp_grp.member_port_indexs.remove(port_index)

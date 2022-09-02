@@ -77,7 +77,7 @@ class EcmpHashFieldSportTestV4(T0TestBase):
                                          ip_ttl=63)
 
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
-            rcv_idx= verify_any_packet_any_port(
+            rcv_idx = verify_any_packet_any_port(
                 self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4], recv_dev_port_idxs)
             rcv_count[rcv_idx] += 1
 
@@ -160,7 +160,7 @@ class EcmpHashFieldSportTestV6(T0TestBase):
                                            ipv6_hlim=63)
 
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
-            rcv_idx= verify_any_packet_any_port(
+            rcv_idx = verify_any_packet_any_port(
                 self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4], recv_dev_port_idxs)
             rcv_count[rcv_idx] += 1
 
@@ -248,7 +248,7 @@ class EcmpHashFieldDportTestV4(T0TestBase):
                                          ip_ttl=63) 
 
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
-            rcv_idx= verify_any_packet_any_port(
+            rcv_idx = verify_any_packet_any_port(
                 self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4], recv_dev_port_idxs)
             rcv_count[rcv_idx] += 1
 
@@ -331,7 +331,7 @@ class EcmpHashFieldDportTestV6(T0TestBase):
                                            ipv6_hlim=63) 
 
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
-            rcv_idx= verify_any_packet_any_port(
+            rcv_idx = verify_any_packet_any_port(
                 self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4], recv_dev_port_idxs)
             rcv_count[rcv_idx] += 1
 
@@ -413,7 +413,7 @@ class EcmpHashFieldSIPTestV4(T0TestBase):
                                          ip_ttl=63) 
 
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
-            rcv_idx= verify_any_packet_any_port(
+            rcv_idx = verify_any_packet_any_port(
                 self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4], recv_dev_port_idxs)
             rcv_count[rcv_idx] += 1
 
@@ -490,7 +490,7 @@ class EcmpHashFieldSIPTestV6(T0TestBase):
                                            ipv6_hlim=63) 
 
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
-            rcv_idx= verify_any_packet_any_port(
+            rcv_idx = verify_any_packet_any_port(
                 self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4], recv_dev_port_idxs)
             rcv_count[rcv_idx] += 1
 
@@ -612,7 +612,7 @@ class EcmpHashFieldProtoTestV4(T0TestBase):
                                              ip_ttl=63) 
 
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
-            rcv_idx= verify_any_packet_any_port(
+            rcv_idx = verify_any_packet_any_port(
                 self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4], recv_dev_port_idxs)
             rcv_count[rcv_idx] += 1
 
@@ -724,7 +724,7 @@ class EcmpHashFieldProtoTestV6(T0TestBase):
                                                ipv6_hlim=63)
 
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
-            rcv_idx= verify_any_packet_any_port(
+            rcv_idx = verify_any_packet_any_port(
                 self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4], recv_dev_port_idxs)
             rcv_count[rcv_idx] += 1
 
@@ -823,3 +823,71 @@ class IngressNoDiffTestV4(T0TestBase):
     def tearDown(self):
         super().tearDown()
 
+
+class RemoveLagEcmpTestV4(T0TestBase):
+    """
+    When remove nexthop member, we expect traffic drop on the removed nexthop member.
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process
+        """
+        T0TestBase.setUp(self,
+                         is_create_route_for_nhopgrp=True,
+                         is_create_route_for_lag=False,
+                        )
+        
+    def test_lag_ecmp_remove(self):
+        """
+        1. Remove the next hop from next-hop group in test_ecmp: next-hop with IP ``DIP:10.1.3.100`` on LAG3 
+        2. Generate Packets, with different source IPs as ``SIP:192.168.0.1-192.168.0.10`` 
+        3. Change other elements in the packets, including ``DIP:192.168.60.1`` ``L4_port``
+        4. Verify Packets only can be received on LAG1 and LAG2, with ``SMAC: SWITCH_MAC_2`` (check loadbalanced in LAG and ECMP)
+        """
+        print("Ecmp remove lag test")
+        
+        self.route_configer.remove_nhop_member_by_lag_idx(
+            nhp_grp_obj=self.dut.nhp_grpv4_list[0], lag_idx=3)
+        
+        ip_dst = self.servers[60][1].ipv4
+        recv_dev_port_idxs = self.get_dev_port_indexes(
+            list(filter(lambda item: item != 1, self.dut.nhp_grpv4_list[0].member_port_indexs)))
+        pkts_num = 10
+        for index in range(pkts_num):
+            ip_src = self.servers[0][index + 1].ipv4
+            
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    eth_src=self.servers[1][1].mac,
+                                    ip_dst=ip_dst,
+                                    ip_src=ip_src,
+                                    ip_id=105,
+                                    ip_ttl=64)
+            
+            exp_pkt1 = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         ip_id=105,
+                                         ip_ttl=63)
+            exp_pkt2 = simple_tcp_packet(eth_dst=self.t1_list[2][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         ip_id=105,
+                                         ip_ttl=63)
+            exp_pkt3 = simple_tcp_packet(eth_dst=self.t1_list[4][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         ip_id=105,
+                                         ip_ttl=63)
+
+            send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
+            verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2, exp_pkt3], recv_dev_port_idxs)
+
+    def runTest(self):
+        self.test_lag_ecmp_remove()
+
+    def tearDown(self):
+        super().tearDown()

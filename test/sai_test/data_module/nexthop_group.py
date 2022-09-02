@@ -35,7 +35,7 @@ class NexthopGroup(route_item):
         member_port_indexs: nexthop group port member indexes
     """
 
-    def __init__(self, nhp_grp_id=None, nhp_grp_members: List['Nexthop'] = [], member_port_indexs: List = []):
+    def __init__(self, nhp_grp_id=None, nhp_grp_members: List = [], member_port_indexs: List = []):
         """
         Init nexthop_group Object
         Init following attrs:

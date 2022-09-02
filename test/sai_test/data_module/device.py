@@ -130,9 +130,13 @@ class Device(object):
         """
         L3 destination lag object, defined in route configer
         """
-        self.nhp_grp : NexthopGroup = None
+        self.l3_nhp_grpv4 : NexthopGroup = None
         """
-        L3 destination nexthop group object, defined in route configer
+        L3 destination nexthop group ipv4 object, defined in route configer
+        """
+        self.l3_nhp_grpv6 : NexthopGroup = None
+        """
+        L3 destination nexthop group ipv6 object, defined in route configer
         """
 
 
