@@ -125,6 +125,7 @@ def t0_route_config_helper(
     if is_create_route_for_nhopgrp:
         nhpv4_list, nhpv6_list = [], []
 
+        print("Create nexthop for port with in ip {}/{}".format(test_obj.t1_list[1][100].ipv4, 24))
         rif = route_configer.create_router_interface(
             net_interface=test_obj.dut.lag_list[0])
         route_configer.create_neighbor_by_rif(rif=rif,
@@ -135,6 +136,7 @@ def t0_route_config_helper(
         nhpv4_list.append(nhv4)
         nhpv6_list.append(nhv6)
 
+        print("Create nexthop for port with in ip {}/{}".format(test_obj.t1_list[2][100].ipv4, 24))
         rif = route_configer.create_router_interface(
             net_interface=test_obj.dut.lag_list[1])
         route_configer.create_neighbor_by_rif(rif=rif,
@@ -145,6 +147,7 @@ def t0_route_config_helper(
         nhpv4_list.append(nhv4)
         nhpv6_list.append(nhv6)
 
+        print("Create nexthop for port with in ip {}/{}".format(test_obj.t1_list[3][100].ipv4, 24))
         rif = route_configer.create_router_interface(
             net_interface=test_obj.dut.lag_list[2])
         route_configer.create_neighbor_by_rif(rif=rif,
@@ -155,6 +158,7 @@ def t0_route_config_helper(
         nhpv4_list.append(nhv4)
         nhpv6_list.append(nhv6)
 
+        print("Create nexthop for port with in ip {}/{}".format(test_obj.t1_list[4][100].ipv4, 24))
         rif = route_configer.create_router_interface(
             net_interface=test_obj.dut.lag_list[3])
         route_configer.create_neighbor_by_rif(rif=rif,
@@ -165,7 +169,7 @@ def t0_route_config_helper(
         nhpv4_list.append(nhv4)
         nhpv6_list.append(nhv6)
 
-        print("Create route for server with in ip {}/{}".format(test_obj.servers[60][0].ipv4, 24))
+        print("Create nexthop group for server with in ip {}/{}".format(test_obj.servers[60][0].ipv4, 24))
         test_obj.servers[60][0].ip_prefix = '24'
         test_obj.servers[60][0].ip_prefix_v6 = '112'
         route_configer.create_nexthop_group_by_nexthops(
@@ -331,8 +335,8 @@ class RouteConfiger(object):
         Set Device attribute: routev4, routev6
         Attrs:
             dest_device: Simulating the destinate device that this dut direct connect to.
-            nexthop_groupv4: nexthop_groupv4
-            nexthop_groupv6: nexthop_groupv6
+            nexthop_groupv4: nexthop group ipv4
+            nexthop_groupv6: nexthop group ipv6
             virtual_router_id: virtual route id, if not defined, will use default route
         Return: routev4, routev6
         """
@@ -408,47 +412,6 @@ class RouteConfiger(object):
         if nbr_entry_v6:
             self.test_obj.dut.neighborv6_list.append(nbr_entry_v6)
         return nbr_entry_v4, nbr_entry_v6
-
-    def create_nexthop_group_by_nexthops(self, nexthopv4_list: List[Nexthop], nexthopv6_list: List[Nexthop], lag_list: List[Lag], dest_device: Device):
-        """
-        Create nexthop group by nexthops. Each element in all lists corresponds one by one.
-        return nexthop group for v4 and nexthop group for v6 
-        """
-        nhop_groupv4_id = sai_thrift_create_next_hop_group(self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
-        self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
-        nhop_groupv6_id = sai_thrift_create_next_hop_group(self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
-        self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
-
-        for nexthopv4, nexthopv6 in zip(nexthopv4_list, nexthopv6_list):
-            sai_thrift_create_next_hop_group_member(
-                self.client,
-                next_hop_group_id=nhop_groupv4_id,
-                next_hop_id=nexthopv4.oid)
-            self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
-            sai_thrift_create_next_hop_group_member(
-                self.client,
-                next_hop_group_id=nhop_groupv6_id,
-                next_hop_id=nexthopv6.oid)
-            self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
-
-        member_port_indexs = []
-        for lag in lag_list:
-            for index in lag.member_port_indexs:
-                member_port_indexs.append(index)
-
-        nhp_grpv4: NexthopGroup = NexthopGroup(nhop_groupv4_id, nexthopv4_list, member_port_indexs)
-        nhp_grpv6: NexthopGroup = NexthopGroup(nhop_groupv6_id, nexthopv6_list, member_port_indexs)
-
-        for lag in lag_list:
-            lag.nexthop_groupv4 = nhp_grpv4
-            lag.nexthop_groupv6 = nhp_grpv6
-
-        self.test_obj.dut.nhp_grpv4_list.append(nhp_grpv4)
-        self.test_obj.dut.nhp_grpv6_list.append(nhp_grpv6)
-        self.create_route_by_nexthop_group(dest_device, nhp_grpv4, nhp_grpv6)
-        self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
-
-        return nhp_grpv4, nhp_grpv6
 
     def create_router_interface_by_port_idx(self, port_idx, virtual_router=None, reuse=True, is_bridge=False):
         """
@@ -561,6 +524,58 @@ class RouteConfiger(object):
         self.test_obj.dut.nexthopv6_list.append(nhopv6)
 
         return nhopv4, nhopv6
+
+    def create_nexthop_group_by_nexthops(self, nexthopv4_list: List[Nexthop], nexthopv6_list: List[Nexthop], lag_list: List[Lag], dest_device: Device):
+        """
+        Create nexthop group by nexthops. Each element in all lists corresponds one by one.
+
+        Set dut attribute: nexthopv4_list, nexthopv6_list
+        Set lag attribute: nexthop_groupv4, nexthop_groupv6
+        Set device attribute: nexthopv4, nexthopv6
+
+        Attrs:
+            nexthopv4_list: A list of ipv4 nexthops to form a nexthop group
+            nexthopv6_list: A list of ipv6 nexthops to form a nexthop group
+            lag_list: A list of lags, use it to set lag attribute (nexthop_groupv4, nexthop_groupv6)
+            dest_device: Simulating the bypass device, use this device to get the ipaddress, ipprefix_v4 and ipprefix_v6
+
+        return nexthop group for v4 and nexthop group for v6 
+        """
+        nhop_groupv4_id = sai_thrift_create_next_hop_group(self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+        self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
+        nhop_groupv6_id = sai_thrift_create_next_hop_group(self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+        self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
+
+        for nexthopv4, nexthopv6 in zip(nexthopv4_list, nexthopv6_list):
+            sai_thrift_create_next_hop_group_member(
+                self.client,
+                next_hop_group_id=nhop_groupv4_id,
+                next_hop_id=nexthopv4.oid)
+            self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
+            sai_thrift_create_next_hop_group_member(
+                self.client,
+                next_hop_group_id=nhop_groupv6_id,
+                next_hop_id=nexthopv6.oid)
+            self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
+
+        member_port_indexs = []
+        for lag in lag_list:
+            for index in lag.member_port_indexs:
+                member_port_indexs.append(index)
+
+        nhp_grpv4: NexthopGroup = NexthopGroup(nhop_groupv4_id, nexthopv4_list, member_port_indexs)
+        nhp_grpv6: NexthopGroup = NexthopGroup(nhop_groupv6_id, nexthopv6_list, member_port_indexs)
+
+        for lag in lag_list:
+            lag.nexthop_groupv4 = nhp_grpv4
+            lag.nexthop_groupv6 = nhp_grpv6
+
+        self.test_obj.dut.nhp_grpv4_list.append(nhp_grpv4)
+        self.test_obj.dut.nhp_grpv6_list.append(nhp_grpv6)
+        self.create_route_by_nexthop_group(dest_device, nhp_grpv4, nhp_grpv6)
+        self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
+
+        return nhp_grpv4, nhp_grpv6
 
     def choice_virtual_route(self, virtual_router=None):
         """
