@@ -738,3 +738,88 @@ class EcmpHashFieldProtoTestV6(T0TestBase):
     def tearDown(self):
         super().tearDown()
 
+
+class IngressNoDiffTestV4(T0TestBase):
+    """
+    Verify if different ingress ports will not impact the loadbalance (not change to other egress ports).
+    """
+    def setUp(self):
+        """
+        Test the basic setup process
+        """
+        T0TestBase.setUp(self,
+                         is_create_route_for_nhopgrp=True,
+                         is_create_route_for_lag=False,
+                        )
+        
+    def test_ingress_no_diff(self):
+        """
+        1. Generate Packets, with ``SIP:192.168.0.1`` ``DIP:192.168.60.1`` to match the exiting config
+        2. Check vlan interface(svi added)
+        3. Send packets from Port5 - Port8
+        4. Verify packet received on a certain LAG's member, with corresponding SIP, DIP, and ``SMAC: SWITCH_MAC``
+        5. Generate Packets, with ``SIP:192.168.0.1`` ``DIP:192.168.60.2``
+        6. Send packets from Port5 - Port8
+        7. Verify packet received on a certain LAG's member but different from step4
+        """
+        print("Ecmp l3 ingress no diff test")
+
+        ip_src = self.servers[0][1].ipv4
+        ip_dst1 = self.servers[60][1].ipv4
+        ip_dst2 = self.servers[60][2].ipv4
+
+        pkt1 = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                 eth_src=self.servers[1][1].mac,
+                                 ip_dst=ip_dst1,
+                                 ip_src=ip_src,
+                                 ip_id=105,
+                                 ip_ttl=64)
+        exp_pkt1 = simple_tcp_packet(eth_dst=self.t1_list[3][100].mac,
+                                     eth_src=ROUTER_MAC,
+                                     ip_dst=ip_dst1,
+                                     ip_src=ip_src,
+                                     ip_id=105,
+                                     ip_ttl=63)
+
+        pkt2 = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                 eth_src=self.servers[1][1].mac,
+                                 ip_dst=ip_dst2,
+                                 ip_src=ip_src,
+                                 ip_id=105,
+                                 ip_ttl=64)
+        exp_pkt2 = simple_tcp_packet(eth_dst=self.t1_list[2][100].mac,
+                                     eth_src=ROUTER_MAC,
+                                     ip_dst=ip_dst2,
+                                     ip_src=ip_src,
+                                     ip_id=105,
+                                     ip_ttl=63)
+        
+        exp_port_idx1 = -1
+        exp_port_idx2 = -1
+        recv_dev_port_idxs = self.get_dev_port_indexes(
+            list(filter(lambda item: item != 1, self.dut.nhp_grpv4_list[0].member_port_indexs)))
+        
+        for i in range(5, 9):
+            # step 4
+            send_packet(self, self.dut.port_obj_list[i].dev_port_index, pkt1)
+            if exp_port_idx1 == -1:
+                exp_port_idx1, _ = verify_packet_any_port(self, exp_pkt1, recv_dev_port_idxs)
+            else:
+                verify_packet(self, exp_pkt1, recv_dev_port_idxs[exp_port_idx1])
+
+            # step 6
+            send_packet(self, self.dut.port_obj_list[i].dev_port_index, pkt2)
+            if exp_port_idx2 == -1:
+                exp_port_idx2, _ = verify_packet_any_port(self, exp_pkt2, recv_dev_port_idxs)
+            else:
+                verify_packet(self, exp_pkt2, recv_dev_port_idxs[exp_port_idx2])
+            
+            # step 7
+            self.assertTrue(exp_port_idx1 != exp_port_idx2, "Recived packets from the same port")
+    
+    def runTest(self):
+        self.test_ingress_no_diff()
+
+    def tearDown(self):
+        super().tearDown()
+
