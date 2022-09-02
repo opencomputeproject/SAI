@@ -82,27 +82,9 @@ Build SAI thrift server and libraries
 ```bash
 export SAITHRIFTV2=y
 export GEN_SAIRPC_OPTS="-ve" # optional - to use SAI experimental headers
-# Below is an extended example of linking additional application-specific libraries besides libsai.
-# Modify to suit a particular use-case. Omit if not needed.
-export SAIRPC_EXTRA_LIBS="\
-		-L/lib/x86_64-linux-gnu -Wl,-rpath=/lib/x86_64-linux-gnu -lm \
-		-L/usr/local/lib/ -Wl,-rpath=/usr/local/lib \
-	    -lpthread \
-	    -lpiprotogrpc \
-	    -lpiprotobuf \
-	    -lprotobuf \
-	    -lgrpc++ \
-	    -lgrpc \
-	    -lpiall \
-	    -lpi_dummy \
-	    -lpthread \
-	    -labsl_synchronization \
-	    -labsl_status \
-		-labsl_raw_hash_set \
-		-lgpr \
-		-lre2 \
-		-lssl \
-		-laddress_sorting"
+# Below is an  example of linking additional application-specific libraries besides libsai.
+# Modify to suit a particular use-case; longer multi-line expressions are also possible. Omit if not needed.
+export SAIRPC_EXTRA_LIBS="-L/usr/local/lib/ -lpthread"
 
 make saithrift-build
 make saithrift-install
