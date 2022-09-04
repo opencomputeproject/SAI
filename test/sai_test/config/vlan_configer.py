@@ -111,7 +111,7 @@ class VlanConfiger(object):
             Vlan: vlan object
         """
 
-        vlan = Vlan(None, None, [], None, None, None)
+        vlan = Vlan(None, None, [], None, [], [])
         print("Create vlan {} and it memmber port at {} ...".format(
             vlan_id, vlan_port_idxs))
         vlan_oid = sai_thrift_create_vlan(self.client, vlan_id=vlan_id)
