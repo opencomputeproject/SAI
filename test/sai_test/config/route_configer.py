@@ -398,7 +398,8 @@ class RouteConfiger(object):
         else:
             nbr_entry_v6 = None
 
-        self.test_obj.dut.neighborv4_list.append(nbr_entry_v4)
+        if nbr_entry_v4:
+            self.test_obj.dut.neighborv4_list.append(nbr_entry_v4)
         if nbr_entry_v6:
             self.test_obj.dut.neighborv6_list.append(nbr_entry_v6)
         return nbr_entry_v4, nbr_entry_v6
