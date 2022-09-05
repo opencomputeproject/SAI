@@ -144,7 +144,7 @@ class Device(object):
         """
         self.routev6 = None
         """
-        routev4 entry, defined in route configer
+        routev6 entry, defined in route configer
         """
 
     def _generate_ipv4_address(self):
