@@ -65,7 +65,9 @@ class Device(object):
             l2_egress_port_idx
             l3_port_idx
             l3_lag_obj
-            nhp_grp
+            ecmp
+            routev4
+            routev6
 
         Server:
             self.ip_pattern: SERVER_IPV4_PATTERN
