@@ -39,9 +39,9 @@ if TYPE_CHECKING:
 
 
 def t0_route_config_helper(
-        test_obj: 'T0TestBase', 
-        is_create_default_route=True, 
-        is_create_default_loopback_interface=False, 
+        test_obj: 'T0TestBase',
+        is_create_default_route=True,
+        is_create_default_loopback_interface=False,
         is_create_route_for_lag=True,
         is_create_vlan_interface=True,
         is_create_route_for_vlan=True):
