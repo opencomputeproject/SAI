@@ -46,6 +46,8 @@ class Device(object):
             l3_port_idx: L3 destination port index, defined in route configer
             l3_lag_obj: L3 destination port object, defined in route configer
             route_id
+            routev4
+            routev6
             nexthop
             neighbor_id
             fdb_entry
@@ -66,6 +68,8 @@ class Device(object):
             l3_port_idx
             l3_lag_obj
             ecmp
+            routev4
+            routev6
 
         Server:
             self.ip_pattern: SERVER_IPV4_PATTERN
@@ -134,7 +138,14 @@ class Device(object):
         """
         L3 destination ecmp object, defined in route configer
         """
-
+        self.routev4 = None
+        """
+        routev4 entry, defined in route configer
+        """
+        self.routev6 = None
+        """
+        routev6 entry, defined in route configer
+        """
 
     def _generate_ipv4_address(self):
         """

@@ -91,7 +91,7 @@ def t0_route_config_helper(
                                                           nexthop_device=test_obj.t1_list[1][100])
         test_obj.dut.lag_list[0].nexthopv4_list.append(nhv4)
         test_obj.dut.lag_list[0].nexthopv6_list.append(nhv6)
-        route_configer.create_route_by_nexthop(
+        routev4, routev6 = route_configer.create_route_by_nexthop(
             dest_device=test_obj.servers[11][0],
             nexthopv4=nhv4,
             nexthopv6=nhv6)
@@ -99,6 +99,8 @@ def t0_route_config_helper(
         for item in test_obj.servers[11]:
             item.l3_lag_obj = test_obj.dut.lag_list[0]
             item.l3_lag_obj.neighbor_mac = test_obj.t1_list[1][100].mac
+            item.routev4 = routev4
+            item.routev6 = routev6
         # set expected dest T1
         test_obj.t1_list[1][100].l3_lag_obj = test_obj.dut.lag_list[0]
 
@@ -106,7 +108,7 @@ def t0_route_config_helper(
             "Create route for server with in ip {}/{}".format(test_obj.servers[21][0].ipv4, 24))
         test_obj.servers[21][0].ip_prefix = '24'
         test_obj.servers[21][0].ip_prefix_v6 = '112'
-        route_configer.create_route_by_nexthop(
+        routev4, routev6 = route_configer.create_route_by_nexthop(
             dest_device=test_obj.servers[21][0],
             nexthopv4=nhv4,
             nexthopv6=nhv6)
@@ -114,6 +116,8 @@ def t0_route_config_helper(
         for item in test_obj.servers[21]:
             item.l3_lag_obj = test_obj.dut.lag_list[0]
             item.l3_lag_obj.neighbor_mac = test_obj.t1_list[1][100].mac
+            item.routev4 = routev4
+            item.routev6 = routev6
 
         print(
             "Create route for server with in ip {}/{}".format(test_obj.servers[12][0].ipv4, 24))
@@ -128,7 +132,7 @@ def t0_route_config_helper(
                                                           nexthop_device=test_obj.t1_list[2][100])
         test_obj.dut.lag_list[1].nexthopv4_list.append(nhv4)
         test_obj.dut.lag_list[1].nexthopv6_list.append(nhv6)
-        route_configer.create_route_by_nexthop(
+        routev4, routev6 = route_configer.create_route_by_nexthop(
             dest_device=test_obj.servers[12][0],
             nexthopv4=nhv4,
             nexthopv6=nhv6)
@@ -136,6 +140,8 @@ def t0_route_config_helper(
         for item in test_obj.servers[12]:
             item.l3_lag_obj = test_obj.dut.lag_list[1]
             item.l3_lag_obj.neighbor_mac = test_obj.t1_list[2][100].mac
+            item.routev4 = routev4
+            item.routev6 = routev6
         # set expected dest T1
         test_obj.t1_list[2][100].l3_lag_obj = test_obj.dut.lag_list[1]
 
@@ -392,7 +398,8 @@ class RouteConfiger(object):
         else:
             nbr_entry_v6 = None
 
-        self.test_obj.dut.neighborv4_list.append(nbr_entry_v4)
+        if nbr_entry_v4:
+            self.test_obj.dut.neighborv4_list.append(nbr_entry_v4)
         if nbr_entry_v6:
             self.test_obj.dut.neighborv6_list.append(nbr_entry_v6)
         return nbr_entry_v4, nbr_entry_v6
