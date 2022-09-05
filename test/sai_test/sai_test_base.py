@@ -316,7 +316,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
         """
         Represent the DUT in test.
         """
-        self.server_groups = [0, 1, 2, 11, 12, 21]
+        self.server_groups = [0, 1, 2, 11, 12, 21, 13, 14, 60]
         """
         Group numbers for server
         """
