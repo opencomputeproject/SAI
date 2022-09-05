@@ -208,50 +208,19 @@ def t0_route_config_helper(
 
     if is_create_route_for_nhopgrp:
         nhpv4_list, nhpv6_list = [], []
-
-        print("Create nexthop for port with in ip {}/{}".format(test_obj.t1_list[1][100].ipv4, 24))
-        rif = route_configer.create_router_interface(
-            net_interface=test_obj.dut.lag_list[0])
-        route_configer.create_neighbor_by_rif(rif=rif,
-                                              nexthop_device=test_obj.t1_list[1][100],
-                                              no_host=False)
-        nhv4, nhv6 = route_configer.create_nexthop_by_rif(rif=rif,
-                                                          nexthop_device=test_obj.t1_list[1][100])
-        nhpv4_list.append(nhv4)
-        nhpv6_list.append(nhv6)
-
-        print("Create nexthop for port with in ip {}/{}".format(test_obj.t1_list[2][100].ipv4, 24))
-        rif = route_configer.create_router_interface(
-            net_interface=test_obj.dut.lag_list[1])
-        route_configer.create_neighbor_by_rif(rif=rif,
-                                              nexthop_device=test_obj.t1_list[2][100],
-                                              no_host=False)
-        nhv4, nhv6 = route_configer.create_nexthop_by_rif(rif=rif,
-                                                          nexthop_device=test_obj.t1_list[2][100])
-        nhpv4_list.append(nhv4)
-        nhpv6_list.append(nhv6)
-
-        print("Create nexthop for port with in ip {}/{}".format(test_obj.t1_list[3][100].ipv4, 24))
-        rif = route_configer.create_router_interface(
-            net_interface=test_obj.dut.lag_list[2])
-        route_configer.create_neighbor_by_rif(rif=rif,
-                                              nexthop_device=test_obj.t1_list[3][100],
-                                              no_host=False)
-        nhv4, nhv6 = route_configer.create_nexthop_by_rif(rif=rif,
-                                                          nexthop_device=test_obj.t1_list[3][100])
-        nhpv4_list.append(nhv4)
-        nhpv6_list.append(nhv6)
-
-        print("Create nexthop for port with in ip {}/{}".format(test_obj.t1_list[4][100].ipv4, 24))
-        rif = route_configer.create_router_interface(
-            net_interface=test_obj.dut.lag_list[3])
-        route_configer.create_neighbor_by_rif(rif=rif,
-                                              nexthop_device=test_obj.t1_list[4][100],
-                                              no_host=False)
-        nhv4, nhv6 = route_configer.create_nexthop_by_rif(rif=rif,
-                                                          nexthop_device=test_obj.t1_list[4][100])
-        nhpv4_list.append(nhv4)
-        nhpv6_list.append(nhv6)
+        lag_num = 4
+        for lag_idx in range(lag_num):
+            t1_idx = lag_idx + 1
+            print("Create nexthop for port with in ip {}/{}".format(test_obj.t1_list[t1_idx][100].ipv4, 24))
+            rif = route_configer.create_router_interface(
+                net_interface=test_obj.dut.lag_list[lag_idx])
+            route_configer.create_neighbor_by_rif(rif=rif,
+                                                nexthop_device=test_obj.t1_list[t1_idx][100],
+                                                no_host=False)
+            nhv4, nhv6 = route_configer.create_nexthop_by_rif(rif=rif,
+                                                            nexthop_device=test_obj.t1_list[t1_idx][100])
+            nhpv4_list.append(nhv4)
+            nhpv6_list.append(nhv6)
 
         print("Create nexthop group for server with in ip {}/{}".format(test_obj.servers[60][0].ipv4, 24))
         test_obj.servers[60][0].ip_prefix = '24'
