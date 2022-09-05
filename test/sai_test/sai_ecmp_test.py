@@ -1,5 +1,3 @@
-from unittest import skip
-
 from sai_test_base import T0TestBase
 from sai_utils import *
 
@@ -506,15 +504,13 @@ class EcmpHashFieldSIPTestV6(T0TestBase):
 
 
 """
-Skip test for broadcom, can't load balance on protocol such as tcp and udp
-Item: 15023123
+Skip test for broadcom, can't load balance on protocol such as tcp and udp. Item: 15023123
 """
 
 class EcmpHashFieldProtoTestV4(T0TestBase):
     """
     Verify loadbalance on NexthopGroup ipv4 by protocol.
     """
-    @skip("skip for broadcom")
     def setUp(self):
         """
         Test the basic setup process
@@ -522,6 +518,7 @@ class EcmpHashFieldProtoTestV4(T0TestBase):
         T0TestBase.setUp(self,
                          is_create_route_for_nhopgrp=True,
                          is_create_route_for_lag=False,
+                         skip_reason ="SKIP! Skip test for broadcom, can't load balance on protocol such as tcp and udp. Item: 15023123",
                         )
         
     def test_load_balance_on_protocolv4(self):
@@ -628,15 +625,13 @@ class EcmpHashFieldProtoTestV4(T0TestBase):
 
 
 """
-Skip test for broadcom, can't load balance on protocol such as tcp and udp
-Item: 15023123
+Skip test for broadcom, can't load balance on protocol such as tcp and udp. Item: 15023123
 """
 
 class EcmpHashFieldProtoTestV6(T0TestBase):
     """
     Verify loadbalance on NexthopGroup ipv6 by protocol.
     """
-    @skip("skip for broadcom")
     def setUp(self):
         """
         Test the basic setup process
@@ -644,6 +639,7 @@ class EcmpHashFieldProtoTestV6(T0TestBase):
         T0TestBase.setUp(self,
                          is_create_route_for_nhopgrp=True,
                          is_create_route_for_lag=False,
+                         skip_reason ="SKIP! Skip test for broadcom, can't load balance on protocol such as tcp and udp. Item: 15023123",
                         )
         
     def test_load_balance_on_protocolv6(self):
