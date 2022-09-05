@@ -319,12 +319,12 @@ class T0TestBase(ThriftInterfaceDataPlane):
         """
         Represent the DUT in test.
         """
-        self.server_groups = [0, 1, 2, 11, 12, 21]
+        self.server_groups = [0, 1, 2, 11, 12, 13, 14, 21, 60]
         """
         Group numbers for server
         """
 
-        self.t1_groups = [1, 2]
+        self.t1_groups = [1, 2, 3, 4]
         """
         Group numbers for server
         """
@@ -360,6 +360,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
               is_create_default_loopback_interface=False,
               is_create_lag=True,
               is_create_route_for_lag=True,
+              is_create_route_for_nhopgrp=False,
               wait_sec=5,
               skip_reason = None):
         super(T0TestBase, self).setUp(skip_reason = skip_reason)
@@ -396,8 +397,9 @@ class T0TestBase(ThriftInterfaceDataPlane):
                 test_obj=self,
                 is_create_default_route=is_create_default_route,
                 is_create_default_loopback_interface=is_create_default_loopback_interface,
-                is_create_route_for_lag=is_create_route_for_lag)
-            print("common config done.persist it")
+                is_create_route_for_lag=is_create_route_for_lag,
+                is_create_route_for_nhopgrp=is_create_route_for_nhopgrp)
+            print("common config done, persist it")
             self.persist_helper.persist_dut(self.dut)
             self.persist_helper.persist_server_list(self.servers)
             self.persist_helper.persist_t1_list(self.t1_list)
