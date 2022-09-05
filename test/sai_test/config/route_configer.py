@@ -172,11 +172,15 @@ def t0_route_config_helper(
         print("Create nexthop group for server with in ip {}/{}".format(test_obj.servers[60][0].ipv4, 24))
         test_obj.servers[60][0].ip_prefix = '24'
         test_obj.servers[60][0].ip_prefix_v6 = '112'
-        route_configer.create_nexthop_group_by_nexthops(
+        nhp_grpv4, nhp_grpv6 = route_configer.create_nexthop_group_by_nexthops(
             nexthopv4_list=nhpv4_list,
             nexthopv6_list=nhpv6_list,
-            lag_list=test_obj.dut.lag_list,
             dest_device=test_obj.servers[60][0])
+
+        # set expected dest lag
+        for lag in test_obj.dut.lag_list:
+            lag.nexthop_groupv4 = nhp_grpv4
+            lag.nexthop_groupv6 = nhp_grpv6
 
 class RouteConfiger(object):
     """
@@ -525,7 +529,7 @@ class RouteConfiger(object):
 
         return nhopv4, nhopv6
 
-    def create_nexthop_group_by_nexthops(self, nexthopv4_list: List[Nexthop], nexthopv6_list: List[Nexthop], lag_list: List[Lag], dest_device: Device):
+    def create_nexthop_group_by_nexthops(self, nexthopv4_list: List[Nexthop], nexthopv6_list: List[Nexthop], dest_device: Device):
         """
         Create nexthop group by nexthops. Each element in all lists corresponds one by one.
 
@@ -536,7 +540,6 @@ class RouteConfiger(object):
         Attrs:
             nexthopv4_list: A list of ipv4 nexthops to form a nexthop group
             nexthopv6_list: A list of ipv6 nexthops to form a nexthop group
-            lag_list: A list of lags, use it to set lag attribute (nexthop_groupv4, nexthop_groupv6)
             dest_device: Simulating the bypass device, use this device to get the ipaddress, ipprefix_v4 and ipprefix_v6
 
         return nexthop group for v4 and nexthop group for v6 
@@ -562,17 +565,9 @@ class RouteConfiger(object):
             nhp_grpv4_members.append(nhp_grpv4_member)
             nhp_grpv6_members.append(nhp_grpv6_member)
 
-        member_port_indexs = []
-        for lag in lag_list:
-            for index in lag.member_port_indexs:
-                member_port_indexs.append(index)
-
+        member_port_indexs = [17, 18, 19, 20, 21, 22, 23, 24]
         nhp_grpv4: NexthopGroup = NexthopGroup(nhop_groupv4_id, nhp_grpv4_members, member_port_indexs)
         nhp_grpv6: NexthopGroup = NexthopGroup(nhop_groupv6_id, nhp_grpv6_members, member_port_indexs)
-
-        for lag in lag_list:
-            lag.nexthop_groupv4 = nhp_grpv4
-            lag.nexthop_groupv6 = nhp_grpv6
 
         self.test_obj.dut.nhp_grpv4_list.append(nhp_grpv4)
         self.test_obj.dut.nhp_grpv6_list.append(nhp_grpv6)
@@ -595,6 +590,15 @@ class RouteConfiger(object):
         return virtual_router
 
     def remove_nhop_member_by_lag_idx(self, nhp_grp_obj, lag_idx):
+        """
+        Remove nexthop member by lag index.
+
+        This method will remove the nexthop member and port index from nexthop group object.
+
+        Args:
+            nhp_grp_obj: nexthop group object.
+            lag_idx: lag index.
+        """
         nhp_grp: NexthopGroup = nhp_grp_obj
         index = lag_idx - 1
         port_indexs = self.test_obj.dut.lag_list[index].member_port_indexs
@@ -603,3 +607,28 @@ class RouteConfiger(object):
         nhp_grp.nhp_grp_members.remove(nhp_grp.nhp_grp_members[index])
         for port_index in port_indexs:
             nhp_grp.member_port_indexs.remove(port_index)
+
+    def create_nhop_member_by_lag_port_idxs(self, nhp_grp_obj, lag_idx):
+        """
+        Create nexthop members for a nexthop group.
+
+        This method will create the nexthop member and port index from nexthop group object.
+
+        Args:
+            nhp_grp_obj: nexthop group object
+            lag_idx: lag index
+
+        Returns:
+            nhop_member: nexthop member
+        """
+        nhp_grp: NexthopGroup = nhp_grp_obj
+        index = lag_idx - 1
+        nhop_member = sai_thrift_create_next_hop_group_member(self.client,
+                                                              next_hop_group_id=nhp_grp_obj.nhp_grp_id,
+                                                              next_hop_id=self.test_obj.dut.nexthopv4_list[index].oid)
+        self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
+        nhp_grp.nhp_grp_members.insert(index, nhop_member)
+        port_indexs = self.test_obj.dut.lag_list[index].member_port_indexs
+        for offset, port_index in enumerate(port_indexs):
+            nhp_grp.member_port_indexs.insert(index * 2 + offset, port_index)
+        return nhop_member

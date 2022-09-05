@@ -837,6 +837,8 @@ class RemoveLagEcmpTestV4(T0TestBase):
                          is_create_route_for_nhopgrp=True,
                          is_create_route_for_lag=False,
                         )
+        self.route_configer.remove_nhop_member_by_lag_idx(
+            nhp_grp_obj=self.dut.nhp_grpv4_list[0], lag_idx=3)
         
     def test_lag_ecmp_remove(self):
         """
@@ -846,10 +848,7 @@ class RemoveLagEcmpTestV4(T0TestBase):
         4. Verify Packets only can be received on LAG1 and LAG2, with ``SMAC: SWITCH_MAC_2`` (check loadbalanced in LAG and ECMP)
         """
         print("Ecmp remove lag test")
-        
-        self.route_configer.remove_nhop_member_by_lag_idx(
-            nhp_grp_obj=self.dut.nhp_grpv4_list[0], lag_idx=3)
-        
+
         ip_dst = self.servers[60][1].ipv4
         recv_dev_port_idxs = self.get_dev_port_indexes(
             list(filter(lambda item: item != 1, self.dut.nhp_grpv4_list[0].member_port_indexs)))
@@ -890,4 +889,6 @@ class RemoveLagEcmpTestV4(T0TestBase):
         self.test_lag_ecmp_remove()
 
     def tearDown(self):
+        self.route_configer.create_nhop_member_by_lag_port_idxs(
+            nhp_grp_obj=self.dut.nhp_grpv4_list[0], lag_idx=3)
         super().tearDown()
