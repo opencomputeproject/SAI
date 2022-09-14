@@ -1,6 +1,7 @@
-# PTF test user guide
+# SAI PTF test user guide
 
-This section describes how to run PTF test cases on your device under test (DUT).
+This section describes how to set up the testing environment manually and run PTF test cases on your device under test (DUT). 
+For how to setup the environment with SONiC-MGMT script please refer [Deploy SAI Test Topology With SONiC-MGMT](docs/DeploySAITestTopologyWithSONiC-MGMT.md)
 
   > This guide covers Ubuntu 18.40 distro and above distros. Steps tested only on Ubuntu 18.04.
 
