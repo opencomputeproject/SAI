@@ -2,11 +2,11 @@
 
 *This article will introduce the detailed processing of entire PTF-SAIv2 testing, including:*
 
-* SAI PTF v2 introduction and manually setup Testbed [PTF test user guide](docs/SAI_PTF_user-guide.md)
+* SAI PTF v2 introduction and manually setup Testbed [PTF test user guide](SAI_PTF_user-guide.md)
 * Build PTF-SAIv2 infras leveraged by [sonic-buildimage](https://github.com/Azure/sonic-buildimage)
-* Setup the testbed by sonic-mgmt [Deploy SAI Test Topology With SONiC-MGMT](https://github.com/Azure/sonic-mgmt/tree/master/docs/testbed/sai_quality)
-* Setup saiserverv2 docker on DUT (Device under testing) [Example:Start SaiServer Docker In DUT](docs/ExampleStartSaiServerDockerInDUT.md)
-* Prepare the testing env and start PTF-SAIv2 testing within ptf-sai docker [Example: SAI Testing](docs/SAI.Example.md)
+* Setup the testbed by sonic-mgmt [Deploy SAI Test Topology With SONiC-MGMT](DeploySAITestTopologyWithSONiC-MGMT.md)
+* Setup saiserverv2 docker on DUT (Device under testing) [Example:Start SaiServer Docker In DUT](ExampleStartSaiServerDockerInDUT.md)
+* Prepare the testing env and start PTF-SAIv2 testing within ptf-sai docker [Example: SAI Testing](SAI.Example.md)
 
 ## SAI PTF v2 introduction and manually setup Testbed
 *In this part, we will get to know what's the SAI-PTF v2 framework and how to set up it manually.*
@@ -14,16 +14,18 @@
 SAI-PTF v2 is upgraded from previous [SAI-PTF](../../test/saithrift/README.md) fremework.
 SAI PTFv2 has two parts, [PTF(Packet Test Framework)](https://github.com/p4lang/ptf) and [SAI PRC framework](../../meta/rpc/README.md).
 
-For SAI-PTF test, we can set up a simple test environment by following [SAI PTF introduction and manually setup Testbed](docs/SAI_PTF_user-guide.md).
+For SAI-PTF test, we can set up a simple test environment by following [SAI PTF introduction and manually setup Testbed](SAI_PTF_user-guide.md).
 
-Besides, following the latter section, we can also use other SONiC scripts to help setup the [PTF32/PTF64 topology](https://github.com/sonic-net/sonic-mgmt/blob/master/docs/testbed/README.testbed.Overview.md#ptf-type-topology) environment. 
- > For more detail about the SONiC testbed topology please refer to [sonic testbed overriew](https://github.com/sonic-net/sonic-mgmt/blob/master/docs/testbed/README.testbed.Overview.md)
+Besides, following the latter sections, we can also use other SONiC scripts to help setup the [SAI PTF topology](https://github.com/sonic-net/sonic-mgmt/blob/master/docs/testbed/README.testbed.Overview.md#ptf-type-topology) environment with all the testing components mentioned in [SAI PTF introduction and manually setup Testbed](SAI_PTF_user-guide.md).
 
+ > By default, we use PTF32 topology for SAI PTF testing. With PTF32 topology, it will use 32 ports, if needs to test against more ports, like 64 ports, please use the PTF64 topology or other customized configuration.
+
+  > For more detail about the SONiC testbed topology please refer to [sonic testbed overriew](https://github.com/sonic-net/sonic-mgmt/blob/master/docs/testbed/README.testbed.Overview.md)
 
 ## Build PTF-SAIv2 infras leveraged by sonic-buildimage
 *In this part, we will build PTF-SAIv2 infras using sonic-buildimage.*
 
-1. Check the sonic image version and commit id: [Check SAI Header Version And SONiC Branch](https://github.com/Azure/sonic-mgmt/blob/master/docs/testbed/sai_quality/ExampleCheckSonicVersionAndBuildSaiserverDocker.md)
+1. Check the sonic image version and commit id: [Check SAI Header Version And SONiC Branch](ExampleCheckSonicVersionAndBuildSaiserverDocker.md)
 2. Reset the sonic-buildimage with the branch and commit id previous checked
     ```
     rm -rf ./sonic-buildimage
@@ -59,7 +61,7 @@ Besides, following the latter section, we can also use other SONiC scripts to he
 
 *In this section, we will set up the physical switch testbed.*
 1. Install the sonic image in the DUT, as for how to install a sonic image on the supported switch, please refer to this doc [Install sonic eos image](https://github.com/Azure/SONiC/wiki/Quick-Start#install-sonic-eos-image)
-2. [Deploy SAI Test Topology With SONiC-MGMT](https://github.com/Azure/sonic-mgmt/tree/master/docs/testbed/sai_quality)
+2. [Deploy SAI Test Topology With SONiC-MGMT](DeploySAITestTopologyWithSONiC-MGMT.md)
 
 For the setup of ptf-sai docker, you can refer to this section [Setup Docker Registry for docker-ptf](https://github.com/Azure/sonic-mgmt/blob/master/docs/testbed/README.testbed.Setup.md#setup-docker-registry-for-docker-ptf), please replace the `docker-ptf` with `docker-ptf-sai` 
 
@@ -78,9 +80,9 @@ For the setup of ptf-sai docker, you can refer to this section [Setup Docker Reg
     }
     stop_service
     ```
-3. Upload the saiserverv2 docker you built from the previous section to your DUT or Pull saiserverv2 docker image from the registry, as for the detailed setup of the docker registry, please refer to [Example: Start SaiServer Docker In DUT](https://github.com/Azure/sonic-mgmt/blob/master/docs/testbed/sai_quality/ExampleStartSaiServerDockerInDUT.md)  
+3. Upload the saiserverv2 docker you built from the previous section to your DUT or Pull saiserverv2 docker image from the registry, as for the detailed setup of the docker registry, please refer to [Example: Start SaiServer Docker In DUT](ExampleStartSaiServerDockerInDUT.md)  
 
-4. Start your saiserver binary from saiserverv2 docker, for detailed information, please refer to this section [Prepare testing environment on DUT](https://github.com/Azure/sonic-mgmt/blob/master/docs/testbed/sai_quality/SAI.Example.md#prepare-testing-environment-on-dut):
+4. Start your saiserver binary from saiserverv2 docker, for detailed information, please refer to this section [Prepare testing environment on DUT](SAI.Example.md#prepare-testing-environment-on-dut):
     
 After successfully starting the saiserver binary, we can get those outputs from the shell:
 ```
@@ -151,4 +153,4 @@ OK
 
 ## Reference
 
-* [SAI Testing Example](https://github.com/Azure/sonic-mgmt/blob/master/docs/testbed/sai_quality/SAI.Example.md)
+* [SAI Testing Example](SAI.Example.md)

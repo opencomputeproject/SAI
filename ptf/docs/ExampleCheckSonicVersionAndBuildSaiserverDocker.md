@@ -1,4 +1,5 @@
-In this article, you will get known how to get a saiserver docker and get a builder to build saiserver binary
+# Example: Check sonic version and build related saiserver docker
+*In this article, you will get known how to get a saiserver docker and get a builder to build saiserver binary*
 
 1. Check SONiC version in a DUT
 **Old version might hit some issue caused by a related package upgrade, you can always use the latest tag of a major version(i.e major is 20201231) but notice the matching image version.**
@@ -17,7 +18,7 @@ In this article, you will get known how to get a saiserver docker and get a buil
 
       In your dev environment, install pre-requirement lib, e.g. pip and jinja, re-located code to that tag and resident on a new branch, 
       here we use repository [sonic-buildimage](https://github.com/Azure/sonic-buildimage)
-      Follow the doc at [Check SAI header version and SONiC branch](https://github.com/Azure/sonic-mgmt/blob/master/docs/testbed/sai_quality/CheckSAIHeaderVersionAndSONiCBranch.md)
+      Follow the doc at [Check SAI header version and SONiC branch](CheckSAIHeaderVersionAndSONiCBranch.md)
 
    - Get commit id from tag.
 

@@ -43,7 +43,9 @@ For example, we want to use the config `vms-sn2700-t1-lag`, then we need to chan
 ```
 > **for the topo, if it ends with 64, then the topo should be ptf64, please change it according to the actual device port.**
 
-4. deploy the new topology
+ > For more detail about the SONiC testbed topology please refer to [sonic testbed overriew](https://github.com/sonic-net/sonic-mgmt/blob/master/docs/testbed/README.testbed.Overview.md)
+
+1. deploy the new topology
 ```
 ./testbed-cli.sh -t testbed.yaml add-topo vms-sn2700-t1 password.txt
 ```
