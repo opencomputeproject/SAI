@@ -957,6 +957,290 @@ class FdbLearnTest(SaiHelper):
                 vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_TAGGED)
 
 
+class FdbDynamicMacLearnTest(PlatformSaiHelper):
+    '''
+    Verify dynamic mac learning for FDB: vlan, new vlan member and new lag member
+    '''
+
+    def setUp(self):
+        super(FdbDynamicMacLearnTest, self).setUp()
+
+        self.vlan_id = 10
+
+        # add (tagged) LAG2 to VLAN 10
+        self.vlan10_member3 = sai_thrift_create_vlan_member(
+            self.client,
+            vlan_id=self.vlan10,
+            bridge_port_id=self.lag2_bp,
+            vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_TAGGED)
+
+        self.src_ports = [self.dev_port0, self.dev_port1, self.dev_port4,
+                          self.dev_port5, self.dev_port6, self.dev_port7,
+                          self.dev_port8, self.dev_port9]
+        self.macs = []
+        for i in range(1, len(self.src_ports)):
+            self.macs.append("00:%02d:%02d:%02d:%02d:%02d" % (i, i, i, i, i))
+
+        self.utg_lag_ports = [self.dev_port4, self.dev_port5, self.dev_port6]
+        self.tg_lag_ports = [self.dev_port7, self.dev_port8, self.dev_port9]
+        self.dst_ports = [[self.dev_port0], [self.dev_port1],
+                          self.utg_lag_ports, self.tg_lag_ports]
+
+    def runTest(self):
+        self.dynamicMacLearnTest()
+    
+    def dynamicMacLearnTest(self):  # noqa pylint: disable=too-many-branches
+        '''
+        Verify if MAC addresses are learned on tagged and untagged VLAN
+        ports and LAGs. The test checks also if MAC addresses are learned on
+        newly added VLAN and LAG member.
+        Send packets with given SMACs and verify they are broadcasted
+        on other ports.
+        Next send packets with DMACs == previous SMACs and verify they are
+        forwarded only to the proper ports
+        '''
+        print("\ndynamicMacLearnTest()")
+
+        try:
+            # learning phase
+            dst_mac = "00:11:22:33:44:55"
+            for src_port, src_mac in zip(self.src_ports, self.macs):
+                pkt = simple_udp_packet(eth_dst=dst_mac,
+                                        eth_src=src_mac,
+                                        pktlen=100)
+                tag_pkt = simple_udp_packet(eth_dst=dst_mac,
+                                            eth_src=src_mac,
+                                            dl_vlan_enable=True,
+                                            vlan_vid=self.vlan_id,
+                                            pktlen=104)
+
+                if src_port == self.dev_port1 or src_port in self.tg_lag_ports:
+                    send_pkt = tag_pkt
+                else:
+                    send_pkt = pkt
+
+                # create port list for flooding verification
+                flood_port_list = [
+                    self.dst_ports[p] for p in range(len(self.dst_ports))
+                    if src_port not in self.dst_ports[p]]
+                # create packet list for flooding verification
+                flood_pkt_list = []
+                tg_lag_set = False
+                utg_lag_set = False
+                for dst_port in self.dst_ports:
+                    if src_port in dst_port:
+                        continue
+                    if dst_port == [self.dev_port0]:
+                        flood_pkt_list.append(pkt)
+                    elif dst_port == [self.dev_port1]:
+                        flood_pkt_list.append(tag_pkt)
+                    elif dst_port == self.utg_lag_ports and not utg_lag_set:
+                        flood_pkt_list.append(pkt)
+                        utg_lag_set = True
+                    elif dst_port == self.tg_lag_ports and not tg_lag_set:
+                        flood_pkt_list.append(tag_pkt)
+                        tg_lag_set = True
+
+                print("Sending packet on port %d, %s -> %s - will flood" %
+                      (src_port, src_mac, dst_mac))
+                send_packet(self, src_port, send_pkt)
+                verify_each_packet_on_multiple_port_lists(self, flood_pkt_list,
+                                                          flood_port_list)
+
+            print("\tLearning complete\n")
+
+            # verification phase:
+            for dst_port, dst_mac in zip(self.src_ports, self.macs):
+                for src_port, src_mac in zip([self.dev_port0, self.dev_port1],
+                                             [self.macs[0], self.macs[1]]):
+                    if src_port == dst_port:
+                        continue
+
+                    pkt = simple_udp_packet(eth_dst=dst_mac,
+                                            eth_src=src_mac,
+                                            pktlen=100)
+                    tag_pkt = simple_udp_packet(eth_dst=dst_mac,
+                                                eth_src=src_mac,
+                                                dl_vlan_enable=True,
+                                                vlan_vid=self.vlan_id,
+                                                pktlen=104)
+
+                    if src_port == self.dev_port1 or src_port \
+                            in self.tg_lag_ports:
+                        send_pkt = tag_pkt
+                    else:
+                        send_pkt = pkt
+
+                    if dst_port == self.dev_port1 or dst_port \
+                            in self.tg_lag_ports:
+                        rcv_pkt = tag_pkt
+                    else:
+                        rcv_pkt = pkt
+
+                    if dst_port in self.utg_lag_ports:
+                        rcv_port = self.utg_lag_ports
+                    elif dst_port in self.tg_lag_ports:
+                        rcv_port = self.tg_lag_ports
+                    else:
+                        rcv_port = [dst_port]
+
+                    print("Sending packet on port %d, %s -> %s - forwarding" %
+                          (src_port, src_mac, dst_mac))
+                    send_packet(self, src_port, send_pkt)
+                    verify_packet_any_port(self, rcv_pkt, rcv_port)
+            print("\tVerification complete")
+
+            # verify learning on new VLAN member
+            new_vlan_member = self.port24
+            new_vlan_member_dev = self.dev_port24
+            new_vlan_member_mac = "00:12:34:56:78:90"
+            new_vlan_member_bp = sai_thrift_create_bridge_port(
+                self.client,
+                bridge_id=self.default_1q_bridge,
+                port_id=new_vlan_member,
+                type=SAI_BRIDGE_PORT_TYPE_PORT,
+                admin_state=True)
+
+            vlan10_member4 = sai_thrift_create_vlan_member(
+                self.client,
+                vlan_id=self.vlan10,
+                bridge_port_id=new_vlan_member_bp,
+                vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
+
+            sai_thrift_set_port_attribute(self.client,
+                                          new_vlan_member,
+                                          port_vlan_id=self.vlan_id)
+
+            print("\nVerify learning on new VLAN member (port %d)" %
+                  new_vlan_member_dev)
+            # check if packet is flooded to the new VLAN port
+            pkt = simple_udp_packet(eth_dst=new_vlan_member_mac,
+                                    eth_src=self.macs[0],
+                                    pktlen=100)
+            tag_pkt = simple_udp_packet(eth_dst=new_vlan_member_mac,
+                                        eth_src=self.macs[0],
+                                        dl_vlan_enable=True,
+                                        vlan_vid=self.vlan_id,
+                                        pktlen=104)
+
+            flood_port_list = [[self.dev_port1], self.utg_lag_ports,
+                               self.tg_lag_ports, [new_vlan_member_dev]]
+            flood_pkt_list = [tag_pkt, pkt, tag_pkt, pkt]
+
+            print("Sending packet on port %d, %s -> %s\nchecking if flood "
+                  "reaches port %d" % (self.dev_port0, self.macs[0],
+                                       new_vlan_member_mac,
+                                       new_vlan_member_dev))
+            send_packet(self, self.dev_port0, pkt)
+            verify_each_packet_on_multiple_port_lists(self, flood_pkt_list,
+                                                      flood_port_list)
+            print("\tOK")
+
+            # check if MAC is learned on new VLAN member
+            dst_mac = "00:11:22:33:44:55"
+            pkt = simple_udp_packet(eth_dst=dst_mac,
+                                    eth_src=new_vlan_member_mac,
+                                    pktlen=100)
+            tag_pkt = simple_udp_packet(eth_dst=dst_mac,
+                                        eth_src=new_vlan_member_mac,
+                                        dl_vlan_enable=True,
+                                        vlan_vid=self.vlan_id,
+                                        pktlen=104)
+
+            flood_port_list = self.dst_ports
+            flood_pkt_list = [pkt, tag_pkt, pkt, tag_pkt]
+
+            print("Sending packet on new VLAN port (%d), %s -> %s - will "
+                  "flood" % (new_vlan_member_dev, new_vlan_member_mac,
+                             dst_mac))
+            send_packet(self, new_vlan_member_dev, pkt)
+            verify_each_packet_on_multiple_port_lists(self, flood_pkt_list,
+                                                      flood_port_list)
+            print("\tOK")
+            time.sleep(2)
+
+            print("Checking if MAC was learned")
+            pkt = simple_udp_packet(eth_dst=new_vlan_member_mac,
+                                    eth_src=self.macs[0],
+                                    pktlen=100)
+
+            print("Sending packet on port %d, %s -> %s - forward to port %d" %
+                  (self.dev_port0, self.macs[0], new_vlan_member_mac,
+                   new_vlan_member_dev))
+            send_packet(self, self.dev_port0, pkt)
+            verify_packets(self, pkt, [new_vlan_member_dev])
+
+            print("\tVerification complete")
+
+            # verify learning on new LAG member
+            new_lag_member = self.port25
+            new_lag_member_dev = self.dev_port25
+            new_lag_member_mac = "00:09:87:65:43:21"
+
+            lag1_member25 = sai_thrift_create_lag_member(
+                self.client, lag_id=self.lag1, port_id=new_lag_member)
+
+            self.utg_lag_ports.append(new_lag_member_dev)
+
+            print("\nVerify learning on new LAG member (port %d in LAG1)" %
+                  new_lag_member_dev)
+            pkt = simple_udp_packet(eth_dst=dst_mac,
+                                    eth_src=new_lag_member_mac,
+                                    pktlen=100)
+            tag_pkt = simple_udp_packet(eth_dst=dst_mac,
+                                        eth_src=new_lag_member_mac,
+                                        dl_vlan_enable=True,
+                                        vlan_vid=self.vlan_id,
+                                        pktlen=104)
+
+            flood_port_list = [[self.dev_port0], [self.dev_port1],
+                               self.tg_lag_ports, [new_vlan_member_dev]]
+            flood_pkt_list = [pkt, tag_pkt, tag_pkt, pkt]
+
+            print("Sending packet on new LAG member (port %d), %s -> %s - "
+                  "will flood" % (new_lag_member_dev, new_lag_member_mac,
+                                  dst_mac))
+            send_packet(self, new_lag_member_dev, pkt)
+            verify_each_packet_on_multiple_port_lists(self, flood_pkt_list,
+                                                      flood_port_list)
+            print("\tOK")
+            time.sleep(2)
+
+            print("Checking if MAC was learned")
+            pkt = simple_udp_packet(eth_dst=new_lag_member_mac,
+                                    eth_src=self.macs[0],
+                                    pktlen=100)
+
+            print("Sending packet on port %d, %s -> %s forward to LAG1" %
+                  (self.dev_port0, self.macs[0], new_lag_member_mac))
+            send_packet(self, self.dev_port0, pkt)
+            verify_packet_any_port(self, pkt, self.utg_lag_ports)
+
+            print("\tVerification complete")
+
+        finally:
+            sai_thrift_flush_fdb_entries(
+                self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC)
+
+            # remove new LAG member
+            sai_thrift_remove_lag_member(self.client, lag1_member25)
+            self.utg_lag_ports.remove(new_lag_member_dev)
+
+            # remove new vlan member
+            sai_thrift_set_port_attribute(self.client, new_vlan_member,
+                                          port_vlan_id=0)
+            sai_thrift_remove_vlan_member(self.client, vlan10_member4)
+            sai_thrift_remove_bridge_port(self.client, new_vlan_member_bp)
+
+    def tearDown(self):
+        # remove LAG2 from VLAN 10
+        sai_thrift_remove_vlan_member(self.client, self.vlan10_member3)
+        sai_thrift_flush_fdb_entries(
+                self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC)
+
+        super(FdbDynamicMacLearnTest, self).tearDown()
+
+
 @group("draft")
 class FdbStaticMacTest(SaiHelper):
     '''

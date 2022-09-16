@@ -276,7 +276,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
                 index=True,
                 parent_scheduler_node=True)
             self.assertEqual(queue, q_attr['index'])
-            self.assertEqual(self.cpu_port_hdl, q_attr['port'])
+            self.assertEqual(self.cpu_port_hdl, q_attr['port']-1)
 
 
     def start_switch(self):
