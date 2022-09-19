@@ -276,24 +276,24 @@ class L2VlanTest(PlatformSaiHelper):
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
 
     def runTest(self):
-        # self.forwardingTest()
+        self.forwardingTest()
         self.nativeVlanTest()
-        # self.priorityTaggingTest()
-        # self.pvDropTest()
-        # self.lagPVMissTest()
-        # self.vlanFloodTest()
-        # self.vlanFloodEnhancedTest()
-        # self.vlanFloodDisableTest()
-        # self.vlanStatsTest()
-        # self.vlanFloodPruneTest()
-        # self.countersClearTest()
-        # self.vlanMemberList()
-        # self.vlanNegativeTest()
-        # self.singleVlanMemberTest()
-        # self.vlanIngressAclTest()
-        # self.vlanEgressAclTest()
-        # self.vlanLearningTest()
-        # self.vlanMaxLearnedAddressesTest()
+        self.priorityTaggingTest()
+        self.pvDropTest()
+        self.lagPVMissTest()
+        self.vlanFloodTest()
+        self.vlanFloodEnhancedTest()
+        self.vlanFloodDisableTest()
+        self.vlanStatsTest()
+        self.vlanFloodPruneTest()
+        self.countersClearTest()
+        self.vlanMemberList()
+        self.vlanNegativeTest()
+        self.singleVlanMemberTest()
+        self.vlanIngressAclTest()
+        self.vlanEgressAclTest()
+        self.vlanLearningTest()
+        self.vlanMaxLearnedAddressesTest()
 
     def tearDown(self):
         sai_thrift_set_port_attribute(self.client, self.port24, port_vlan_id=1)
@@ -528,9 +528,8 @@ class L2VlanTest(PlatformSaiHelper):
             send_packet(self, self.dev_port1, tag_pkt_40)
             verify_no_other_packets(self, timeout=1)
 
-            status = sai_thrift_set_vlan_attribute(
+            sai_thrift_set_vlan_attribute(
                 self.client, self.vlan20, learn_disable=True)
-            #self.assertEqual(status, SAI_STATUS_SUCCESS)
 
             sai_thrift_set_port_attribute(
                 self.client, self.port2, port_vlan_id=20)
@@ -2571,3 +2570,232 @@ class NativeVlanTest(PlatformSaiHelper):
     
     def runTest(self):
         self.nativeVlanTest()
+
+
+class UpdateNativeVlanTest(PlatformSaiHelper):
+    """
+    This test case verifies the packet with or without tag sending
+    and receiving in different scenarios.
+    """
+
+    def setUp(self):
+        super(UpdateNativeVlanTest, self).setUp()
+
+        self.mac0 = '00:11:11:11:11:11'
+        self.mac1 = '00:22:22:22:22:22'
+        self.mac2 = '00:33:33:33:33:33'
+        self.mac3 = '00:44:44:44:44:44'
+        self.mac_action = SAI_PACKET_ACTION_FORWARD
+
+        self.port24_bp = sai_thrift_create_bridge_port(
+            self.client,
+            bridge_id=self.default_1q_bridge,
+            port_id=self.port24,
+            type=SAI_BRIDGE_PORT_TYPE_PORT,
+            admin_state=True)
+        self.port25_bp = sai_thrift_create_bridge_port(
+            self.client,
+            bridge_id=self.default_1q_bridge,
+            port_id=self.port25,
+            type=SAI_BRIDGE_PORT_TYPE_PORT,
+            admin_state=True)
+
+        # Add port24 and port25 to vlan10
+        self.vlan10_member3 = sai_thrift_create_vlan_member(
+            self.client,
+            vlan_id=self.vlan10,
+            bridge_port_id=self.port24_bp,
+            vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
+        self.vlan10_member4 = sai_thrift_create_vlan_member(
+            self.client,
+            vlan_id=self.vlan10,
+            bridge_port_id=self.port25_bp,
+            vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_TAGGED)
+
+        sai_thrift_set_port_attribute(
+            self.client, self.port24, port_vlan_id=10)
+        sai_thrift_set_port_attribute(
+            self.client, self.port25, port_vlan_id=10)
+
+        self.fdb_entry0 = sai_thrift_fdb_entry_t(
+            switch_id=self.switch_id, mac_address=self.mac0, bv_id=self.vlan10)
+        sai_thrift_create_fdb_entry(
+            self.client,
+            self.fdb_entry0,
+            type=SAI_FDB_ENTRY_TYPE_STATIC,
+            bridge_port_id=self.port0_bp,
+            packet_action=self.mac_action,
+            allow_mac_move=True)
+        self.fdb_entry1 = sai_thrift_fdb_entry_t(
+            switch_id=self.switch_id, mac_address=self.mac1, bv_id=self.vlan10)
+        sai_thrift_create_fdb_entry(
+            self.client,
+            self.fdb_entry1,
+            type=SAI_FDB_ENTRY_TYPE_STATIC,
+            bridge_port_id=self.port1_bp,
+            packet_action=self.mac_action,
+            allow_mac_move=True)
+        self.fdb_entry24 = sai_thrift_fdb_entry_t(
+            switch_id=self.switch_id, mac_address=self.mac2, bv_id=self.vlan10)
+        sai_thrift_create_fdb_entry(
+            self.client,
+            self.fdb_entry24,
+            type=SAI_FDB_ENTRY_TYPE_STATIC,
+            bridge_port_id=self.port24_bp,
+            packet_action=self.mac_action,
+            allow_mac_move=True)
+        self.fdb_entry25 = sai_thrift_fdb_entry_t(
+            switch_id=self.switch_id, mac_address=self.mac3, bv_id=self.vlan10)
+        sai_thrift_create_fdb_entry(
+            self.client,
+            self.fdb_entry25,
+            type=SAI_FDB_ENTRY_TYPE_STATIC,
+            bridge_port_id=self.port25_bp,
+            packet_action=self.mac_action,
+            allow_mac_move=True)
+
+    def tearDown(self):
+        sai_thrift_set_port_attribute(self.client, self.port24, port_vlan_id=1)
+        sai_thrift_set_port_attribute(self.client, self.port25, port_vlan_id=1)
+
+        sai_thrift_remove_fdb_entry(self.client, self.fdb_entry0)
+        sai_thrift_remove_fdb_entry(self.client, self.fdb_entry1)
+        sai_thrift_remove_fdb_entry(self.client, self.fdb_entry24)
+        sai_thrift_remove_fdb_entry(self.client, self.fdb_entry25)
+
+        sai_thrift_remove_vlan_member(self.client, self.vlan10_member3)
+        sai_thrift_remove_vlan_member(self.client, self.vlan10_member4)
+
+        sai_thrift_remove_bridge_port(self.client, self.port24_bp)
+        sai_thrift_remove_bridge_port(self.client, self.port25_bp)
+
+        super(UpdateNativeVlanTest, self).tearDown()
+
+    def updateNativeVlanTest(self):
+        print("\nupdateNativeVlanTest()")
+        try:
+            # not support on brcm platform
+            # status = sai_thrift_set_vlan_attribute(
+            #     self.client, self.vlan20, learn_disable=True)
+            # self.assertEqual(status, SAI_STATUS_SUCCESS)
+
+            status = sai_thrift_set_port_attribute(
+                self.client, self.port2, port_vlan_id=20)
+            self.assertEqual(status, SAI_STATUS_SUCCESS)
+            if self.platform == 'brcm':
+                print("brcm platform")
+                sai_thrift_remove_vlan_member(self.client, self.vlan10_member1)
+                self.vlan20_member111 = sai_thrift_create_vlan_member(
+                        self.client,
+                        vlan_id=self.vlan20,
+                        bridge_port_id=self.port1_bp,
+                        vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_TAGGED)
+            sai_thrift_set_port_attribute(self.client, self.port1, port_vlan_id=20)
+
+            untag_pkt = simple_udp_packet(eth_dst='00:44:44:44:44:44',
+                                          eth_src='00:22:22:22:22:22',
+                                          ip_ttl=64,
+                                          pktlen=100)
+            tag_pkt = simple_udp_packet(eth_dst='00:44:44:44:44:44',
+                                        eth_src='00:22:22:22:22:22',
+                                        dl_vlan_enable=True,
+                                        vlan_vid=10,
+                                        ip_ttl=64,
+                                        pktlen=104)
+            tag_pkt_20 = simple_udp_packet(eth_dst='00:44:44:44:44:44',
+                                           eth_src='00:22:22:22:22:22',
+                                           dl_vlan_enable=True,
+                                           vlan_vid=20,
+                                           ip_ttl=64,
+                                           pktlen=104)
+            lag2_ports = [self.dev_port7, self.dev_port8, self.dev_port9]
+            print("Tx untag packet on trunk port 1 -> "
+                  "Flood to all members of vlan 20 i.e. lag2, port2, port3")
+            send_packet(self, self.dev_port1, untag_pkt)
+            verify_each_packet_on_multiple_port_lists(
+                self, [tag_pkt_20, untag_pkt, tag_pkt_20],
+                [lag2_ports, [self.dev_port2], [self.dev_port3]])
+
+            mac = '00:55:55:55:55:55'
+            mac_action = SAI_PACKET_ACTION_FORWARD
+
+            fdb_entry = sai_thrift_fdb_entry_t(
+                switch_id=self.switch_id, mac_address=mac, bv_id=self.vlan20)
+            sai_thrift_create_fdb_entry(
+                self.client,
+                fdb_entry,
+                type=SAI_FDB_ENTRY_TYPE_STATIC,
+                bridge_port_id=self.lag2_bp,
+                packet_action=mac_action,
+                allow_mac_move=True)
+
+            sai_thrift_set_lag_attribute(
+                self.client, self.lag2, port_vlan_id=20)
+
+            tag_pkt_lag = simple_udp_packet(eth_dst='00:44:44:44:44:44',
+                                            eth_src='00:55:55:55:55:55',
+                                            dl_vlan_enable=True,
+                                            vlan_vid=20,
+                                            ip_ttl=64,
+                                            pktlen=104)
+
+            untag_pkt_lag = simple_udp_packet(eth_dst='00:44:44:44:44:44',
+                                              eth_src='00:55:55:55:55:55',
+                                              ip_ttl=64,
+                                              pktlen=100)
+
+            print("Tx untag packet on trunk lag2 -> "
+                  "Flood to all members of vlan 20 i.e. lag2, port2, port3")
+            if self.platform == 'brcm':
+                sai_thrift_remove_vlan_member(self.client, self.vlan20_member111)
+                self.vlan10_member1 = sai_thrift_create_vlan_member(
+                        self.client,
+                        vlan_id=self.vlan10,
+                        bridge_port_id=self.port1_bp,
+                        vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_TAGGED)
+
+            send_packet(self, self.dev_port7, untag_pkt_lag)
+            verify_each_packet_on_multiple_port_lists(
+                self, [untag_pkt_lag, tag_pkt_lag],
+                [[self.dev_port2], [self.dev_port3]])
+
+            sai_thrift_set_lag_attribute(
+                self.client, self.lag2, port_vlan_id=1)
+
+            print("Tx tag [vlan 10] packet on trunk port %d -> "
+                  "trunk port %d of vlan 10" % (
+                      self.dev_port1, self.dev_port25))
+            send_packet(self, self.dev_port1, tag_pkt)
+            verify_packet(self, tag_pkt, self.dev_port25)
+
+            print("Update native vlan of trunk port %d - reset to one" % (
+                self.dev_port1))
+            sai_thrift_set_port_attribute(
+                self.client, self.port1, port_vlan_id=1)
+
+            print("Tx untag packet on trunk port 1, "
+                  "drop because no native vlan is set")
+            send_packet(self, self.dev_port1, untag_pkt)
+            verify_no_other_packets(self, timeout=1)
+
+            print("Tx tag [vlan 10] packet on trunk port %d -> "
+                  "trunk port %d of vlan 10" % (
+                      self.dev_port1, self.dev_port25))
+            send_packet(self, self.dev_port1, tag_pkt)
+            verify_packet(self, tag_pkt, self.dev_port25)
+            print("\tVerification complete")
+
+        finally:
+            sai_thrift_set_port_attribute(
+                self.client, self.port1, port_vlan_id=1)
+
+            sai_thrift_remove_fdb_entry(self.client, fdb_entry)
+
+            # not support on brcm platform
+            # status = sai_thrift_set_vlan_attribute(
+            #     self.client, self.vlan20, learn_disable=False)
+            # self.assertEqual(status, SAI_STATUS_SUCCESS)
+    
+    def runTest(self):
+        self.updateNativeVlanTest()
+
