@@ -2137,6 +2137,21 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_FEC_ALIGNMENT_LOCK,
 
     /**
+     * @brief Fabric port isolation setting.
+     *
+     * true: The link may be enabled in serdes level and the
+     * MAC level, but the link partner will not use
+     * it for traffic distribution.
+     * false: Undo the isolation operation.
+     * This attribute is for fabric links only.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_FABRIC_ISOLATE,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
