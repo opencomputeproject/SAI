@@ -277,6 +277,12 @@ typedef enum _sai_acl_action_type_t
     /** Set Forwarding class */
     SAI_ACL_ACTION_TYPE_SET_FORWARDING_CLASS = 0x00000034,
 
+    /** Go to a stateful table with key #0 */
+    SAI_ACL_ACTION_TYPE_APPLY_STATEFUL_TABLE_WITH_KEY_0 = 0x00000035,
+
+    /** Go to a stateful table with key #1 */
+    SAI_ACL_ACTION_TYPE_APPLY_STATEFUL_TABLE_WITH_KEY_1 = 0x00000036,
+
 } sai_acl_action_type_t;
 
 /**
@@ -2938,9 +2944,29 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_SET_FORWARDING_CLASS = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x34,
 
     /**
+     * @brief Apply stateful table with key #0
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_STATEFUL_TABLE
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_APPLY_STATEFUL_TABLE_WITH_KEY_0 = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x35,
+
+    /**
+     * @brief Apply stateful table with key #1
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_STATEFUL_TABLE
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_APPLY_STATEFUL_TABLE_WITH_KEY_1 = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x36,
+
+    /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_FORWARDING_CLASS,
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_APPLY_STATEFUL_TABLE_WITH_KEY_1,
 
     /**
      * @brief End of ACL Entry attributes
