@@ -956,7 +956,7 @@ class FdbLearnTest(SaiHelper):
                 self.client, vlan_id=self.vlan10, bridge_port_id=self.port1_bp,
                 vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_TAGGED)
 
-
+# proposal for issue #1604: https://github.com/opencomputeproject/SAI/issues/1604
 class FdbDynamicMacLearnTest(PlatformSaiHelper):
     '''
     Verify dynamic mac learning for FDB: vlan, new vlan member and new lag member
