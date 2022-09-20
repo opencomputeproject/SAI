@@ -560,8 +560,7 @@ class L2VlanTest(PlatformSaiHelper):
                 fdb_entry,
                 type=SAI_FDB_ENTRY_TYPE_STATIC,
                 bridge_port_id=self.lag2_bp,
-                packet_action=mac_action,
-                allow_mac_move=True)
+                packet_action=mac_action)
 
             sai_thrift_set_lag_attribute(
                 self.client, self.lag2, port_vlan_id=20)
@@ -2413,6 +2412,8 @@ class L2VlanTest(PlatformSaiHelper):
             sai_thrift_remove_vlan(self.client, vlan200)
             sai_thrift_remove_vlan(self.client, vlan100)
 
+
+# proposal for issue #1604: https://github.com/opencomputeproject/SAI/issues/1604
 class NativeVlanTest(PlatformSaiHelper):
     """
     This test case verifies the packet with or without tag sending
@@ -2460,6 +2461,7 @@ class NativeVlanTest(PlatformSaiHelper):
 
         self.fdb_entry0 = sai_thrift_fdb_entry_t(
             switch_id=self.switch_id, mac_address=self.mac0, bv_id=self.vlan10)
+        # explicitly set allow_mac_move for issue #1605: https://github.com/opencomputeproject/SAI/issues/1605
         sai_thrift_create_fdb_entry(
             self.client,
             self.fdb_entry0,
