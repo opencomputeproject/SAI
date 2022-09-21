@@ -44,11 +44,11 @@ For how to setup the sonic-mgmt docker please refer to [setup-sonic-mgmt-docker]
       ptf_ipv6:
       server: server_1
    ```
-> **for the topo, if it ends with 64, then the topo should be ptf64, please change it according to the actual device port.**
+   > **for the topo, if it ends with 64, then the topo should be ptf64, please change it according to the actual device port.**
 
-> Make sure you push docker docker-ptf-saiv2 correctly [Setup the testbed by sonic-mgmt](PTF-SAIv2Overview.md#setup-the-testbed-by-sonic-mgmt)
+   > Make sure you push docker docker-ptf-saiv2 correctly [Setup the testbed by sonic-mgmt](PTF-SAIv2Overview.md#setup-the-testbed-by-sonic-mgmt)
 
-> For more detail about the SONiC testbed topology please refer to [sonic testbed overriew](https://github.com/sonic-net/sonic-mgmt/blob/master/docs/testbed/README.testbed.Overview.md)
+   > For more detail about the SONiC testbed topology please refer to [sonic testbed overriew](https://github.com/sonic-net/sonic-mgmt/blob/master/docs/testbed/README.testbed.Overview.md)
 
 4. deploy the new topology
    In sonic-mgmt docker
@@ -62,7 +62,7 @@ For how to setup the sonic-mgmt docker please refer to [setup-sonic-mgmt-docker]
    /data/<sonic-mgmt-clone>/ansible/testbed-cli.sh -t testbed.yaml add-topo vms-sn2700-t1 password.txt
    ```
 
-> **Note: vms-sn2700-t1 is a sample testbed name, for example, please use the actual name as needed.**
+   > **Note: vms-sn2700-t1 is a sample testbed name, for example, please use the actual name as needed.**
 
 # reference
 
