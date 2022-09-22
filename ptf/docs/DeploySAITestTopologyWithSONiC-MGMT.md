@@ -50,7 +50,12 @@ For how to setup the sonic-mgmt docker please refer to [setup-sonic-mgmt-docker]
 
    > Make sure you push docker docker-ptf-saiv2 correctly [Setup the testbed by sonic-mgmt](PTF-SAIv2Overview.md#setup-the-testbed-by-sonic-mgmt)
 
-   > For more detail about the SONiC testbed topology please refer to [sonic testbed overriew](https://github.com/sonic-net/sonic-mgmt/blob/master/docs/testbed/README.testbed.Overview.md)
+
+   > Note: By default, we use PTF32 topology for SAI PTF testing. With PTF32 topology, it will use 32 ports, it needs to test against more ports, like 64 ports, please use the PTF64 topology or other customized configuration.
+
+   > Compared with other [SONiC Logical topologies](https://github.com/sonic-net/sonic-mgmt/blob/master/docs/testbed/README.testbed.Overview.md#logical-topologies), SAI-PTFv2 is simpler, it only gets connected from PTF to DUT. 
+
+   > For more detail about the SONiC testbed topology please refer to [sonic testbed overview](https://github.com/sonic-net/sonic-mgmt/blob/master/docs/testbed/README.testbed.Overview.md).
 
 4. deploy the new topology
    In sonic-mgmt docker

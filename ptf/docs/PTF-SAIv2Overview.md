@@ -9,8 +9,9 @@
   - [Setup Testbed](#setup-testbed)
     - [Build PTF-SAIv2 components](#build-ptf-saiv2-components)
     - [Setup the testbed by sonic-mgmt](#setup-the-testbed-by-sonic-mgmt)
-- [check the saiserver process](#check-the-saiserver-process)
-- [output](#output)
+    - [Setup DUT (Device under testing)](#setup-dut-device-under-testing)
+    - [Setup ptf-sai docker](#setup-ptf-sai-docker)
+    - [Run test](#run-test)
   - [Reference](#reference)
 
 
@@ -48,20 +49,14 @@ Key aspects of the physical connection:
 3. Root fanout switch connects leaf fanout switches and test servers using 802.1Q trunks. *The root fanout switch is not mandatory if there is only one testbed or a test server is only used by one testbed. In this case, the leaf fanout switch can be directly connected with NIC of the test server by 802.1Q trunk.*
 4. Any test server can access any DUT port by sending a packet with the port VLAN tag (The root fanout switch should have this VLAN number enabled on the server trunk)
 
-Needed device and equipment in this doc
-> Note: The device information below is just an example. They are not mandatory. Please make adjustments according to your actual devices.
+Device and equipment needed in this doc
+> Note: The device information below is just an example. They are not mandatory. Please make adjustments according to your actual environment.
 - Test Servers: `dev-acs-serv-01`
 - Fanout Switches
   - Root Fanout Switch (optional): `dev-7260-11` HwSku:`Arista-7260QX-64`
   - Leaf Fanout Switch: `dev-7260-16` HwSku: `Arista-7260QX-64`
 - SONiC DUT: `str-s6000-acs-10` HwSku: `Force10-S6000`
 
-
- > Note: By default, we use PTF32 topology for SAI PTF testing. With PTF32 topology, it will use 32 ports, it needs to test against more ports, like 64 ports, please use the PTF64 topology or other customized configuration.
-
- > Compared with other [SONiC Logical topologies](https://github.com/sonic-net/sonic-mgmt/blob/master/docs/testbed/README.testbed.Overview.md#logical-topologies), SAI-PTFv2 is simpler, it only gets connected from PTF to DUT. 
-
- > For more detail about the SONiC testbed topology please refer to [sonic testbed overview](https://github.com/sonic-net/sonic-mgmt/blob/master/docs/testbed/README.testbed.Overview.md).
 
 ## Setup Testbed
 *In this part, we will build PTF-SAIv2 infras using sonic-buildimage.*
@@ -148,12 +143,12 @@ You have a local docker registry that can be used to push and pull dockers.
 1. Check the SONiC OS version
    
    In order to use the script to prepare the environment, we need to get the right SONiC OS version for pushing the saiserver docker.
-   ```
-   # In a SONiC OS
+    ```
+    # In a SONiC OS
     ~$ show version
 
     SONiC Software Version: SONiC.20201231.76
-    ...
+    ......
 
     Docker images:
     REPOSITORY                                                 TAG                 IMAGE ID            SIZE
@@ -190,6 +185,7 @@ You have a local docker registry that can be used to push and pull dockers.
 3. Add docker registry for sonic-mgmt
 
     sonic-mgmt will try to pull the dependent ptf docker during the deployment process, we need to use the local docker registry here:
+
     ```
     # Edit file <local_folder>/sonic-mgmt/ansible/vars/docker_registry.yml with your local docker reigstry
     docker_registry_host: <docker-reigstry>:<port>
@@ -200,6 +196,7 @@ You have a local docker registry that can be used to push and pull dockers.
     For the detailed steps please refer to [Deploy SAI Test Topology With SONiC-MGMT](DeploySAITestTopologyWithSONiC-MGMT.md)
 
     After setup the SONiC-MGMT env, we can use the command to set up the topology.
+
     ```
     cd /data/<sonic-mgmt-clone>/ansible
     ./testbed-cli.sh -t testbed.yaml add-topo <config_name> ../password.txt
@@ -207,9 +204,11 @@ You have a local docker registry that can be used to push and pull dockers.
 
 ### Setup DUT (Device under testing)
 *In this section, we will introduce how to setup the saiserverv2 docker in DUT.*
-> we prepared some scripts to help setup the DUT, you can change some of the scripts as needed
+
+> We prepared some scripts to help setup the DUT, you can change some of the scripts as needed
 
 1. Install the script for the setup DUT
+
     ```
     # clone the sonic-misc to your local environment
     git clone https://github.com/richardyu-ms/sonic-misc
@@ -218,8 +217,11 @@ You have a local docker registry that can be used to push and pull dockers.
     cd sonic-misc/sonic-scripts
     scp -r ./DUTScript admin@<DUT_IP>:~/
     ```
+
 > below steps are under DUT
+
 2. Go into folder DUTScript
+   
    ```
    cd DUTScript
    ```
@@ -232,10 +234,13 @@ You have a local docker registry that can be used to push and pull dockers.
 4. Pull saiserverv docker 
 
     Change the docker registry in `<sonic-misc>/DUTScript/pull_saiserver_syncd_rpc_dockers.sh`
+
     ```
     #SONIC_REG=<local_docker_reg>
     ```
+
     Run command to pull docker based on OS version
+
     ```
     # pull docker from docker registry
     # for example, it will pull prepared 
@@ -243,14 +248,18 @@ You have a local docker registry that can be used to push and pull dockers.
     # v1 for saiserver v1, it will pull saiserver and syncd-rpc dockers
     ./pull_saiserver_syncd_rpc_dockers.sh -v v2  
     ```
+
     > Make sure you pushed docker correctly.
+
 5. Prepare saiserver 
+   
     ```
     sudo ./prepare_saiserver_service.sh -v v2 
     ```
     Here is the output
+
     ```
-    make folder ... .
+    make folder ......
     copy_syncd_files
     change_scripts
     comment out functions and variables
@@ -261,39 +270,47 @@ You have a local docker registry that can be used to push and pull dockers.
             /usr/bin/start.sh
             /usr/sbin/saiserver -p /etc/sai.d/sai.profile -f /usr/share/sonic/hwsku/port_config.ini
     ```
+
 6. Stop all listeners which are used for docker recovery
+   
     ```
     sudo ./all_listener.sh -o stop
     ```
+
 7. Stop all the other docker services
+
     ```
     sudo ./all_service.sh -o stop
     ```
+
 8. Start saiserver
+
     ```
     sudo systemctl start saiserver
     ```
 
 Right here saiserver should be started, you can check it by
 
-```
-# check the saiserver process
-docker exec -it saiserver ps -a
-# output
-PID TTY          TIME CMD
-    11 pts/0    00:00:01 rsyslogd
-714 pts/9    00:03:11 saiserver
-```
+    
+    # check the saiserver process
+    docker exec -it saiserver ps -a
+    # output
+    PID TTY          TIME CMD
+        11 pts/0    00:00:01 rsyslogd
+    714 pts/9    00:03:11 saiserver
+    
 
 ### Setup ptf-sai docker 
 *In the last section, we will set up our testing environment and run a sanity test on PTF side.*
 
-1. Log in to the ptf-sai docker, you can find the IP address of docker which is connected to the DUT in [testbed.yaml](https://github.com/Azure/sonic-mgmt/blob/master/ansible/testbed.yaml). 
+1. Log in to the ptf-sai docker, you can find the IP address of docker which is connected to the DUT in [testbed.yaml](https://github.com/Azure/sonic-mgmt/blob/master/ansible/testbed.yaml).
+
     ```
     ssh root@<PTF_IP>
     ```
 
-2. Make sure Github is accessible on ptf-sai docker and download the SAI repo which contains PTF-SAIv2 test cases 
+2. Make sure Github is accessible on ptf-sai docker and download the SAI repo which contains PTF-SAIv2 test cases
+
     ```
     cd <PTF_Folder>
     git clone https://github.com/opencomputeproject/SAI.git

@@ -15,7 +15,7 @@ The physical connection of the testbed is designed like below:
 ![Physical topology](./img/physical_connection.png)
 
 Key components/devices in the physical connection:
-> Note: The hardware information here is just for illustrating the physcial connection topology. Please make adjustment according to your actual devices.
+> Note: The hardware information here is just for illustrating the physcial connection topology. Please make adjustment according to your actual environment.
 - Test Servers: `dev-acs-serv-01`
 - Fanout Switches
   - Root Fanout Switch (optional): `dev-7260-11` HwSku:`Arista-7260QX-64`
