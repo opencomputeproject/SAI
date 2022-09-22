@@ -23,27 +23,29 @@ For how to setup the sonic-mgmt docker please refer to [setup-sonic-mgmt-docker]
       
    ```
    cd /data/<sonic-mgmt-clone>/ansible
-   ./testbed-cli.sh remove-topo vms12-t0-s6000-1 password.txt
+   ./testbed-cli.sh remove-topo str-s6000-acs-10 password.txt
    ```
 
 3. Config PTF 32 topology deployment
 
    In order to deploy the PTF 32 environment, we need to change the topology to 'ptf32' by modifying the testbed.yml
 
-   For example, if we want to use the config `vms-sn2700-t1-lag`, then we need to change it
+   For example, if we want to use the config `str-s6000-acs-10`, then we need to change it
    > Note: Below environment is just for example, please use your local physical environment for actual testing.  
    ```git
-   - conf-name: vms-sn2700-t1
-      group-name: vms1-1
-   -  topo: t1
-   +  topo: ptf32
-      ptf_image_name: docker-ptf-saiv2 < 
-   -  ptf: ptf-unknown
-   +  ptf: ptf-docker-name
-      ptf_ip: 10.255.0.178/24
+    - conf-name: vms11-t0-s6000
+      group-name: vms11-4
+   -  topo: t0
+   +  topo: ptf32                         # <-- change to ptf32 topo
+      ptf_image_name: docker-ptf-saiv2    # <-- ptf dockre image name
+      ptf: vms11-4                        # <-- docker instance name 
+      ptf_ip: 10.64.246.83/23             # <-- docker-ptf-saiv2 IP
       ptf_ipv6:
       server: server_1
+      dut:
+        - str-s6000-acs-10
    ```
+
    > **for the topo, if it ends with 64, then the topo should be ptf64, please change it according to the actual device port.**
 
    > Make sure you push docker docker-ptf-saiv2 correctly [Setup the testbed by sonic-mgmt](PTF-SAIv2Overview.md#setup-the-testbed-by-sonic-mgmt)
@@ -57,12 +59,12 @@ For how to setup the sonic-mgmt docker please refer to [setup-sonic-mgmt-docker]
    ./testbed-cli.sh -t testbed.yaml add-topo <conf-name> password.txt
    # password.txt can not be an empty file, you can input `123` in it.
    ```
-   For example, for the test bed config `vms-sn2700-t1-lag`, it should be
+   For example, for the test bed config `vms11-t0-s6000`, it should be
    ```
-   /data/<sonic-mgmt-clone>/ansible/testbed-cli.sh -t testbed.yaml add-topo vms-sn2700-t1 password.txt
+   /data/<sonic-mgmt-clone>/ansible/testbed-cli.sh -t testbed.yaml add-topo vms11-t0-s6000 password.txt
    ```
 
-   > **Note: vms-sn2700-t1 is a sample testbed name, for example, please use the actual name as needed.**
+   > **Note: vms11-t0-s6000 is a sample testbed name, please use the actual name as needed.**
 
 # reference
 

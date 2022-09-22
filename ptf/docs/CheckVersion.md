@@ -12,14 +12,10 @@ For sai, it has many versions and spread with those versions, different SAI head
 	
 1. For understanding the testbed topology, make sure you go through the doc at 
 https://github.com/Azure/sonic-mgmt/tree/master/docs/testbed
-2. Registry the device you want to use
-   ```
-   Here we need an s6000, t0
-   ```
-3. Follow this page to get the testbed info 
+2. Follow this page to get the testbed info 
 [Example of Testbed Configuration - Overview (azure.com)](https://github.com/Azure/sonic-mgmt/blob/master/docs/testbed/README.testbed.Example.Config.md)
 
-4. log in to a sonic device, and check the installed sai version within a `syncd` docker.
+3. log in to a sonic device, and check the installed sai version within a `syncd` docker.
    ```
    docker exec -it syncd bash
    ```
@@ -27,9 +23,9 @@ https://github.com/Azure/sonic-mgmt/tree/master/docs/testbed
    ```
    apt list --installed| grep libsai
    ```
-5. Check out the code from [sonic-buildimage](https://github.com/Azure/sonic-buildimage.git), 
+4. Check out the code from [sonic-buildimage](https://github.com/Azure/sonic-buildimage.git), 
    > *Note: remember to change the branch*
-6. Check out the code for the matching sonic version [Example: Check sonic version and build saiserver docker](CheckVersion.md#check-sonic-version) ,
+5. Check out the code for the matching sonic version [Example: Check sonic version and build saiserver docker](CheckVersion.md#check-sonic-version) ,
 Check the file content at [platform/broadcom/sai.mk](https://github.com/Azure/sonic-buildimage/blob/master/platform/broadcom/sai.mk), there is the link to the binary we installed.
    ```
    The sai binary file and its name will be there

@@ -14,14 +14,13 @@ The physical connection of the testbed is designed like below:
 
 ![Physical topology](./img/physical_connection.png)
 
-Key components in the physical connection:
-
-- Test servers
+Key components/devices in the physical connection:
+> Note: The hardware information here is just for illustrating the physcial connection topology. Please make adjustment according to your actual devices.
 - Test Servers: `dev-acs-serv-01`
 - Fanout Switches
-  - Root Fanout Switch (optional): `dev-7260-11`
-  - Leaf Fanout Switch: `dev-7260-10`
-- SONiC DUT: `dev-msn2700-01`
+  - Root Fanout Switch (optional): `dev-7260-11` HwSku:`Arista-7260QX-64`
+  - Leaf Fanout Switch: `dev-7260-10` HwSku: `Arista-7260QX-64`
+- SONiC DUT: `dev-msn2700-01` HwSku: `Mellanox-2700`
 
 ## Physical Connection
 Datastream from SONiC DUT to Test Server: 

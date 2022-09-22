@@ -5,9 +5,12 @@
   - [SAI PTF v2 introduction](#sai-ptf-v2-introduction)
     - [Logical Topology](#logical-topology)
     - [Physical Connection](#physical-connection)
+      - [Key components/devices in the physical connection:](#key-componentsdevices-in-the-physical-connection)
   - [Setup Testbed](#setup-testbed)
     - [Build PTF-SAIv2 components](#build-ptf-saiv2-components)
     - [Setup the testbed by sonic-mgmt](#setup-the-testbed-by-sonic-mgmt)
+- [check the saiserver process](#check-the-saiserver-process)
+- [output](#output)
   - [Reference](#reference)
 
 
@@ -30,7 +33,7 @@ In the chart above the components are:
 Below is the [Physical connection of testbed](./ExamplePhysicalConnection.md):
 ![Physical connection](./img/physical_connection.png)
 
-Key components in the physical connection:
+#### Key components/devices in the physical connection:
 
 * Test servers
 * Fanout switches
@@ -44,6 +47,14 @@ Key aspects of the physical connection:
 2. Every leaf fanout switch has a unique VLAN tag for every DUT port.
 3. Root fanout switch connects leaf fanout switches and test servers using 802.1Q trunks. *The root fanout switch is not mandatory if there is only one testbed or a test server is only used by one testbed. In this case, the leaf fanout switch can be directly connected with NIC of the test server by 802.1Q trunk.*
 4. Any test server can access any DUT port by sending a packet with the port VLAN tag (The root fanout switch should have this VLAN number enabled on the server trunk)
+
+Needed device and equipment in this doc
+> Note: The device information below is just an example. They are not mandatory. Please make adjustments according to your actual devices.
+- Test Servers: `dev-acs-serv-01`
+- Fanout Switches
+  - Root Fanout Switch (optional): `dev-7260-11` HwSku:`Arista-7260QX-64`
+  - Leaf Fanout Switch: `dev-7260-16` HwSku: `Arista-7260QX-64`
+- SONiC DUT: `str-s6000-acs-10` HwSku: `Force10-S6000`
 
 
  > Note: By default, we use PTF32 topology for SAI PTF testing. With PTF32 topology, it will use 32 ports, it needs to test against more ports, like 64 ports, please use the PTF64 topology or other customized configuration.
