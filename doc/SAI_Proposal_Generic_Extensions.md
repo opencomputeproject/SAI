@@ -339,21 +339,48 @@ virtual_ip[“virtual_ip”][“sai_metadata”] = sai_metadata_json.dump();
 json.push_back(virtual_ip);
  
 // push metadata and value for nexthop_list
-nlohmann::json sai_metadata_json;
-sai_metadata_json[“sai_metadata”][“sai_attr_value_type”] = SAI_ATTR_VALUE_TYPE_OBJECT_LIST;
+nlohmann::json sai_metadata_json1;
+sai_metadata_json[“sai_metadata”][“sai_attr_value_type”] = SAI_ATTR_VALUE_TYPE_OBJECT_ID;
 nlohmann::json nexthop_list;
-nexthop_list [“nexthop_list”][“value”] = { nexthop_1_oid, nexthop_2_iod };
-nexthop_list [“nexthop_list”][“sai_metadata”] = sai_metadata_json.dump();
+nexthop_list [“nexthop_list”][“value”] = nexthop_1_oid;
+nexthop_list [“nexthop_list”][“sai_metadata”] = sai_metadata_json1.dump();
 json.push_back(nexthop_list);
  
 attr.id = SAI_GENERIC_PROGRAMMABLE_ATTR_ENTRY;
-strncpy(attr.data.json, json.dump(), sizeof(json.dump());
+strncpy(attr.json.json, json.dump(), sizeof(json.dump());
 attrs.push_back(attr);
  
 sai_object_id_t sai_generic_oid;
 sai_status_t status =
     sai_generic_programmable_api->create_generic_programmable(
         &sai_generic_oid, gSwitchId, (uint32_t)attrs.size(), attrs.data());
+```
+
+## Update ##
+The update operation can include all the attributes from create time or just the attribute to be updated. The SAI convention is to update one attribute and the recommendation is to use the same convention.
+
+```c
+sai_attribute_t attr;
+vector<sai_attribute_t> attrs;
+ 
+// encode the updated JSON info for VIP table
+nlohmann::json json;
+
+// push metadata with updated nexthop
+nlohmann::json sai_metadata_json;
+sai_metadata_json[“sai_metadata”][“sai_attr_value_type”] = SAI_ATTR_VALUE_TYPE_OBJECT_ID;
+nlohmann::json nexthop_list;
+nexthop_list [“nexthop_list”][“value”] = nexthop_2_oid;
+nexthop_list [“nexthop_list”][“sai_metadata”] = sai_metadata_json.dump();
+json.push_back(nexthop_list);
+ 
+attr.id = SAI_GENERIC_PROGRAMMABLE_ATTR_ENTRY;
+strncpy(attr.json.json, json.dump(), sizeof(json.dump());
+attrs.push_back(attr);
+
+sai_status_t status =
+    sai_generic_programmable_api->set_generic_programmable_attribute(
+        sai_generic_oid, attr);
 ```
 
 ## Delete ##
