@@ -401,6 +401,7 @@ client.[% function.thrift_name %](
 
 [%- BLOCK function_body -%]
     [%- PROCESS decorate_method IF dev_utils -%]
+    [%- PROCESS decorate_skip_test_on_error IF skip_error -%]
     [%- PROCESS function_header %]
     [%- PROCESS function_docstring %]
 
@@ -457,6 +458,7 @@ Thrift SAI interface basic tests
 # pylint: disable=too-many-return-statements,line-too-long,invalid-name
 
 [%- PROCESS dev_utils_imports IF dev_utils -%]
+[%- PROCESS skip_test_on_error_imports IF skip_error -%]
 
 from sai_thrift.ttypes import *
 from sai_thrift.sai_headers import *
@@ -472,6 +474,7 @@ CATCH_EXCEPTIONS = True
 status = 0
 
 [%- PROCESS dev_utils IF dev_utils -%]
+[%- PROCESS skip_error IF skip_error -%]
 
 [%- FOREACH api IN apis.keys.sort -%]
     [%- IF apis.$api.functions.size %]

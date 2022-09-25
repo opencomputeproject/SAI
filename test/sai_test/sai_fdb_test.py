@@ -37,6 +37,9 @@ class L2PortForwardingTest(T0TestBase):
         Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
+        sai_thrift_flush_fdb_entries(
+            self.client, entry_type=SAI_FDB_ENTRY_TYPE_STATIC)
+        
 
     def runTest(self):
         """
