@@ -80,11 +80,33 @@ In this FDB test, the example packet structure is below.
 ### Test steps: <!-- omit in toc --> 
 
 - test_vlan_port_learn_disable
+
+1. Flush all MAC
+2. Disable MAC learn on VLAN10
+3. Create a packet with SMAC ``MacX``
+4. send packet from port1
+5. Verify the packet flood to other VLAN10 ports
+6. Create a packet with DMAC ``MacX``
+7. send the packet on port2
+8. Verify the packet flood to other VLAN10 ports, including port1
+9. check FDB entries, no new entry
+
 - test_bg_port_learn_disable
+
+1. Flush all MAC
+2. Disable MAC learn on Port1(Bridge Port1)
+3. Create a packet with SMAC ``MacX``
+4. send packet from port1
+5. Verify the packet flood to other VLAN10 ports
+6. Create a packet with DMAC ``MacX``
+7. send the packet on port2
+8. Verify the packet flood to other VLAN10 ports, including port1
+9. check FDB entries, no new entry
+
 - test_non_bgPort_no_learn
 
 1. Flush all MAC
-2. Disable MAC learn on VLAN10/Port1(Bridge Port1) and Removed Port1 from Bridge Port1 for each case
+2. Removed Port1 from Bridge Port1 for each case
 3. Create a packet with SMAC ``MacX``
 4. send packet from port1
 5. Verify the packet flood to other VLAN10 ports
@@ -107,7 +129,7 @@ In this FDB test, the example packet structure is below.
 - test_remove_vlan_member_learn
 
 1. Remove Port2 from VLAN10
-2. Create a flood Packet with SMAC=``MacX`` and VLAN10 tag
+2. Create a Packet with SMAC=``MacX`` and VLAN10 tag
 3. Send packet on port2
 4. Verify no packet was received on any port
 5. Create a packet with DMAC=``MacX`` and VLAN10 tag
@@ -177,8 +199,11 @@ In this FDB test, the example packet structure is below.
 6. Send packet on port1
 7. Verify only receive a packet on port2
 8. Wait for the ``aging`` time
-9. Send packet on port3
-10. Verify only receive a packet on port2
+9. Create Packet with SMAC=``MacX`` DMAC=``Port1 MAC`` 
+10. Send packet on port3(mac moved from Port2 to Port3)
+11. verify only receive a packet on port1
+12. Create and send a packet with DMAC=``MacX``
+13. Verify only receive a packet on port3
 
 ## Test Group3: FDB flush
 ### Case1: test_flush_vlan_static
@@ -241,14 +266,13 @@ Verify flushing of static/dynamic entries on VLAN/Port/All.
 - test_dynamic_mac_move
   
 1. Flush All MAC
-2. Install static FDB entry for port2 with ``Port2 MAC``
+2. Install static FDB entry for port2 with ``Port2 MAC``(with allow_mac_move as true)
 3. Send Packet on Port1 with SMAC=``Port1 MAC`` DMAC=``Port2 MAC``
-4. Create packet with SMAC=``Port1 MAC`` DMAC=``Port2 MAC``
-5. Send packet on port1
-6. Install static mac move for ``Port1 MAC`` on Port1 and enable mac move
-7. Verify packet received on port2
-8. Send packet in step2 on port3
-9. Verify packet received on port2
+4. Verify packet received on port2
+5. Send packet in step2 on port3
+8. Verify packet received on port2
+9. Send packet with DMAC=``Port1 MAC`` SMAC=``Port2 MAC`` on Port2
+10. Verify packet received on port3
 
 - test_static_mac_move
   
