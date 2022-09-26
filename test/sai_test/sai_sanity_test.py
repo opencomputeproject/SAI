@@ -22,6 +22,7 @@ from sai_thrift.sai_headers import *
 from ptf import config
 from ptf.testutils import *
 from ptf.thriftutils import *
+import time
 
 
 class SaiSanityTest(T0TestBase):
@@ -31,7 +32,7 @@ class SaiSanityTest(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup proecss
+        Setup proecss
         """
         T0TestBase.setUp(self,
                          is_reset_default_vlan=False,
@@ -45,7 +46,7 @@ class SaiSanityTest(T0TestBase):
 
     def tearDown(self):
         """
-        Test the basic tearDown proecss
+        TearDown process
         """
         pass
 
@@ -62,8 +63,9 @@ class SaiSanityTest(T0TestBase):
         try:
             # Unknown mac, flooding to all the other ports.
             print("Sanity test, check all the ports be flooded.")
-            send_packet(self, 1, pkt)
+            send_packet(
+                self, self.dut.port_obj_list[1].dev_port_index, pkt)
             verify_each_packet_on_multiple_port_lists(
-                self, [pkt], [self.dev_port_list[2:]])
+                self, [pkt], [[item.dev_port_index for item in self.dut.port_obj_list[2:]]])
         finally:
             pass

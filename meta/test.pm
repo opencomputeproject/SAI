@@ -530,6 +530,31 @@ sub CreateStatEnumTest
     WriteTest "}";
 }
 
+sub CreateApiImplementedTest
+{
+    # make sure that all apis are implemented in vendor library
+
+    DefineTestName "api_implemented";
+
+    WriteTest "{";
+
+    WriteTest "#ifdef API_IMPLEMENTED_TEST";
+
+    for my $name (sort keys %main::GLOBAL_APIS)
+    {
+        my $type = $main::GLOBAL_APIS{$name}{type};
+
+        # link will fail if one of below apis is not implemented and exported in vendor sai library
+
+        WriteTest "    ${name}_fn var_$name = &$name;";
+        WriteTest "    PP(var_$name);";
+    }
+
+    WriteTest "#endif";
+
+    WriteTest "}";
+}
+
 sub WriteTestHeader
 {
     #
@@ -617,6 +642,8 @@ sub CreateTests
     CreateSerializeUnionsTest();
 
     CreateStatEnumTest();
+
+    CreateApiImplementedTest();
 
     CreatePragmaPop();
 

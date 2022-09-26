@@ -441,6 +441,27 @@ typedef struct _sai_prbs_rx_state_t
     uint32_t error_count;
 } sai_prbs_rx_state_t;
 
+typedef struct _sai_latch_status_t
+{
+    /** Current status at the time of read */
+    bool current_status;
+
+    /** Indicates that the status changed at least once since the last read */
+    bool changed;
+} sai_latch_status_t;
+
+typedef struct _sai_port_lane_latch_status_t
+{
+    uint32_t lane;
+    sai_latch_status_t value;
+} sai_port_lane_latch_status_t;
+
+typedef struct _sai_port_lane_latch_status_list_t
+{
+    uint32_t count;
+    sai_port_lane_latch_status_t *list;
+} sai_port_lane_latch_status_list_t;
+
 /**
  * @brief Field match mask
  *
@@ -1308,6 +1329,12 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PORT_ERR_STATUS_LIST */
     sai_port_err_status_list_t porterror;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PORT_LANE_LATCH_STATUS_LIST */
+    sai_port_lane_latch_status_list_t portlanelatchstatuslist;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_LATCH_STATUS */
+    sai_latch_status_t latchstatus;
 } sai_attribute_value_t;
 
 /**
@@ -1485,6 +1512,19 @@ typedef struct _sai_stat_capability_list_t
     sai_stat_capability_t *list;
 
 } sai_stat_capability_list_t;
+
+typedef enum _sai_object_stage_t
+{
+    /** Common stage */
+    SAI_OBJECT_STAGE_BOTH,
+
+    /** Ingress stage */
+    SAI_OBJECT_STAGE_INGRESS,
+
+    /** Egress stage */
+    SAI_OBJECT_STAGE_EGRESS
+
+} sai_object_stage_t;
 
 /**
  * @}

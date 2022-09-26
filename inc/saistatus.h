@@ -174,6 +174,11 @@
 #define SAI_STATUS_NOT_EXECUTED                     SAI_STATUS_CODE(0x00000017L)
 
 /**
+ * @brief Object pipeline stage mismatch
+ */
+#define SAI_STATUS_STAGE_MISMATCH                   SAI_STATUS_CODE(0x00000018L)
+
+/**
  * @brief Attribute is invalid
  *
  * Range from 0x00010000L to 0x0001FFFFL.

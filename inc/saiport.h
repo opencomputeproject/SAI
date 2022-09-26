@@ -2105,6 +2105,53 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_SUPPORTED_LINK_TRAINING_MODE,
 
     /**
+     * @brief List of port's PMD lanes rx signal detect
+     *
+     * @type sai_port_lane_latch_status_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_RX_SIGNAL_DETECT,
+
+    /**
+     * @brief List of port's PMD lanes rx lock status
+     *
+     * @type sai_port_lane_latch_status_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_RX_LOCK_STATUS,
+
+    /**
+     * @brief Port's PCS RX Link Status
+     *
+     * @type sai_latch_status_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PCS_RX_LINK_STATUS,
+
+    /**
+     * @brief List of port's FEC lanes alignment marker lock
+     *
+     * @type sai_port_lane_latch_status_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_FEC_ALIGNMENT_LOCK,
+
+    /**
+     * @brief Fabric port isolation setting.
+     *
+     * true: The link may be enabled in serdes level and the
+     * MAC level, but the link partner will not use
+     * it for traffic distribution.
+     * false: Undo the isolation operation.
+     * This attribute is for fabric links only.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_FABRIC_ISOLATE,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,

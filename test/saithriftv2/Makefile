@@ -18,6 +18,9 @@ CPPFLAGS = -I$(SAI_HEADER_DIR) -I. -std=c++11
 CPPFLAGS += -O0 -ggdb
 
 
+# specify add'l libraries along with libsai
+SAIRPC_EXTRA_LIBS?=
+
 ifeq ($(platform),MLNX)
 CDEFS = -DMLNXSAI
 else
@@ -88,7 +91,7 @@ $(ODIR)/sai_rpc_server.o: ../../meta/sai_rpc_frontend.cpp
 	$(CXX) $(CPPFLAGS) -c $^ -o $@ $(CPPFLAGS) -I./gen-cpp -I../../meta -I../../inc -I../../experimental
 
 $(ODIR)/saiserver.o: src/saiserver.cpp $(CPP_SOURCES) directories
-	$(CXX) $(CPPFLAGS) -c src/saiserver.cpp  -o $@ $(CPPFLAGS) $(CDEFS) -I./gen-cpp -I../../inc
+	$(CXX) $(CPPFLAGS) -c src/saiserver.cpp  -o $@ $(CPPFLAGS) $(CDEFS) -I./gen-cpp -I../../inc -I../../experimental
 
 $(ODIR)/librpcserver.a: $(ODIR)/sai_rpc.o $(ODIR)/sai_types.o $(ODIR)/sai_rpc_server.o
 	ar rcs $(ODIR)/librpcserver.a $^
@@ -98,7 +101,7 @@ clientlib: $(PY_SOURCES) $(SAI_PY_HEADERS)
 
 saiserver: $(ODIR)/saiserver.o $(ODIR)/librpcserver.a
 	$(CXX) $(LDFLAGS) $(ODIR)/sai_rpc_server.o $(ODIR)/saiserver.o -o $@ \
-		   $(ODIR)/librpcserver.a $(LIBS)
+		   $(ODIR)/librpcserver.a $(LIBS) $(SAIRPC_EXTRA_LIBS)
 
 install-lib: $(ODIR)/librpcserver.a
 	$(INSTALL) -D $(ODIR)/librpcserver.a $(DESTDIR)/usr/lib/librpcserver.a

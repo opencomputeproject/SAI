@@ -737,6 +737,20 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_DECAP_QOS_TC_TO_PRIORITY_GROUP_MAP,
 
     /**
+     * @brief Drop tunnel packets with not allowed UDP source port
+     *
+     * Upon enabling this feature, if the tunnel packet ingresses with
+     * UDP source port outside of range defined for this tunnel, it
+     * will be dropped.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_VXLAN and SAI_TUNNEL_ATTR_VXLAN_UDP_SPORT_MODE == SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_USER_DEFINED
+     */
+    SAI_TUNNEL_ATTR_VXLAN_UDP_SPORT_SECURITY,
+
+    /**
      * @brief End of attributes
      */
     SAI_TUNNEL_ATTR_END,
@@ -1132,8 +1146,10 @@ typedef struct _sai_tunnel_api_t
     sai_remove_tunnel_map_entry_fn               remove_tunnel_map_entry;
     sai_set_tunnel_map_entry_attribute_fn        set_tunnel_map_entry_attribute;
     sai_get_tunnel_map_entry_attribute_fn        get_tunnel_map_entry_attribute;
-    sai_bulk_object_get_attribute_fn             get_tunnels_attribute;
+    sai_bulk_object_create_fn                    create_tunnels;
+    sai_bulk_object_remove_fn                    remove_tunnels;
     sai_bulk_object_set_attribute_fn             set_tunnels_attribute;
+    sai_bulk_object_get_attribute_fn             get_tunnels_attribute;
 
 } sai_tunnel_api_t;
 

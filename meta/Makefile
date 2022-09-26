@@ -22,6 +22,9 @@
 # @brief   This module defines SAI Metadata Makefile
 #
 
+# Passed to genrpc.pl:
+GEN_SAIRPC_OPTS?=
+
 WARNINGS = \
 	-ansi \
 	-Wall \
@@ -86,6 +89,10 @@ all: toolsversions saisanitycheck saimetadatatest saiserializetest saidepgraph.s
 	./saiserializetest >/dev/null
 	./saisanitycheck
 
+apitest: saimetadatatest.c
+	$(CC) -o apitest saimetadatatest.c -DAPI_IMPLEMENTED_TEST -lsai $(CFLAGS) $(OBJ)
+	./apitest
+
 toolsversions:
 	@make -v | grep -i make
 	@$(CC) --version | grep gcc
@@ -114,7 +121,7 @@ saimetadatatest.c saimetadata.c saimetadata.h: xml $(XMLDEPS) parse.pl $(CONSTHE
 	perl -I. parse.pl
 
 rpc sai.thrift sai_rpc_server.cpp sai_adapter.py: xml $(XMLDEPS) gensairpc.pl
-	perl -Irpc gensairpc.pl
+	perl -Irpc gensairpc.pl $(GEN_SAIRPC_OPTS)
 
 HEADERS = saimetadata.h $(CONSTHEADERS)
 
