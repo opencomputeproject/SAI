@@ -41,6 +41,7 @@ class Vlan_Domain_Forwarding_Test(T0TestBase):
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
+    @T0TestBase.skip_test_on_rebooting(False)
     def runTest(self):
         """
         Test VLAN forwarding
@@ -98,6 +99,7 @@ class UntagAccessToAccessTest(T0TestBase):
     def setUp(self):
         super().setUp()
 
+    @T0TestBase.skip_test_on_rebooting(False)
     def runTest(self):
         """
         Forwarding between tagged ports with untagged pkt
@@ -150,6 +152,7 @@ class MismatchDropTest(T0TestBase):
     def setUp(self):
         super().setUp()
 
+    @T0TestBase.skip_test_on_rebooting(False)
     def runTest(self):
         """
         Dropping between tagged ports with mismatched tagged pkt
@@ -285,6 +288,7 @@ class TaggedVlanFloodingTest(T0TestBase):
             is_create_lag=False, 
             is_create_default_route=False)
 
+    @T0TestBase.skip_test_on_rebooting(False)
     def runTest(self):
         print("\nTaggedVlanFloodingTest")
         try:
@@ -324,6 +328,7 @@ class UnTaggedVlanFloodingTest(T0TestBase):
             is_create_lag=False, 
             is_create_default_route=False)
 
+    @T0TestBase.skip_test_on_rebooting(False)
     def runTest(self):
         print("\nUnTaggedVlanFloodingTest")
         try:
@@ -354,6 +359,7 @@ class BroadcastTest(T0TestBase):
     def setUp(self):
         super().setUp()
 
+    @T0TestBase.skip_test_on_rebooting(False)
     def runTest(self):
         print("\nBroadcastTest")
         try:
@@ -691,6 +697,7 @@ class ArpRequestFloodingTest(T0TestBase):
             ip_tgt=ip2,
             hw_tgt=self.servers[1][2].mac)
 
+    @T0TestBase.skip_test_on_rebooting(False)
     def runTest(self):
         print("ArpRequestFloodingTest")
         send_packet(

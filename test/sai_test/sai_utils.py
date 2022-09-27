@@ -178,3 +178,4 @@ def generate_ip_address_list(role, group, indexes):
     for index in indexes:
         ip_list.append(role.format(group, index))
     return ip_list
+
