@@ -146,12 +146,13 @@ class ThriftInterface(BaseTest):
         super(ThriftInterface, self).setUp()
 
         self.test_params = test_params_get()
-        self.loadCommonConfigured()
+        # self.loadCommonConfigured()
         self.loadTestRebootMode()
         self.loadPortMap()
-        self.needRPCOp = not (self.test_reboot_mode == 'warm' and self.test_reboot_stage == 'rebooting')
+        self.needRPCOp =  (self.test_reboot_stage != WARM_TEST_REBOOTING)
         if self.needRPCOp:
             self.createRpcClient()
+            print('createRpcClient')
 
     def tearDown(self):
         """
@@ -174,12 +175,13 @@ class ThriftInterface(BaseTest):
             test_reboot_mode - reboot mode
             test_reboot_stage - reboot stage, can be [setup|starting|post]
         """
+        if "test_reboot_stage" in self.test_params:
+            self.test_reboot_stage = self.test_params['test_reboot_stage']
+        else:
+            self.test_reboot_stage = None
         if "test_reboot_mode" in self.test_params:
             self.test_reboot_mode = self.test_params['test_reboot_mode']
-            if "test_reboot_stage" in self.test_params:
-                self.test_reboot_stage = self.test_params['test_reboot_stage']
-            else:
-                raise ValueError('test_reboot_stage is Null!')
+
         else:
             self.test_reboot_mode = 'cold'
 
@@ -218,19 +220,6 @@ class ThriftInterface(BaseTest):
                     self.interface_to_front_mapping[iface_front_pair[0]] =  \
                         iface_front_pair[1].strip()
         self.port_map_loaded = True
-
-    def loadCommonConfigured(self):
-        '''
-        if common_configured = true:
-                set up common config
-        else:
-                skip commmon config
-        '''
-        if "common_configured" in self.test_params:
-            self.common_configured = True if self.test_params['common_configured'] == 'true' else False
-        else:
-            self.common_configured = False
-        print("\ncommon_configured is: {}".format(self.common_configured))
 
     def createRpcClient(self):
         """
@@ -285,6 +274,7 @@ class ThriftInterfaceDataPlane(ThriftInterface):
                 filename = os.path.join(config['log_dir'], str(self)) + ".pcap"
                 self.dataplane.start_pcap(filename)
 
+        
     def tearDown(self):
         """
         Clean up ThriftInterfaceDataPlane.
@@ -375,8 +365,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
         self.vlan_configer = VlanConfiger(self)
         self.route_configer = RouteConfiger(self)
         self.lag_configer = LagConfiger(self)
-
-        if force_config or not self.common_configured:
+        if force_config  or  self.test_reboot_stage in [WARM_TEST_PRE_REBOOT,WARM_TEST_POST_REBOOT]:
             self.create_device()
             t0_switch_config_helper(self)
             t0_port_config_helper(
@@ -567,3 +556,25 @@ class T0TestBase(ThriftInterfaceDataPlane):
             we need persist dut again 
         '''
         super().tearDown()
+    
+    def skip_test_on_rebooting(is_skip_rebooting = True):
+        def skip_test_on_rebooting_decorator(func):
+            """
+            Decorator for determing whether skipping the test when rebooting.
+            Args:
+                errorcode: a list of the error code that test will be skipped.
+            """
+            @wraps(func)
+            def decorated(self,*args, **kwargs):
+                """
+                Args:
+                    args(List): original args
+                    kwargs(Dict): original kwargs
+                """
+                if self.test_reboot_stage == WARM_TEST_REBOOTING and not is_skip_rebooting:
+                    print("switch is rebooting, skip this case")
+                else:
+                    print("case is running at %s stage"%self.test_reboot_stage)
+                    func(self, *args, **kwargs)
+            return decorated
+        return skip_test_on_rebooting_decorator
