@@ -81,6 +81,11 @@ Build SAI thrift server and libraries
 
 ```bash
 export SAITHRIFTV2=y
+export GEN_SAIRPC_OPTS="-ve" # optional - to use SAI experimental headers
+# Below is an  example of linking additional application-specific libraries besides libsai.
+# Modify to suit a particular use-case; longer multi-line expressions are also possible. Omit if not needed.
+export SAIRPC_EXTRA_LIBS="-L/usr/local/lib/ -lpthread"
+
 make saithrift-build
 make saithrift-install
 ```
