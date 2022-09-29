@@ -669,6 +669,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_LATCH_STATUS:
         case SAI_ATTR_VALUE_TYPE_PORT_LANE_LATCH_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_TIMESPEC:
+        case SAI_ATTR_VALUE_TYPE_JSON:
 
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_BOOL:
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8:
@@ -1025,6 +1026,10 @@ void check_attr_default_required(
 
             break;
 
+        case SAI_ATTR_VALUE_TYPE_JSON:
+
+            break;
+
         default:
 
             META_MD_ASSERT_FAIL(md, "default value is required but this attr value type is not supported yet");
@@ -1187,6 +1192,7 @@ void check_attr_default_value_type(
             {
                 case SAI_ATTR_VALUE_TYPE_MAC:
                 case SAI_ATTR_VALUE_TYPE_UINT64:
+                case SAI_ATTR_VALUE_TYPE_JSON:
                     break;
 
                 default:
@@ -2616,6 +2622,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_PORT_ERR_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT16_RANGE_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_LANE_LATCH_STATUS_LIST:
+        case SAI_ATTR_VALUE_TYPE_JSON:
 
             if (md->isprimitive)
             {
@@ -4707,7 +4714,8 @@ void check_object_ro_list(
             oi->objecttype == SAI_OBJECT_TYPE_HOSTIF_TABLE_ENTRY ||
             oi->objecttype == SAI_OBJECT_TYPE_DTEL ||
             oi->objecttype == SAI_OBJECT_TYPE_DTEL_QUEUE_REPORT ||
-            oi->objecttype == SAI_OBJECT_TYPE_DTEL_EVENT)
+            oi->objecttype == SAI_OBJECT_TYPE_DTEL_EVENT ||
+            oi->objecttype == SAI_OBJECT_TYPE_GENERIC_PROGRAMMABLE)
     {
         /*
          * We skip hostif table entry since there is no 1 object which can

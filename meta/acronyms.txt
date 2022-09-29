@@ -50,6 +50,7 @@ GCM - Galois Counter Mode
 GMII - Gigabit Media-Independent Interface
 GNMI - gRPC Network Management Interface
 GPB - Google Protocol Buffers
+GPE - Generic Programmable Extensions
 GRE - Generic Routing Encapsulation
 GRPC - GRPC Remote Procedure Call
 HW - Hardware

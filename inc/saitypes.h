@@ -289,6 +289,7 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_IPSEC                    = 99,
     SAI_OBJECT_TYPE_IPSEC_PORT               = 100,
     SAI_OBJECT_TYPE_IPSEC_SA                 = 101,
+    SAI_OBJECT_TYPE_GENERIC_PROGRAMMABLE     = 102,
     SAI_OBJECT_TYPE_MAX,  /* Must remain in last position */
 } sai_object_type_t;
 
@@ -990,6 +991,35 @@ typedef struct _sai_segment_list_t
 } sai_segment_list_t;
 
 /**
+ * @brief JSON data type
+ * "attributes": [
+ * {
+ *    "attribute_name": {
+ *        "sai_metadata": {
+ *        "sai_attr_value_type": "<SAI_ATTR_VALUE_TYPE_T>",
+ *        "brief": "Brief Attribute Description",
+ *        "sai_attr_flags": "<SAI_ATTR_FLAGS_T>",
+ *        "allowed_object_types": [ "<LIST OF ALLOWED OBJECT TYPES>" ],
+ *        "default_value": "<DEFAULT ATTR VALUE>"
+ *        },
+ *        "value": <VALUE of the attribute>
+ *    }
+ * }
+ * ]
+ * attributes - Mandatory top-level key where JSON parsing begins
+ * attribute_name - Name of one attribute in the list of attributes
+ * sai_attr_value_type - Data type of the attribute
+ * brief - Optional description of the field
+ * sai_attr_flags - Optional Usage flags for the field
+ * allowed_object_types - If data type is OID, then this is the list of object types allowed as data
+ */
+typedef struct _sai_json_t
+{
+    /** String in JSON format */
+    sai_s8_list_t json;
+} sai_json_t;
+
+/**
  * @brief Defines a lane with its eye values with the up and down values
  * being in mV and left and right being in mUI.
  */
@@ -1335,6 +1365,9 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_LATCH_STATUS */
     sai_latch_status_t latchstatus;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_JSON */
+    sai_json_t json;
 } sai_attribute_value_t;
 
 /**
