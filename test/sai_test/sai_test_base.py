@@ -576,8 +576,11 @@ class T0TestBase(ThriftInterfaceDataPlane):
                     args(List): original args
                     kwargs(Dict): original kwargs
                 """
+                self.test_params = test_params_get()
+                self.loadTestRebootMode()
                 if self.test_reboot_stage == WARM_TEST_REBOOTING and is_skip_rebooting:
                     print("switch is rebooting, skip this case")
+                    raise SkipTest("switch is rebooting, skip this case")
                 else:
                     print("case is running at %s stage"%self.test_reboot_stage)
                     func(self, *args, **kwargs)
