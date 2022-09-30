@@ -66,8 +66,12 @@ class SwitchConfiger(object):
         Returns:
             Vlan: vlan object
         """
-        switch_id = sai_thrift_create_switch(
-            self.test_obj.client, init_switch=True, src_mac_address=route_mac)
+        if self.test_obj.test_reboot_stage  == WARM_TEST_POST_REBOOT:
+            switch_id = sai_thrift_create_switch(
+                self.test_obj.client, init_switch=True, warm_recover=True)
+        else:
+            switch_id = sai_thrift_create_switch(
+                self.test_obj.client, init_switch=True, src_mac_address=route_mac)
         self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
 
         print("Waiting for switch to get ready, {} seconds ...".format(
