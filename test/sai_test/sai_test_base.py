@@ -234,8 +234,6 @@ class ThriftInterface(BaseTest):
         self.transport = TSocket.TSocket(server, THRIFT_PORT)
         self.transport = TTransport.TBufferedTransport(self.transport)
         self.protocol = TBinaryProtocol.TBinaryProtocol(self.transport)
-        if self.test_reboot_stage == 'starting':
-            return
         self.client = sai_rpc.Client(self.protocol)
         self.transport.open()
 
@@ -365,7 +363,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
         self.vlan_configer = VlanConfiger(self)
         self.route_configer = RouteConfiger(self)
         self.lag_configer = LagConfiger(self)
-        if force_config  or  self.test_reboot_stage in [WARM_TEST_PRE_REBOOT,WARM_TEST_POST_REBOOT]:
+        if force_config  or  self.test_reboot_stage  == WARM_TEST_PRE_REBOOT:
             self.create_device()
             t0_switch_config_helper(self)
             t0_port_config_helper(
@@ -396,6 +394,8 @@ class T0TestBase(ThriftInterfaceDataPlane):
                 wait_sec))
             time.sleep(wait_sec)
         else:
+            if self.test_reboot_stage  == WARM_TEST_POST_REBOOT:
+                t0_switch_config_helper(self)
             print("switch keeps running, read config from storage")
             self.dut = self.persist_helper.read_dut()
             self.t1_list = self.persist_helper.read_t1_list()
@@ -555,6 +555,11 @@ class T0TestBase(ThriftInterfaceDataPlane):
             if we change the common configure in ths case,
             we need persist dut again 
         '''
+        if self.test_reboot_stage  == WARM_TEST_PRE_REBOOT:
+            print("shutdown the swich in warm mode")
+            sai_thrift_set_switch_attribute(self.client, restart_warm=True)
+            sai_thrift_set_switch_attribute(self.client, pre_shutdown=True)
+            sai_thrift_remove_switch(self.client)
         super().tearDown()
     
     def skip_test_on_rebooting(is_skip_rebooting = True):
@@ -571,7 +576,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
                     args(List): original args
                     kwargs(Dict): original kwargs
                 """
-                if self.test_reboot_stage == WARM_TEST_REBOOTING and not is_skip_rebooting:
+                if self.test_reboot_stage == WARM_TEST_REBOOTING and is_skip_rebooting:
                     print("switch is rebooting, skip this case")
                 else:
                     print("case is running at %s stage"%self.test_reboot_stage)
