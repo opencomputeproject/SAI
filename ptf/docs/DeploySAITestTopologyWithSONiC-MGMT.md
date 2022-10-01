@@ -48,7 +48,7 @@ For how to setup the sonic-mgmt docker please refer to [setup-sonic-mgmt-docker]
 
    > **for the topo, if it ends with 64, then the topo should be ptf64, please change it according to the actual device port.**
 
-   > Make sure you push docker docker-ptf-saiv2 correctly [Setup the testbed by sonic-mgmt](PTF-SAIv2Overview.md#setup-the-testbed-by-sonic-mgmt)
+   > Make sure you push docker docker-ptf-saiv2 correctly [Setup the testbed by sonic-mgmt](SAI-PTFv2Overview.md#setup-the-testbed-by-sonic-mgmt)
 
 
    > Note: By default, we use PTF32 topology for SAI PTF testing. With PTF32 topology, it will use 32 ports, it needs to test against more ports, like 64 ports, please use the PTF64 topology or other customized configuration.

@@ -1,13 +1,13 @@
-# PTF-SAIv2 Overview
-*This article will introduce PTF-SAIv2 and the detailed process of the entire PTF-SAIv2 testing.*
+# SAI-PTFv2 Overview
+*This article will introduce SAI-PTFv2 and the detailed process of the entire SAI-PTFv2 testing.*
 
-- [PTF-SAIv2 Overview](#ptf-saiv2-overview)
+- [SAI-PTFv2 Overview](#sai-ptfv2-overview)
   - [SAI PTF v2 introduction](#sai-ptf-v2-introduction)
     - [Logical Topology](#logical-topology)
     - [Physical Connection](#physical-connection)
       - [Key components/devices in the physical connection:](#key-componentsdevices-in-the-physical-connection)
   - [Setup Testbed](#setup-testbed)
-    - [Build PTF-SAIv2 components](#build-ptf-saiv2-components)
+    - [Build SAI-PTFv2 components](#build-sai-ptfv2-components)
     - [Setup the testbed by sonic-mgmt](#setup-the-testbed-by-sonic-mgmt)
     - [Setup DUT (Device under testing)](#setup-dut-device-under-testing)
     - [Setup ptf-sai docker](#setup-ptf-sai-docker)
@@ -59,7 +59,7 @@ Device and equipment needed in this doc
 
 
 ## Setup Testbed
-*In this part, we will build PTF-SAIv2 infras using sonic-buildimage.*
+*In this part, we will build SAI-PTFv2 infras using sonic-buildimage.*
 
  > Note: We use sonic-buildimage and sonic-mgmt to automatically set up testbed by some script. Please refer to [SAI PTF introduction and manually setup Testbed](ManuallySetupTestbedGuide.md) for setup if manually.
 
@@ -67,7 +67,7 @@ Device and equipment needed in this doc
 
 In the following, we use other SONiC scripts to help setup the [SAI PTF topology](https://github.com/sonic-net/sonic-mgmt/blob/master/docs/testbed/README.testbed.Overview.md#ptf-type-topology) environment with all the testing components mentioned in [SAI PTF introduction and manually setup Testbed](ManuallySetupTestbedGuide.md).
 
-### Build PTF-SAIv2 components
+### Build SAI-PTFv2 components
 *In this section, we will build the test-related resources.*
 
 For SAI-PTFv2 test, we need to build components:
@@ -102,7 +102,7 @@ For how to check the sai header version and sonic branch from a certain sonic im
     git checkout 202205    
     ```
 
-2. Build PTF-SAIv2 infras 
+2. Build SAI-PTFv2 infras 
 
     - build saiserverv2
         ```
@@ -168,12 +168,12 @@ You have a local docker registry that can be used to push and pull dockers.
 
     # tag docker
     docker tag docker-saiserverv2-brcm:latest <docker-registry-address>/docker-saiserverv2-brcm:<TAG_WITH_OS_VERSION>
-    docker tag docker-ptf-sai <docker-registry-address>/docker-ptf-saiv2
+    docker tag docker-ptf-sai <docker-registry-address>/docker-SAI-PTFv2
 
     docker push <docker-registry-address>/docker-saiserverv2-brcm:<TAG_WITH_OS_VERSION>
-    docker push <docker-registry-address>/docker-ptf-saiv2
+    docker push <docker-registry-address>/docker-SAI-PTFv2
     ```
-    > For the setup of ptf-sai docker, it is similar to this section [Setup Docker Registry for docker-ptf](https://github.com/Azure/sonic-mgmt/blob/master/docs/testbed/README.testbed.Setup.md#setup-docker-registry-for-docker-ptf). But here, we need to use `docker-ptf-saiv2`.
+    > For the setup of ptf-sai docker, it is similar to this section [Setup Docker Registry for docker-ptf](https://github.com/Azure/sonic-mgmt/blob/master/docs/testbed/README.testbed.Setup.md#setup-docker-registry-for-docker-ptf). But here, we need to use `docker-SAI-PTFv2`.
 
     > Make sure you upload the docker-saiserverv2-brcm with the right TAG_WITH_OS_VERSION, it is critical for the latter dut setup script.
 
@@ -309,7 +309,7 @@ Right here saiserver should be started, you can check it by
     ssh root@<PTF_IP>
     ```
 
-2. Make sure Github is accessible on ptf-sai docker and download the SAI repo which contains PTF-SAIv2 test cases
+2. Make sure Github is accessible on ptf-sai docker and download the SAI repo which contains SAI-PTFv2 test cases
 
     ```
     cd <PTF_Folder>
@@ -327,7 +327,7 @@ Right here saiserver should be started, you can check it by
 
 ### Run test
 
-Start PTF-SAIv2 testing within ptf-sai docker
+Start SAI-PTFv2 testing within ptf-sai docker
 
         
     # set the platform name
