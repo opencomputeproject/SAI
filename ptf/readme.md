@@ -1,5 +1,8 @@
-# PTF test overview
+# SAI PTF overview
 
-[PTF test user guide](SAI_PTF_user-guide.md)
+## [Overview](docs/SAI-PTFv2Overview.md)
 
-[Test plan](testplan.md)
+## [Test plan](docs/testplan.md)
+
+## [SAI PTF introduction and manually setup Testbed (PTF test user guide)](ManuallySetupTestbedGuide.md) 
+
