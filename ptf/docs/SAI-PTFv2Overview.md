@@ -13,6 +13,10 @@
     - [Setup ptf-sai docker](#setup-ptf-sai-docker)
     - [Run test](#run-test)
   - [Reference](#reference)
+    - [SAI PTF introduction and manually setup Testbed](#sai-ptf-introduction-and-manually-setup-testbed)
+    - [sonic-buildimage user guide](#sonic-buildimage-user-guide)
+    - [Deploy SAI Test Topology With SONiC-MGMT](#deploy-sai-test-topology-with-sonic-mgmt)
+    - [Setup Docker builder for debugging](#setup-docker-builder-for-debugging)
 
 
 
@@ -396,7 +400,7 @@ OK
 
 ## Reference
 
-* [SAI PTF introduction and manually setup Testbed](ManuallySetupTestbedGuide.md)
-* [sonic-buildimage user guide](https://github.com/Azure/sonic-buildimage)
-* [Deploy SAI Test Topology With SONiC-MGMT](DeploySAITestTopologyWithSONiC-MGMT.md)
-* [Setup Docker builder for debugging](SetupDockerBuilderForDebugging.md)
+### [SAI PTF introduction and manually setup Testbed](ManuallySetupTestbedGuide.md)
+### [sonic-buildimage user guide](https://github.com/Azure/sonic-buildimage)
+### [Deploy SAI Test Topology With SONiC-MGMT](DeploySAITestTopologyWithSONiC-MGMT.md)
+### [Setup Docker builder for debugging](SetupDockerBuilderForDebugging.md)
