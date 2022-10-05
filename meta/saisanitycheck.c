@@ -3690,6 +3690,7 @@ void check_non_object_id_object_attrs()
             {
                 case SAI_ATTR_FLAGS_MANDATORY_ON_CREATE | SAI_ATTR_FLAGS_CREATE_AND_SET:
                 case SAI_ATTR_FLAGS_CREATE_AND_SET:
+                case SAI_ATTR_FLAGS_CREATE_ONLY:
                     break;
 
                 default:
