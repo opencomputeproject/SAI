@@ -3097,6 +3097,46 @@ typedef sai_status_t (*sai_switch_mdio_write_fn)(
         _In_ const uint32_t *reg_val);
 
 /**
+ * @brief Switch MDIO clause 22 read API
+ *
+ * Provides clause 22 read access API for devices connected to MDIO from NPU SAI.
+ *
+ * @objects switch_id SAI_OBJECT_TYPE_SWITCH
+ *
+ * @param[in] switch_id Switch Id
+ * @param[in] device_addr Device address(PHY/lane/port MDIO address)
+ * @param[in] start_reg_addr Starting register address to read
+ * @param[in] number_of_registers Number of consecutive registers to read
+ * @param[out] reg_val Register read values
+ */
+typedef sai_status_t (*sai_switch_mdio_cl22_read_fn)(
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t device_addr,
+        _In_ uint32_t start_reg_addr,
+        _In_ uint32_t number_of_registers,
+        _Out_ uint32_t *reg_val);
+
+/**
+ * @brief Switch MDIO clause write API
+ *
+ * Provides clause 22 write access API for devices connected to MDIO from NPU SAI.
+ *
+ * @objects switch_id SAI_OBJECT_TYPE_SWITCH
+ *
+ * @param[in] switch_id Switch Id
+ * @param[in] device_addr Device address(PHY/lane/port MDIO address)
+ * @param[in] start_reg_addr Starting register address to write
+ * @param[in] number_of_registers Number of consecutive registers to write
+ * @param[in] reg_val Register write values
+ */
+typedef sai_status_t (*sai_switch_mdio_cl22_write_fn)(
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t device_addr,
+        _In_ uint32_t start_reg_addr,
+        _In_ uint32_t number_of_registers,
+        _In_ const uint32_t *reg_val);
+
+/**
  * @brief Create switch
  *
  * SDK initialization/connect to SDK. After the call the capability attributes should be
@@ -3272,6 +3312,8 @@ typedef struct _sai_switch_api_t
     sai_remove_switch_tunnel_fn            remove_switch_tunnel;
     sai_set_switch_tunnel_attribute_fn     set_switch_tunnel_attribute;
     sai_get_switch_tunnel_attribute_fn     get_switch_tunnel_attribute;
+    sai_switch_mdio_cl22_read_fn           switch_mdio_cl22_read;
+    sai_switch_mdio_cl22_write_fn          switch_mdio_cl22_write;
 
 } sai_switch_api_t;
 
