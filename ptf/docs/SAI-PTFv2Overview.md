@@ -24,7 +24,7 @@
 *In this part, we will get to know what's the SAI-PTF v2 framework.*
 
 SAI-PTF v2 is upgraded from previous [SAI-PTF fremework](../../test/saithrift/README.md).
-SAI PTFv2 has two parts, [PTF (Packet Test Framework)](https://github.com/p4lang/ptf) and [SAI PRC framework](../../meta/rpc/README.md).
+SAI PTFv2 has two parts, [PTF (Packet Test Framework)](https://github.com/p4lang/ptf) and [SAI RPC framework](../../meta/rpc/README.md).
 
 ### Logical Topology
 ![Logical topology](./img/logic_connection.png#=120x120)
