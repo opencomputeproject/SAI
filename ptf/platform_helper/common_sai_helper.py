@@ -71,19 +71,3 @@ class CommonSaiHelper(SaiHelper):
         for index in range(0, len(self.port_list)):
             port_bp = getattr(self, 'port%s_bp' % index)
             sai_thrift_remove_bridge_port(self.client, port_bp)
-
-
-    def create_bridge_ports(self):
-        """
-        Create bridge ports base on port_list.
-        """
-        for index in range(0, len(self.port_list)):
-            port_id = getattr(self, 'port%s' % index)
-            port_bp = sai_thrift_create_bridge_port(
-                self.client,
-                bridge_id=self.default_1q_bridge,
-                port_id=port_id,
-                type=SAI_BRIDGE_PORT_TYPE_PORT,
-                admin_state=True)
-            setattr(self, 'port%s_bp' % index, port_bp)
-            self.assertNotEqual(getattr(self, 'port%s_bp' % index), 0)
