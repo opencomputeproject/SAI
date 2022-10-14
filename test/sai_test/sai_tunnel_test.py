@@ -90,7 +90,7 @@ class IpInIpTnnnelBase(T0TestBase):
 
 class IPInIPTunnelDecapTest(IpInIpTnnnelBase):
     """
-    Verify the load-balance of l3
+    We will send ipinip packet from lag1 and verify getting inner packet by matching tunnel term table entry, recieving the inner packet on port1 by  matching route entry
     """
 
     def setUp(self):
@@ -100,6 +100,12 @@ class IPInIPTunnelDecapTest(IpInIpTnnnelBase):
         IpInIpTnnnelBase.setUp(self)
 
     def ipv4inipv4decap(self):
+        """
+        Generate ingress ipinip packet as decribed by Testing Data Packet
+        Send encap packet from lag1.
+        Generate expected decap packet as decribed by Testing Data Packet.
+        Recieve decap packet from port1, compare it with expected decap packet.
+        """
         pkt = simple_udp_packet(eth_dst=self.customer_mac,
                                 eth_src=ROUTER_MAC,
                                 ip_dst=self.customer_ip,
