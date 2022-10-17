@@ -2152,6 +2152,15 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_FABRIC_ISOLATE,
 
     /**
+     * @brief Query the maximum number of symbols with errors that can be
+     * detected by the current FEC code (per FEC codeword).
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_MAX_FEC_SYMBOL_ERRORS_DETECTABLE,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
@@ -2748,6 +2757,77 @@ typedef enum _sai_port_stat_t
 
     /** Fabric port stat out data units */
     SAI_PORT_STAT_IF_OUT_FABRIC_DATA_UNITS,
+
+    /**
+     * @brief Port FEC codeword symbol error counters.
+     *
+     * This set of counters corresponds to number of symbol errors in each FEC
+     * codeword received on the port.
+     *
+     * The number of symbol errors that may be detected is dependent on the type
+     * of FEC in use. For instance, RS-528 FEC supports detection of up to 7
+     * symbol errors, while RS-544 FEC supports detection of up to 15 symbol
+     * errors. The maximum number of errors that can be detected by the port's
+     * current FEC mode may be retrieved via the
+     * SAI_PORT_ATTR_MAX_FEC_SYMBOL_ERRORS_DETECTABLE port attribute. If the
+     * codeword contains more than SAI_PORT_ATTR_MAX_FEC_SYMBOL_ERRORS_DETECTABLE,
+     * the errors are placed in the next higher counter (so for the examples
+     * above, SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S8 would be used for
+     * greater than 7 symbol errors when RS-528 FEC is used, and
+     * SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S16 for greater than 15 symbol
+     * errors when using RS-544).
+     */
+
+    /** Count of FEC codewords with no symbol errors. */
+    SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S0,
+
+    /** Count of FEC codewords with 1 symbol error. */
+    SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S1,
+
+    /** Count of FEC codewords with 2 symbol errors. */
+    SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S2,
+
+    /** Count of FEC codewords with 3 symbol errors. */
+    SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S3,
+
+    /** Count of FEC codewords with 4 symbol errors. */
+    SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S4,
+
+    /** Count of FEC codewords with 5 symbol errors. */
+    SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S5,
+
+    /** Count of FEC codewords with 6 symbol errors. */
+    SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S6,
+
+    /** Count of FEC codewords with 7 symbol errors. */
+    SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S7,
+
+    /** Count of FEC codewords with 8 symbol errors. */
+    SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S8,
+
+    /** Count of FEC codewords with 9 symbol errors. */
+    SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S9,
+
+    /** Count of FEC codewords with 10 symbol errors. */
+    SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S10,
+
+    /** Count of FEC codewords with 11 symbol errors. */
+    SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S11,
+
+    /** Count of FEC codewords with 12 symbol errors. */
+    SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S12,
+
+    /** Count of FEC codewords with 13 symbol errors. */
+    SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S13,
+
+    /** Count of FEC codewords with 14 symbol errors. */
+    SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S14,
+
+    /** Count of FEC codewords with 15 symbol errors. */
+    SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S15,
+
+    /** Count of FEC codewords with 16 symbol errors. */
+    SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S16,
 
     /** Port stat in drop reasons range start */
     SAI_PORT_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,
