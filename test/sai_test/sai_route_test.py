@@ -980,3 +980,42 @@ class SviDirectBroadcastTest(T0TestBase):
 
     def tearDown(self):
         super().tearDown()
+
+class RemoveRouteTest(T0TestBase):
+    """
+    Verify remove route entry
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process.
+        """
+        super().setUp()
+
+    def runTest(self):
+        """
+        1. Rmove route dest IP within 192.168.12.0/24 through RIF(Nhop is Rif) to LAG2 created
+        2. Send packets for DIP:192.168.12.1~8 SIP 192.168.0.1 DMAC: SWITCH_MAC on port5
+        3. Verify no packetes received 
+        """
+        print("RemoveRouteTest")
+        sai_thrift_remove_route_entry(self.client, self.servers[12][1].routev4)
+        self.recv_dev_port_idxs = self.get_dev_port_indexes(self.servers[12][1].l3_lag_obj.member_port_indexs)
+        try:
+            for i in range(1, 3):
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                        ip_dst=self.servers[12][i].ipv4,
+                                        ip_id=105,
+                                        ip_ttl=64)
+                exp_pkt = simple_tcp_packet(eth_src=ROUTER_MAC,
+                                            eth_dst=self.servers[12][i].l3_lag_obj.neighbor_mac,
+                                            ip_dst=self.servers[12][i].ipv4,
+                                            ip_id=105,
+                                            ip_ttl=63)
+                send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt)
+                verify_no_other_packets(self)
+        finally:
+            pass
+    
+    def tearDown(self):
+        super().tearDown()
