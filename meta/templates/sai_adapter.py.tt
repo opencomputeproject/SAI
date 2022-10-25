@@ -111,8 +111,9 @@ def [% function.thrift_name %](client
     [%- # Declare variables that are not part of python interface -%]
     [%- # but are required by thritft functions -%]
     [%- FOREACH arg IN function.adapter_preprocessed_args -%]
+
         [%- IF arg.is_list AND arg.name!= 'counter_ids' %]
-    [% function.name %]_[% arg.name %] = []
+    [% arg.name %] = []
         [%- ELSIF arg.is_attr %]
     [% arg.name %] = None
         [%- END -%]
@@ -125,12 +126,14 @@ def [% function.thrift_name %](client
 
             [%- IF arg.is_list %]
 [% function.name %]_[% arg.name %] = []
+[% function.name %]_[% arg.name %]_dict = dict()
             [%- ELSIF arg.is_attr %]
         [% arg.name %] = None
             [%- END -%]
         [%- END -%]
         [%- FOREACH stat IN apis.$api.objects.${function.object}.stats.all %]
 [% function.name %]_[% arg.name %].append([% stat.name %])
+[% function.name %]_[% arg.name %]_dict[[% stat.name %]] = "[% stat.name %]"
         [%- END -%]
 
     [%- END -%]
@@ -265,6 +268,7 @@ client.[% function.thrift_name %](
 [%- BLOCK preprocess_attributes %]
     [%- # For 'set attr' function we just do call the funtion for first argument -%]
     [%- IF function.operation == 'set' -%]
+    
     global status
     status = SAI_STATUS_SUCCESS
 
@@ -319,11 +323,9 @@ client.[% function.thrift_name %](
 [%- BLOCK postprocess_stats %]
     stats = dict()
 
-    [%- i = 0 %]
-    [%- FOREACH stat IN apis.$api.objects.${function.object}.stats.all %]
-    stats["[% stat.name %]"] = [% function.rpc_return.name %][[% i %]]
-        [%- i = i + 1 -%]
-    [%- END %]
+    for index, item in enumerate(counter_ids):
+        stats[[% function.name %]_[% arg.name %]_dict[item]] = counters[index]
+
 
 [%- END -%]
 
@@ -439,6 +441,7 @@ client.[% function.thrift_name %](
 
         [%- # Now, call the thrift function -%]
         [%- IF function.operation != 'set' -%]
+
     global status
     status = SAI_STATUS_SUCCESS
 
