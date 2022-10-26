@@ -363,7 +363,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
         self.vlan_configer = VlanConfiger(self)
         self.route_configer = RouteConfiger(self)
         self.lag_configer = LagConfiger(self)
-        if force_config  or  self.test_reboot_stage  == WARM_TEST_PRE_REBOOT:
+        if force_config  or  not self.test_reboot_stage or self.test_reboot_stage  == WARM_TEST_PRE_REBOOT:
             self.create_device()
             t0_switch_config_helper(self)
             t0_port_config_helper(
@@ -386,10 +386,9 @@ class T0TestBase(ThriftInterfaceDataPlane):
                 is_create_default_loopback_interface=is_create_default_loopback_interface,
                 is_create_route_for_lag=is_create_route_for_lag,
                 is_create_route_for_nhopgrp=is_create_route_for_nhopgrp)
-            print("common config done, persist it")
-            self.persist_helper.persist_dut(self.dut)
-            self.persist_helper.persist_server_list(self.servers)
-            self.persist_helper.persist_t1_list(self.t1_list)
+            if self.test_reboot_stage  != WARM_TEST_PRE_REBOOT:
+                print("common config done")
+                self.persist_config()
             print("Waiting for switch to get ready before test, {} seconds ...".format(
                 wait_sec))
             time.sleep(wait_sec)
@@ -400,6 +399,15 @@ class T0TestBase(ThriftInterfaceDataPlane):
             self.dut = self.persist_helper.read_dut()
             self.t1_list = self.persist_helper.read_t1_list()
             self.servers = self.persist_helper.read_server_list()
+
+    def persist_config(self):
+        """
+        persist config
+        """
+        print("persist config")
+        self.persist_helper.persist_dut(self.dut)
+        self.persist_helper.persist_server_list(self.servers)
+        self.persist_helper.persist_t1_list(self.t1_list)
 
     def restore_fdb_config(self):
         """
@@ -578,11 +586,16 @@ class T0TestBase(ThriftInterfaceDataPlane):
                 """
                 self.test_params = test_params_get()
                 self.loadTestRebootMode()
-                if self.test_reboot_stage == WARM_TEST_REBOOTING and is_skip_rebooting:
+                if self.test_reboot_stage == WARM_TEST_PRE_REBOOT:
+                    print("switch is pre-reboot, set up and skip this case")
+                    func(self, *args, **kwargs)
+                    self.persist_config() # persist common and local config
+                    raise SkipTest("switch is rebooting, skip this case")
+                elif self.test_reboot_stage == WARM_TEST_REBOOTING and is_skip_rebooting:
                     print("switch is rebooting, skip this case")
                     raise SkipTest("switch is rebooting, skip this case")
                 else:
                     print("case is running at %s stage"%self.test_reboot_stage)
-                    func(self, *args, **kwargs)
+                    T0TestBase.setUp(self)
             return decorated
         return skip_test_on_rebooting_decorator
