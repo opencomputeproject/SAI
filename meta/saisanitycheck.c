@@ -2623,6 +2623,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_UINT16_RANGE_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_LANE_LATCH_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_JSON:
+        case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
 
             if (md->isprimitive)
             {
