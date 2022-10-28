@@ -835,7 +835,8 @@ class RemoveLagEcmpTestV4(T0TestBase):
                         )
         self.route_configer.remove_nhop_member_by_lag_idx(
             nhp_grp_obj=self.dut.nhp_grpv4_list[0], lag_idx=3)
-        
+        import pdb
+        pdb.set_trace()
     def test_lag_ecmp_remove(self):
         """
         1. Remove the next hop from next-hop group in test_ecmp: next-hop with IP ``DIP:10.1.3.100`` on LAG3 
@@ -877,7 +878,7 @@ class RemoveLagEcmpTestV4(T0TestBase):
                                          ip_src=ip_src,
                                          ip_id=105,
                                          ip_ttl=63)
-
+            
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
             verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2, exp_pkt3], recv_dev_port_idxs)
 
@@ -889,9 +890,87 @@ class RemoveLagEcmpTestV4(T0TestBase):
             nhp_grp_obj=self.dut.nhp_grpv4_list[0], lag_idx=3)
         super().tearDown()
 
-class RemoveNexthopGroupTestV4(T0TestBase):
+class RemoveLagEcmpTestV6(T0TestBase):
     """
-    When remove nexthop group, we expect traffic drop.
+    When remove nexthop member, we expect traffic drop on the removed nexthop member.
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process
+        """
+        T0TestBase.setUp(self,
+                         is_create_route_for_nhopgrp=True,
+                         is_create_route_for_lag=False,
+                        )
+        self.route_configer.remove_nhop_member_by_lag_idx(
+            nhp_grp_obj=self.dut.nhp_grpv6_list[0], lag_idx=3)
+
+    def test_lag_ecmp_remove_v6(self):
+        """
+        1. Remove the next hop from next-hop group in test_ecmp: next-hop on LAG3 
+        2. Generate Packets, with different source IPs
+        3. Change other elements in the packets
+        4. Verify Packets only can be received on LAG1 and LAG2, with ``SMAC: SWITCH_MAC_2`` (check loadbalanced in LAG and ECMP)
+        """
+        print("Ecmp remove lag test")
+        max_itrs = 50
+        begin_port = 2000
+        recv_dev_port_idxs = self.get_dev_port_indexes(
+            list(filter(lambda item: item != 1, self.dut.nhp_grpv6_list[0].member_port_indexs)))
+        cnt_ports = len(recv_dev_port_idxs)
+        rcv_count = [0 for _ in range(cnt_ports)]
+
+        ip_src = self.servers[0][1].ipv6
+        ip_dst = self.servers[60][1].ipv6
+        for port_index in range(0, max_itrs):
+            dst_port = begin_port + port_index
+            pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
+                                      eth_src=self.servers[1][1].mac,
+                                      ipv6_dst=ip_dst,
+                                      ipv6_src=ip_src,
+                                      tcp_dport= dst_port,
+                                      ipv6_hlim=64)
+
+            exp_pkt1 = simple_tcpv6_packet(eth_dst=self.t1_list[1][100].mac,
+                                           eth_src=ROUTER_MAC,
+                                           ipv6_dst=ip_dst,
+                                           ipv6_src=ip_src,
+                                           tcp_dport= dst_port,
+                                           ipv6_hlim=63)
+
+            exp_pkt2 = simple_tcpv6_packet(eth_dst=self.t1_list[2][100].mac,
+                                           eth_src=ROUTER_MAC,
+                                           ipv6_dst=ip_dst,
+                                           ipv6_src=ip_src,
+                                           tcp_dport= dst_port,
+                                           ipv6_hlim=63)
+
+            exp_pkt3 = simple_tcpv6_packet(eth_dst=self.t1_list[4][100].mac,
+                                           eth_src=ROUTER_MAC,
+                                           ipv6_dst=ip_dst,
+                                           ipv6_src=ip_src,
+                                           tcp_dport= dst_port,
+                                           ipv6_hlim=63) 
+
+            send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
+            rcv_idx = verify_any_packet_any_port(
+                self, [exp_pkt1, exp_pkt2, exp_pkt3], recv_dev_port_idxs)
+            rcv_count[rcv_idx] += 1
+
+        print(rcv_count)
+
+    def runTest(self):
+        self.test_lag_ecmp_remove_v6()
+
+    def tearDown(self):
+        self.route_configer.create_nhop_member_by_lag_port_idxs(
+            nhp_grp_obj=self.dut.nhp_grpv6_list[0], lag_idx=3)
+        super().tearDown()
+
+class RemoveAllNextHopMemeberTestV4(T0TestBase):
+    """
+    When remove all of nexthop group members, we expect traffic drop.
     """
 
     def setUp(self):
@@ -906,18 +985,14 @@ class RemoveNexthopGroupTestV4(T0TestBase):
     def test_nexthopgroup_remove(self):
         """
         1. Remove all next hops from next-hop group in test_ecmp
-        2. Remove nexthop group v4
-        3. Generate Packets
-        4. Verify no Packets  can be received on LAG1, LAG2 and LAG3
+        2. Generate Packets
+        3. Verify no Packets  can be received on LAG1, LAG2 and LAG3
         """
         print("Ecmp remove nexthop group test")
 
         for nhp_member in self.dut.nhp_grpv4_list[0].nhp_grp_members:
             sai_thrift_remove_next_hop_group_member(self.client, nhp_member)
             self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-
-        sai_thrift_remove_next_hop_group(self.client, self.dut.nhp_grpv4_list[0].nhp_grp_id)
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         ip_src = self.servers[0][1].ipv4
         ip_dst = self.servers[60][1].ipv4
@@ -971,4 +1046,468 @@ class RemoveNexthopGroupTestV4(T0TestBase):
         self.test_nexthopgroup_remove()
 
     def tearDown(self):
+        super().tearDown()
+
+class RemoveNexthopGroupTestV4(T0TestBase):
+    """
+    When remove nexthop group, we expect traffic drop.
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process
+        """
+        T0TestBase.setUp(self,
+                         is_create_route_for_nhopgrp=True,
+                         is_create_route_for_lag=False,
+                        )
+        
+    def test_nexthopgroup_remove(self):
+        """
+        1. Remove all next hops from next-hop group in test_ecmp
+        2. Remove nexthop group v4
+        3. Generate Packets
+        4. Verify no Packets  can be received on LAG1, LAG2 and LAG3
+        """
+        print("Ecmp remove nexthop group test")
+
+        for nhp_member in self.dut.nhp_grpv4_list[0].nhp_grp_members:
+            sai_thrift_remove_next_hop_group_member(self.client, nhp_member)
+            self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+
+        sai_thrift_remove_next_hop_group(self.client, self.dut.nhp_grpv4_list[0].nhp_grp_id)
+
+        ip_src = self.servers[0][1].ipv4
+        ip_dst = self.servers[60][1].ipv4
+        src_port = 1000 
+        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    eth_src=self.servers[1][1].mac,
+                                    ip_dst=ip_dst,
+                                    ip_src=ip_src,
+                                    tcp_sport= src_port,
+                                    ip_id=105,
+                                    ip_ttl=64)
+
+        exp_pkt1 = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         tcp_sport= src_port,
+                                         ip_id=105,
+                                         ip_ttl=63)
+
+        exp_pkt2 = simple_tcp_packet(eth_dst=self.t1_list[2][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         tcp_sport= src_port,
+                                         ip_id=105,
+                                         ip_ttl=63)
+
+        exp_pkt3 = simple_tcp_packet(eth_dst=self.t1_list[3][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         tcp_sport= src_port,
+                                         ip_id=105,
+                                         ip_ttl=63)
+
+        exp_pkt4 = simple_tcp_packet(eth_dst=self.t1_list[4][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         tcp_sport= src_port,
+                                         ip_id=105,
+                                         ip_ttl=63)
+
+        send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
+        verify_no_other_packets(self)
+
+            
+
+    def runTest(self):
+        self.test_nexthopgroup_remove()
+
+    def tearDown(self):
+        super().tearDown()
+
+class ReaAddLagEcmpTestV4(T0TestBase):
+    """
+    When readd nexthop member, we expect traffic received on the readded nexthop member.
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process
+        """
+        T0TestBase.setUp(self,
+                         is_create_route_for_nhopgrp=True,
+                         is_create_route_for_lag=False,
+                        )
+        self.route_configer.remove_nhop_member_by_lag_idx(
+            nhp_grp_obj=self.dut.nhp_grpv4_list[0], lag_idx=3)
+
+    def test_lag_ecmp_readd(self):
+        """
+       Remove lag3 nexthop member run steps in test_ecmp
+       add already existing next hop on IP 10.1.2.100 for LAG3 to the next-hop group in test_ecmp
+       Generate Packets, with different source IP SIP:192.168.0.1-192.168.0.10
+       Change other elements in the packets, including DIP:192.168.60.1 L4_port
+       Verify Packets can be received on LAG1 LAG2 and LAG3, LAG4, with SMAC: SWITCH_MAC_2 (check loadbalanced in LAG and ECMP)
+
+        """
+        print("Ecmp readd lag test")
+
+        ip_dst = self.servers[60][1].ipv4
+        recv_dev_port_idxs = self.get_dev_port_indexes(
+            list(filter(lambda item: item != 1, self.dut.nhp_grpv4_list[0].member_port_indexs)))
+        pkts_num = 10
+        for index in range(pkts_num):
+            ip_src = self.servers[0][index + 1].ipv4
+            
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    eth_src=self.servers[1][1].mac,
+                                    ip_dst=ip_dst,
+                                    ip_src=ip_src,
+                                    ip_id=105,
+                                    ip_ttl=64)
+            
+            exp_pkt1 = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         ip_id=105,
+                                         ip_ttl=63)
+            exp_pkt2 = simple_tcp_packet(eth_dst=self.t1_list[2][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         ip_id=105,
+                                         ip_ttl=63)
+            exp_pkt3 = simple_tcp_packet(eth_dst=self.t1_list[4][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         ip_id=105,
+                                         ip_ttl=63)
+
+            send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
+            verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2, exp_pkt3], recv_dev_port_idxs)
+
+        self.route_configer.create_nhop_member_by_lag_port_idxs(
+            nhp_grp_obj=self.dut.nhp_grpv4_list[0], lag_idx=3)
+        recv_dev_port_idxs = self.get_dev_port_indexes(
+            list(filter(lambda item: item != 1, self.dut.nhp_grpv4_list[0].member_port_indexs)))
+        for index in range(pkts_num):
+            ip_src = self.servers[0][index + 1].ipv4
+            
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    eth_src=self.servers[1][1].mac,
+                                    ip_dst=ip_dst,
+                                    ip_src=ip_src,
+                                    ip_id=105,
+                                    ip_ttl=64)
+            
+            exp_pkt1 = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         ip_id=105,
+                                         ip_ttl=63)
+            exp_pkt2 = simple_tcp_packet(eth_dst=self.t1_list[2][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         ip_id=105,
+                                         ip_ttl=63)
+            exp_pkt3 = simple_tcp_packet(eth_dst=self.t1_list[3][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         ip_id=105,
+                                         ip_ttl=63)
+            exp_pkt4 = simple_tcp_packet(eth_dst=self.t1_list[4][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         ip_id=105,
+                                         ip_ttl=63)
+
+            send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
+            verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4], recv_dev_port_idxs)
+    def runTest(self):
+        self.test_lag_ecmp_readd()
+
+    def tearDown(self):
+        super().tearDown()
+
+class ReaAddLagEcmpTestV6(T0TestBase):
+    """
+    When readd nexthop member, we expect traffic received on the readded nexthop member.
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process
+        """
+        T0TestBase.setUp(self,
+                         is_create_route_for_nhopgrp=True,
+                         is_create_route_for_lag=False,
+                        )
+        self.route_configer.remove_nhop_member_by_lag_idx(
+            nhp_grp_obj=self.dut.nhp_grpv6_list[0], lag_idx=3)
+        
+    def test_lag_ecmp_readdv6(self):
+
+        max_itrs = 50
+        begin_port = 2000
+        recv_dev_port_idxs = self.get_dev_port_indexes(
+            list(filter(lambda item: item != 1, self.dut.nhp_grpv6_list[0].member_port_indexs)))
+        cnt_ports = len(recv_dev_port_idxs)
+        rcv_count = [0 for _ in range(cnt_ports)]
+
+        ip_src = self.servers[0][1].ipv6
+        ip_dst = self.servers[60][1].ipv6
+        for port_index in range(0, max_itrs):
+            dst_port = begin_port + port_index
+            pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
+                                      eth_src=self.servers[1][1].mac,
+                                      ipv6_dst=ip_dst,
+                                      ipv6_src=ip_src,
+                                      tcp_dport= dst_port,
+                                      ipv6_hlim=64)
+
+            exp_pkt1 = simple_tcpv6_packet(eth_dst=self.t1_list[1][100].mac,
+                                           eth_src=ROUTER_MAC,
+                                           ipv6_dst=ip_dst,
+                                           ipv6_src=ip_src,
+                                           tcp_dport= dst_port,
+                                           ipv6_hlim=63)
+
+            exp_pkt2 = simple_tcpv6_packet(eth_dst=self.t1_list[2][100].mac,
+                                           eth_src=ROUTER_MAC,
+                                           ipv6_dst=ip_dst,
+                                           ipv6_src=ip_src,
+                                           tcp_dport= dst_port,
+                                           ipv6_hlim=63)
+
+            exp_pkt3 = simple_tcpv6_packet(eth_dst=self.t1_list[4][100].mac,
+                                           eth_src=ROUTER_MAC,
+                                           ipv6_dst=ip_dst,
+                                           ipv6_src=ip_src,
+                                           tcp_dport= dst_port,
+                                           ipv6_hlim=63) 
+
+            send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
+            rcv_idx = verify_any_packet_any_port(
+                self, [exp_pkt1, exp_pkt2, exp_pkt3], recv_dev_port_idxs)
+            rcv_count[rcv_idx] += 1
+        print(rcv_count)
+
+        
+        self.route_configer.create_nhop_member_by_lag_port_idxs(
+            nhp_grp_obj=self.dut.nhp_grpv6_list[0], lag_idx=3)
+
+        recv_dev_port_idxs = self.get_dev_port_indexes(
+            list(filter(lambda item: item != 1, self.dut.nhp_grpv6_list[0].member_port_indexs)))
+        cnt_ports = len(recv_dev_port_idxs)
+        rcv_count = [0 for _ in range(cnt_ports)]
+        ip_src = self.servers[0][1].ipv6
+        ip_dst = self.servers[60][1].ipv6
+        for port_index in range(0, max_itrs):
+            dst_port = begin_port + port_index
+            pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
+                                      eth_src=self.servers[1][1].mac,
+                                      ipv6_dst=ip_dst,
+                                      ipv6_src=ip_src,
+                                      tcp_dport= dst_port,
+                                      ipv6_hlim=64)
+
+            exp_pkt1 = simple_tcpv6_packet(eth_dst=self.t1_list[1][100].mac,
+                                           eth_src=ROUTER_MAC,
+                                           ipv6_dst=ip_dst,
+                                           ipv6_src=ip_src,
+                                           tcp_dport= dst_port,
+                                           ipv6_hlim=63)
+
+            exp_pkt2 = simple_tcpv6_packet(eth_dst=self.t1_list[2][100].mac,
+                                           eth_src=ROUTER_MAC,
+                                           ipv6_dst=ip_dst,
+                                           ipv6_src=ip_src,
+                                           tcp_dport= dst_port,
+                                           ipv6_hlim=63)
+
+            exp_pkt3 = simple_tcpv6_packet(eth_dst=self.t1_list[3][100].mac,
+                                           eth_src=ROUTER_MAC,
+                                           ipv6_dst=ip_dst,
+                                           ipv6_src=ip_src,
+                                           tcp_dport= dst_port,
+                                           ipv6_hlim=63) 
+
+            exp_pkt4 = simple_tcpv6_packet(eth_dst=self.t1_list[4][100].mac,
+                                           eth_src=ROUTER_MAC,
+                                           ipv6_dst=ip_dst,
+                                           ipv6_src=ip_src,
+                                           tcp_dport= dst_port,
+                                           ipv6_hlim=63) 
+
+            send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
+            rcv_idx = verify_any_packet_any_port(
+                self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4], recv_dev_port_idxs)
+            rcv_count[rcv_idx] += 1
+
+        print(rcv_count)
+
+    def runTest(self):
+        self.test_lag_ecmp_readdv6()
+
+    def tearDown(self):
+        super().tearDown()
+        
+class EcmpLagDisableTestV4(T0TestBase):
+    """
+      Verify traffic drop on lag1 when ecmp lag1 member egress is disable.
+    """
+    def setUp(self):
+        """
+        Test the basic setup process
+        """
+        T0TestBase.setUp(self,
+                         is_create_route_for_nhopgrp=True,
+                         is_create_route_for_lag=False,
+                        )
+        
+    def test_lag_ecmp_disable(self):
+        """
+        Disable LAG1 members(member attribute)
+        Generate Packets, with different source IPs as SIP:192.168.0.1-192.168.0.10
+        Change other elements in the packets, including DIP:192.168.60.1 L4_port
+        Verify Packets no packet lost and only can be received on LAG2 and LAG3, LAG4, with SMAC: SWITCH_MAC_2 (check loadbalanced in LAG and ECMP)
+        """
+         # disable egress of lag member: port18, 17
+        print("disable port17,18 egress")
+        status = sai_thrift_set_lag_member_attribute(self.client,
+                                                         self.dut.lag_list[0].lag_members[1],
+                                                         egress_disable=True)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        status = sai_thrift_set_lag_member_attribute(self.client,
+                                                         self.dut.lag_list[0].lag_members[0],
+                                                         egress_disable=True)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        import pdb
+        pdb.set_trace()
+        max_itrs = 10
+        begin_port = 2000
+        recv_dev_port_idxs = self.get_dev_port_indexes(
+            list(filter(lambda item: item != 1, self.dut.nhp_grpv4_list[0].member_port_indexs)))
+        cnt_ports = len(recv_dev_port_idxs)
+        rcv_count = [0 for _ in range(cnt_ports)]
+
+        ip_src = self.servers[0][1].ipv4
+        ip_dst = self.servers[60][1].ipv4
+        for port_index in range(0, max_itrs):
+            src_port = begin_port + port_index
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    eth_src=self.servers[1][1].mac,
+                                    ip_dst=ip_dst,
+                                    ip_src=ip_src,
+                                    tcp_sport= src_port,
+                                    ip_id=105,
+                                    ip_ttl=64)
+
+            exp_pkt1 = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         tcp_sport= src_port,
+                                         ip_id=105,
+                                         ip_ttl=63)
+
+
+            send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
+            verify_no_packet_any(self, exp_pkt1, self.dut.lag_list[0].member_port_indexs)
+
+        
+    def runTest(self):
+        self.test_lag_ecmp_disable()
+
+    def tearDown(self):
+        status = sai_thrift_set_lag_member_attribute(self.client,
+                                                      self.dut.lag_list[0].lag_members[0],
+                                                     egress_disable=False)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        status = sai_thrift_set_lag_member_attribute(self.client,
+                                                     self.dut.lag_list[0].lag_members[1],
+                                                     egress_disable=False)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        super().tearDown()
+
+class EcmpLagDisableTestV6(T0TestBase):
+    """
+    Verify traffic drop on lag1 when ecmp lag1 member egress is disable
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process
+        """
+        T0TestBase.setUp(self,
+                         is_create_route_for_nhopgrp=True,
+                         is_create_route_for_lag=False,
+                        )
+        # disable egress of lag member: port18, 17
+        print("disable port17,18 egress")
+        status = sai_thrift_set_lag_member_attribute(self.client,
+                                                         self.dut.lag_list[0].lag_members[1],
+                                                         egress_disable=True)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        status = sai_thrift_set_lag_member_attribute(self.client,
+                                                         self.dut.lag_list[0].lag_members[0],
+                                                         egress_disable=True)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+
+        
+    def test_lag_ecmp_disablev6(self):
+        """
+        Disable LAG1 members(member attribute)
+        Generate Packets, with different source IPs 
+        Change other elements in the packets
+        Verify Packets no packet lost and only can be received on LAG2 and LAG3, LAG4, with SMAC: SWITCH_MAC_2 (check loadbalanced in LAG and ECMP)
+        """
+        max_itrs = 10
+        begin_port = 2000
+
+        ip_src = self.servers[0][1].ipv6
+        ip_dst = self.servers[60][1].ipv6
+        for port_index in range(0, max_itrs):
+            dst_port = begin_port + port_index
+            pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
+                                      eth_src=self.servers[1][1].mac,
+                                      ipv6_dst=ip_dst,
+                                      ipv6_src=ip_src,
+                                      tcp_dport= dst_port,
+                                      ipv6_hlim=64)
+
+            exp_pkt1 = simple_tcpv6_packet(eth_dst=self.t1_list[1][100].mac,
+                                           eth_src=ROUTER_MAC,
+                                           ipv6_dst=ip_dst,
+                                           ipv6_src=ip_src,
+                                           tcp_dport= dst_port,
+                                           ipv6_hlim=63)
+      
+            send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
+            verify_no_packet_any(self, exp_pkt1, self.dut.lag_list[0].member_port_indexs)
+
+    def runTest(self):
+        self.test_lag_ecmp_disablev6()
+
+    def tearDown(self):
+        status = sai_thrift_set_lag_member_attribute(self.client,
+                                                      self.dut.lag_list[0].lag_members[0],
+                                                     egress_disable=False)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        status = sai_thrift_set_lag_member_attribute(self.client,
+                                                     self.dut.lag_list[0].lag_members[1],
+                                                     egress_disable=False)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
         super().tearDown()
