@@ -465,6 +465,11 @@ typedef enum _sai_attr_value_type_t
      * @brief Attribute value is a json.
      */
     SAI_ATTR_VALUE_TYPE_JSON,
+
+    /**
+     * @brief Attribute value is IP prefix list.
+     */
+    SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST,
 } sai_attr_value_type_t;
 
 /**
