@@ -111,7 +111,7 @@ typedef enum _sai_dash_acl_rule_attr_t
     /**
      * @brief List matched key dip
      *
-     * @type sai_ip_address_list_t
+     * @type sai_ip_prefix_list_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_DASH_ACL_RULE_ATTR_DIP,
@@ -119,7 +119,7 @@ typedef enum _sai_dash_acl_rule_attr_t
     /**
      * @brief List matched key sip
      *
-     * @type sai_ip_address_list_t
+     * @type sai_ip_prefix_list_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_DASH_ACL_RULE_ATTR_SIP,
