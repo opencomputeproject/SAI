@@ -835,8 +835,7 @@ class RemoveLagEcmpTestV4(T0TestBase):
                         )
         self.route_configer.remove_nhop_member_by_lag_idx(
             nhp_grp_obj=self.dut.nhp_grpv4_list[0], lag_idx=3)
-        import pdb
-        pdb.set_trace()
+
     def test_lag_ecmp_remove(self):
         """
         1. Remove the next hop from next-hop group in test_ecmp: next-hop with IP ``DIP:10.1.3.100`` on LAG3 
@@ -1394,8 +1393,6 @@ class EcmpLagDisableTestV4(T0TestBase):
                                                          self.dut.lag_list[0].lag_members[0],
                                                          egress_disable=True)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
-        import pdb
-        pdb.set_trace()
         max_itrs = 10
         begin_port = 2000
         recv_dev_port_idxs = self.get_dev_port_indexes(
@@ -1500,6 +1497,145 @@ class EcmpLagDisableTestV6(T0TestBase):
 
     def runTest(self):
         self.test_lag_ecmp_disablev6()
+
+    def tearDown(self):
+        status = sai_thrift_set_lag_member_attribute(self.client,
+                                                      self.dut.lag_list[0].lag_members[0],
+                                                     egress_disable=False)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        status = sai_thrift_set_lag_member_attribute(self.client,
+                                                     self.dut.lag_list[0].lag_members[1],
+                                                     egress_disable=False)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        super().tearDown()
+
+
+class EcmpIngressDisableTestV4(T0TestBase):
+    """
+    Verify ingress RIF disable.
+    """
+    def setUp(self):
+        """
+        Test the basic setup process
+        """
+        T0TestBase.setUp(self,
+                         is_create_route_for_nhopgrp=True,
+                         is_create_route_for_lag=False,
+                        )
+        print("Disable vlan 10  ingress RIF")
+        sai_thrift_set_router_interface_attribute(
+            self.client, self.dut.vlans[10].rif_list[0], admin_v4_state=False)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        time.sleep(3)
+
+    def test_ecmp_ingress_disable_v4(self):
+        """
+        Generate Packets, with SIP:192.168.0.1 DIP:192.168.60.1
+        Check vlan interface(svi added)
+        Disable the ingress for Port1 related RIF (VLAN Interface)
+        Send packest from Port1
+        Verify packet drop
+        """
+        max_itrs = 10
+        begin_port = 2000
+        recv_dev_port_idxs = self.get_dev_port_indexes(
+            list(filter(lambda item: item != 1, self.dut.nhp_grpv4_list[0].member_port_indexs)))
+        cnt_ports = len(recv_dev_port_idxs)
+        rcv_count = [0 for _ in range(cnt_ports)]
+
+        ip_src = self.servers[0][1].ipv4
+        ip_dst = self.servers[60][1].ipv4
+        for port_index in range(0, max_itrs):
+            src_port = begin_port + port_index
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    eth_src=self.servers[1][1].mac,
+                                    ip_dst=ip_dst,
+                                    ip_src=ip_src,
+                                    tcp_sport= src_port,
+                                    ip_id=105,
+                                    ip_ttl=64)
+
+            exp_pkt1 = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         tcp_sport= src_port,
+                                         ip_id=105,
+                                         ip_ttl=63)
+
+
+            send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
+            verify_no_packet_any(self, exp_pkt1, self.dut.lag_list[0].member_port_indexs)
+
+        
+    def runTest(self):
+        self.test_ecmp_ingress_disable_v4()
+
+    def tearDown(self):
+        status = sai_thrift_set_lag_member_attribute(self.client,
+                                                      self.dut.lag_list[0].lag_members[0],
+                                                     egress_disable=False)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        status = sai_thrift_set_lag_member_attribute(self.client,
+                                                     self.dut.lag_list[0].lag_members[1],
+                                                     egress_disable=False)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        super().tearDown()
+
+class EcmpIngressDisableTestV6(T0TestBase):
+    """
+    Verify ingress RIF disable
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process
+        """
+        T0TestBase.setUp(self,
+                         is_create_route_for_nhopgrp=True,
+                         is_create_route_for_lag=False,
+                        )
+
+        print("Disable vlan 10  ingress RIF")
+        sai_thrift_set_router_interface_attribute(
+            self.client, self.dut.vlans[10].rif_list[0], admin_v6_state=False)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        time.sleep(3)
+        
+    def test_ecmp_ingress_disable_v6(self):
+        """
+        Generate Packets, with SIP:192.168.0.1 DIP:192.168.60.1
+        Check vlan interface(svi added)
+        Disable the ingress for Port1 related RIF (VLAN Interface)
+        Send packest from Port1
+        Verify packet drop
+        """
+        max_itrs = 10
+        begin_port = 2000
+
+        ip_src = self.servers[0][1].ipv6
+        ip_dst = self.servers[60][1].ipv6
+        for port_index in range(0, max_itrs):
+            dst_port = begin_port + port_index
+            pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
+                                      eth_src=self.servers[1][1].mac,
+                                      ipv6_dst=ip_dst,
+                                      ipv6_src=ip_src,
+                                      tcp_dport= dst_port,
+                                      ipv6_hlim=64)
+
+            exp_pkt1 = simple_tcpv6_packet(eth_dst=self.t1_list[1][100].mac,
+                                           eth_src=ROUTER_MAC,
+                                           ipv6_dst=ip_dst,
+                                           ipv6_src=ip_src,
+                                           tcp_dport= dst_port,
+                                           ipv6_hlim=63)
+      
+            send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
+            verify_no_packet_any(self, exp_pkt1, self.dut.lag_list[0].member_port_indexs)
+
+    def runTest(self):
+        self.test_ecmp_ingress_disable_v6()
 
     def tearDown(self):
         status = sai_thrift_set_lag_member_attribute(self.client,
