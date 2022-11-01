@@ -209,6 +209,7 @@ class TaggedFrameFilteringTest(T0TestBase):
 
     def runTest(self):
         print("\nTaggedFrameFilteringTest")
+        self.tmp_server_list = [self.servers[1][i] for i in [1, 5]] # need for warm reboot
         try:
             for tmp_server in self.tmp_server_list:
                 pkt = simple_udp_packet(eth_dst=tmp_server.mac,
@@ -240,7 +241,7 @@ class UnTaggedFrameFilteringTest(T0TestBase):
     def setUp(self):
         super().setUp()
         t0_fdb_tear_down_helper(self)
-        self.tmp_server_list = [self.servers[1][i] for i in [1, 5]]
+        self.tmp_server_list = [self.servers[1][i] for i in [1, 5]] # need for warm reboot
         self.fdb_configer.create_fdb_entries(
             switch_id=self.dut.switch_id,
             server_list=self.tmp_server_list,
@@ -250,6 +251,7 @@ class UnTaggedFrameFilteringTest(T0TestBase):
     def runTest(self):
         print("\nUnTaggedFrameFilteringTest")
         try:
+            self.tmp_server_list = [self.servers[1][i] for i in [1, 5]]
             for tmp_server in self.tmp_server_list:
                 pkt = simple_udp_packet(eth_dst=tmp_server.mac,
                                         eth_src=self.servers[1][1].mac,
@@ -713,6 +715,7 @@ class ArpRequestLearningTest(T0TestBase):
     def setUp(self):
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
+    def runTest(self):
         ip1 = "192.168.0.1"
         ip2 = "192.168.0.2"
         self.arp_response = simple_arp_packet(
@@ -723,8 +726,6 @@ class ArpRequestLearningTest(T0TestBase):
             ip_snd=ip1,
             hw_snd=self.servers[1][2].mac,
             hw_tgt=self.servers[1][1].mac)
-
-    def runTest(self):
         print("ArpRequestLearningTest")
         send_packet(
             self, self.dut.port_obj_list[2].dev_port_index, self.arp_response)
@@ -748,14 +749,14 @@ class TaggedVlanStatusTest(T0TestBase):
     @T0TestBase.skip_test_on_rebooting(True)
     def setUp(self):
         T0TestBase.setUp(self, is_reset_default_vlan=False)
+
+    def runTest(self):
+        print("TaggedVlanStatusTest")
         self.tagged_pkt = simple_udp_packet(eth_dst=self.servers[1][2].mac,
                                             eth_src=self.servers[1][1].mac,
                                             vlan_vid=10,
                                             ip_id=101,
                                             ip_ttl=64)
-
-    def runTest(self):
-        print("TaggedVlanStatusTest")
         stats = sai_thrift_get_vlan_stats(
             self.client, self.dut.vlans[10].oid)
 
