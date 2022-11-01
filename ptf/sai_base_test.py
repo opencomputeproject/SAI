@@ -895,7 +895,7 @@ class SaiHelper(SaiHelperUtilsMixin, SaiHelperBase):
         self.create_routing_interfaces(ports=[10, 11, 12, 13])
 
         # Create default route for default VRF is mandartory.
-        # Issue
+        # Issue #1606(https://github.com/opencomputeproject/SAI/issues/1606)
         # Creating route in default VRF will failed if there aren't default routes.
         # Solution
         # Create default route before create route in detaul VRF

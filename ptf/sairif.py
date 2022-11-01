@@ -9281,6 +9281,9 @@ class SviLagHostTest(PlatformSaiHelper):
         self.dmac7 = '00:44:33:33:44:55'  # 20.11.11.1
 
         # create nhop1, nhop2 & nhop3 on SVI
+        # When creating nhop, neighbor and route, calling api in this order:
+        # neighbor -> nhop -> route
+        # Related Issue: https://github.com/opencomputeproject/SAI/issues/1607
         self.neighbor_entry1 = sai_thrift_neighbor_entry_t(
             rif_id=self.vlan100_rif, ip_address=sai_ipaddress('10.10.0.1'))
         sai_thrift_create_neighbor_entry(
@@ -9550,6 +9553,9 @@ class SviLagHostTest(PlatformSaiHelper):
                 self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
 
     def tearDown(self):
+        # When removing nhop, neighbor and route, calling api in this order:
+        # route -> nhop -> neighbor
+        # Related Issue: https://github.com/opencomputeproject/SAI/issues/1607
         sai_thrift_remove_route_entry(self.client, self.route_entry5)
         sai_thrift_remove_route_entry(self.client, self.route_entry5_v6)
         sai_thrift_remove_route_entry(self.client, self.route_entry6)
