@@ -804,13 +804,12 @@ class UntaggedVlanStatusTest(T0TestBase):
     def setUp(self):
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
+    def runTest(self):
+        print("UntaggedVlanStatusTest")
         self.untagged_pkt = simple_udp_packet(eth_dst=self.servers[1][2].mac,
                                               eth_src=self.servers[1][1].mac,
                                               ip_id=101,
                                               ip_ttl=64)
-
-    def runTest(self):
-        print("UntaggedVlanStatusTest")
         stats = sai_thrift_get_vlan_stats(self.client, self.dut.vlans[10].oid)
 
         in_bytes_pre = stats["SAI_VLAN_STAT_IN_OCTETS"]
