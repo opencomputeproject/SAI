@@ -3731,3 +3731,248 @@ class L3IPv6SVIEcmpTest(SaiHelper):
         finally:
             sai_thrift_remove_fdb_entry(self.client, fdb_entry1)
             sai_thrift_remove_fdb_entry(self.client, fdb_entry2)
+
+
+@group("draft")
+class L3IPv4EcmpHostTwoLagsTest(PlatformSaiHelper):
+    """
+    IPv4 ECMP tests with all LAG RIFs members
+    """
+
+    def setUp(self):
+        super(L3IPv4EcmpHostTwoLagsTest, self).setUp()
+
+        dmac1 = '00:11:11:11:11:11'
+        dmac2 = '00:22:22:22:22:22'
+        dmac3 = '00:33:33:33:33:33'
+        dmac4 = '00:44:44:44:44:44'
+        dmac5 = '00:55:55:55:55:55'
+        dmac6 = '00:66:66:66:66:66'
+        nhop_ip1 = '11.11.11.11'
+        nhop_ip2 = '22.22.22.22'
+        nhop_ip3 = '33.33.33.33'
+        nhop_ip4 = '44.44.44.44'
+        nhop_ip5 = '44.55.55.55'
+        nhop_ip6 = '44.66.66.66'
+        # set switch src mac address
+        sai_thrift_set_switch_attribute(
+            self.client, src_mac_address=ROUTER_MAC)
+        sai_thrift_set_switch_attribute(
+            self.client, ecmp_default_hash_seed=TEST_ECMP_SEED)
+        sai_thrift_set_switch_attribute(
+            self.client, lag_default_hash_seed=TEST_LAG_SEED)
+        self.lag1_rif = sai_thrift_create_router_interface(
+            self.client,
+            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+            virtual_router_id=self.default_vrf,
+            port_id=self.lag1,
+            admin_v4_state=True)
+        self.lag2_rif = sai_thrift_create_router_interface(
+            self.client,
+            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+            virtual_router_id=self.default_vrf,
+            port_id=self.lag2,
+            admin_v4_state=True)
+        self.port15_rif = sai_thrift_create_router_interface(
+            self.client,
+            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+            virtual_router_id=self.default_vrf,
+            port_id=self.port15,
+            admin_v4_state=True)
+        # test neighbor creation
+        self.neighbor_entry11 = sai_thrift_neighbor_entry_t(
+            self.switch_id, self.port11_rif, sai_ipaddress(nhop_ip1))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry11, dst_mac_address=dmac1)
+        self.neighbor_entry12 = sai_thrift_neighbor_entry_t(
+            self.switch_id, self.port12_rif, sai_ipaddress(nhop_ip2))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry12, dst_mac_address=dmac2)
+        self.neighbor_entry13 = sai_thrift_neighbor_entry_t(
+            self.switch_id, self.lag1_rif, sai_ipaddress(nhop_ip3))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry13, dst_mac_address=dmac3)
+        self.neighbor_entry14 = sai_thrift_neighbor_entry_t(
+            self.switch_id, self.lag2_rif, sai_ipaddress(nhop_ip4))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry14, dst_mac_address=dmac4)
+        self.neighbor_entry15 = sai_thrift_neighbor_entry_t(
+            self.switch_id, self.lag1_rif, sai_ipaddress(nhop_ip5))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry15, dst_mac_address=dmac5)
+        self.neighbor_entry16 = sai_thrift_neighbor_entry_t(
+            self.switch_id, self.lag2_rif, sai_ipaddress(nhop_ip6))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry16, dst_mac_address=dmac6)
+        self.nhop1 = sai_thrift_create_next_hop(
+            self.client,
+            type=SAI_NEXT_HOP_TYPE_IP,
+            router_interface_id=self.port11_rif,
+            ip=sai_ipaddress(nhop_ip1))
+        self.nhop2 = sai_thrift_create_next_hop(
+            self.client,
+            type=SAI_NEXT_HOP_TYPE_IP,
+            router_interface_id=self.port12_rif,
+            ip=sai_ipaddress(nhop_ip2))
+        self.nhop3_lag1 = sai_thrift_create_next_hop(
+            self.client,
+            type=SAI_NEXT_HOP_TYPE_IP,
+            router_interface_id=self.lag1_rif,
+            ip=sai_ipaddress(nhop_ip3))
+        self.nhop4_lag2 = sai_thrift_create_next_hop(
+            self.client,
+            type=SAI_NEXT_HOP_TYPE_IP,
+            router_interface_id=self.lag2_rif,
+            ip=sai_ipaddress(nhop_ip4))
+        self.nhop5_lag1 = sai_thrift_create_next_hop(
+            self.client,
+            type=SAI_NEXT_HOP_TYPE_IP,
+            router_interface_id=self.lag1_rif,
+            ip=sai_ipaddress(nhop_ip5))
+        self.nhop6_lag2 = sai_thrift_create_next_hop(
+            self.client,
+            type=SAI_NEXT_HOP_TYPE_IP,
+            router_interface_id=self.lag2_rif,
+            ip=sai_ipaddress(nhop_ip6))
+        self.nhop_group1 = sai_thrift_create_next_hop_group(
+            self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+        self.nh_group1_member1 = sai_thrift_create_next_hop_group_member(
+            self.client,
+            next_hop_group_id=self.nhop_group1,
+            next_hop_id=self.nhop1)
+        self.nh_group1_member2 = sai_thrift_create_next_hop_group_member(
+            self.client,
+            next_hop_group_id=self.nhop_group1,
+            next_hop_id=self.nhop2)
+        self.nh_group1_member3 = sai_thrift_create_next_hop_group_member(
+            self.client,
+            next_hop_group_id=self.nhop_group1,
+            next_hop_id=self.nhop3_lag1)
+        self.nh_group1_member4 = sai_thrift_create_next_hop_group_member(
+            self.client,
+            next_hop_group_id=self.nhop_group1,
+            next_hop_id=self.nhop4_lag2)
+        self.nhop_group2 = sai_thrift_create_next_hop_group(
+            self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+        self.nh_group2_member1 = sai_thrift_create_next_hop_group_member(
+            self.client,
+            next_hop_group_id=self.nhop_group2,
+            next_hop_id=self.nhop5_lag1)
+        self.nh_group2_member2 = sai_thrift_create_next_hop_group_member(
+            self.client,
+            next_hop_group_id=self.nhop_group2,
+            next_hop_id=self.nhop6_lag2)
+        # create route entries
+        self.route0 = sai_thrift_route_entry_t(
+            switch_id=self.switch_id,
+            destination=sai_ipprefix('10.10.10.1/16'),
+            vr_id=self.default_vrf)
+        status = sai_thrift_create_route_entry(
+            self.client, self.route0, next_hop_id=self.nhop_group1)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        self.route1 = sai_thrift_route_entry_t(
+            switch_id=self.switch_id,
+            destination=sai_ipprefix('20.20.20.1/16'),
+            vr_id=self.default_vrf)
+        status = sai_thrift_create_route_entry(
+            self.client, self.route1, next_hop_id=self.nhop_group2)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        # define IPv4 IPv6 LagIPv4Hash and LagIPv6Hash
+        self.ipv4_hash_id, self.ipv6_hash_id = setup_hash(self)
+
+    def runTest(self):
+        print("l3IPv4EcmpHostTwoLagsTest")
+
+        count = [0, 0, 0, 0, 0, 0]
+        dst_ip = int(binascii.hexlify(socket.inet_aton('20.20.20.1')), 16)
+        src_mac_start = '00:22:22:22:{0}:{1}'
+        for i in range(0, MAX_ITRS):
+            dst_ip_addr = socket.inet_ntoa(
+                binascii.unhexlify(hex(dst_ip)[2:].zfill(8)))
+            src_mac = src_mac_start.format(
+                str(i).zfill(4)[:2],
+                str(i).zfill(4)[2:])
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    eth_src=src_mac,
+                                    ip_dst=dst_ip_addr,
+                                    ip_src='192.168.8.1',
+                                    ip_id=106,
+                                    ip_ttl=64)
+            exp_pkt1 = simple_tcp_packet(eth_dst='00:55:55:55:55:55',
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=dst_ip_addr,
+                                         ip_src='192.168.8.1',
+                                         ip_id=106,
+                                         ip_ttl=63)
+            exp_pkt2 = simple_tcp_packet(eth_dst='00:66:66:66:66:66',
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=dst_ip_addr,
+                                         ip_src='192.168.8.1',
+                                         ip_id=106,
+                                         ip_ttl=63)
+            send_packet(self, self.dev_port15, pkt)
+            ports_to_verify = [
+                self.dev_port4,  # LAG1 ports
+                self.dev_port5,
+                self.dev_port6,
+                self.dev_port7,  # LAG2 ports
+                self.dev_port8,
+                self.dev_port9
+            ]
+            rcv_idx = verify_any_packet_any_port(
+                self, [exp_pkt1, exp_pkt2], ports_to_verify)
+            count[rcv_idx] += 1
+            dst_ip += 1
+        print("PORT lb counts", count)
+        ecmp_count = [(count[0] + count[1] + count[2]),
+                      (count[3] + count[4] + count[5])]
+        print("ECMP count:", ecmp_count)
+        for i in range(0, 2):
+            self.assertTrue((ecmp_count[i] >= ((MAX_ITRS / 2) * 0.7)),
+                            "Ecmp paths are not equally balanced")
+        for i in range(0, 3):
+            self.assertTrue((count[i] >= ((MAX_ITRS / 6) * 0.6)),
+                            "Lag path1 is not equally balanced")
+
+        for i in range(3, 6):
+            self.assertTrue((count[i] >= ((MAX_ITRS / 6) * 0.6)),
+                            "Lag path2 is not equally balanced")
+        print("\nVerification done")
+
+    def tearDown(self):
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry11)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry12)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry13)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry14)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry15)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry16)
+        sai_thrift_remove_next_hop_group_member(self.client,
+                                                self.nh_group1_member1)
+        sai_thrift_remove_next_hop_group_member(self.client,
+                                                self.nh_group1_member2)
+        sai_thrift_remove_next_hop_group_member(self.client,
+                                                self.nh_group1_member3)
+        sai_thrift_remove_next_hop_group_member(self.client,
+                                                self.nh_group1_member4)
+        sai_thrift_remove_next_hop_group_member(self.client,
+                                                self.nh_group2_member1)
+        sai_thrift_remove_next_hop_group_member(self.client,
+                                                self.nh_group2_member2)
+        self.assertEqual(nhg_members_count(self.client, self.nhop_group1), 0)
+        self.assertEqual(nhg_members_count(self.client, self.nhop_group2), 0)
+        sai_thrift_remove_route_entry(self.client, self.route0)
+        sai_thrift_remove_route_entry(self.client, self.route1)
+        sai_thrift_remove_next_hop_group(self.client, self.nhop_group1)
+        sai_thrift_remove_next_hop_group(self.client, self.nhop_group2)
+        sai_thrift_remove_next_hop(self.client, self.nhop1)
+        sai_thrift_remove_next_hop(self.client, self.nhop2)
+        sai_thrift_remove_next_hop(self.client, self.nhop3_lag1)
+        sai_thrift_remove_next_hop(self.client, self.nhop4_lag2)
+        sai_thrift_remove_next_hop(self.client, self.nhop5_lag1)
+        sai_thrift_remove_next_hop(self.client, self.nhop6_lag2)
+        sai_thrift_remove_router_interface(self.client, self.lag1_rif)
+        sai_thrift_remove_router_interface(self.client, self.lag2_rif)
+        sai_thrift_remove_router_interface(self.client, self.port15_rif)
+        release_hash(self, self.ipv4_hash_id, self.ipv6_hash_id)
+
+        super(L3IPv4EcmpHostTwoLagsTest, self).tearDown()
