@@ -9133,9 +9133,6 @@ class SviHostTest(PlatformSaiHelper):
                   "11.11.11.1) Routed" % (self.dev_port24, self.dev_port10))
             send_packet(self, self.dev_port24, pkt2)
             verify_packets(self, exp_pkt2, [self.dev_port10])
-        
-        print("\nVerification done")
-
         finally:
             sai_thrift_remove_fdb_entry(self.client, fdb_entry1)
             sai_thrift_remove_fdb_entry(self.client, fdb_entry2)
