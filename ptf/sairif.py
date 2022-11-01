@@ -8220,3 +8220,1408 @@ class L3MtuTrapTest(SaiHelper):
             'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
         self.assertTrue(self.vlan100_rif_counter_out == vlan100_rif_stats[
             'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
+
+@group("draft")
+class RifToSubPortTest(PlatformSaiHelper):
+    """
+    """
+
+    def setUp(self):
+        super(RifToSubPortTest, self).setUp()
+
+        dmac0 = '00:11:22:33:44:55'
+        dmac1 = '00:22:22:33:44:55'
+        dmac2 = '00:33:22:33:44:55'
+        dmac3 = '00:44:22:33:44:55'
+        dmac4 = '00:55:22:33:44:55'
+        mac_action = SAI_PACKET_ACTION_FORWARD
+
+        # L3 RIF on port10, port11 and lag3
+        self.neighbor_entry0 = sai_thrift_neighbor_entry_t(
+            rif_id=self.port10_rif, ip_address=sai_ipaddress('10.10.10.1'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry0, dst_mac_address=dmac0)
+        self.nhop0 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('10.10.10.1'),
+            router_interface_id=self.port10_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+
+        self.neighbor_entry1 = sai_thrift_neighbor_entry_t(
+            rif_id=self.port11_rif, ip_address=sai_ipaddress('10.10.10.2'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry1, dst_mac_address=dmac1)
+        self.nhop1 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('10.10.10.2'),
+            router_interface_id=self.port11_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+
+        self.neighbor_entry2 = sai_thrift_neighbor_entry_t(
+            rif_id=self.lag3_rif, ip_address=sai_ipaddress('10.10.10.3'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry2, dst_mac_address=dmac2)
+        self.nhop2 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('10.10.10.3'),
+            router_interface_id=self.lag3_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+
+        self.port24_bp = sai_thrift_create_bridge_port(
+            self.client,
+            bridge_id=self.default_1q_bridge,
+            port_id=self.port24,
+            type=SAI_BRIDGE_PORT_TYPE_PORT,
+            admin_state=True)
+        self.port25_bp = sai_thrift_create_bridge_port(
+            self.client,
+            bridge_id=self.default_1q_bridge,
+            port_id=self.port25,
+            type=SAI_BRIDGE_PORT_TYPE_PORT,
+            admin_state=True)
+
+        # add SVI on vlan600, port24 and vlan700, port 25
+        self.vlan600 = sai_thrift_create_vlan(self.client, vlan_id=600)
+        self.vlan_member601 = sai_thrift_create_vlan_member(
+            self.client,
+            vlan_id=self.vlan600,
+            bridge_port_id=self.port24_bp,
+            vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
+        self.vlan600_rif = sai_thrift_create_router_interface(
+            self.client,
+            type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
+            virtual_router_id=self.default_vrf,
+            vlan_id=self.vlan600)
+        self.neighbor_entry3 = sai_thrift_neighbor_entry_t(
+            rif_id=self.vlan600_rif, ip_address=sai_ipaddress('10.10.10.4'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry3, dst_mac_address=dmac3)
+        self.nhop3 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('10.10.10.4'),
+            router_interface_id=self.vlan600_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        self.fdb_entry3 = sai_thrift_fdb_entry_t(
+            switch_id=self.switch_id, mac_address=dmac3, bv_id=self.vlan600)
+        sai_thrift_create_fdb_entry(self.client,
+                                    self.fdb_entry3,
+                                    type=SAI_FDB_ENTRY_TYPE_STATIC,
+                                    bridge_port_id=self.port24_bp,
+                                    packet_action=mac_action)
+        sai_thrift_set_port_attribute(
+            self.client, self.port24, port_vlan_id=600)
+
+        self.vlan700 = sai_thrift_create_vlan(self.client, vlan_id=700)
+        self.vlan_member701 = sai_thrift_create_vlan_member(
+            self.client,
+            vlan_id=self.vlan700,
+            bridge_port_id=self.port25_bp,
+            vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_TAGGED)
+        self.vlan700_rif = sai_thrift_create_router_interface(
+            self.client,
+            type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
+            virtual_router_id=self.default_vrf,
+            vlan_id=self.vlan700)
+        self.neighbor_entry4 = sai_thrift_neighbor_entry_t(
+            rif_id=self.vlan700_rif, ip_address=sai_ipaddress('10.10.10.5'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry4, dst_mac_address=dmac4)
+        self.nhop4 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('10.10.10.5'),
+            router_interface_id=self.vlan700_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        self.fdb_entry4 = sai_thrift_fdb_entry_t(
+            switch_id=self.switch_id, mac_address=dmac4, bv_id=self.vlan700)
+        sai_thrift_create_fdb_entry(self.client,
+                                    self.fdb_entry4,
+                                    type=SAI_FDB_ENTRY_TYPE_STATIC,
+                                    bridge_port_id=self.port25_bp,
+                                    packet_action=mac_action)
+
+        # add subport 100, 200 on port10
+        self.subport10_100 = sai_thrift_create_router_interface(
+            self.client,
+            type=SAI_ROUTER_INTERFACE_TYPE_SUB_PORT,
+            virtual_router_id=self.default_vrf,
+            port_id=self.port10,
+            admin_v4_state=True,
+            outer_vlan_id=100)
+        self.neighbor_entry_sp10_100 = sai_thrift_neighbor_entry_t(
+            rif_id=self.subport10_100, ip_address=sai_ipaddress('20.20.0.10'))
+        sai_thrift_create_neighbor_entry(self.client,
+                                         self.neighbor_entry_sp10_100,
+                                         dst_mac_address="00:33:33:33:01:00")
+        self.nhop_sp10_100 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('20.20.0.10'),
+            router_interface_id=self.subport10_100,
+            type=SAI_NEXT_HOP_TYPE_IP)
+
+        self.subport10_200 = sai_thrift_create_router_interface(
+            self.client,
+            type=SAI_ROUTER_INTERFACE_TYPE_SUB_PORT,
+            virtual_router_id=self.default_vrf,
+            port_id=self.port10,
+            admin_v4_state=True,
+            outer_vlan_id=200)
+        self.neighbor_entry_sp10_200 = sai_thrift_neighbor_entry_t(
+            rif_id=self.subport10_200, ip_address=sai_ipaddress('20.20.0.20'))
+        sai_thrift_create_neighbor_entry(self.client,
+                                         self.neighbor_entry_sp10_200,
+                                         dst_mac_address="00:33:33:33:02:00")
+        self.nhop_sp10_200 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('20.20.0.20'),
+            router_interface_id=self.subport10_200,
+            type=SAI_NEXT_HOP_TYPE_IP)
+
+        # add subport 200, 300 on port11
+        self.subport11_200 = sai_thrift_create_router_interface(
+            self.client,
+            type=SAI_ROUTER_INTERFACE_TYPE_SUB_PORT,
+            virtual_router_id=self.default_vrf,
+            port_id=self.port11,
+            admin_v4_state=True,
+            outer_vlan_id=200)
+        self.neighbor_entry_sp11_200 = sai_thrift_neighbor_entry_t(
+            rif_id=self.subport11_200, ip_address=sai_ipaddress('20.20.1.20'))
+        sai_thrift_create_neighbor_entry(self.client,
+                                         self.neighbor_entry_sp11_200,
+                                         dst_mac_address="00:33:33:33:12:00")
+        self.nhop_sp11_200 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('20.20.1.20'),
+            router_interface_id=self.subport11_200,
+            type=SAI_NEXT_HOP_TYPE_IP)
+
+        self.subport11_300 = sai_thrift_create_router_interface(
+            self.client,
+            type=SAI_ROUTER_INTERFACE_TYPE_SUB_PORT,
+            virtual_router_id=self.default_vrf,
+            port_id=self.port11,
+            admin_v4_state=True,
+            outer_vlan_id=300)
+        self.neighbor_entry_sp11_300 = sai_thrift_neighbor_entry_t(
+            rif_id=self.subport11_300, ip_address=sai_ipaddress('20.20.1.30'))
+        sai_thrift_create_neighbor_entry(self.client,
+                                         self.neighbor_entry_sp11_300,
+                                         dst_mac_address="00:33:33:33:13:00")
+        self.nhop_sp11_300 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('20.20.1.30'),
+            router_interface_id=self.subport11_300,
+            type=SAI_NEXT_HOP_TYPE_IP)
+
+        # add subport 400, 500 on lag3
+        self.sublag3_400 = sai_thrift_create_router_interface(
+            self.client,
+            type=SAI_ROUTER_INTERFACE_TYPE_SUB_PORT,
+            virtual_router_id=self.default_vrf,
+            port_id=self.lag3,
+            admin_v4_state=True,
+            outer_vlan_id=400)
+        self.neighbor_entry_sl3_400 = sai_thrift_neighbor_entry_t(
+            rif_id=self.sublag3_400, ip_address=sai_ipaddress('20.20.0.40'))
+        sai_thrift_create_neighbor_entry(self.client,
+                                         self.neighbor_entry_sl3_400,
+                                         dst_mac_address="00:33:33:33:04:00")
+        self.nhop_sl3_400 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('20.20.0.40'),
+            router_interface_id=self.sublag3_400,
+            type=SAI_NEXT_HOP_TYPE_IP)
+
+        self.sublag3_500 = sai_thrift_create_router_interface(
+            self.client,
+            type=SAI_ROUTER_INTERFACE_TYPE_SUB_PORT,
+            virtual_router_id=self.default_vrf,
+            port_id=self.lag3,
+            admin_v4_state=True,
+            outer_vlan_id=500)
+        self.neighbor_entry_sl3_500 = sai_thrift_neighbor_entry_t(
+            rif_id=self.sublag3_500, ip_address=sai_ipaddress('20.20.0.50'))
+        sai_thrift_create_neighbor_entry(self.client,
+                                         self.neighbor_entry_sl3_500,
+                                         dst_mac_address="00:33:33:33:05:00")
+        self.nhop_sl3_500 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('20.20.0.50'),
+            router_interface_id=self.sublag3_500,
+            type=SAI_NEXT_HOP_TYPE_IP)
+
+        # add subport 600 on port24, this port is untagged on vlan600
+        self.subport24_600 = sai_thrift_create_router_interface(
+            self.client,
+            type=SAI_ROUTER_INTERFACE_TYPE_SUB_PORT,
+            virtual_router_id=self.default_vrf,
+            port_id=self.port24,
+            admin_v4_state=True,
+            outer_vlan_id=600)
+        self.neighbor_entry_sp24_600 = sai_thrift_neighbor_entry_t(
+            rif_id=self.subport24_600, ip_address=sai_ipaddress('20.20.3.60'))
+        sai_thrift_create_neighbor_entry(self.client,
+                                         self.neighbor_entry_sp24_600,
+                                         dst_mac_address="00:33:33:33:36:00")
+        self.nhop_sp24_600 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('20.20.3.60'),
+            router_interface_id=self.subport24_600,
+            type=SAI_NEXT_HOP_TYPE_IP)
+
+        # add subport 400, 500 on port25, this port is tagged on vlan700
+        self.subport25_400 = sai_thrift_create_router_interface(
+            self.client,
+            type=SAI_ROUTER_INTERFACE_TYPE_SUB_PORT,
+            virtual_router_id=self.default_vrf,
+            port_id=self.port25,
+            admin_v4_state=True,
+            outer_vlan_id=400)
+        self.neighbor_entry_sp25_400 = sai_thrift_neighbor_entry_t(
+            rif_id=self.subport25_400, ip_address=sai_ipaddress('20.20.4.40'))
+        sai_thrift_create_neighbor_entry(self.client,
+                                         self.neighbor_entry_sp25_400,
+                                         dst_mac_address="00:33:33:33:44:00")
+        self.nhop_sp25_400 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('20.20.4.40'),
+            router_interface_id=self.subport25_400,
+            type=SAI_NEXT_HOP_TYPE_IP)
+
+        self.subport25_500 = sai_thrift_create_router_interface(
+            self.client,
+            type=SAI_ROUTER_INTERFACE_TYPE_SUB_PORT,
+            virtual_router_id=self.default_vrf,
+            port_id=self.port25,
+            admin_v4_state=True,
+            outer_vlan_id=500)
+        self.neighbor_entry_sp25_500 = sai_thrift_neighbor_entry_t(
+            rif_id=self.subport25_500, ip_address=sai_ipaddress('20.20.4.50'))
+        sai_thrift_create_neighbor_entry(self.client,
+                                         self.neighbor_entry_sp25_500,
+                                         dst_mac_address="00:33:33:33:45:00")
+        self.nhop_sp25_500 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('20.20.4.50'),
+            router_interface_id=self.subport25_500,
+            type=SAI_NEXT_HOP_TYPE_IP)
+
+        self.route_entry0 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('30.30.0.1/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry0, next_hop_id=self.nhop0)
+
+        self.route_entry1 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('30.30.1.1/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry1, next_hop_id=self.nhop1)
+
+        self.route_entry1_ipv6 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf,
+            destination=sai_ipprefix(
+                '1234:5678:9abc:def0:4422:1133:5577:99aa/128'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry1_ipv6, next_hop_id=self.nhop0)
+
+        self.route_entry2 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('30.30.2.1/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry2, next_hop_id=self.nhop2)
+
+        self.route_entry3 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('30.30.3.1/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry3, next_hop_id=self.nhop3)
+
+        self.route_entry4 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('30.30.4.1/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry4, next_hop_id=self.nhop4)
+
+        self.route_entry_sp10_100 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('40.40.0.10/32'))
+        sai_thrift_create_route_entry(self.client,
+                                      self.route_entry_sp10_100,
+                                      next_hop_id=self.nhop_sp10_100)
+
+        self.route_entry_sp10_100_ipv6 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf,
+            destination=sai_ipprefix(
+                '1234:5678:9abc:def0:4422:1133:5577:8899/128'))
+        sai_thrift_create_route_entry(self.client,
+                                      self.route_entry_sp10_100_ipv6,
+                                      next_hop_id=self.nhop_sp10_100)
+
+        self.route_entry_sp10_200 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('40.40.0.20/32'))
+        sai_thrift_create_route_entry(self.client,
+                                      self.route_entry_sp10_200,
+                                      next_hop_id=self.nhop_sp10_200)
+
+        self.route_entry_sp11_200 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('40.40.1.20/32'))
+        sai_thrift_create_route_entry(self.client,
+                                      self.route_entry_sp11_200,
+                                      next_hop_id=self.nhop_sp11_200)
+
+        self.route_entry_sp11_300 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('40.40.1.30/32'))
+        sai_thrift_create_route_entry(self.client,
+                                      self.route_entry_sp11_300,
+                                      next_hop_id=self.nhop_sp11_300)
+
+        self.route_entry_sl3_400 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('40.40.0.40/32'))
+        sai_thrift_create_route_entry(self.client,
+                                      self.route_entry_sl3_400,
+                                      next_hop_id=self.nhop_sl3_400)
+
+        self.route_entry_sl3_500 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('40.40.0.50/32'))
+        sai_thrift_create_route_entry(self.client,
+                                      self.route_entry_sl3_500,
+                                      next_hop_id=self.nhop_sl3_500)
+
+        self.route_entry_sp24_600 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('40.40.3.60/32'))
+        sai_thrift_create_route_entry(self.client,
+                                      self.route_entry_sp24_600,
+                                      next_hop_id=self.nhop_sp24_600)
+
+        self.route_entry_sp25_400 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('40.40.4.40/32'))
+        sai_thrift_create_route_entry(self.client,
+                                      self.route_entry_sp25_400,
+                                      next_hop_id=self.nhop_sp25_400)
+
+        self.route_entry_sp25_500 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('40.40.4.50/32'))
+        sai_thrift_create_route_entry(self.client,
+                                      self.route_entry_sp25_500,
+                                      next_hop_id=self.nhop_sp25_500)
+
+        # ECMP
+        self.nhop_group = sai_thrift_create_next_hop_group(
+            self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+        self.nhop_group_member1 = sai_thrift_create_next_hop_group_member(
+            self.client, next_hop_group_id=self.nhop_group,
+            next_hop_id=self.nhop_sp10_200)
+        self.nhop_group_member2 = sai_thrift_create_next_hop_group_member(
+            self.client, next_hop_group_id=self.nhop_group,
+            next_hop_id=self.nhop_sp11_200)
+        self.nhop_group_member3 = sai_thrift_create_next_hop_group_member(
+            self.client, next_hop_group_id=self.nhop_group,
+            next_hop_id=self.nhop_sl3_400)
+        self.nhop_group_member4 = sai_thrift_create_next_hop_group_member(
+            self.client, next_hop_group_id=self.nhop_group,
+            next_hop_id=self.nhop_sp24_600)
+        self.nhop_group_member5 = sai_thrift_create_next_hop_group_member(
+            self.client, next_hop_group_id=self.nhop_group,
+            next_hop_id=self.nhop_sp25_500)
+
+        self.route_entry_ecmp = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('60.60.60.0/16'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry_ecmp, next_hop_id=self.nhop_group)
+
+    def runTest(self):
+        """
+        Verifies packet routed with valid vlan on sub-port
+        and routing between L3 RIF and sub-port
+        """
+        print("\nrifToSubPortTest()")
+
+        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                eth_src='00:22:22:22:22:22',
+                                ip_dst='40.40.0.10',
+                                ip_src='30.30.0.1',
+                                ip_id=105,
+                                ip_ttl=64,
+                                pktlen=100)
+        tagged_pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                       eth_src='00:22:22:22:22:22',
+                                       ip_dst='40.40.0.10',
+                                       ip_src='30.30.0.1',
+                                       ip_id=105,
+                                       ip_ttl=64,
+                                       dl_vlan_enable=True,
+                                       vlan_vid=700,
+                                       pktlen=104)
+        exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
+                                    eth_src=ROUTER_MAC,
+                                    ip_dst='40.40.0.10',
+                                    ip_src='30.30.0.1',
+                                    ip_id=105,
+                                    ip_ttl=63,
+                                    dl_vlan_enable=True,
+                                    vlan_vid=100,
+                                    pktlen=104)
+
+        pkt_data = [
+            ['40.40.0.10', '00:33:33:33:01:00', 100, [10],
+             'subport10_100'],
+            ['40.40.0.20', '00:33:33:33:02:00', 200, [10],
+             'subport10_200'],
+            ['40.40.1.20', '00:33:33:33:12:00', 200, [11],
+             'subport11_200'],
+            ['40.40.1.30', '00:33:33:33:13:00', 300, [11],
+             'subport11_300'],
+            ['40.40.0.40', '00:33:33:33:04:00', 400, [14, 15, 16],
+             'sublag3_400'],
+            ['40.40.0.50', '00:33:33:33:05:00', 500, [14, 15, 16],
+             'sublag3_500'],
+            ['40.40.3.60', '00:33:33:33:36:00', 600, [24],
+             'subport24_600'],
+            ['40.40.4.40', '00:33:33:33:44:00', 400, [25],
+             'subport25_400'],
+            ['40.40.4.50', '00:33:33:33:45:00', 500, [25],
+             'subport25_500'],
+        ]
+        ingress_rifs = [10, 11, 15, 24]
+        for port in ingress_rifs:
+            for content in pkt_data:
+                pkt[IP].dst = content[0]
+                exp_pkt[IP].dst = content[0]
+                exp_pkt[Ether].dst = content[1]
+                exp_pkt[Dot1Q].vlan = content[2]
+                iport = getattr(self, 'dev_port%s' % port)
+                eport = [getattr(self, 'dev_port%s' % i)
+                         for i in content[3]]
+                send_packet(self, iport, pkt)
+                verify_packet_any_port(self, exp_pkt, eport)
+
+        for content in pkt_data:
+            tagged_pkt[IP].dst = content[0]
+            exp_pkt[IP].dst = content[0]
+            exp_pkt[Ether].dst = content[1]
+            exp_pkt[Dot1Q].vlan = content[2]
+            eport = [getattr(self, 'dev_port%s' % i) for i in content[3]]
+            send_packet(self, self.dev_port25, tagged_pkt)
+            verify_packet_any_port(self, exp_pkt, eport)
+
+        print("\nVerification done")
+
+    def tearDown(self):
+        sai_thrift_remove_route_entry(self.client, self.route_entry_ecmp)
+        sai_thrift_remove_next_hop_group_member(
+            self.client, self.nhop_group_member1)
+        sai_thrift_remove_next_hop_group_member(
+            self.client, self.nhop_group_member2)
+        sai_thrift_remove_next_hop_group_member(
+            self.client, self.nhop_group_member3)
+        sai_thrift_remove_next_hop_group_member(
+            self.client, self.nhop_group_member4)
+        sai_thrift_remove_next_hop_group_member(
+            self.client, self.nhop_group_member5)
+        sai_thrift_remove_next_hop_group(self.client, self.nhop_group)
+
+        sai_thrift_remove_route_entry(self.client, self.route_entry_sp25_500)
+        sai_thrift_remove_route_entry(self.client, self.route_entry_sp25_400)
+        sai_thrift_remove_route_entry(self.client, self.route_entry_sp24_600)
+        sai_thrift_remove_route_entry(self.client, self.route_entry_sp10_100)
+        sai_thrift_remove_route_entry(
+            self.client, self.route_entry_sp10_100_ipv6)
+        sai_thrift_remove_route_entry(self.client, self.route_entry_sp10_200)
+        sai_thrift_remove_route_entry(self.client, self.route_entry_sp11_200)
+        sai_thrift_remove_route_entry(self.client, self.route_entry_sp11_300)
+        sai_thrift_remove_route_entry(self.client, self.route_entry_sl3_400)
+        sai_thrift_remove_route_entry(self.client, self.route_entry_sl3_500)
+        sai_thrift_remove_route_entry(self.client, self.route_entry4)
+        sai_thrift_remove_route_entry(self.client, self.route_entry3)
+        sai_thrift_remove_route_entry(self.client, self.route_entry2)
+        sai_thrift_remove_route_entry(self.client, self.route_entry1)
+        sai_thrift_remove_route_entry(self.client, self.route_entry1_ipv6)
+        sai_thrift_remove_route_entry(self.client, self.route_entry0)
+
+        sai_thrift_remove_neighbor_entry(
+            self.client, self.neighbor_entry_sp24_600)
+        sai_thrift_remove_next_hop(self.client, self.nhop_sp24_600)
+        sai_thrift_remove_router_interface(self.client, self.subport24_600)
+
+        sai_thrift_remove_neighbor_entry(
+            self.client, self.neighbor_entry_sp25_500)
+        sai_thrift_remove_neighbor_entry(
+            self.client, self.neighbor_entry_sp25_400)
+        sai_thrift_remove_next_hop(self.client, self.nhop_sp25_500)
+        sai_thrift_remove_next_hop(self.client, self.nhop_sp25_400)
+        sai_thrift_remove_router_interface(self.client, self.subport25_500)
+        sai_thrift_remove_router_interface(self.client, self.subport25_400)
+
+        sai_thrift_remove_neighbor_entry(
+            self.client, self.neighbor_entry_sl3_500)
+        sai_thrift_remove_neighbor_entry(
+            self.client, self.neighbor_entry_sl3_400)
+        sai_thrift_remove_next_hop(self.client, self.nhop_sl3_500)
+        sai_thrift_remove_next_hop(self.client, self.nhop_sl3_400)
+        sai_thrift_remove_router_interface(self.client, self.sublag3_500)
+        sai_thrift_remove_router_interface(self.client, self.sublag3_400)
+
+        sai_thrift_remove_neighbor_entry(
+            self.client, self.neighbor_entry_sp11_300)
+        sai_thrift_remove_neighbor_entry(
+            self.client, self.neighbor_entry_sp11_200)
+        sai_thrift_remove_next_hop(self.client, self.nhop_sp11_300)
+        sai_thrift_remove_next_hop(self.client, self.nhop_sp11_200)
+        sai_thrift_remove_router_interface(self.client, self.subport11_300)
+        sai_thrift_remove_router_interface(self.client, self.subport11_200)
+
+        sai_thrift_remove_neighbor_entry(
+            self.client, self.neighbor_entry_sp10_200)
+        sai_thrift_remove_neighbor_entry(
+            self.client, self.neighbor_entry_sp10_100)
+        sai_thrift_remove_next_hop(self.client, self.nhop_sp10_200)
+        sai_thrift_remove_next_hop(self.client, self.nhop_sp10_100)
+        sai_thrift_remove_router_interface(self.client, self.subport10_200)
+        sai_thrift_remove_router_interface(self.client, self.subport10_100)
+
+        sai_thrift_set_port_attribute(self.client, self.port24, port_vlan_id=1)
+
+        sai_thrift_remove_fdb_entry(self.client, self.fdb_entry4)
+        sai_thrift_remove_fdb_entry(self.client, self.fdb_entry3)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry4)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry3)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry2)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry1)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry0)
+
+        sai_thrift_remove_next_hop(self.client, self.nhop4)
+        sai_thrift_remove_next_hop(self.client, self.nhop3)
+        sai_thrift_remove_next_hop(self.client, self.nhop2)
+        sai_thrift_remove_next_hop(self.client, self.nhop1)
+        sai_thrift_remove_next_hop(self.client, self.nhop0)
+
+        sai_thrift_remove_router_interface(self.client, self.vlan700_rif)
+        sai_thrift_remove_router_interface(self.client, self.vlan600_rif)
+        sai_thrift_remove_vlan_member(self.client, self.vlan_member701)
+        sai_thrift_remove_vlan_member(self.client, self.vlan_member601)
+        sai_thrift_remove_vlan(self.client, self.vlan700)
+        sai_thrift_remove_vlan(self.client, self.vlan600)
+
+        sai_thrift_remove_bridge_port(self.client, self.port25_bp)
+        sai_thrift_remove_bridge_port(self.client, self.port24_bp)
+
+        super(RifToSubPortTest, self).tearDown()
+
+
+@group("draft")
+class SviHostTest(PlatformSaiHelper):
+    """
+    Verifies routing after NHOP resolved via static MAC entry
+    """
+
+    def setUp(self):
+        """
+        Topology
+        L3 intf  - 10, 11
+        vlan 100 - 24, 25, 26
+        vlan 200 - lag10(30, 31), lag11(28, 29)
+        27 extra port used for testing
+        """
+        super(SviHostTest, self).setUp()
+
+        self.port24_bp = sai_thrift_create_bridge_port(
+            self.client,
+            bridge_id=self.default_1q_bridge,
+            port_id=self.port24,
+            type=SAI_BRIDGE_PORT_TYPE_PORT,
+            admin_state=True)
+        self.port25_bp = sai_thrift_create_bridge_port(
+            self.client,
+            bridge_id=self.default_1q_bridge,
+            port_id=self.port25,
+            type=SAI_BRIDGE_PORT_TYPE_PORT,
+            admin_state=True)
+        self.port26_bp = sai_thrift_create_bridge_port(
+            self.client,
+            bridge_id=self.default_1q_bridge,
+            port_id=self.port26,
+            type=SAI_BRIDGE_PORT_TYPE_PORT,
+            admin_state=True)
+
+        # vlan100 with members port24, port25 and port26
+        self.vlan100 = sai_thrift_create_vlan(self.client, vlan_id=100)
+        self.vlan_member100 = sai_thrift_create_vlan_member(
+            self.client,
+            vlan_id=self.vlan100,
+            bridge_port_id=self.port24_bp,
+            vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
+        self.vlan_member101 = sai_thrift_create_vlan_member(
+            self.client,
+            vlan_id=self.vlan100,
+            bridge_port_id=self.port25_bp,
+            vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
+        self.vlan_member102 = sai_thrift_create_vlan_member(
+            self.client,
+            vlan_id=self.vlan100,
+            bridge_port_id=self.port26_bp,
+            vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
+        sai_thrift_set_port_attribute(
+            self.client, self.port24, port_vlan_id=100)
+        sai_thrift_set_port_attribute(
+            self.client, self.port25, port_vlan_id=100)
+        sai_thrift_set_port_attribute(
+            self.client, self.port26, port_vlan_id=100)
+
+        # create vlan100_rif
+        self.vlan100_rif = sai_thrift_create_router_interface(
+            self.client,
+            type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
+            virtual_router_id=self.default_vrf,
+            vlan_id=self.vlan100)
+
+        self.dmac1 = '00:11:22:33:44:55'  # 10.10.10.1
+        self.dmac2 = '00:22:22:33:44:55'  # 10.10.10.2
+        self.dmac3 = '00:33:22:33:44:55'  # 10.10.10.3
+        self.dmac4 = '00:44:22:33:44:55'  # 11.11.11.1
+        self.dmac5 = '00:11:33:33:44:55'  # 20.10.10.1
+        self.dmac6 = '00:22:33:33:44:55'  # 20.10.10.2
+        self.dmac7 = '00:44:33:33:44:55'  # 20.11.11.1
+
+        # create nhop1, nhop2 & nhop3 on SVI
+        self.neighbor_entry1 = sai_thrift_neighbor_entry_t(
+            rif_id=self.vlan100_rif, ip_address=sai_ipaddress('10.10.0.1'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry1, dst_mac_address=self.dmac1)
+        self.nhop1 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('10.10.0.1'),
+            router_interface_id=self.vlan100_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        self.route_entry1 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry1, next_hop_id=self.nhop1)
+        self.route_entry1_v6 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf,
+            destination=sai_ipprefix(
+                '1234:5678:9abc:def0:4422:1133:5577:0000/128'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry1_v6, next_hop_id=self.nhop1)
+
+        self.neighbor_entry2 = sai_thrift_neighbor_entry_t(
+            rif_id=self.vlan100_rif, ip_address=sai_ipaddress('10.10.0.2'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry2, dst_mac_address=self.dmac2)
+        self.nhop2 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('10.10.0.2'),
+            router_interface_id=self.vlan100_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        self.route_entry2 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.2/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry2, next_hop_id=self.nhop2)
+        self.route_entry2_v6 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf,
+            destination=sai_ipprefix(
+                '1234:5678:9abc:def0:4422:1133:5577:2222/128'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry2_v6, next_hop_id=self.nhop2)
+
+        self.neighbor_entry3 = sai_thrift_neighbor_entry_t(
+            rif_id=self.vlan100_rif, ip_address=sai_ipaddress('10.10.0.3'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry3, dst_mac_address=self.dmac3)
+        self.nhop3 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('10.10.0.3'),
+            router_interface_id=self.vlan100_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        self.route_entry3 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.3/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry3, next_hop_id=self.nhop3)
+
+        # create nhop and route to L2 intf
+        self.neighbor_entry4 = sai_thrift_neighbor_entry_t(
+            rif_id=self.port10_rif, ip_address=sai_ipaddress('11.11.0.2'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry4, dst_mac_address=self.dmac4)
+        self.nhop4 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('11.11.0.2'),
+            router_interface_id=self.port10_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        self.route_entry4 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('11.11.11.1/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry4, next_hop_id=self.nhop4)
+        self.route_entry4_v6 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf,
+            destination=sai_ipprefix(
+                '1234:5678:9abc:def0:4422:1133:5577:1111/128'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry4_v6, next_hop_id=self.nhop4)
+
+        self.lag10 = sai_thrift_create_lag(self.client)
+        self.lag10_bp = sai_thrift_create_bridge_port(
+            self.client,
+            bridge_id=self.default_1q_bridge,
+            port_id=self.lag10,
+            type=SAI_BRIDGE_PORT_TYPE_PORT,
+            admin_state=True)
+        self.lag10_member30 = sai_thrift_create_lag_member(
+            self.client, lag_id=self.lag10, port_id=self.port30)
+        self.lag10_member31 = sai_thrift_create_lag_member(
+            self.client, lag_id=self.lag10, port_id=self.port31)
+
+        self.lag11 = sai_thrift_create_lag(self.client)
+        self.lag11_bp = sai_thrift_create_bridge_port(
+            self.client,
+            bridge_id=self.default_1q_bridge,
+            port_id=self.lag11,
+            type=SAI_BRIDGE_PORT_TYPE_PORT,
+            admin_state=True)
+        self.lag11_member28 = sai_thrift_create_lag_member(
+            self.client, lag_id=self.lag11, port_id=self.port28)
+        self.lag11_member29 = sai_thrift_create_lag_member(
+            self.client, lag_id=self.lag11, port_id=self.port29)
+
+        # vlan200 with members lag10 and lag11
+        self.vlan200 = sai_thrift_create_vlan(self.client, vlan_id=200)
+        self.vlan_member200 = sai_thrift_create_vlan_member(
+            self.client,
+            vlan_id=self.vlan200,
+            bridge_port_id=self.lag10_bp,
+            vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
+        self.vlan_member201 = sai_thrift_create_vlan_member(
+            self.client,
+            vlan_id=self.vlan200,
+            bridge_port_id=self.lag11_bp,
+            vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
+        sai_thrift_set_lag_attribute(self.client, self.lag10, port_vlan_id=200)
+        sai_thrift_set_lag_attribute(self.client, self.lag11, port_vlan_id=200)
+
+        self.vlan200_rif = sai_thrift_create_router_interface(
+            self.client,
+            type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
+            virtual_router_id=self.default_vrf,
+            vlan_id=self.vlan200)
+
+        # Create nhop5 and nhop6 on SVI
+        self.neighbor_entry5 = sai_thrift_neighbor_entry_t(
+            rif_id=self.vlan200_rif, ip_address=sai_ipaddress('20.10.0.1'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry5, dst_mac_address=self.dmac5)
+        self.nhop5 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('20.10.0.1'),
+            router_interface_id=self.vlan200_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        self.route_entry5 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('20.10.10.1/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry5, next_hop_id=self.nhop5)
+        self.route_entry5_v6 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf,
+            destination=sai_ipprefix(
+                '1234:5678:9abc:def0:4422:1133:5577:99aa/128'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry5_v6, next_hop_id=self.nhop5)
+
+        self.neighbor_entry6 = sai_thrift_neighbor_entry_t(
+            rif_id=self.vlan200_rif, ip_address=sai_ipaddress('20.10.0.2'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry6, dst_mac_address=self.dmac6)
+        self.nhop6 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('20.10.0.2'),
+            router_interface_id=self.vlan200_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        self.route_entry6 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('20.10.10.2/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry6, next_hop_id=self.nhop6)
+        self.route_entry6_v6 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf,
+            destination=sai_ipprefix(
+                '1234:5678:9abc:def0:1122:3344:5566:7788/128'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry6_v6, next_hop_id=self.nhop6)
+
+        self.neighbor_entry7 = sai_thrift_neighbor_entry_t(
+            rif_id=self.port11_rif, ip_address=sai_ipaddress('21.11.0.2'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry7, dst_mac_address=self.dmac7)
+        self.nhop7 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('21.11.0.2'),
+            router_interface_id=self.port11_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        self.route_entry7 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('21.11.11.1/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry7, next_hop_id=self.nhop7)
+        self.route_entry7_v6 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf,
+            destination=sai_ipprefix(
+                '1234:5678:9abc:def0:1122:3344:5566:6677/128'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry7_v6, next_hop_id=self.nhop7)
+
+    def runTest(self):
+        print("\nSviHostTest()")
+
+        mac_action = SAI_PACKET_ACTION_FORWARD
+        fdb_entry1 = sai_thrift_fdb_entry_t(switch_id=self.switch_id,
+                                            mac_address='00:11:22:33:44:55',
+                                            bv_id=self.vlan100)
+        sai_thrift_create_fdb_entry(self.client,
+                                    fdb_entry1,
+                                    type=SAI_FDB_ENTRY_TYPE_STATIC,
+                                    bridge_port_id=self.port24_bp,
+                                    packet_action=mac_action)
+
+        fdb_entry2 = sai_thrift_fdb_entry_t(switch_id=self.switch_id,
+                                            mac_address='00:22:22:33:44:55',
+                                            bv_id=self.vlan100)
+        sai_thrift_create_fdb_entry(self.client,
+                                    fdb_entry2,
+                                    type=SAI_FDB_ENTRY_TYPE_STATIC,
+                                    bridge_port_id=self.port25_bp,
+                                    packet_action=mac_action)
+
+        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                eth_src='00:22:22:22:22:22',
+                                ip_dst='10.10.10.1',
+                                ip_src='192.168.0.1',
+                                ip_id=105,
+                                ip_ttl=64)
+        exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
+                                    eth_src=ROUTER_MAC,
+                                    ip_dst='10.10.10.1',
+                                    ip_src='192.168.0.1',
+                                    ip_id=105,
+                                    ip_ttl=63)
+        pkt1 = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                 eth_src='00:22:22:22:22:22',
+                                 ip_dst='10.10.10.2',
+                                 ip_src='192.168.0.1',
+                                 ip_id=105,
+                                 ip_ttl=64)
+        exp_pkt1 = simple_tcp_packet(eth_dst='00:22:22:33:44:55',
+                                     eth_src=ROUTER_MAC,
+                                     ip_dst='10.10.10.2',
+                                     ip_src='192.168.0.1',
+                                     ip_id=105,
+                                     ip_ttl=63)
+        pkt2 = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                 eth_src='00:22:22:22:22:22',
+                                 ip_dst='11.11.11.1',
+                                 ip_src='192.168.0.1',
+                                 ip_id=105,
+                                 ip_ttl=64)
+        exp_pkt2 = simple_tcp_packet(eth_dst='00:44:22:33:44:55',
+                                     eth_src=ROUTER_MAC,
+                                     ip_dst='11.11.11.1',
+                                     ip_src='192.168.0.1',
+                                     ip_id=105,
+                                     ip_ttl=63)
+
+        try:
+            print("Sending packet port %d to port %d, (192.168.0.1 -> "
+                  "10.10.10.1) Routed" % (self.dev_port10, self.dev_port24))
+            send_packet(self, self.dev_port10, pkt)
+            verify_packets(self, exp_pkt, [self.dev_port24])
+
+            print("Sending packet port %d to port %d, (192.168.0.1 -> "
+                  "10.10.10.2) Routed" % (self.dev_port10, self.dev_port25))
+            send_packet(self, self.dev_port10, pkt1)
+            verify_packets(self, exp_pkt1, [self.dev_port25])
+
+            print("Sending packet port %d to port %d, (192.168.0.1 -> "
+                  "11.11.11.1) Routed" % (self.dev_port24, self.dev_port10))
+            send_packet(self, self.dev_port24, pkt2)
+            verify_packets(self, exp_pkt2, [self.dev_port10])
+        
+        print("\nVerification done")
+
+        finally:
+            sai_thrift_remove_fdb_entry(self.client, fdb_entry1)
+            sai_thrift_remove_fdb_entry(self.client, fdb_entry2)
+
+    def tearDown(self):
+        sai_thrift_remove_route_entry(self.client, self.route_entry5)
+        sai_thrift_remove_route_entry(self.client, self.route_entry5_v6)
+        sai_thrift_remove_route_entry(self.client, self.route_entry6)
+        sai_thrift_remove_route_entry(self.client, self.route_entry6_v6)
+        sai_thrift_remove_route_entry(self.client, self.route_entry7)
+        sai_thrift_remove_route_entry(self.client, self.route_entry7_v6)
+
+        sai_thrift_remove_next_hop(self.client, self.nhop5)
+        sai_thrift_remove_next_hop(self.client, self.nhop6)
+        sai_thrift_remove_next_hop(self.client, self.nhop7)
+
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry5)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry6)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry7)
+
+        sai_thrift_set_lag_attribute(self.client, self.lag10, port_vlan_id=1)
+        sai_thrift_set_lag_attribute(self.client, self.lag11, port_vlan_id=1)
+
+        sai_thrift_remove_router_interface(self.client, self.vlan200_rif)
+
+        sai_thrift_remove_vlan_member(self.client, self.vlan_member200)
+        sai_thrift_remove_vlan_member(self.client, self.vlan_member201)
+
+        sai_thrift_remove_vlan(self.client, self.vlan200)
+
+        sai_thrift_remove_lag_member(self.client, self.lag10_member30)
+        sai_thrift_remove_lag_member(self.client, self.lag10_member31)
+        sai_thrift_remove_lag_member(self.client, self.lag11_member28)
+        sai_thrift_remove_lag_member(self.client, self.lag11_member29)
+        sai_thrift_remove_bridge_port(self.client, self.lag10_bp)
+        sai_thrift_remove_bridge_port(self.client, self.lag11_bp)
+        sai_thrift_remove_lag(self.client, self.lag10)
+        sai_thrift_remove_lag(self.client, self.lag11)
+
+        sai_thrift_remove_route_entry(self.client, self.route_entry1)
+        sai_thrift_remove_route_entry(self.client, self.route_entry1_v6)
+        sai_thrift_remove_route_entry(self.client, self.route_entry2)
+        sai_thrift_remove_route_entry(self.client, self.route_entry2_v6)
+        sai_thrift_remove_route_entry(self.client, self.route_entry3)
+        sai_thrift_remove_route_entry(self.client, self.route_entry4)
+        sai_thrift_remove_route_entry(self.client, self.route_entry4_v6)
+
+        sai_thrift_remove_next_hop(self.client, self.nhop1)
+        sai_thrift_remove_next_hop(self.client, self.nhop2)
+        sai_thrift_remove_next_hop(self.client, self.nhop3)
+        sai_thrift_remove_next_hop(self.client, self.nhop4)
+
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry1)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry2)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry3)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry4)
+
+        sai_thrift_remove_router_interface(self.client, self.vlan100_rif)
+
+        sai_thrift_set_port_attribute(self.client, self.port24, port_vlan_id=1)
+        sai_thrift_set_port_attribute(self.client, self.port25, port_vlan_id=1)
+        sai_thrift_set_port_attribute(self.client, self.port26, port_vlan_id=1)
+
+        sai_thrift_remove_vlan_member(self.client, self.vlan_member100)
+        sai_thrift_remove_vlan_member(self.client, self.vlan_member101)
+        sai_thrift_remove_vlan_member(self.client, self.vlan_member102)
+
+        sai_thrift_remove_vlan(self.client, self.vlan100)
+
+        sai_thrift_remove_bridge_port(self.client, self.port24_bp)
+        sai_thrift_remove_bridge_port(self.client, self.port25_bp)
+        sai_thrift_remove_bridge_port(self.client, self.port26_bp)
+
+        super(SviHostTest, self).tearDown()
+
+
+@group("draft")
+class SviLagHostTest(PlatformSaiHelper):
+    """
+    Verifies routing after NHOP resolved via static MAC entry on LAG
+    """
+
+    def setUp(self):
+        """
+        Topology
+        L3 intf  - 10, 11
+        vlan 100 - 24, 25, 26
+        vlan 200 - lag10(30, 31), lag11(28, 29)
+        27 extra port used for testing
+        """
+        super(SviLagHostTest, self).setUp()
+
+        self.port24_bp = sai_thrift_create_bridge_port(
+            self.client,
+            bridge_id=self.default_1q_bridge,
+            port_id=self.port24,
+            type=SAI_BRIDGE_PORT_TYPE_PORT,
+            admin_state=True)
+        self.port25_bp = sai_thrift_create_bridge_port(
+            self.client,
+            bridge_id=self.default_1q_bridge,
+            port_id=self.port25,
+            type=SAI_BRIDGE_PORT_TYPE_PORT,
+            admin_state=True)
+        self.port26_bp = sai_thrift_create_bridge_port(
+            self.client,
+            bridge_id=self.default_1q_bridge,
+            port_id=self.port26,
+            type=SAI_BRIDGE_PORT_TYPE_PORT,
+            admin_state=True)
+
+        # vlan100 with members port24, port25 and port26
+        self.vlan100 = sai_thrift_create_vlan(self.client, vlan_id=100)
+        self.vlan_member100 = sai_thrift_create_vlan_member(
+            self.client,
+            vlan_id=self.vlan100,
+            bridge_port_id=self.port24_bp,
+            vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
+        self.vlan_member101 = sai_thrift_create_vlan_member(
+            self.client,
+            vlan_id=self.vlan100,
+            bridge_port_id=self.port25_bp,
+            vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
+        self.vlan_member102 = sai_thrift_create_vlan_member(
+            self.client,
+            vlan_id=self.vlan100,
+            bridge_port_id=self.port26_bp,
+            vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
+        sai_thrift_set_port_attribute(
+            self.client, self.port24, port_vlan_id=100)
+        sai_thrift_set_port_attribute(
+            self.client, self.port25, port_vlan_id=100)
+        sai_thrift_set_port_attribute(
+            self.client, self.port26, port_vlan_id=100)
+
+        # create vlan100_rif
+        self.vlan100_rif = sai_thrift_create_router_interface(
+            self.client,
+            type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
+            virtual_router_id=self.default_vrf,
+            vlan_id=self.vlan100)
+
+        self.dmac1 = '00:11:22:33:44:55'  # 10.10.10.1
+        self.dmac2 = '00:22:22:33:44:55'  # 10.10.10.2
+        self.dmac3 = '00:33:22:33:44:55'  # 10.10.10.3
+        self.dmac4 = '00:44:22:33:44:55'  # 11.11.11.1
+        self.dmac5 = '00:11:33:33:44:55'  # 20.10.10.1
+        self.dmac6 = '00:22:33:33:44:55'  # 20.10.10.2
+        self.dmac7 = '00:44:33:33:44:55'  # 20.11.11.1
+
+        # create nhop1, nhop2 & nhop3 on SVI
+        self.neighbor_entry1 = sai_thrift_neighbor_entry_t(
+            rif_id=self.vlan100_rif, ip_address=sai_ipaddress('10.10.0.1'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry1, dst_mac_address=self.dmac1)
+        self.nhop1 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('10.10.0.1'),
+            router_interface_id=self.vlan100_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        self.route_entry1 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry1, next_hop_id=self.nhop1)
+        self.route_entry1_v6 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf,
+            destination=sai_ipprefix(
+                '1234:5678:9abc:def0:4422:1133:5577:0000/128'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry1_v6, next_hop_id=self.nhop1)
+
+        self.neighbor_entry2 = sai_thrift_neighbor_entry_t(
+            rif_id=self.vlan100_rif, ip_address=sai_ipaddress('10.10.0.2'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry2, dst_mac_address=self.dmac2)
+        self.nhop2 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('10.10.0.2'),
+            router_interface_id=self.vlan100_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        self.route_entry2 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.2/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry2, next_hop_id=self.nhop2)
+        self.route_entry2_v6 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf,
+            destination=sai_ipprefix(
+                '1234:5678:9abc:def0:4422:1133:5577:2222/128'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry2_v6, next_hop_id=self.nhop2)
+
+        self.neighbor_entry3 = sai_thrift_neighbor_entry_t(
+            rif_id=self.vlan100_rif, ip_address=sai_ipaddress('10.10.0.3'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry3, dst_mac_address=self.dmac3)
+        self.nhop3 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('10.10.0.3'),
+            router_interface_id=self.vlan100_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        self.route_entry3 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.3/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry3, next_hop_id=self.nhop3)
+
+        # create nhop and route to L2 intf
+        self.neighbor_entry4 = sai_thrift_neighbor_entry_t(
+            rif_id=self.port10_rif, ip_address=sai_ipaddress('11.11.0.2'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry4, dst_mac_address=self.dmac4)
+        self.nhop4 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('11.11.0.2'),
+            router_interface_id=self.port10_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        self.route_entry4 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('11.11.11.1/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry4, next_hop_id=self.nhop4)
+        self.route_entry4_v6 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf,
+            destination=sai_ipprefix(
+                '1234:5678:9abc:def0:4422:1133:5577:1111/128'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry4_v6, next_hop_id=self.nhop4)
+
+        self.lag10 = sai_thrift_create_lag(self.client)
+        self.lag10_bp = sai_thrift_create_bridge_port(
+            self.client,
+            bridge_id=self.default_1q_bridge,
+            port_id=self.lag10,
+            type=SAI_BRIDGE_PORT_TYPE_PORT,
+            admin_state=True)
+        self.lag10_member30 = sai_thrift_create_lag_member(
+            self.client, lag_id=self.lag10, port_id=self.port30)
+        self.lag10_member31 = sai_thrift_create_lag_member(
+            self.client, lag_id=self.lag10, port_id=self.port31)
+
+        self.lag11 = sai_thrift_create_lag(self.client)
+        self.lag11_bp = sai_thrift_create_bridge_port(
+            self.client,
+            bridge_id=self.default_1q_bridge,
+            port_id=self.lag11,
+            type=SAI_BRIDGE_PORT_TYPE_PORT,
+            admin_state=True)
+        self.lag11_member28 = sai_thrift_create_lag_member(
+            self.client, lag_id=self.lag11, port_id=self.port28)
+        self.lag11_member29 = sai_thrift_create_lag_member(
+            self.client, lag_id=self.lag11, port_id=self.port29)
+
+        # vlan200 with members lag10 and lag11
+        self.vlan200 = sai_thrift_create_vlan(self.client, vlan_id=200)
+        self.vlan_member200 = sai_thrift_create_vlan_member(
+            self.client,
+            vlan_id=self.vlan200,
+            bridge_port_id=self.lag10_bp,
+            vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
+        self.vlan_member201 = sai_thrift_create_vlan_member(
+            self.client,
+            vlan_id=self.vlan200,
+            bridge_port_id=self.lag11_bp,
+            vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
+        sai_thrift_set_lag_attribute(self.client, self.lag10, port_vlan_id=200)
+        sai_thrift_set_lag_attribute(self.client, self.lag11, port_vlan_id=200)
+
+        self.vlan200_rif = sai_thrift_create_router_interface(
+            self.client,
+            type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
+            virtual_router_id=self.default_vrf,
+            vlan_id=self.vlan200)
+
+        # Create nhop5 and nhop6 on SVI
+        self.neighbor_entry5 = sai_thrift_neighbor_entry_t(
+            rif_id=self.vlan200_rif, ip_address=sai_ipaddress('20.10.0.1'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry5, dst_mac_address=self.dmac5)
+        self.nhop5 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('20.10.0.1'),
+            router_interface_id=self.vlan200_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        self.route_entry5 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('20.10.10.1/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry5, next_hop_id=self.nhop5)
+        self.route_entry5_v6 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf,
+            destination=sai_ipprefix(
+                '1234:5678:9abc:def0:4422:1133:5577:99aa/128'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry5_v6, next_hop_id=self.nhop5)
+
+        self.neighbor_entry6 = sai_thrift_neighbor_entry_t(
+            rif_id=self.vlan200_rif, ip_address=sai_ipaddress('20.10.0.2'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry6, dst_mac_address=self.dmac6)
+        self.nhop6 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('20.10.0.2'),
+            router_interface_id=self.vlan200_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        self.route_entry6 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('20.10.10.2/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry6, next_hop_id=self.nhop6)
+        self.route_entry6_v6 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf,
+            destination=sai_ipprefix(
+                '1234:5678:9abc:def0:1122:3344:5566:7788/128'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry6_v6, next_hop_id=self.nhop6)
+
+        self.neighbor_entry7 = sai_thrift_neighbor_entry_t(
+            rif_id=self.port11_rif, ip_address=sai_ipaddress('21.11.0.2'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry7, dst_mac_address=self.dmac7)
+        self.nhop7 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('21.11.0.2'),
+            router_interface_id=self.port11_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        self.route_entry7 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('21.11.11.1/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry7, next_hop_id=self.nhop7)
+        self.route_entry7_v6 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf,
+            destination=sai_ipprefix(
+                '1234:5678:9abc:def0:1122:3344:5566:6677/128'))
+        sai_thrift_create_route_entry(
+            self.client, self.route_entry7_v6, next_hop_id=self.nhop7)
+
+    def runTest(self):
+        print("\nSviLagHostTest()")
+        print("Test routing after NHOP resolved via static MAC entry")
+
+        mac_action = SAI_PACKET_ACTION_FORWARD
+        fdb_entry1 = sai_thrift_fdb_entry_t(switch_id=self.switch_id,
+                                            mac_address='00:11:33:33:44:55',
+                                            bv_id=self.vlan200)
+        sai_thrift_create_fdb_entry(self.client,
+                                    fdb_entry1,
+                                    type=SAI_FDB_ENTRY_TYPE_STATIC,
+                                    bridge_port_id=self.lag10_bp,
+                                    packet_action=mac_action)
+
+        fdb_entry2 = sai_thrift_fdb_entry_t(switch_id=self.switch_id,
+                                            mac_address='00:22:33:33:44:55',
+                                            bv_id=self.vlan200)
+        sai_thrift_create_fdb_entry(self.client,
+                                    fdb_entry2,
+                                    type=SAI_FDB_ENTRY_TYPE_STATIC,
+                                    bridge_port_id=self.lag11_bp,
+                                    packet_action=mac_action)
+
+        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                eth_src='00:22:22:22:22:22',
+                                ip_dst='20.10.10.1',
+                                ip_src='192.168.0.1',
+                                ip_id=105,
+                                ip_ttl=64)
+        exp_pkt = simple_tcp_packet(eth_dst='00:11:33:33:44:55',
+                                    eth_src=ROUTER_MAC,
+                                    ip_dst='20.10.10.1',
+                                    ip_src='192.168.0.1',
+                                    ip_id=105,
+                                    ip_ttl=63)
+        pkt1 = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                 eth_src='00:22:22:22:22:22',
+                                 ip_dst='20.10.10.2',
+                                 ip_src='192.168.0.1',
+                                 ip_id=105,
+                                 ip_ttl=64)
+        exp_pkt1 = simple_tcp_packet(eth_dst='00:22:33:33:44:55',
+                                     eth_src=ROUTER_MAC,
+                                     ip_dst='20.10.10.2',
+                                     ip_src='192.168.0.1',
+                                     ip_id=105,
+                                     ip_ttl=63)
+        pkt2 = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                 eth_src='00:22:22:22:22:22',
+                                 ip_dst='21.11.11.1',
+                                 ip_src='192.168.0.1',
+                                 ip_id=105,
+                                 ip_ttl=64)
+        exp_pkt2 = simple_tcp_packet(eth_dst='00:44:33:33:44:55',
+                                     eth_src=ROUTER_MAC,
+                                     ip_dst='21.11.11.1',
+                                     ip_src='192.168.0.1',
+                                     ip_id=105,
+                                     ip_ttl=63)
+
+        try:
+            print("Sending packet port %d to lag 3, (192.168.0.1 -> "
+                  "20.10.10.1) Routed" % (self.dev_port11))
+            send_packet(self, self.dev_port11, pkt)
+            verify_packet_any_port(
+                self, exp_pkt, [self.dev_port30, self.dev_port31])
+
+            print("Sending packet port %d to lag 4, (192.168.0.1 -> "
+                  "20.10.10.2) Routed" % (self.dev_port11))
+            send_packet(self, self.dev_port11, pkt1)
+            verify_packet_any_port(
+                self, exp_pkt1, [self.dev_port28, self.dev_port29])
+
+            print("Sending packet port %d to port %d (192.168.0.1 -> "
+                  "21.11.11.1) Routed" % (self.dev_port15, self.dev_port11))
+            send_packet(self, self.dev_port30, pkt2)
+            verify_packet(self, exp_pkt2, self.dev_port11)
+
+            print("Sending packet port %d to port %d, (192.168.0.1 -> "
+                  "21.11.11.1) Routed" % (self.dev_port16, self.dev_port11))
+            send_packet(self, self.dev_port31, pkt2)
+            verify_packet(self, exp_pkt2, self.dev_port11)
+
+        finally:
+            sai_thrift_flush_fdb_entries(
+                self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
+
+    def tearDown(self):
+        sai_thrift_remove_route_entry(self.client, self.route_entry5)
+        sai_thrift_remove_route_entry(self.client, self.route_entry5_v6)
+        sai_thrift_remove_route_entry(self.client, self.route_entry6)
+        sai_thrift_remove_route_entry(self.client, self.route_entry6_v6)
+        sai_thrift_remove_route_entry(self.client, self.route_entry7)
+        sai_thrift_remove_route_entry(self.client, self.route_entry7_v6)
+
+        sai_thrift_remove_next_hop(self.client, self.nhop5)
+        sai_thrift_remove_next_hop(self.client, self.nhop6)
+        sai_thrift_remove_next_hop(self.client, self.nhop7)
+
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry5)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry6)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry7)
+
+        sai_thrift_set_lag_attribute(self.client, self.lag10, port_vlan_id=1)
+        sai_thrift_set_lag_attribute(self.client, self.lag11, port_vlan_id=1)
+
+        sai_thrift_remove_router_interface(self.client, self.vlan200_rif)
+
+        sai_thrift_remove_vlan_member(self.client, self.vlan_member200)
+        sai_thrift_remove_vlan_member(self.client, self.vlan_member201)
+
+        sai_thrift_remove_vlan(self.client, self.vlan200)
+
+        sai_thrift_remove_lag_member(self.client, self.lag10_member30)
+        sai_thrift_remove_lag_member(self.client, self.lag10_member31)
+        sai_thrift_remove_lag_member(self.client, self.lag11_member28)
+        sai_thrift_remove_lag_member(self.client, self.lag11_member29)
+        sai_thrift_remove_bridge_port(self.client, self.lag10_bp)
+        sai_thrift_remove_bridge_port(self.client, self.lag11_bp)
+        sai_thrift_remove_lag(self.client, self.lag10)
+        sai_thrift_remove_lag(self.client, self.lag11)
+
+        sai_thrift_remove_route_entry(self.client, self.route_entry1)
+        sai_thrift_remove_route_entry(self.client, self.route_entry1_v6)
+        sai_thrift_remove_route_entry(self.client, self.route_entry2)
+        sai_thrift_remove_route_entry(self.client, self.route_entry2_v6)
+        sai_thrift_remove_route_entry(self.client, self.route_entry3)
+        sai_thrift_remove_route_entry(self.client, self.route_entry4)
+        sai_thrift_remove_route_entry(self.client, self.route_entry4_v6)
+
+        sai_thrift_remove_next_hop(self.client, self.nhop1)
+        sai_thrift_remove_next_hop(self.client, self.nhop2)
+        sai_thrift_remove_next_hop(self.client, self.nhop3)
+        sai_thrift_remove_next_hop(self.client, self.nhop4)
+
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry1)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry2)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry3)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry4)
+
+        sai_thrift_remove_router_interface(self.client, self.vlan100_rif)
+
+        sai_thrift_set_port_attribute(self.client, self.port24, port_vlan_id=1)
+        sai_thrift_set_port_attribute(self.client, self.port25, port_vlan_id=1)
+        sai_thrift_set_port_attribute(self.client, self.port26, port_vlan_id=1)
+
+        sai_thrift_remove_vlan_member(self.client, self.vlan_member100)
+        sai_thrift_remove_vlan_member(self.client, self.vlan_member101)
+        sai_thrift_remove_vlan_member(self.client, self.vlan_member102)
+
+        sai_thrift_remove_vlan(self.client, self.vlan100)
+
+        sai_thrift_remove_bridge_port(self.client, self.port24_bp)
+        sai_thrift_remove_bridge_port(self.client, self.port25_bp)
+        sai_thrift_remove_bridge_port(self.client, self.port26_bp)
+
+        super(SviLagHostTest, self).tearDown()
