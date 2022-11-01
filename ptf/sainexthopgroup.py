@@ -3732,8 +3732,6 @@ class L3IPv6SVIEcmpTest(SaiHelper):
             sai_thrift_remove_fdb_entry(self.client, fdb_entry1)
             sai_thrift_remove_fdb_entry(self.client, fdb_entry2)
 
-
-@group("draft")
 class L3IPv4EcmpHostTwoLagsTest(PlatformSaiHelper):
     """
     IPv4 ECMP tests with all LAG RIFs members
@@ -3978,7 +3976,6 @@ class L3IPv4EcmpHostTwoLagsTest(PlatformSaiHelper):
         super(L3IPv4EcmpHostTwoLagsTest, self).tearDown()
 
 
-@group("draft")
 class L3IPv4EcmpHostPortLagSharedMembersTest(PlatformSaiHelper):
     """
     IPv4 multiples ECMP with shared nexthop members

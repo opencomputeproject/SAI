@@ -8221,7 +8221,6 @@ class L3MtuTrapTest(SaiHelper):
         self.assertTrue(self.vlan100_rif_counter_out == vlan100_rif_stats[
             'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
 
-@group("draft")
 class RifToSubPortTest(PlatformSaiHelper):
     """
     """
@@ -8803,7 +8802,6 @@ class RifToSubPortTest(PlatformSaiHelper):
         super(RifToSubPortTest, self).tearDown()
 
 
-@group("draft")
 class SviHostTest(PlatformSaiHelper):
     """
     Verifies routing after NHOP resolved via static MAC entry
@@ -9209,7 +9207,6 @@ class SviHostTest(PlatformSaiHelper):
         super(SviHostTest, self).tearDown()
 
 
-@group("draft")
 class SviLagHostTest(PlatformSaiHelper):
     """
     Verifies routing after NHOP resolved via static MAC entry on LAG
