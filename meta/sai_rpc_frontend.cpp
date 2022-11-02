@@ -837,6 +837,14 @@ class sai_rpcHandlerFrontend : virtual public sai_rpcHandler {
     return sai_switch_id_query(object_id);
   }
 
+    /**
+   * @brief Thrift wrapper for sai_api_uninitialize() SAI function
+   */
+  sai_thrift_status_t sai_thrift_api_uninitialize(void) {
+
+    return sai_api_uninitialize();
+  }
+
   /**
    * @brief Thrift wrapper for sai_query_attribute_enum_values_capability()
    *        function
