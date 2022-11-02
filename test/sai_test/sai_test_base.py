@@ -363,42 +363,35 @@ class T0TestBase(ThriftInterfaceDataPlane):
         self.vlan_configer = VlanConfiger(self)
         self.route_configer = RouteConfiger(self)
         self.lag_configer = LagConfiger(self)
-        if force_config  or  not self.test_reboot_stage or self.test_reboot_stage  == WARM_TEST_PRE_REBOOT:
-            self.create_device()
-            t0_switch_config_helper(self)
-            t0_port_config_helper(
-                test_obj=self,
-                is_create_hostIf=is_create_hostIf,
-                is_recreate_bridge=is_recreate_bridge)
-            t0_vlan_config_helper(
-                test_obj=self,
-                is_reset_default_vlan=is_reset_default_vlan,
-                is_create_vlan=is_create_vlan)
-            t0_fdb_config_helper(
-                test_obj=self,
-                is_create_fdb=is_create_fdb)
-            t0_lag_config_helper(
-                test_obj=self,
-                is_create_lag=is_create_lag)
-            t0_route_config_helper(
-                test_obj=self,
-                is_create_default_route=is_create_default_route,
-                is_create_default_loopback_interface=is_create_default_loopback_interface,
-                is_create_route_for_lag=is_create_route_for_lag,
-                is_create_route_for_nhopgrp=is_create_route_for_nhopgrp)
-            if self.test_reboot_stage  != WARM_TEST_PRE_REBOOT:
-                print("common config done")
-                self.persist_config()
-            print("Waiting for switch to get ready before test, {} seconds ...".format(
-                wait_sec))
-            time.sleep(wait_sec)
-        else:
-            if self.test_reboot_stage  == WARM_TEST_POST_REBOOT:
-                t0_switch_config_helper(self)
-            print("switch keeps running, read config from storage")
-            self.dut = self.persist_helper.read_dut()
-            self.t1_list = self.persist_helper.read_t1_list()
-            self.servers = self.persist_helper.read_server_list()
+        self.create_device()
+        t0_switch_config_helper(self)
+        t0_port_config_helper(
+            test_obj=self,
+            is_create_hostIf=is_create_hostIf,
+            is_recreate_bridge=is_recreate_bridge)
+        t0_vlan_config_helper(
+            test_obj=self,
+            is_reset_default_vlan=is_reset_default_vlan,
+            is_create_vlan=is_create_vlan)
+        t0_fdb_config_helper(
+            test_obj=self,
+            is_create_fdb=is_create_fdb)
+        t0_lag_config_helper(
+            test_obj=self,
+            is_create_lag=is_create_lag)
+        t0_route_config_helper(
+            test_obj=self,
+            is_create_default_route=is_create_default_route,
+            is_create_default_loopback_interface=is_create_default_loopback_interface,
+            is_create_route_for_lag=is_create_route_for_lag,
+            is_create_route_for_nhopgrp=is_create_route_for_nhopgrp)
+        if self.test_reboot_stage  != WARM_TEST_PRE_REBOOT:
+            print("common config done")
+            self.persist_config()
+        print("Waiting for switch to get ready before test, {} seconds ...".format(
+            wait_sec))
+        time.sleep(wait_sec)
+
 
     def persist_config(self):
         """
@@ -415,7 +408,6 @@ class T0TestBase(ThriftInterfaceDataPlane):
         """
         t0_fdb_tear_down_helper(self)
         t0_fdb_config_helper(test_obj=self)
-
 
     def parsePortConfig(self, port_config_file):
         """
@@ -568,6 +560,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
             sai_thrift_set_switch_attribute(self.client, restart_warm=True)
             sai_thrift_set_switch_attribute(self.client, pre_shutdown=True)
             sai_thrift_remove_switch(self.client)
+            # sai_thrift_api_uninitialize()
         super().tearDown()
     
     def skip_test_on_rebooting(is_skip_rebooting = True):
