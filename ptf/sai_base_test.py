@@ -1088,7 +1088,11 @@ class PlatformSaiHelper(SaiHelper):
         else:
             target_base_class = sai_helper_subclass_map[pl]
 
-        cls.__bases__ = (target_base_class,)
+        cur_cls = cls
+        while cur_cls.__base__ != PlatformSaiHelper:
+            cur_cls = cur_cls.__base__
+
+        cur_cls.__bases__ = (target_base_class,)
 
         instance = target_base_class.__new__(cls, *args, **kwargs)
         return instance
