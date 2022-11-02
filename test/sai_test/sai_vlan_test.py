@@ -34,13 +34,13 @@ class Vlan_Domain_Forwarding_Test(T0TestBase):
     In L2, if segement with VLAN tag and sends to a VLAN port, 
     segment should be forwarded inside a VLAN domain.
     """
-    @T0TestBase.skip_test_on_rebooting(False)
     def setUp(self):
         """
         Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
-
+    
+    @warm_test(is_runTest=True)
     def runTest(self):
         """
         Test VLAN forwarding
