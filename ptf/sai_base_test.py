@@ -820,6 +820,33 @@ class SaiHelper(SaiHelperUtilsMixin, SaiHelperBase):
     +--------+-------------------------------------------------------------------+
     """
 
+    def create_default_v4_v6_route_entry(self):
+        """
+        Create default v4 and v6 route entry.
+        """
+        DEFAULT_IP_V4_PREFIX = '0.0.0.0/0'
+        DEFAULT_IP_V6_PREFIX = '0000:0000:0000:0000:0000:0000:0000:0000'
+        print("Create default v4&v6 route entry...")
+        v6_default = sai_thrift_ip_prefix_t(addr_family=1,
+                                            addr=sai_thrift_ip_addr_t(
+                                                ip6=DEFAULT_IP_V6_PREFIX),
+                                            mask=sai_thrift_ip_addr_t(ip6=DEFAULT_IP_V6_PREFIX))
+        self.default_ipv6_route_entry = sai_thrift_route_entry_t(vr_id=self.default_vrf,
+                                                                 destination=v6_default)
+        status = sai_thrift_create_route_entry(
+            self.client,
+            route_entry=self.default_ipv6_route_entry,
+            packet_action=SAI_PACKET_ACTION_DROP)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+
+        self.default_ipv4_route_entry = sai_thrift_route_entry_t(vr_id=self.default_vrf,
+                                                                 destination=sai_ipprefix(DEFAULT_IP_V4_PREFIX))
+        status = sai_thrift_create_route_entry(
+            self.client,
+            route_entry=self.default_ipv4_route_entry,
+            packet_action=SAI_PACKET_ACTION_DROP)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+
     def setUp(self):
         super(SaiHelper, self).setUp()
 
@@ -866,6 +893,13 @@ class SaiHelper(SaiHelperUtilsMixin, SaiHelperBase):
         self.create_routing_interfaces(vlans=[30])
         self.create_routing_interfaces(lags=[3, 4])
         self.create_routing_interfaces(ports=[10, 11, 12, 13])
+
+        # Create default route for default VRF is mandartory.
+        # Issue #1606(https://github.com/opencomputeproject/SAI/issues/1606)
+        # Creating route in default VRF will failed if there aren't default routes.
+        # Solution
+        # Create default route before create route in detaul VRF
+        self.create_default_v4_v6_route_entry()
 
     def tearDown(self):
         sai_thrift_set_port_attribute(self.client, self.port2, port_vlan_id=0)
