@@ -331,7 +331,7 @@ def delay_wrapper(func, delay=2):
             status: original function return value
         """
         test_params = test_params_get()
-        if test_params['target'] != "hw":
+        if 'target' in test_params.keys() and test_params['target'] != "hw":
             time.sleep(delay)
 
         status = func(*args, **kwargs)
