@@ -445,7 +445,7 @@ class RemoveVlanmemberLearnTest(T0TestBase):
         """
         Set up test
         """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self, is_reset_default_vlan=False, is_create_vlan_itf=False, is_create_route_for_vlan_itf=False, is_create_route_for_lag=False, is_create_lag=False, is_create_default_route=False)
         sai_thrift_remove_vlan_member(
             self.client, self.dut.vlans[10].vlan_mport_oids[1])
         self.assertEqual(status, SAI_STATUS_SUCCESS)

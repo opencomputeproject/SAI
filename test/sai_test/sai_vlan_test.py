@@ -271,7 +271,7 @@ class TaggedVlanFloodingTest(T0TestBase):
     """
 
     def setUp(self):
-        super().setUp()
+        super().setUp(is_create_vlan_itf=False, is_create_route_for_vlan_itf=False, is_create_route_for_lag=False, is_create_lag=False, is_create_default_route=False)
 
     def runTest(self):
         print("\nTaggedVlanFloodingTest")
@@ -305,7 +305,7 @@ class UnTaggedVlanFloodingTest(T0TestBase):
     """
 
     def setUp(self):
-        super().setUp()
+        super().setUp(is_create_vlan_itf=False, is_create_route_for_vlan_itf=False, is_create_route_for_lag=False, is_create_lag=False, is_create_default_route=False)
 
     def runTest(self):
         print("\nUnTaggedVlanFloodingTest")
@@ -378,7 +378,7 @@ class UntaggedMacLearningTest(T0TestBase):
     """
 
     def setUp(self):
-        super().setUp()
+        super().setUp(is_create_vlan_itf=False, is_create_route_for_vlan_itf=False, is_create_route_for_lag=False, is_create_lag=False, is_create_default_route=False)
 
     def runTest(self):
         print("\nUntaggedMacLearningTest")
@@ -424,7 +424,7 @@ class TaggedMacLearningTest(T0TestBase):
     """
 
     def setUp(self):
-        super().setUp()
+        super().setUp(is_create_vlan_itf=False, is_create_route_for_vlan_itf=False, is_create_route_for_lag=False, is_create_lag=False, is_create_default_route=False)
 
     def runTest(self):
         print("\nTaggedMacLearningTest")
@@ -564,7 +564,7 @@ class DisableMacLearningTaggedTest(T0TestBase):
     """
 
     def setUp(self):
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self, is_reset_default_vlan=False, is_create_vlan_itf=False, is_create_route_for_vlan_itf=False, is_create_route_for_lag=False, is_create_lag=False, is_create_default_route=False)
         print("DisableMacLearningTaggedTest")
         sai_thrift_set_vlan_attribute(
             self.client, self.dut.vlans[10].oid, learn_disable=True)
@@ -604,7 +604,7 @@ class DisableMacLearningUntaggedTest(T0TestBase):
     """
 
     def setUp(self):
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self, is_reset_default_vlan=False, is_create_vlan_itf=False, is_create_route_for_vlan_itf=False, is_create_route_for_lag=False, is_create_lag=False, is_create_default_route=False)
         print("DisableMacLearningUntaggedTest")
         sai_thrift_set_vlan_attribute(
             self.client, self.dut.vlans[10].oid, learn_disable=True)
