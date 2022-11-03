@@ -415,6 +415,12 @@ typedef struct _sai_ip_prefix_t
     sai_ip_addr_t mask;
 } sai_ip_prefix_t;
 
+typedef struct _sai_ip_prefix_list_t
+{
+    uint32_t count;
+    sai_ip_prefix_t *list;
+} sai_ip_prefix_list_t;
+
 /**
  * @brief Attribute data for #SAI_PORT_ATTR_PRBS_RX_STATUS
  */
@@ -1308,6 +1314,9 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PORT_ERR_STATUS_LIST */
     sai_port_err_status_list_t porterror;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST */
+    sai_ip_prefix_list_t ipprefixlist;
 } sai_attribute_value_t;
 
 /**

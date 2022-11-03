@@ -2610,6 +2610,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_ERR_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT16_RANGE_LIST:
+        case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
 
             if (md->isprimitive)
             {

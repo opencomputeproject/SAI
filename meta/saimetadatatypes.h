@@ -451,6 +451,10 @@ typedef enum _sai_attr_value_type_t
      */
     SAI_ATTR_VALUE_TYPE_AUTH_KEY,
 
+    /**
+     * @brief Attribute value is IP prefix list.
+     */
+    SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST,
 } sai_attr_value_type_t;
 
 /**
