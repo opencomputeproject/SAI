@@ -26,12 +26,12 @@ class IpInIpTnnnelBase(T0TestBase):
         self.inner_dmac = "00:41:11:14:11:14"
         self.customer_mac = self.servers[1][1].mac
         self.unbor_mac = self.servers[11][1].l3_lag_obj.neighbor_mac
-
+ 
         # underlay configuration
-        self.uvrf = self.default_vrf
+        self.uvrf = self.dut.default_vrf
 
         # overlay configuration
-        self.ovrf = self.default_vrf
+        self.ovrf = self.dut.default_vrf
         tunnel_type = SAI_TUNNEL_TYPE_IPINIP
         term_type = SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P
 
@@ -88,7 +88,7 @@ class IpInIpTnnnelBase(T0TestBase):
     def tearDown(self):
         T0TestBase.tearDown(self)
 
-class IPInIPTunnelDecapTest(IpInIpTnnnelBase):
+class IPInIPTunnelDecapv4Inv4Test(IpInIpTnnnelBase):
     """
     We will send ipinip packet from lag1 and verify getting inner packet by matching tunnel term table entry, recieving the inner packet on port1 by  matching route entry
     """
@@ -131,6 +131,22 @@ class IPInIPTunnelDecapTest(IpInIpTnnnelBase):
         verify_packet(self, pkt, self.oport_dev)
         print("\tOK")
         
+    def runTest(self):
+        try:
+            self.ipv4inipv4decap()
+        finally:
+            pass
+
+class IPInIPTunnelDecapV6InV4Test(IpInIpTnnnelBase):
+    """
+    We will send ipinip packet from lag1 and verify getting inner packet by matching tunnel term table entry, recieving the inner packet on port1 by  matching route entry
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process.
+        """
+        IpInIpTnnnelBase.setUp(self)
 
     def ipv6inipv4decap(self):
         pkt = simple_udpv6_packet(eth_dst=self.customer_mac,
@@ -160,7 +176,6 @@ class IPInIPTunnelDecapTest(IpInIpTnnnelBase):
 
     def runTest(self):
         try:
-            self.ipv4inipv4decap()
             self.ipv6inipv4decap()
         finally:
             pass
