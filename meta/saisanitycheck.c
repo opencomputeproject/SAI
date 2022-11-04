@@ -709,6 +709,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
         case SAI_ATTR_VALUE_TYPE_FABRIC_PORT_REACHABILITY:
         case SAI_ATTR_VALUE_TYPE_PORT_ERR_STATUS_LIST:
+        case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
 
             if (md->allowedobjecttypes != NULL)
             {
