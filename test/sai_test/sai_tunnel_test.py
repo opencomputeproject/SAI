@@ -1,7 +1,6 @@
 from sai_test_base import T0TestBase
 from sai_utils import *
-
-
+from ptf.mask import Mask
 class IpInIpTnnnelBase(T0TestBase):
     '''
     This class contains base setup for IP in IP tunnel tests
@@ -180,3 +179,114 @@ class IPInIPTunnelDecapV6InV4Test(IpInIpTnnnelBase):
         finally:
             pass
 
+class IPInIPTunnelEncapv4Inv4Test(IpInIpTnnnelBase):
+    """
+    We will send ipinip packet from lag1 and verify getting inner packet by matching tunnel term table entry, recieving the inner packet on port1 by  matching route entry
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process.
+        """
+        IpInIpTnnnelBase.setUp(self)
+        self.recv_dev_port_idxs = self.get_dev_port_indexes(self.servers[11][1].l3_lag_obj.member_port_indexs)
+    def ipv4inipv4ecap(self):
+        """
+        Generate ingress ipinip packet as decribed by Testing Data Packet
+        Send encap packet from lag1.
+        Generate expected decap packet as decribed by Testing Data Packet.
+        Recieve decap packet from port1, compare it with expected decap packet.
+        """
+       
+        pkt = simple_udp_packet(eth_dst=ROUTER_MAC,
+                                eth_src=self.customer_mac,
+                                ip_dst=self.vm_ip,
+                                ip_src=self.customer_ip,
+                                ip_id=108,
+                                ip_ttl=64,
+                                )
+        inner_pkt = simple_udp_packet(eth_dst=self.inner_dmac,
+                                      eth_src=ROUTER_MAC,
+                                      ip_dst=self.vm_ip,
+                                      ip_src=self.customer_ip,
+                                      ip_id=108,
+                                      ip_ttl=63)
+
+
+        ipip_pkt = simple_ipv4ip_packet(eth_dst=self.unbor_mac,
+                                            eth_src=ROUTER_MAC,
+                                            ip_id=0,
+                                            ip_src=self.lpb_ip,
+                                            ip_dst=self.tun_ip,
+                                            ip_ttl= 63,
+                                            inner_frame=inner_pkt['IP'])
+   
+        print("Verifying IP4inIP4 encapsulation")
+        m = Mask(ipip_pkt)
+        m.set_do_not_care_scapy(ptf.packet.IP, "len")
+        m.set_do_not_care_scapy(ptf.packet.IP, "chksum")
+        m.set_do_not_care_scapy(ptf.packet.IP, "inl")
+        m.set_do_not_care_scapy(ptf.packet.IP, "id")
+        m.set_do_not_care_scapy(ptf.packet.IP, "flags")
+
+        send_packet(self, self.oport_dev, pkt)
+        verify_packet_any_port(self, m, self.recv_dev_port_idxs)
+        
+        print("\tOK")
+
+        
+    def runTest(self):
+        try:
+            self.ipv4inipv4ecap()
+        finally:
+            pass
+
+class IPInIPTunnelEncapv6Inv4Test(IpInIpTnnnelBase):
+    """
+    We will send ipinip packet from lag1 and verify getting inner packet by matching tunnel term table entry, recieving the inner packet on port1 by  matching route entry
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process.
+        """
+        IpInIpTnnnelBase.setUp(self)
+
+    def ipv6inipv4ecap(self):
+        """
+        Generate ingress ipinip packet as decribed by Testing Data Packet
+        Send encap packet from lag1.
+        Generate expected decap packet as decribed by Testing Data Packet.
+        Recieve decap packet from port1, compare it with expected decap packet.
+        """
+       
+        pkt = simple_udp_packet(eth_dst=ROUTER_MAC,
+                                eth_src=self.customer_mac,
+                                ip_dst=self.vm_ip,
+                                ip_src=self.customer_ip,
+                                ip_id=108,
+                                ip_ttl=64)
+        inner_pkt = simple_udp_packet(eth_dst=self.inner_dmac,
+                                      eth_src=ROUTER_MAC,
+                                      ip_dst=self.vm_ip,
+                                      ip_src=self.customer_ip,
+                                      ip_id=108,
+                                      ip_ttl=63)
+
+        ipip_pkt = simple_ipv6ip_packet(eth_dst=self.unbor_mac,
+                                        eth_src=ROUTER_MAC,
+                                        ipv6_src=self.lpb_ip,
+                                        ipv6_dst=self.tun_ip,
+                                        inner_frame=inner_pkt['IP'])
+
+        print("Verifying IP6inIP4 encapsulation")
+        send_packet(self, self.oport_dev, pkt)
+        verify_packet(self, ipip_pkt, self.uport_dev)
+        print("\tOK")
+
+        
+    def runTest(self):
+        try:
+            self.ipv6inipv4ecap()
+        finally:
+            pass

@@ -981,7 +981,7 @@ class SviDirectBroadcastTest(T0TestBase):
     def tearDown(self):
         super().tearDown()
 
-class RemoveRouteTest(T0TestBase):
+class RemoveRouteV4Test(T0TestBase):
     """
     Verify remove route entry
     """
@@ -1014,6 +1014,70 @@ class RemoveRouteTest(T0TestBase):
                                             ip_ttl=63)
                 send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt)
                 verify_no_other_packets(self)
+        finally:
+            pass
+    
+    def tearDown(self):
+        super().tearDown()
+
+class DefaultRouteV6Test(T0TestBase):
+    """
+    Verify Default Route 
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process.
+        """
+        super().setUp()
+
+    def runTest(self):
+        """
+        1. Rmove route dest IP within 192.168.12.0/24 through RIF(Nhop is Rif) to LAG2 created
+        2. Send packets for DIP:192.168.12.1~8 SIP 192.168.0.1 DMAC: SWITCH_MAC on port5
+        3. Verify no packetes received 
+        """
+        dst_ip = "fc80::f68c:38fe:fe16:bc74"
+        print("VerifyDefaultRouteTest")
+        try:
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                        ip_dst=dst_ip,
+                                        ip_id=105,
+                                        ip_ttl=64)
+            send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt)
+            verify_no_other_packets(self)
+        finally:
+            pass
+    
+    def tearDown(self):
+        super().tearDown()
+
+class DefaultRouteV6Test(T0TestBase):
+    """
+    Verify Default Route 
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process.
+        """
+        super().setUp()
+
+    def runTest(self):
+        """
+        1. Rmove route dest IP within 192.168.12.0/24 through RIF(Nhop is Rif) to LAG2 created
+        2. Send packets for DIP:192.168.12.1~8 SIP 192.168.0.1 DMAC: SWITCH_MAC on port5
+        3. Verify no packetes received 
+        """
+        dst_ip = "222.222.222.2"
+        print("VerifyDefaultRouteTest")
+        try:
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                        ip_dst=dst_ip,
+                                        ip_id=105,
+                                        ip_ttl=64)
+            send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt)
+            verify_no_other_packets(self)
         finally:
             pass
     
