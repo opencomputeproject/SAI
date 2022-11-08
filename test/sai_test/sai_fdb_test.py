@@ -446,8 +446,7 @@ class RemoveVlanmemberLearnTest(T0TestBase):
         Set up test
         """
         T0TestBase.setUp(
-            self, 
-            is_reset_default_vlan=False, 
+            self,
             is_create_vlan_itf=False, 
             is_create_route_for_vlan_itf=False, 
             is_create_route_for_lag=False, 
@@ -491,7 +490,7 @@ class RemoveVlanmemberLearnTest(T0TestBase):
         self.dataplane.flush()
         send_packet(self, send_port2.dev_port_index, self.pkt2)
         verify_each_packet_on_multiple_port_lists(
-            self, [self.pkt2], [recv_dev_ports1])
+            self, [self.pkt2], [recv_dev_ports1], timeout=5)
         verify_no_other_packets(self)
 
         self.assertEqual(attr["available_fdb_entry"] - stored_fdb_entry, 0)
