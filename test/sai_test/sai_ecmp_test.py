@@ -244,7 +244,7 @@ class EcmpHashFieldDportTestV4(T0TestBase):
                                          tcp_dport= dst_port,
                                          ip_id=105,
                                          ip_ttl=63) 
-
+            self.dataplane.flush()
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
             rcv_idx = verify_any_packet_any_port(
                 self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4], recv_dev_port_idxs)
@@ -1130,7 +1130,7 @@ class RemoveNexthopGroupTestV4(T0TestBase):
     def tearDown(self):
         super().tearDown()
 
-class ReaAddLagEcmpTestV4(T0TestBase):
+class ReAddLagEcmpTestV4(T0TestBase):
     """
     When readd nexthop member, we expect traffic received on the readded nexthop member.
     """
@@ -1240,7 +1240,7 @@ class ReaAddLagEcmpTestV4(T0TestBase):
     def tearDown(self):
         super().tearDown()
 
-class ReaAddLagEcmpTestV6(T0TestBase):
+class ReAddLagEcmpTestV6(T0TestBase):
     """
     When readd nexthop member, we expect traffic received on the readded nexthop member.
     """
