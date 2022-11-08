@@ -463,7 +463,7 @@ class TaggedMacLearningTest(T0TestBase):
             verify_packet(self, tagged_pkt,
                           self.dut.port_obj_list[2].dev_port_index)
             verify_no_other_packets(self, timeout=2)
-            sleep(2)  # wait for add mac entry
+            sleep(5)  # wait for add mac entry
             available_fdb_entry_cnt_now = sai_thrift_get_switch_attribute(
                 self.client,
                 available_fdb_entry=True)['available_fdb_entry']
