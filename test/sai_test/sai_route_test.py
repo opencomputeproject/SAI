@@ -1099,7 +1099,7 @@ class RouteSameSipDipv4Test(T0TestBase):
         """
         1. Make sure common config for route dest IP within 192.168.12.0/24 through RIF(Nhop is Rif) to LAG2 created
         2. Send packets for DIP:192.168.12.1~2 SIP 192.168.12.1~2 DMAC: SWITCH_MAC on port5
-        3. Verify packet received with SMAC: SWITCH_MAC SIP: 192.168.12.1~2 DIP:192.168.12.1~8 on one of LAG2 member
+        3. Verify packet received with SMAC: SWITCH_MAC SIP: 192.168.12.1~2 DIP:192.168.12.1~2 on one of LAG2 member
         """
         print("RouteSameSipDipv4Test")
 
