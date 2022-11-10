@@ -581,6 +581,33 @@ typedef enum _sai_switch_tunnel_attr_t
 } sai_switch_tunnel_attr_t;
 
 /**
+ * @brief Attribute data for SAI_SWITCH_ATTR_HOSTIF_OPER_STATUS_UPDATE_MODE.
+ */
+typedef enum _sai_switch_hostif_oper_status_update_mode_t
+{
+    /**
+     * @brief Application mode.
+     *
+     * In this mode, operational status of hostif must be updated by application
+     * using hostif API with SAI_HOSTIF_ATTR_OPER_STATUS attribute. SAI adapter
+     * should not update the hostif operational status internally.
+     * When a host interface is created, application must update the operational
+     * status if required and should not rely on SAI adapter to update it.
+     */
+    SAI_SWITCH_HOSTIF_OPER_STATUS_UPDATE_MODE_APPLICATION = 0,
+
+    /**
+     * @brief SAI adapter mode.
+     *
+     * In this mode, operational status of hostif is updated internally by SAI
+     * adapter. Update of hostif operational status by application using hostif
+     * API with SAI_HOSTIF_ATTR_OPER_STATUS is ignored.
+     */
+    SAI_SWITCH_HOSTIF_OPER_STATUS_UPDATE_MODE_SAI_ADAPTER = 1,
+
+} sai_switch_hostif_oper_status_update_mode_t;
+
+/**
  * @brief Attribute Id in sai_set_switch_attribute() and
  * sai_get_switch_attribute() calls.
  */
@@ -2833,6 +2860,18 @@ typedef enum _sai_switch_attr_t
      * @validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_FABRIC
      */
     SAI_SWITCH_ATTR_SWITCH_ISOLATE,
+
+    /**
+     * @brief Set hostif operational status update mode.
+     *
+     * This will set layer responsible for updating the operational status of
+     * hostif.
+     *
+     * @type sai_switch_hostif_oper_status_update_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_SWITCH_HOSTIF_OPER_STATUS_UPDATE_MODE_APPLICATION
+     */
+    SAI_SWITCH_ATTR_HOSTIF_OPER_STATUS_UPDATE_MODE,
 
     /**
      * @brief End of attributes
