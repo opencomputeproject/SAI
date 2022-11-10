@@ -175,10 +175,7 @@ class ThriftInterface(BaseTest):
             test_reboot_mode - reboot mode
             test_reboot_stage - reboot stage, can be [setup|starting|post]
         """
-        if "test_reboot_stage" in self.test_params:
-            self.test_reboot_stage = self.test_params['test_reboot_stage']
-        else:
-            self.test_reboot_stage = None
+        self.test_reboot_stage = None
         if "test_reboot_mode" in self.test_params:
             self.test_reboot_mode = self.test_params['test_reboot_mode']
 

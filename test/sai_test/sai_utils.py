@@ -32,7 +32,7 @@ from functools import wraps
 
 from ptf.packet import *
 from ptf.testutils import *
-
+from config.switch_configer import t0_switch_config_helper
 from sai_thrift.sai_adapter import *
 from constant import *
 
@@ -189,26 +189,40 @@ def warm_test(is_runTest:bool=False, time_out=60, interval=1):
     def _check_run_case(f):
         def test_director(inst, *args):
             if inst.test_reboot_mode == 'warm':
+                print("shutdown the swich in warm mode")
+                sai_thrift_set_switch_attribute(inst.client, restart_warm=True)
+                sai_thrift_set_switch_attribute(inst.client, pre_shutdown=True)
+                sai_thrift_remove_switch(inst.client)
 			#check and create file if not exist
 			# msg to promote change the text file content to rebooted
-                warm_file = open('/tmp/warm_reboot','w')
+                warm_file = open('/tmp/warm_reboot','w+')
 				# write content to reboot-requested
                 times = 0
-                stages = [WARM_TEST_REBOOTING, WARM_TEST_POST_REBOOT]
-                for stage in stages:
-                    warm_file.write(stage)
-                    while times < time_out:
-                        txt = warm_file.read()
-                        if txt == 'mgmtDone':
-                            if not (not is_runTest and stage == WARM_TEST_REBOOTING):
-                                if stage == WARM_TEST_POST_REBOOT:
-                                    inst.createRpcClient()
-                                    inst.t0_switch_config_helper()
-                                f(inst)
+                print("write rebooting to file")
+                warm_file.write(WARM_TEST_REBOOTING)
+                warm_file.close()
+                try:
+                    while 1:
+                        warm_file = open('/tmp/warm_reboot','r')
+                        txt = warm_file.readline()
+                        warm_file.close()
+                        import pdb;pdb.set_trace()
+                        if 'post_reboot_done' in txt:
                             break
+                        if is_runTest:
+                            print("running in the rebooting stage, text is ", txt)
+                            f(inst)
                         times = times + 1
                         time.sleep(interval)
-                return
+                        print(times)
+                        if times > time_out:
+                            raise Exception("time out")
+                except Exception as e:
+                    print(e)
+                
+                inst.createRpcClient()
+                inst.test_reboot_stage  == WARM_TEST_POST_REBOOT
+                t0_switch_config_helper(inst)
             return f(inst)
         return test_director
     return _check_run_case
