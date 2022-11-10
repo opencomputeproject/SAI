@@ -59,7 +59,7 @@ class L2PortForwardingTest(T0TestBase):
                                         vlan_vid=10,
                                         ip_id=101,
                                         ip_ttl=64)
-
+                self.dataplane.flush()
                 send_packet(
                     self, send_port.dev_port_index, pkt)
                 verify_packet(

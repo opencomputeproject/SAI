@@ -117,6 +117,7 @@ class LoadbalanceOnSrcPortTest(T0TestBase):
                                             tcp_sport=src_port,
                                             ip_id=105,
                                             ip_ttl=63)
+                self.dataplane.flush()
                 send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
                 rcv_idx, _ = verify_packet_any_port(
                     self, exp_pkt, self.recv_dev_port_idxs)
@@ -173,6 +174,7 @@ class LoadbalanceOnDesPortTest(T0TestBase):
                                             tcp_dport=des_port,
                                             ip_id=105,
                                             ip_ttl=63)
+                self.dataplane.flush()
                 send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
                 rcv_idx, _ = verify_packet_any_port(
                     self, exp_pkt, self.recv_dev_port_idxs)
@@ -226,6 +228,7 @@ class LoadbalanceOnSrcIPTest(T0TestBase):
                                             ip_src=self.servers[1][i].ipv4,
                                             ip_id=105,
                                             ip_ttl=63)
+                self.dataplane.flush()
                 send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
                 rcv_idx, _ = verify_packet_any_port(
                     self, exp_pkt, self.recv_dev_port_idxs)
@@ -280,6 +283,7 @@ class LoadbalanceOnDesIPTest(T0TestBase):
                                             ip_src=self.servers[1][1].ipv4,
                                             ip_id=105,
                                             ip_ttl=63)
+                self.dataplane.flush()
                 send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
                 rcv_idx, _ = verify_packet_any_port(
                     self, exp_pkt, self.recv_dev_port_idxs)
@@ -354,6 +358,7 @@ class LoadbalanceOnProtocolTest(T0TestBase):
                                                  ip_src=self.servers[1][1].ipv4,
                                                  ip_id=105,
                                                  ip_ttl=63)
+                self.dataplane.flush()
                 send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
                 rcv_idx, _ = verify_packet_any_port(
                     self, exp_pkt, self.recv_dev_port_idxs)
@@ -416,6 +421,7 @@ class DisableEgressTest(T0TestBase):
                                             tcp_sport=src_port,
                                             ip_id=105,
                                             ip_ttl=63)
+                self.dataplane.flush()
                 send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
                 rcv_idx, _ = verify_packet_any_port(
                     self, exp_pkt, self.recv_dev_port_idxs)
@@ -445,6 +451,7 @@ class DisableEgressTest(T0TestBase):
                                             tcp_sport=src_port,
                                             ip_id=105,
                                             ip_ttl=63)
+                self.dataplane.flush()
                 send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
                 if src_port in exp_drop:
                     verify_no_packet(self, exp_pkt, self.get_dev_port_index(18))
@@ -508,6 +515,7 @@ class DisableIngressTest(T0TestBase):
                                             tcp_sport=src_port,
                                             ip_id=105,
                                             ip_ttl=63)
+                self.dataplane.flush()
                 send_packet(self, self.dut.port_obj_list[18].dev_port_index, pkt)
                 verify_packet(self, exp_pkt, self.dut.port_obj_list[1].dev_port_index)
             # git disable ingress of lag member: port18
@@ -532,6 +540,7 @@ class DisableIngressTest(T0TestBase):
                                             tcp_sport=src_port,
                                             ip_id=105,
                                             ip_ttl=63)
+                self.dataplane.flush()
                 send_packet(self, self.dut.port_obj_list[18].dev_port_index, pkt)
                 verify_no_packet(self, exp_pkt, self.dut.port_obj_list[1].dev_port_index)
         finally:
@@ -584,6 +593,7 @@ class RemoveLagMemberTest(T0TestBase):
                                             tcp_sport=src_port,
                                             ip_id=105,
                                             ip_ttl=63)
+                self.dataplane.flush()
                 send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
                 verify_packet_any_port(
                     self, exp_pkt, self.recv_dev_port_idxs)
@@ -607,6 +617,7 @@ class RemoveLagMemberTest(T0TestBase):
                                             tcp_sport=src_port,
                                             ip_id=105,
                                             ip_ttl=63)
+                self.dataplane.flush()
                 send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
                 verify_no_packet(self, exp_pkt, self.get_dev_port_index(18))
             self.lag_configer.create_lag_member(lag_obj=self.servers[11][1].l3_lag_obj,
@@ -662,6 +673,7 @@ class AddLagMemberTest(T0TestBase):
                                             tcp_sport=src_port,
                                             ip_id=105,
                                             ip_ttl=63)
+                self.dataplane.flush()
                 send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
                 verify_packet_any_port(
                     self, exp_pkt, self.recv_dev_port_idxs)
@@ -685,6 +697,7 @@ class AddLagMemberTest(T0TestBase):
                                             tcp_sport=src_port,
                                             ip_id=105,
                                             ip_ttl=63)
+                self.dataplane.flush()
                 send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
                 rcv_idx, _ = verify_packet_any_port(
                     self, exp_pkt, self.recv_dev_port_idxs)
@@ -729,6 +742,7 @@ class IndifferenceIngressPortTest(T0TestBase):
             exp_port_idx = -1
             exp_port_list = self.get_dev_port_indexes(self.servers[11][1].l3_lag_obj.member_port_indexs)
             for i in range(1, 9):
+                self.dataplane.flush()
                 send_packet(self, self.dut.port_obj_list[i].dev_port_index, pkt)
                 if exp_port_idx == -1:
                     exp_port_idx, _ = verify_packet_any_port(
