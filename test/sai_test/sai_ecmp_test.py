@@ -73,7 +73,7 @@ class EcmpHashFieldSportTestV4(T0TestBase):
                                          tcp_sport= src_port,
                                          ip_id=105,
                                          ip_ttl=63)
-
+            self.dataplane.flush()
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
             rcv_idx = verify_any_packet_any_port(
                 self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4], recv_dev_port_idxs)
@@ -156,7 +156,7 @@ class EcmpHashFieldSportTestV6(T0TestBase):
                                            ipv6_src=ip_src,
                                            tcp_sport= src_port,
                                            ipv6_hlim=63)
-
+            self.dataplane.flush()
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
             rcv_idx = verify_any_packet_any_port(
                 self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4], recv_dev_port_idxs)
@@ -244,7 +244,7 @@ class EcmpHashFieldDportTestV4(T0TestBase):
                                          tcp_dport= dst_port,
                                          ip_id=105,
                                          ip_ttl=63) 
-
+            self.dataplane.flush()
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
             rcv_idx = verify_any_packet_any_port(
                 self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4], recv_dev_port_idxs)
@@ -327,7 +327,7 @@ class EcmpHashFieldDportTestV6(T0TestBase):
                                            ipv6_src=ip_src,
                                            tcp_dport= dst_port,
                                            ipv6_hlim=63) 
-
+            self.dataplane.flush()
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
             rcv_idx = verify_any_packet_any_port(
                 self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4], recv_dev_port_idxs)
@@ -409,7 +409,7 @@ class EcmpHashFieldSIPTestV4(T0TestBase):
                                          ip_src=ip_src,
                                          ip_id=105,
                                          ip_ttl=63) 
-
+            self.dataplane.flush()
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
             rcv_idx = verify_any_packet_any_port(
                 self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4], recv_dev_port_idxs)
@@ -486,7 +486,7 @@ class EcmpHashFieldSIPTestV6(T0TestBase):
                                            ipv6_dst=ip_dst,
                                            ipv6_src=ip_src,
                                            ipv6_hlim=63) 
-
+            self.dataplane.flush()
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
             rcv_idx = verify_any_packet_any_port(
                 self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4], recv_dev_port_idxs)
@@ -607,7 +607,7 @@ class EcmpHashFieldProtoTestV4(T0TestBase):
                                              ip_src=ip_src,
                                              ip_id=105,
                                              ip_ttl=63) 
-
+            self.dataplane.flush()
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
             rcv_idx = verify_any_packet_any_port(
                 self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4], recv_dev_port_idxs)
@@ -718,7 +718,7 @@ class EcmpHashFieldProtoTestV6(T0TestBase):
                                                ipv6_dst=ip_dst,
                                                ipv6_src=ip_src,
                                                ipv6_hlim=63)
-
+            self.dataplane.flush()
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
             rcv_idx = verify_any_packet_any_port(
                 self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4], recv_dev_port_idxs)
@@ -797,6 +797,7 @@ class IngressNoDiffTestV4(T0TestBase):
         
         for i in range(5, 9):
             # step 4
+            self.dataplane.flush()
             send_packet(self, self.dut.port_obj_list[i].dev_port_index, pkt1)
             if exp_port_idx1 == -1:
                 exp_port_idx1, _ = verify_packet_any_port(self, exp_pkt1, recv_dev_port_idxs)
@@ -804,6 +805,7 @@ class IngressNoDiffTestV4(T0TestBase):
                 verify_packet(self, exp_pkt1, recv_dev_port_idxs[exp_port_idx1])
 
             # step 6
+            self.dataplane.flush()
             send_packet(self, self.dut.port_obj_list[i].dev_port_index, pkt2)
             if exp_port_idx2 == -1:
                 exp_port_idx2, _ = verify_packet_any_port(self, exp_pkt2, recv_dev_port_idxs)
@@ -877,7 +879,7 @@ class RemoveLagEcmpTestV4(T0TestBase):
                                          ip_src=ip_src,
                                          ip_id=105,
                                          ip_ttl=63)
-            
+            self.dataplane.flush()
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
             verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2, exp_pkt3], recv_dev_port_idxs)
 
@@ -951,7 +953,7 @@ class RemoveLagEcmpTestV6(T0TestBase):
                                            ipv6_src=ip_src,
                                            tcp_dport= dst_port,
                                            ipv6_hlim=63) 
-
+            self.dataplane.flush()
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
             rcv_idx = verify_any_packet_any_port(
                 self, [exp_pkt1, exp_pkt2, exp_pkt3], recv_dev_port_idxs)
@@ -1035,7 +1037,7 @@ class RemoveAllNextHopMemeberTestV4(T0TestBase):
                                          tcp_sport= src_port,
                                          ip_id=105,
                                          ip_ttl=63)
-
+        self.dataplane.flush()
         send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
         verify_no_other_packets(self)
 
@@ -1118,7 +1120,7 @@ class RemoveNexthopGroupTestV4(T0TestBase):
                                          tcp_sport= src_port,
                                          ip_id=105,
                                          ip_ttl=63)
-
+        self.dataplane.flush()
         send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
         verify_no_other_packets(self)
 
@@ -1189,7 +1191,7 @@ class ReaAddLagEcmpTestV4(T0TestBase):
                                          ip_src=ip_src,
                                          ip_id=105,
                                          ip_ttl=63)
-
+            self.dataplane.flush()
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
             verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2, exp_pkt3], recv_dev_port_idxs)
 
@@ -1231,7 +1233,7 @@ class ReaAddLagEcmpTestV4(T0TestBase):
                                          ip_src=ip_src,
                                          ip_id=105,
                                          ip_ttl=63)
-
+            self.dataplane.flush()
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
             verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4], recv_dev_port_idxs)
     def runTest(self):
@@ -1296,7 +1298,7 @@ class ReaAddLagEcmpTestV6(T0TestBase):
                                            ipv6_src=ip_src,
                                            tcp_dport= dst_port,
                                            ipv6_hlim=63) 
-
+            self.dataplane.flush()
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
             rcv_idx = verify_any_packet_any_port(
                 self, [exp_pkt1, exp_pkt2, exp_pkt3], recv_dev_port_idxs)
@@ -1349,7 +1351,7 @@ class ReaAddLagEcmpTestV6(T0TestBase):
                                            ipv6_src=ip_src,
                                            tcp_dport= dst_port,
                                            ipv6_hlim=63) 
-
+            self.dataplane.flush()
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
             rcv_idx = verify_any_packet_any_port(
                 self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4], recv_dev_port_idxs)
@@ -1420,7 +1422,7 @@ class EcmpLagDisableTestV4(T0TestBase):
                                          ip_id=105,
                                          ip_ttl=63)
 
-
+            self.dataplane.flush()
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
             verify_no_packet_any(self, exp_pkt1, self.dut.lag_list[0].member_port_indexs)
 
@@ -1491,7 +1493,7 @@ class EcmpLagDisableTestV6(T0TestBase):
                                            ipv6_src=ip_src,
                                            tcp_dport= dst_port,
                                            ipv6_hlim=63)
-      
+            self.dataplane.flush()
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
             verify_no_packet_any(self, exp_pkt1, self.dut.lag_list[0].member_port_indexs)
 
@@ -1563,7 +1565,7 @@ class EcmpIngressDisableTestV4(T0TestBase):
                                          ip_id=105,
                                          ip_ttl=63)
 
-
+            self.dataplane.flush()
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
             verify_no_packet_any(self, exp_pkt1, self.dut.lag_list[0].member_port_indexs)
 
@@ -1630,7 +1632,7 @@ class EcmpIngressDisableTestV6(T0TestBase):
                                            ipv6_src=ip_src,
                                            tcp_dport= dst_port,
                                            ipv6_hlim=63)
-      
+            self.dataplane.flush()
             send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
             verify_no_packet_any(self, exp_pkt1, self.dut.lag_list[0].member_port_indexs)
 

@@ -55,6 +55,7 @@ class RouteRifTest(T0TestBase):
                                             ip_dst=self.servers[12][i].ipv4,
                                             ip_id=105,
                                             ip_ttl=63)
+                self.dataplane.flush()
                 send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt)
                 verify_packet_any_port(self, exp_pkt, self.recv_dev_port_idxs)
                 print("received packet with dst_ip:{} on one of lag2 member".format(self.servers[12][i].ipv4))
@@ -94,6 +95,7 @@ class RouteRifv6Test(T0TestBase):
                                                  eth_dst=self.servers[12][i].l3_lag_obj.neighbor_mac,
                                                  ipv6_dst=self.servers[12][i].ipv6,
                                                  ipv6_hlim=63)
+                self.dataplane.flush()
                 send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt_v6)
                 verify_packet_any_port(self, exp_pkt_v6, self.recv_dev_port_idxs)
                 print("received packet with dst_ip:{} on one of lag2 member".format(self.servers[12][i].ipv6))
@@ -1012,6 +1014,7 @@ class RemoveRouteTest(T0TestBase):
                                             ip_dst=self.servers[12][i].ipv4,
                                             ip_id=105,
                                             ip_ttl=63)
+                self.dataplane.flush()
                 send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt)
                 verify_no_other_packets(self)
         finally:
