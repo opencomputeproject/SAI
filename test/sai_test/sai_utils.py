@@ -205,8 +205,7 @@ def warm_test(is_runTest:bool=False, time_out=60, interval=1):
                     while 1:
                         warm_file = open('/tmp/warm_reboot','r')
                         txt = warm_file.readline()
-                        warm_file.close()
-                        import pdb;pdb.set_trace()
+                        warm_file.close()                
                         if 'post_reboot_done' in txt:
                             break
                         if is_runTest:
@@ -221,7 +220,7 @@ def warm_test(is_runTest:bool=False, time_out=60, interval=1):
                     print(e)
                 
                 inst.createRpcClient()
-                inst.test_reboot_stage  == WARM_TEST_POST_REBOOT
+                inst.test_reboot_stage  = WARM_TEST_POST_REBOOT
                 t0_switch_config_helper(inst)
             return f(inst)
         return test_director
