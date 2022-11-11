@@ -1108,13 +1108,16 @@ class RouteSameSipDipv4Test(T0TestBase):
             for i in range(1, 3):
                 pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                         ip_dst=self.servers[12][i].ipv4,
+                                        ip_src=self.servers[12][i].ipv4,
                                         ip_id=105,
                                         ip_ttl=64)
                 exp_pkt = simple_tcp_packet(eth_src=ROUTER_MAC,
                                             eth_dst=self.servers[12][i].l3_lag_obj.neighbor_mac,
                                             ip_dst=self.servers[12][i].ipv4,
+                                            ip_src=self.servers[12][i].ipv4,
                                             ip_id=105,
                                             ip_ttl=63)
+                self.dataplane.flush()
                 send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt)
                 verify_packet_any_port(self, exp_pkt, self.recv_dev_port_idxs)
                 print("received packet with dst_ip:{} on one of lag2 member".format(self.servers[12][i].ipv4))
@@ -1156,6 +1159,7 @@ class RouteSameSipDipv6Test(T0TestBase):
                                                  ipv6_dst=self.servers[12][i].ipv6,
                                                  ipv6_src=self.servers[12][i].ipv6,
                                                  ipv6_hlim=63)
+                self.dataplane.flush()                                 
                 send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt_v6)
                 verify_packet_any_port(self, exp_pkt_v6, self.recv_dev_port_idxs)
                 print("received packet with dst_ip:{} on one of lag2 member".format(self.servers[12][i].ipv6))

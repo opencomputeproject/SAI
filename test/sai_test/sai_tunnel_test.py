@@ -227,7 +227,8 @@ class IPInIPTunnelEncapv4Inv4Test(IpInIpTnnnelBase):
         m.set_do_not_care_scapy(ptf.packet.IP, "len")
         m.set_do_not_care_scapy(ptf.packet.IP, "chksum")
         m.set_do_not_care_scapy(ptf.packet.IP, "flags")
-
+        
+        self.dataplane.flush()
         send_packet(self, self.oport_dev, pkt)
         verify_packet_any_port(self, m, self.recv_dev_port_idxs)
         
@@ -236,7 +237,7 @@ class IPInIPTunnelEncapv4Inv4Test(IpInIpTnnnelBase):
         
     def runTest(self):
         try:
-            self.ipv4inipv4ecap()
+            self.ipv4inipv4encap()
         finally:
             pass
 
@@ -284,7 +285,7 @@ class IPInIPTunnelEncapv6Inv4Test(IpInIpTnnnelBase):
         m.set_do_not_care_scapy(ptf.packet.IP, "chksum")
         m.set_do_not_care_scapy(ptf.packet.IP, "plen")     
         m.set_do_not_care_scapy(ptf.packet.IP, "flags")
-
+        self.dataplane.flush()
         send_packet(self, self.oport_dev, pkt)
         verify_packet_any_port(self, m, self.recv_dev_port_idxs)
         print("\tOK")
@@ -292,6 +293,6 @@ class IPInIPTunnelEncapv6Inv4Test(IpInIpTnnnelBase):
 
     def runTest(self):
         try:
-            self.ipv6inipv4ecap()
+            self.ipv6inipv4encap()
         finally:
             pass
