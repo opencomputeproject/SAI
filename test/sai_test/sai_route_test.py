@@ -983,7 +983,7 @@ class SviDirectBroadcastTest(T0TestBase):
     def tearDown(self):
         super().tearDown()
 
-class RemoveRouteTest(T0TestBase):
+class RemoveRouteV4Test(T0TestBase):
     """
     Verify remove route entry
     """
@@ -1022,3 +1022,153 @@ class RemoveRouteTest(T0TestBase):
     
     def tearDown(self):
         super().tearDown()
+
+class DefaultRouteV6Test(T0TestBase):
+    """
+    Verify Default Route 
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process.
+        """
+        super().setUp()
+
+    def runTest(self):
+        """
+        Make sure default route and route interface are created as config spec.
+        Send packet with a DIP which is not exist in the config spec for any route or host neighbor, IPX
+        Verify no packetes received. 
+        """
+        dst_ipv6 = "fc80::f68c:38fe:fe16:bc74"
+        print("VerifyDefaultRouteTest")
+
+        try:
+            pkt_v6 = simple_udpv6_packet(eth_dst=ROUTER_MAC,
+                                         ipv6_dst=dst_ipv6,
+                                         ipv6_hlim=64)
+            send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt_v6)
+            verify_no_other_packets(self)
+        finally:
+            pass
+    
+    def tearDown(self):
+        super().tearDown()
+
+class DefaultRouteV4Test(T0TestBase):
+    """
+    Verify Default Route 
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process.
+        """
+        super().setUp()
+
+    def runTest(self):
+        """
+        Make sure default route and route interface are created as config spec.
+        Send packet with a DIP which is not exist in the config spec for any route or host neighbor, IPX
+        Verify no packetes received.
+        """
+        dst_ip = "222.222.222.2"
+        print("VerifyDefaultRouteTest")
+        try:
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                        ip_dst=dst_ip,
+                                        ip_id=105,
+                                        ip_ttl=64)
+            send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt)
+            verify_no_other_packets(self)
+        finally:
+            pass
+    
+    def tearDown(self):
+        super().tearDown()
+
+class RouteSameSipDipv4Test(T0TestBase):
+    """
+    Verify route packet with same dip and sip also can be forwarded
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process.
+        """
+        super().setUp()
+
+    def runTest(self):
+        """
+        1. Make sure common config for route dest IP within 192.168.12.0/24 through RIF(Nhop is Rif) to LAG2 created
+        2. Send packets for DIP:192.168.12.1~2 SIP 192.168.12.1~2 DMAC: SWITCH_MAC on port5
+        3. Verify packet received with SMAC: SWITCH_MAC SIP: 192.168.12.1~2 DIP:192.168.12.1~2 on one of LAG2 member
+        """
+        print("RouteSameSipDipv4Test")
+
+        self.recv_dev_port_idxs = self.get_dev_port_indexes(self.servers[12][1].l3_lag_obj.member_port_indexs)
+        try:
+            for i in range(1, 3):
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                        ip_dst=self.servers[12][i].ipv4,
+                                        ip_src=self.servers[12][i].ipv4,
+                                        ip_id=105,
+                                        ip_ttl=64)
+                exp_pkt = simple_tcp_packet(eth_src=ROUTER_MAC,
+                                            eth_dst=self.servers[12][i].l3_lag_obj.neighbor_mac,
+                                            ip_dst=self.servers[12][i].ipv4,
+                                            ip_src=self.servers[12][i].ipv4,
+                                            ip_id=105,
+                                            ip_ttl=63)
+                self.dataplane.flush()
+                send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt)
+                verify_packet_any_port(self, exp_pkt, self.recv_dev_port_idxs)
+                print("received packet with dst_ip:{} on one of lag2 member".format(self.servers[12][i].ipv4))
+        finally:
+            pass
+    
+    def tearDown(self):
+        super().tearDown()
+
+
+class RouteSameSipDipv6Test(T0TestBase):
+    """
+    Verify route packet with same dip and sip also can be forwarded
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process.
+        """
+        super().setUp()
+
+    def runTest(self):
+        """
+        1. Make sure common config for route dest IP within fc02::12:0/112 through RIF(Nhop is Rif) to LAG2 created
+        2. Send packets for DIP:fc02::12:1~2 SIP:fc02::12:1~2 DMAC:SWITCH_MAC on port5
+        3. Verify packet received with SMAC:SWITCH_MAC SIP:fc02::12:1~2 DIP:fc02::12:1~2 on one of LAG2 member
+        """
+        print("RouteSameSipDipv6Test")
+
+        self.recv_dev_port_idxs = self.get_dev_port_indexes(self.servers[12][1].l3_lag_obj.member_port_indexs)
+        try:
+            for i in range(1, 3):
+                pkt_v6 = simple_udpv6_packet(eth_dst=ROUTER_MAC,
+                                             ipv6_src=self.servers[12][i].ipv6,
+                                             ipv6_dst=self.servers[12][i].ipv6,
+                                             ipv6_hlim=64)
+                exp_pkt_v6 = simple_udpv6_packet(eth_src=ROUTER_MAC,
+                                                 eth_dst=self.servers[12][i].l3_lag_obj.neighbor_mac,
+                                                 ipv6_dst=self.servers[12][i].ipv6,
+                                                 ipv6_src=self.servers[12][i].ipv6,
+                                                 ipv6_hlim=63)
+                self.dataplane.flush()                                 
+                send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt_v6)
+                verify_packet_any_port(self, exp_pkt_v6, self.recv_dev_port_idxs)
+                print("received packet with dst_ip:{} on one of lag2 member".format(self.servers[12][i].ipv6))
+        finally:
+            pass
+    
+    def tearDown(self):
+        super().tearDown()
+
