@@ -35,7 +35,6 @@ from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 
 from sai_thrift import sai_rpc
-from LogConfig import logger
 import LogConfig
 
 from sai_utils import *
@@ -163,10 +162,11 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         """
         Set Logger name as filename:classname
         """
-        LogConfig.set_logging()
+
         file_name = inspect.getfile(self.__class__)
         class_name = self.__class__.__name__
-        logger.name = "{}:{}".format(file_name, class_name)    
+        logger_name = "{}:{}".format(file_name, class_name)
+        LogConfig.set_logging(loggerName = logger_name)
 
 
     def get_active_port_list(self):

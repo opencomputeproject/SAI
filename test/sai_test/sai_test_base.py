@@ -57,7 +57,6 @@ from sai_utils import *
 
 import inspect
 
-from LogConfig import logger
 import LogConfig
 
 THRIFT_PORT = 9092
@@ -358,10 +357,10 @@ class T0TestBase(ThriftInterfaceDataPlane):
         """
         Set Logger name as filename:classname
         """
-        LogConfig.set_logging()        
         file_name = inspect.getfile(self.__class__)
         class_name = self.__class__.__name__
-        logger.name = "{}:{}".format(file_name, class_name)
+        logger_name = "{}:{}".format(file_name, class_name)
+        LogConfig.set_logging(loggerName = logger_name)
 
     def setUp(self,
               force_config=False,
