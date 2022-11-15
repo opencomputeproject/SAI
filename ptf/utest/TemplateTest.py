@@ -29,10 +29,13 @@ class TestAdapterLogger(BasicMockedTest):
         
     
     def test_logger(self):
+        self.set_logger_name()
         sai_thrift_remove_acl_table(self.client, 11111)
         self.check_file_contains(LOG_FILE_PATH, 'acl_table_oid')
         
-        sai_thrift_create_switch(self.client, init_switch=True, hardware_access_bus="11:11:11:11:11:11")
+        sai_thrift_create_switch(self.client, 
+                                 init_switch=True, 
+                                 hardware_access_bus="11:11:11:11:11:11")
         self.check_file_contains(LOG_FILE_PATH, 'hardware_access_bus')
         
     
@@ -41,7 +44,7 @@ class TestAdapterLogger(BasicMockedTest):
             datafile = f.readlines()
             found = False
             for line in datafile:
-                if content in line:                
+                if content in line:
                     return True
         return False
 
