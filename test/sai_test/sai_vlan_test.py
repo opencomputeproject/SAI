@@ -93,10 +93,10 @@ class UntagAccessToAccessTest(T0TestBase):
     """
     This test verifies the VLAN function around untag and access ports.
     """
-    @T0TestBase.skip_test_on_rebooting(False)
     def setUp(self):
         super().setUp()
-    
+
+    @warm_test(is_runTest=True)
     def runTest(self):
         """
         Forwarding between tagged ports with untagged pkt
@@ -143,10 +143,10 @@ class MismatchDropTest(T0TestBase):
     """
     This test verifies the VLAN function around untag and access ports.
     """
-    @T0TestBase.skip_test_on_rebooting(False)
     def setUp(self):
         super().setUp()
 
+    @warm_test(is_runTest=True)
     def runTest(self):
         """
         Dropping between tagged ports with mismatched tagged pkt
@@ -191,7 +191,6 @@ class TaggedFrameFilteringTest(T0TestBase):
     """
     Drop tagged packet when the destination port from MAC table search is the port which packet comes into the switch.
     """
-    @T0TestBase.skip_test_on_rebooting(True)
     def setUp(self):
         super().setUp()
         t0_fdb_tear_down_helper(self)
@@ -202,6 +201,7 @@ class TaggedFrameFilteringTest(T0TestBase):
             port_idxs=[1, 1],
             vlan_oid=self.dut.vlans[10].oid)
 
+    @warm_test(is_runTest=False)
     def runTest(self):
         print("\nTaggedFrameFilteringTest")
         self.tmp_server_list = [self.servers[1][i] for i in [1, 5]] # need for warm reboot
@@ -231,7 +231,6 @@ class UnTaggedFrameFilteringTest(T0TestBase):
     Drop untagged packet when the destination port from MAC table search
     is the port which packet comes into the switch.
     """
-    @T0TestBase.skip_test_on_rebooting(True)
     def setUp(self):
         super().setUp()
         t0_fdb_tear_down_helper(self)
@@ -242,6 +241,7 @@ class UnTaggedFrameFilteringTest(T0TestBase):
             port_idxs=[1, 1],
             vlan_oid=self.dut.vlans[10].oid)
 
+    @warm_test(is_runTest=False)
     def runTest(self):
         print("\nUnTaggedFrameFilteringTest")
         try:
@@ -271,10 +271,10 @@ class TaggedVlanFloodingTest(T0TestBase):
     the packet sent to the VLAN port will flood to other ports, and the egress ports
     will be in the same VLAN as the ingress port.
     """
-    @T0TestBase.skip_test_on_rebooting(False)
     def setUp(self):
         super().setUp()
 
+    @warm_test(is_runTest=True)
     def runTest(self):
         print("\nTaggedVlanFloodingTest")
         try:
@@ -305,10 +305,10 @@ class UnTaggedVlanFloodingTest(T0TestBase):
     the packet sent to the VLAN port will flood to other ports, and the egress ports
     will be in the same VLAN as the ingress port.
     """
-    @T0TestBase.skip_test_on_rebooting(False)
     def setUp(self):
         super().setUp()
 
+    @warm_test(is_runTest=True)
     def runTest(self):
         print("\nUnTaggedVlanFloodingTest")
         try:
@@ -335,10 +335,10 @@ class BroadcastTest(T0TestBase):
     Drop untagged packet when the destination port from MAC table search
     is the port which packet comes into the switch.
     """
-    @T0TestBase.skip_test_on_rebooting(False)
     def setUp(self):
         super().setUp()
 
+    @warm_test(is_runTest=True)
     def runTest(self):
         print("\nBroadcastTest")
         try:
@@ -378,10 +378,10 @@ class UntaggedMacLearningTest(T0TestBase):
     from the packet, the packet sent to the VLAN port will only send to the 
     port whose MAC address matches the MAC table entry.
     """
-    @T0TestBase.skip_test_on_rebooting(True)
     def setUp(self):
         super().setUp()
 
+    @warm_test(is_runTest=False)
     def runTest(self):
         print("\nUntaggedMacLearningTest")
         try:
@@ -424,10 +424,10 @@ class TaggedMacLearningTest(T0TestBase):
     from the packet, the packet sent to the VLAN port will only send to the
     port whose MAC address matches the MAC table entry.
     """
-    @T0TestBase.skip_test_on_rebooting(True)
     def setUp(self):
         super().setUp()
 
+    @warm_test(is_runTest=False)
     def runTest(self):
         print("\nTaggedMacLearningTest")
         try:
@@ -468,10 +468,10 @@ class VlanMemberListTest(T0TestBase):
     """
     This test verifies the VLAN member list using SAI_VLAN_ATTR_MEMBER_LIST
     """
-    @T0TestBase.skip_test_on_rebooting(True)
     def setUp(self):
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
+    @warm_test(is_runTest=False)
     def runTest(self):
         print("VlanMemberListTest")
         mbr_list = []
@@ -539,10 +539,10 @@ class VlanMemberInvalidTest(T0TestBase):
     """
     This test verifies when adding a VLAN member to a non-exist VLAN, it will fail.
     """
-    @T0TestBase.skip_test_on_rebooting(True)
     def setUp(self):
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
+    @warm_test(is_runTest=False)
     def runTest(self):
         print("VlanMemberInvalidTest")
 
@@ -564,7 +564,6 @@ class DisableMacLearningTaggedTest(T0TestBase):
     """
     This test verifies the function when disabling VLAN MAC learning. When disabled, no new MAC will be learned in the MAC table.
     """
-    @T0TestBase.skip_test_on_rebooting(True)
     def setUp(self):
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         print("DisableMacLearningTaggedTest")
@@ -573,6 +572,7 @@ class DisableMacLearningTaggedTest(T0TestBase):
         self.assertEqual(status, SAI_STATUS_SUCCESS)
         print("MAC Learning disabled on VLAN")
 
+    @warm_test(is_runTest=False)
     def runTest(self):
         attr = sai_thrift_get_switch_attribute(
             self.client, available_fdb_entry=True)
@@ -604,7 +604,6 @@ class DisableMacLearningUntaggedTest(T0TestBase):
     """
     This test verifies the function when disabling VLAN MAC learning. When disabled, no new MAC will be learned in the MAC table.
     """
-    @T0TestBase.skip_test_on_rebooting(True)
     def setUp(self):
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         print("DisableMacLearningUntaggedTest")
@@ -613,6 +612,7 @@ class DisableMacLearningUntaggedTest(T0TestBase):
         self.assertEqual(status, SAI_STATUS_SUCCESS)
         print("MAC Learning disabled on VLAN")
 
+    @warm_test(is_runTest=True)
     def runTest(self):
         attr = sai_thrift_get_switch_attribute(
             self.client, available_fdb_entry=True)
@@ -642,7 +642,6 @@ class ArpRequestFloodingTest(T0TestBase):
     """
     This test verifies the flooding when receive a arp request
     """
-    @T0TestBase.skip_test_on_rebooting(False)
     def setUp(self):
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         ip2 = "192.168.0.2"
@@ -652,6 +651,7 @@ class ArpRequestFloodingTest(T0TestBase):
             ip_tgt=ip2,
             hw_tgt=self.servers[1][2].mac)
 
+    @warm_test(is_runTest=True)
     def runTest(self):
         print("ArpRequestFloodingTest")
         send_packet(
@@ -670,10 +670,10 @@ class ArpRequestLearningTest(T0TestBase):
     """
     This test verifies the mac learning when receive a arp request
     """
-    @T0TestBase.skip_test_on_rebooting(True)
     def setUp(self):
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
+    @warm_test(is_runTest=True)
     def runTest(self):
         ip1 = "192.168.0.1"
         ip2 = "192.168.0.2"
@@ -705,10 +705,10 @@ class TaggedVlanStatusTest(T0TestBase):
     """
     This test verifies VLAN-related counters with tagged pkt 
     """
-    @T0TestBase.skip_test_on_rebooting(True)
     def setUp(self):
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
+    @warm_test(is_runTest=False)
     def runTest(self):
         print("TaggedVlanStatusTest")
         self.tagged_pkt = simple_udp_packet(eth_dst=self.servers[1][2].mac,
@@ -800,10 +800,10 @@ class UntaggedVlanStatusTest(T0TestBase):
     """
     This test verifies VLAN-related counters with untagged pkt 
     """
-    @T0TestBase.skip_test_on_rebooting(True)
     def setUp(self):
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
+    @warm_test(is_runTest=False)
     def runTest(self):
         print("UntaggedVlanStatusTest")
         self.untagged_pkt = simple_udp_packet(eth_dst=self.servers[1][2].mac,
