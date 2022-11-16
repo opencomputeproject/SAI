@@ -19,7 +19,8 @@ Optional arguments are useful for development purposes.
 | `-d` `--dump`          | Dump all data to the file. **Should be used during development**. |
 | `--mandatory-attrs`    | Make mandatory attributes obligatory in *sai\_adapter.py*. It removes `=None` from attributes, which are passed as arguments into python functions. Can be useful for debugging purposes, but since most of attributes are **optionally** mandatory, this is not as useful as it could be. |
 | `--dev-utils[=STR]`    | Generate additional development utils within the generated code. Additional options: [=log,zero]. Useful for tests development and debugging. The generated code **should not** be committed. |
-| `--skip_error[=STR]`    | Skip test on specified error code. Additional options: [=-2]. The generated code **should not** be committed. |
+| `--skip_error[=STR]`   | Skip test on specified error code. Additional options: [=-2]. The generated code **should not** be committed. |
+| `--adapter_logger`     | Enable the logger in sai_adapter, it will log all the method invocation. |
 | `-h` `--help`          | Print the help. |
 
 *gensairpc.pl* development
