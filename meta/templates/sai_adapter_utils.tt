@@ -13,6 +13,11 @@ from unittest import SkipTest
 from ptf import testutils
 [% END -%]
 
+[%- BLOCK invocation_logger_imports %]
+import inspect 
+import logging
+[% END -%]
+
 [%- ######################################################################## -%]
 
 [%- ######################################################################## -%]
@@ -29,6 +34,13 @@ from ptf import testutils
 # skip_error
 
 [% PROCESS skip_test_on_error %]
+[% END -%]
+
+[%- BLOCK invocation_logger %]
+
+# invocation_logger
+
+[% PROCESS invocation_logger_func %]
 [% END -%]
 
 [%- ######################################################################## -%]
@@ -207,6 +219,27 @@ def skip_test_on_error(errorcode=[-2]):
     return skip_test_on_error_decorator
 [%- END -%]
 
+[%- BLOCK invocation_logger_func -%]
+def invocation_logger(func):
+    """
+    SAI interface invocation logger.
+    Use it to log all the invocated method in this sai_adapater.
+    """
+     
+    def inner_logger(*args, **kwargs):
+ 
+        args_name = inspect.getargspec(func)[0]
+
+        args_dict = dict(zip(args_name, args))
+        args_dict.update(kwargs)
+        logging.info("sai_adapter_invoke func:[{}] args: [{}]".format(func.__name__, args_dict))
+
+        args_values = args_dict.values()
+        return func(*args, **kwargs)
+ 
+    return inner_logger
+[%- END -%]
+
 [%- ######################################################################## -%]
 
 [%- ######################################################################## -%]
@@ -217,6 +250,10 @@ def skip_test_on_error(errorcode=[-2]):
 
 [%- BLOCK decorate_skip_test_on_error %]
 @skip_test_on_error([% IF skip_error %]errorcode=[[% skip_error %]][% END %])
+[%- END -%]
+
+[%- BLOCK decorate_invocation_logger %]
+@invocation_logger
 [%- END -%]
 
 [%- ######################################################################## -%]
