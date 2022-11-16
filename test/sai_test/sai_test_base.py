@@ -55,6 +55,10 @@ from data_module.persist import PersistHelper
 from data_module.vlan import Vlan
 from sai_utils import *
 
+import inspect
+
+import LogConfig
+
 THRIFT_PORT = 9092
 
 
@@ -349,6 +353,15 @@ class T0TestBase(ThriftInterfaceDataPlane):
         self.persist_helper = PersistHelper()
         self.ports_config = None
 
+    def set_logger_name(self):
+        """
+        Set Logger name as filename:classname
+        """
+        file_name = inspect.getfile(self.__class__)
+        class_name = self.__class__.__name__
+        logger_name = "{}:{}".format(file_name, class_name)
+        LogConfig.set_logging(loggerName = logger_name)
+
     def setUp(self,
               force_config=False,
               is_create_hostIf=True,
@@ -363,8 +376,9 @@ class T0TestBase(ThriftInterfaceDataPlane):
               is_create_route_for_nhopgrp=False,
               wait_sec=5,
               skip_reason = None):
-        super(T0TestBase, self).setUp(skip_reason = skip_reason)
 
+        super(T0TestBase, self).setUp(skip_reason = skip_reason)
+        self.set_logger_name()
         # parse the port_config.ini, will create port, bridge port and host interface base on that file
         if 'port_config_ini' in self.test_params:
             self.ports_config = self.parsePortConfig(self.test_params['port_config_ini'])        
@@ -411,6 +425,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
             self.dut = self.persist_helper.read_dut()
             self.t1_list = self.persist_helper.read_t1_list()
             self.servers = self.persist_helper.read_server_list()
+
 
     def restore_fdb_config(self):
         """
