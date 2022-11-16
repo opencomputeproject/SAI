@@ -432,6 +432,7 @@ client.[% function.thrift_name %](
 
     [%- PROCESS decorate_method IF dev_utils -%]
     [%- PROCESS decorate_skip_test_on_error IF skip_error -%]
+    [%- PROCESS decorate_invocation_logger IF adapter_logger -%]
     [%- PROCESS function_header %]
     [%- PROCESS function_docstring %]
 
@@ -489,6 +490,7 @@ Thrift SAI interface basic tests
 
 [%- PROCESS dev_utils_imports IF dev_utils -%]
 [%- PROCESS skip_test_on_error_imports IF skip_error -%]
+[%- PROCESS invocation_logger_imports IF adapter_logger -%]
 
 from sai_thrift.ttypes import *
 from sai_thrift.sai_headers import *
@@ -505,6 +507,7 @@ status = 0
 
 [%- PROCESS dev_utils IF dev_utils -%]
 [%- PROCESS skip_error IF skip_error -%]
+[%- PROCESS invocation_logger IF adapter_logger -%]
 
 [%- FOREACH api IN apis.keys.sort -%]
     [%- IF apis.$api.functions.size %]

@@ -21,6 +21,7 @@ and/or dataplane automatically set up.
 """
 import os
 import time
+import inspect
 from threading import Thread
 
 from collections import OrderedDict
@@ -33,6 +34,7 @@ from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 
 from sai_thrift import sai_rpc
+import LogConfig
 
 from sai_utils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 import sai_thrift.sai_adapter as adapter
@@ -49,7 +51,6 @@ class ThriftInterface(BaseTest):
     """
     def setUp(self):
         super(ThriftInterface, self).setUp()
-
         self.interface_to_front_mapping = {}
         self.port_map_loaded = False
 
@@ -146,6 +147,7 @@ class ThriftInterface(BaseTest):
         self.transport.open()
 
 
+
 class ThriftInterfaceDataPlane(ThriftInterface):
     """
     Sets up the thrift interface and dataplane
@@ -181,6 +183,17 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
     """
 
     platform = 'common'
+    
+    def set_logger_name(self):
+        """
+        Set Logger name as filename:classname
+        """
+
+        file_name = inspect.getfile(self.__class__)
+        class_name = self.__class__.__name__
+        logger_name = "{}:{}".format(file_name, class_name)
+        LogConfig.set_logging(loggerName = logger_name)
+
 
     def get_active_port_list(self):
         '''
@@ -459,6 +472,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
 
     def setUp(self):
         super(SaiHelperBase, self).setUp()
+        self.set_logger_name()
 
         self.getSwitchPorts()
         if self.test_reboot_mode == 'warm':
