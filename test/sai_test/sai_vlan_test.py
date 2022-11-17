@@ -612,7 +612,7 @@ class DisableMacLearningUntaggedTest(T0TestBase):
         self.assertEqual(status, SAI_STATUS_SUCCESS)
         print("MAC Learning disabled on VLAN")
 
-    @warm_test(is_runTest=True)
+    @warm_test(is_runTest=False)
     def runTest(self):
         attr = sai_thrift_get_switch_attribute(
             self.client, available_fdb_entry=True)
