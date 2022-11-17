@@ -185,6 +185,41 @@ typedef enum _sai_next_hop_group_attr_t
     SAI_NEXT_HOP_GROUP_ATTR_SELECTION_MAP,
 
     /**
+     * @brief Adaptive routing and switching object for this group.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ARS
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_ARS_OBJECT_ID,
+
+    /**
+     * @brief Number of packets dropped by ARS mechanism
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_ARS_PACKET_DROPS,
+
+    /**
+     * @brief Number of ARS next hop reassignments done
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_ARS_NEXT_HOP_REASSIGNMENTS,
+
+    /**
+     * @brief Number of ARS port reassignments done
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_ARS_PORT_REASSIGNMENTS,
+
+    /**
      * @brief End of attributes
      */
     SAI_NEXT_HOP_GROUP_ATTR_END,
@@ -313,6 +348,33 @@ typedef enum _sai_next_hop_group_member_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_NEXT_HOP_GROUP_MEMBER_ATTR_COUNTER_ID,
+
+    /**
+     * @brief Quality threshold for least cost ARS paths. Crossing down the threshold will result in using the non least cost sub optimal path.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 16
+     */
+    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_ARS_PRIMARY_PATH_QUALITY_THRESHOLD,
+
+    /**
+     * @brief Cost of switching over to non least cost ARS paths
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_ARS_ALTERNATE_PATH_COST,
+
+    /**
+     * @brief Indicates the bias in favor of alternate path
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_ARS_ALTERNATE_PATH_BIAS,
 
     /**
      * @brief End of attributes
