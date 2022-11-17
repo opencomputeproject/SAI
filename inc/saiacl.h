@@ -277,6 +277,15 @@ typedef enum _sai_acl_action_type_t
     /** Set Forwarding class */
     SAI_ACL_ACTION_TYPE_SET_FORWARDING_CLASS = 0x00000034,
 
+    /** Set ARS monitoring */
+    SAI_ACL_ACTION_TYPE_SET_ARS_MONITORING = 0x00000035,
+
+    /** Set ARS object */
+    SAI_ACL_ACTION_TYPE_SET_ARS_OBJECT = 0x00000036,
+
+    /** Disable ARS forwarding */
+    SAI_ACL_ACTION_TYPE_DISABLE_ARS_FORWARDING = 0x00000037,
+
 } sai_acl_action_type_t;
 
 /**
@@ -2936,6 +2945,36 @@ typedef enum _sai_acl_entry_attr_t
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_SET_FORWARDING_CLASS = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x34,
+
+    /**
+     * @brief Enable ARS monitoring for a destination that can be a LAG or nexthopgroup
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP_GROUP
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_ARS_MONITORING = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x35,
+
+    /**
+     * @brief Enable ARS object for a destination that can be a LAG or nexthopgroup
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ARS
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_ARS_OBJECT = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x36,
+
+    /**
+     * @brief Disable ARS forwarding for a destination that can be a LAG or nexthopgroup
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP_GROUP
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_DISABLE_ARS_FORWARDING = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x37,
 
     /**
      * @brief End of Rule Actions
