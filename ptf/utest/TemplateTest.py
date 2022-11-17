@@ -1,5 +1,10 @@
 from BasicTest import BasicMockedTest
-from meta.sai_adapter import *
+# Try to import from local build folder
+# If cannot import then try to import from global folder
+try:
+    from meta.sai_adapter import *
+except ImportError:
+    from sai_thrift.sai_adapter import *
 from MockClient import MockSuccessClient
 import unittest
 
