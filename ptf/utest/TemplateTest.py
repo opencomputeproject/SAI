@@ -52,7 +52,3 @@ class TestAdapterLogger(BasicMockedTest):
                 if content in line:
                     return True
         return False
-
-
-if __name__ == '__main__':
-    unittest.main()
