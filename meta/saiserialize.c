@@ -1124,6 +1124,9 @@ int sai_serialize_enum_list(
     buf += sprintf(buf, "{");
 
     buf += sprintf(buf, "\"count\":");
+    buf += sprintf(buf, "%d", list->count);
+
+    buf += sprintf(buf, ",\"list\":");
 
     if (list->list == NULL || list->count == 0)
     {
@@ -1151,6 +1154,7 @@ int sai_serialize_enum_list(
                 SAI_META_LOG_WARN("failed to serialize enum_list");
                 return SAI_SERIALIZE_ERROR;
             }
+            buf += ret;
 
             buf += sprintf(buf, "\"");
         }

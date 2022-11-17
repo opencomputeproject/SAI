@@ -32,11 +32,9 @@ class SaiSanityTest(T0TestBase):
 
     def setUp(self):
         """
-        Test the basic setup proecss
+        Setup proecss
         """
-        T0TestBase.setUp(self,
-                         is_reset_default_vlan=False,
-                         is_recreate_bridge=False)
+        T0TestBase.setUp(self)
 
     def runTest(self):
         """
@@ -46,7 +44,7 @@ class SaiSanityTest(T0TestBase):
 
     def tearDown(self):
         """
-        Test the basic tearDown process
+        TearDown process
         """
         pass
 
@@ -63,8 +61,10 @@ class SaiSanityTest(T0TestBase):
         try:
             # Unknown mac, flooding to all the other ports.
             print("Sanity test, check all the ports be flooded.")
-            send_packet(self, 1, pkt)
-            verify_each_packet_on_multiple_port_lists(
-                self, [pkt], [self.dev_port_list[2:]])
+            self.dataplane.flush()
+            send_packet(
+                self, self.dut.port_obj_list[1].dev_port_index, pkt)
+            received_index = verify_each_packet_on_multiple_port_lists(
+                self, [pkt], [[item.dev_port_index for item in self.dut.port_obj_list[2:]]])
         finally:
             pass

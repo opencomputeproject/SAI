@@ -20,9 +20,13 @@
 
 from sai_thrift.sai_adapter import *
 from sai_utils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from sai_test_base import T0TestBase
 
 
-def t0_switch_config_helper(test_obj):
+def t0_switch_config_helper(test_obj: 'T0TestBase'):
     """
     Make t0 switch configurations base on the configuration in the test plan.
     Set the configuration in test directly.
@@ -32,7 +36,7 @@ def t0_switch_config_helper(test_obj):
 
     """
     configer = SwitchConfiger(test_obj)
-    test_obj.switch_id = configer.start_switch()
+    test_obj.dut.switch_id = configer.start_switch()
 
 
 class SwitchConfiger(object):
@@ -40,7 +44,7 @@ class SwitchConfiger(object):
     Class use to make all the Switch configurations.
     """
 
-    def __init__(self, test_obj) -> None:
+    def __init__(self, test_obj: 'T0TestBase') -> None:
         """
         Init the Switch configer.
 

@@ -201,6 +201,15 @@ typedef enum _sai_policer_attr_t
     SAI_POLICER_ATTR_ENABLE_COUNTER_PACKET_ACTION_LIST = 0x0000000a,
 
     /**
+     * @brief Policer pool stage
+     *
+     * @type sai_object_stage_t
+     * @flags CREATE_ONLY
+     * @default SAI_OBJECT_STAGE_BOTH
+     */
+    SAI_POLICER_ATTR_OBJECT_STAGE = 0x0000000b,
+
+    /**
      * @brief End of attributes
      */
     SAI_POLICER_ATTR_END,

@@ -52,6 +52,7 @@ GCM - Galois Counter Mode
 GMII - Gigabit Media-Independent Interface
 GNMI - gRPC Network Management Interface
 GPB - Google Protocol Buffers
+GPE - Generic Programmable Extensions
 GRE - Generic Routing Encapsulation
 GRPC - GRPC Remote Procedure Call
 HW - Hardware
@@ -96,9 +97,11 @@ P4RT - Programming Protocol-independent Packet Processors Runtime
 PAM4 - Pulse Amplitude Modulation 4-level
 PBS - Peak Burst Size
 PCI - Peripheral Component Interconnect
+PCS - Physical Coding Sublayer
 PFC - Priority Flow Control
 PHP - Penultimate Hop Pop
 PIR - Peak Information Rate
+PMD - Physical Medium Dependent
 PN - Packet Number
 PRBS - Pseudorandom binary sequence
 PSC - PHB Scheduling Class

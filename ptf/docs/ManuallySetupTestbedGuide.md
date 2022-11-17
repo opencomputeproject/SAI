@@ -1,6 +1,14 @@
-# PTF test user guide
+# Manually Setup Testbed Guide
 
-This section describes how to run PTF test cases on your device under test (DUT).
+- [Manually Setup Testbed Guide](#manually-setup-testbed-guide)
+  - [Build SAI thrift server and python client (DUT side)](#build-sai-thrift-server-and-python-client-dut-side)
+    - [Install prerequisites:](#install-prerequisites)
+    - [Generate & build](#generate--build)
+    - [Run server](#run-server)
+  - [Test controller (client side)](#test-controller-client-side)
+
+This section describes how to set up the testing environment manually and run PTF test cases on your device under test (DUT). 
+For how to setup the environment with SONiC-MGMT script please refer [Deploy SAI Test Topology With SONiC-MGMT](DeploySAITestTopologyWithSONiC-MGMT.md)
 
   > This guide covers Ubuntu 18.40 distro and above distros. Steps tested only on Ubuntu 18.04.
 
@@ -81,6 +89,11 @@ Build SAI thrift server and libraries
 
 ```bash
 export SAITHRIFTV2=y
+export GEN_SAIRPC_OPTS="-ve" # optional - to use SAI experimental headers
+# Below is an  example of linking additional application-specific libraries besides libsai.
+# Modify to suit a particular use-case; longer multi-line expressions are also possible. Omit if not needed.
+export SAIRPC_EXTRA_LIBS="-L/usr/local/lib/ -lpthread"
+
 make saithrift-build
 make saithrift-install
 ```

@@ -11,6 +11,8 @@
   - [2.1 VLAN Interfaces](#21-vlan-interfaces)
   - [2.2 Route Interfaces](#22-route-interfaces)
   - [2.3 Route Configuration](#23-route-configuration)
+    - [Common Route configuration](#common-route-configuration)
+    - [Ecmp route configuration](#ecmp-route-configuration)
   - [2.4 Neighbor Configuration](#24-neighbor-configuration)
   - [2.5 Default route entry and interface](#25-default-route-entry-and-interface)
 - [3 LAG configuration](#3-lag-configuration)
@@ -55,14 +57,19 @@ For IP addresses, we will use different prefix for different role
 
 Format: ROLE.NUM.GROUP_ID.SEQ
 
-- ROLE_NUM
+Server: ROLE=192
+T1: ROLE=10, NUM=1
+T0: ROLE=10, NUM=0
+
+Local Server: ROLE=192, NUM=168, GROUP_ID (0 - 9)
+Remote Server: ROLE=192, NUM=168, Group_ID(10-19) 
+
+
+- Example
    ```
    T0: 10.0.0.0
-   T0 ECMP: 10.0.50.0
    T1: 10.1.0.0
-   T1 ECMP: 10.1.50.0
    Server: 192.168.0.0
-   Server ECMP: 192.168.50.0
    Server Remote:192.168.10.0
    ```
 
@@ -81,17 +88,21 @@ For IP addresses, we will use different prefix for different role
 
 Format: ROLE.NUM.GROUP_ID.SEQ
 
-- ROLE_NUM
+Server: ROLE=fc02
+T1: ROLE=fc00, NUM=1
+T0: ROLE=fc00, NUM=0
+
+Local Server: ROLE=fc02, NUM=0, GROUP_ID (0 - 9)
+Remote Server: ROLE=fc02, NUM=0, Group_ID(10-19) 
+
+- Example
    ```
    T0: fc00:0::
    T0 ECMP: fc00:0:50::
    T1: fc00:1::
-   T1 ECMP: fc00:1:50::
    Server: fc02::
-   Server ECMP: fc02:50::
    Server Remote:fc02:10::
    ```
-
 
 
 # 1. L2 Configurations
@@ -105,6 +116,8 @@ The MAC Table for VLAN L2 forwarding as below
 |mac1-8  |00:01:01:99:01:01 - 00:01:01:99:01:08|Port1-8|10|Ethernet4-Ethernet32|
 |mac1-8  |00:01:01:99:01:91 - 00:01:01:99:01:98|Port1-8|10|Ethernet4-Ethernet32|
 |mac9-16 |00:01:01:99:02:09 - 00:01:01:99:02:16|Port9-16|20|Ethernet36-Ethernet64|
+|mac9-16 |00:01:01:99:02:91 - 00:01:01:99:02:98|Port9-16|20|Ethernet36-Ethernet64|
+|mac1-8  |00:01:01:99:03:91 - 00:01:01:99:03:98|Port1-8|30|Ethernet4-Ethernet32|
 
 ## 1.2 VLAN configuration
 
@@ -126,50 +139,62 @@ Host interface IP
 |-|-|-|
 |10|192.168.1.100|fc02::1:100|
 |20|192.168.2.100|fc02::2:100|
+|30|192.168.3.100|fc02::3:100|
 
 ## 2.2 Route Interfaces
 |Port|Type|
 |-|-|
 |port0|port|
-|port5-8|port|
-|port13-16|port|
 |Lag1-4|Lag|
 |VLAN10|VLAN|
 |VLAN20|VLAN|
+|VLAN30|VLAN|
 
 
 
 ## 2.3 Route Configuration
 
-|Dest IPv4|Dest IPv6| Next Hop/Group | Next hop IPv4 | Next hop IPv6 | next hop port|
+### Common Route configuration
+
+|Dest IPv4|Dest IPv6| Next Hop/Group/RIF | Next hop IPv4 | Next hop IPv6 | next hop port|
 |-|-|-|-|-|-|
-|192.168.1.0/24|fc02::1::/112|Next Hop|192.168.1.0|fc02::1::|VLAN10|
-|192.168.2.0/24|fc02::2::/112|Next Hop|192.168.2.0|fc02::2::|VLAN20|
-|192.168.11.0/24|fc02::11:0/112|Next Hop|10.1.1.101|fc02::1:101|LAG1|
-|192.168.12.0/24|fc02::12:0/112|Next Hop|10.1.2.101|fc02::2:101|LAG2|
-|192.168.13.0/24|fc02::13:0/112|Next Hop|10.1.3.101|fc02::3:101|LAG3|
-|192.168.14.0/24|fc02::14:0/112|Next Hop|10.1.4.101|fc02::4:101|LAG4|
-|192.168.60.0/24|fc02::60:0/112|Next Hop Group|10.1.1.101; 10.1.2.101; 10.1.3.101; 10.1.4.101|fc00:1::1:101; fc00:1::2:101; fc00:1::3:101; fc00:1:4:101|LAG1-4|
+|192.168.1.0/24|fc02::1::/112|Next Hop|192.168.1.0/24|fc02::1::/112|VLAN10|
+|192.168.2.0/24|fc02::2::/112|VLAN RIF(Nhop is Rif)|192.168.2.0/24|fc02::2::/112|VLAN20|
+|192.168.11.0/24|fc02::11:0/112|Next Hop|10.1.1.100|fc02::1:100|LAG1|
+|192.168.21.0/24|fc02::21:0/112|Next Hop|10.1.1.100|fc02::1:100|LAG1|
+|192.168.12.0/24|fc02::12:0/112|Next Hop|10.1.2.100|fc02::2:100|LAG2|
+|192.168.13.0/24|fc02::13:0/112|Next Hop|10.1.3.100|fc02::3:100|LAG3|
+|192.168.14.0/24|fc02::14:0/112|Next Hop|10.1.4.100|fc02::4:100|LAG4|
+|192.168.15.0/24|fc02::15:0/112|LAG RIF(Nhop is Rif)|10.1.5.100|fc02::5:100|LAG4|
 |192.168.20.0/24|fc02::20:0/112|Next Hop|10.1.2.100|fc00:1::2:100|Tunnel|
 |192.168.30.0/24|fc02::30:0/112|Next Hop|10.1.3.100|fc00:1::3:100|Tunnel|
 |192.168.40.0/24|fc02::40:0/112|Next Hop|10.1.4.100|fc00:1::4:100|Tunnel|
 |192.168.70.0/24|fc02::70:0/112|Next Hop Group|10.1.2.100;10.1.4.100|fc00:1::2:100; fc00:1::4:100|Tunnel|
 
+### Ecmp route configuration
+
+**P.S. If this ecmp configuration cannot con-exist with [Common Route configuration], please make ecmp configuration seperately.
+|Dest IPv4|Dest IPv6| Next Hop/Group/RIF | Next hop IPv4 | Next hop IPv6 | next hop port|
+|-|-|-|-|-|-|
+|192.168.60.0/24|fc02::60:0/112|Next Hop Group|10.1.1.100; 10.1.2.100; 10.1.3.100; 10.1.4.100|fc00:1::1:100; fc00:1::2:100; fc00:1::3:100; fc00:1:4:100|LAG1-4|
+|192.168.61.0/24|fc02::60:0/112|Next Hop Group|10.1.1.101; 10.1.2.101; 10.1.3.101; 10.1.4.101|fc00:1::1:101; fc00:1::2:101; fc00:1::3:101; fc00:1:4:101|LAG1-4|
+
 ## 2.4 Neighbor Configuration
 
 |IPv4|IPv6|Port|No_host_route|dest_mac|
 |-|-|-|-|-|
-|192.168.1.0/24|fc02::1::/112|SVI:VLAN10|No|00:01:01:99:01:a0|
-|192.168.1.255/32||SVI:VLAN10|No|ff:ff:ff:ff:ff:ff|
-|192.168.2.0/24|fc02::2::/112|SVI:VLAN20|No|00:01:01:99:02:a0|
-|192.168.2.255/32||SVI:VLAN20|No|ff:ff:ff:ff:ff:ff|
+|192.168.1.255||SVI:VLAN10|No|ff:ff:ff:ff:ff:ff|
+|192.168.2.255||SVI:VLAN20|No|ff:ff:ff:ff:ff:ff|
 |10.1.1.100|fc00:1::1:100|LAG:lag1|No|00:01:01:01:01:a0|
 |10.1.2.100|fc00:1::2:100|LAG:lag2|No|00:01:01:01:02:a0|
-|10.1.3.100|fc00:1::3:100|LAG:lag3|No|00:01:01:01:03:a0|
-|10.1.4.100|fc00:1::4:100|LAG:lag4|No|00:01:01:01:04:a0|
-|192.168.1.1 ~ 192.168.1.8 |fc02::1:1 - fc02::1:8|Port1-8 | Yes|00:01:01:99:01:01 - 00:01:01:99:01:08|
-|192.168.2.9 ~ 192.168.2.16| fc02::2:9 - fc02::2:16|Port9-16| Yes|00:01:01:99:02:09 - 00:01:01:99:02:16|
-|192.168.1.91 ~ 192.168.1.98 |fc02::1:91 - fc02::1:98|VLAN10 | Yes|00:01:01:99:01:91 - 00:01:01:99:01:98|
+|10.1.3.100|fc00:1::3:100|LAG:lag3|Yes|00:01:01:01:03:a0|
+|10.1.4.100|fc00:1::4:100|LAG:lag4|Yes|00:01:01:01:04:a0|
+|10.1.5.100|fc00:1::5:100|LAG:lag4|Yes|00:01:01:01:05:a0|
+|192.168.1.1 ~ 192.168.1.8 |fc02::1:1 - fc02::1:8|RIF:VLAN10 | Yes|00:01:01:99:01:1 - 00:01:01:99:01:8|
+|192.168.2.9 ~ 192.168.2.16 |fc02::2:9 - fc02::2:16|RIF:VLAN20 | Yes|00:01:01:99:02:9 - 00:01:01:99:02:16|
+|192.168.1.91 ~ 192.168.1.98 |fc02::1:91 - fc02::1:98|RIF:VLAN10 | Yes|00:01:01:99:01:91 - 00:01:01:99:01:98|
+|192.168.2.91 ~ 192.168.2.98 |fc02::2:91 - fc02::2:98|RIF:VLAN20 | Yes|00:01:01:99:02:98 - 00:01:01:99:02:98|
+|192.168.3.91 ~ 192.168.3.98 |fc02::3:91 - fc02::3:98|RIF:VLAN30 | No|00:01:01:99:03:91 - 00:01:01:99:03:98|
 
 ## 2.5 Default route entry and interface
 
@@ -228,8 +253,8 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
   2. Create tunnel type nexhop 
      |type|IP|MAC|
      |-|-|-|
-     |SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|10.1.2.101| 02:02:02:01:02:01|
-     |SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|10.1.4.101| 04:04:04:01:04:01|
+     |SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|10.1.2.100| 02:02:02:01:02:01|
+     |SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|10.1.4.100| 04:04:04:01:04:01|
 
   3. Create tunnel term table entry with attribute 
      |term type|dst_ip|src_ip|
@@ -262,7 +287,7 @@ SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
   5. Create tunnel type nexhop
      |type|IP|MAC|
      |-|-|-|
-     |SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|10.1.3.101| 03:03:03:01:03:01|
+     |SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP|10.1.3.100| 03:03:03:01:03:01|
 
 # 5. Tunnel QoS remapping (pcbb)
 ## Port TC MAP 

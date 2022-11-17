@@ -76,6 +76,7 @@
 #include "saiisolationgroup.h"
 #include "saidebugcounter.h"
 #include "saimymac.h"
+#include "saigenericprogrammable.h"
 #include "saiversion.h"
 
 /**
@@ -140,8 +141,10 @@ typedef enum _sai_api_t
     SAI_API_SYSTEM_PORT      = 44, /**< sai_system_port_api_t */
     SAI_API_MY_MAC           = 45, /**< sai_my_mac_api_t */
     SAI_API_IPSEC            = 46, /**< sai_ipsec_api_t */
-    SAI_API_ARS              = 47, /**< sai_ars_api_t */
-    SAI_API_ARS_QUALITY_MAP  = 48, /**< sai_ars_quality_map_api_t */
+    SAI_API_GENERIC_PROGRAMMABLE = 47, /**<sai_generic_programmable_t */
+    SAI_API_ARS              = 48, /**< sai_ars_api_t */
+    SAI_API_ARS_QUALITY_MAP  = 49, /**< sai_ars_quality_map_api_t */
+
     SAI_API_MAX,                   /**< total number of APIs */
 } sai_api_t;
 

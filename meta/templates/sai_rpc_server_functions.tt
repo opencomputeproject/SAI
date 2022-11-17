@@ -5,7 +5,7 @@
 [%- create_switch_function = 'create_switch' %]
 [%- remove_switch_function = 'remove_switch' %]
 
-[%- sai_utils_functions = '(query_attribute_enum_values_capability|sai_object_type_get_availability|sai_object_type_query|sai_switch_id_query)' -%]
+[%- sai_utils_functions = '(query_attribute_enum_values_capability|sai_object_type_get_availability|sai_object_type_query|sai_switch_id_query|sai_api_uninitialize)' -%]
 
 [%- ######################################################################## -%]
 
@@ -26,6 +26,16 @@
 [% UNLESS methods.$name %]
 #endif
 [% END -%]
+[%- END -%]
+
+[%- BLOCK check_sai_function -%]
+[% name = function.name; UNLESS methods.$name %]
+[% END -%]
+if ([% api %]_api->[% name = function.name; GET methods.$name %] == (void *)0) {
+        std::cerr << "NULL ptr: [% api %]_api->[% name = function.name; GET methods.$name %]" << std::endl;
+        [%- PROCESS throw_null_api_exception %]
+    }
+
 [%- END -%]
 
 [%- ######################################################################## -%]
@@ -54,6 +64,12 @@
     if (switch_id != NULL) {
         return switch_id;
     }
+
+    //check if the switch created in syncd
+    if (gSwitchId != NULL) {
+      switch_id = gSwitchId;
+      return switch_id;
+    }
    
 [%- END -%]
 
@@ -72,7 +88,7 @@
 
     // This function should be manually implemented elsewhere
     [%- indentation = 2 || 2; tab = 2; indent = ' '; indent = indent.repeat(tab*indentation) %]
-    [%- IF ret_type == 'int64_t' %]
+    [%- IF ret_type == 'int64_t' OR ret_type == 'sai_thrift_status_t' %]
 [% indent %]return 0ULL;
     [%- ELSIF ret_type == 'sai_thrift_object_id_t' OR ret_type == 'sai_thrift_object_type_t' %]
 [% indent %]return SAI_NULL_OBJECT_ID;
@@ -110,7 +126,7 @@
 [%- ######################################################################## -%]
 
 [%- BLOCK sai_api_query -%]
-    status = sai_api_query(SAI_API_[% api.upper %], (void **)&[% api %]_api);
+    status = sai_api_query(static_cast<sai_api_t>(SAI_API_[% api.upper %]), (void **)&[% api %]_api);
     if (status != SAI_STATUS_SUCCESS) {
       [%- PROCESS return_error indentation = 3 status_variable = 'status' %]
     }
@@ -124,6 +140,14 @@
     [%- indentation = indentation || 2; tab = 2; indent = ' '; indent = indent.repeat(tab*indentation) %]
 [% indent %]sai_thrift_exception e;
 [% indent %]e.status = [% status_variable %];
+[% indent %]throw e;
+[%- END -%]
+
+[%- BLOCK throw_null_api_exception -%]
+    [%- indentation = indentation || 2; tab = 2; indent = ' '; indent = indent.repeat(tab*indentation) %]
+    
+[% indent %]sai_thrift_exception e;
+[% indent %]e.status = SAI_STATUS_NOT_IMPLEMENTED;
 [% indent %]throw e;
 [%- END -%]
 
@@ -344,6 +368,9 @@
         [%- PROCESS sai_api_query -%]
 
         [%- PROCESS preprocess_arguments %]
+
+        [%- # Ensure function ptr not NULL -%]
+    [% name = function.name; UNLESS methods.$name %]//[% END %][% PROCESS check_sai_function -%]
 
         [%- # Now just call the function -%]
     [% name = function.name; UNLESS methods.$name %]//[% END %]status = [% PROCESS call_sai_function -%]

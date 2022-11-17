@@ -90,6 +90,15 @@ typedef enum _sai_hostif_trap_group_attr_t
     SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER,
 
     /**
+     * @brief Hostif trap group object stage
+     *
+     * @type sai_object_stage_t
+     * @flags CREATE_ONLY
+     * @default SAI_OBJECT_STAGE_BOTH
+     */
+    SAI_HOSTIF_TRAP_GROUP_ATTR_OBJECT_STAGE,
+
+    /**
      * @brief End of attributes
      */
     SAI_HOSTIF_TRAP_GROUP_ATTR_END,
