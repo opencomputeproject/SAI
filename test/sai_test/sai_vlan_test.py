@@ -469,7 +469,7 @@ class VlanMemberListTest(T0TestBase):
     This test verifies the VLAN member list using SAI_VLAN_ATTR_MEMBER_LIST
     """
     def setUp(self):
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
 
     @warm_test(is_runTest=False)
     def runTest(self):

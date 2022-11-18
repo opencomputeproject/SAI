@@ -38,6 +38,7 @@ class L2PortForwardingTest(T0TestBase):
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
+    @warm_test(is_runTest=True)
     def runTest(self):
         """
         Test fdb forwarding
@@ -104,6 +105,7 @@ class VlanLearnDisableTest(T0TestBase):
             fdb_unicast_miss_packet_action=SAI_PACKET_ACTION_FORWARD)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
+    @warm_test(is_runTest=False)
     def runTest(self):
         """
         1. Flush all MAC
@@ -182,6 +184,7 @@ class BridgePortLearnDisableTest(T0TestBase):
             fdb_learning_mode=SAI_BRIDGE_PORT_FDB_LEARNING_MODE_DISABLE)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
+    @warm_test(is_runTest=False)
     def runTest(self):
         """
         1. Flush all MAC
@@ -289,6 +292,7 @@ class NonBridgePortNoLearnTest(T0TestBase):
             self.client, self.dut.port_obj_list[2].bridge_port_oid)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
+    @warm_test(is_runTest=False)
     def runTest(self):
         """
         1. Flush all MAC
@@ -385,6 +389,7 @@ class NewVlanmemberLearnTest(T0TestBase):
             self.client, self.dut.port_obj_list[24].oid, port_vlan_id=10)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
+    @warm_test(is_runTest=False)
     def runTest(self):
         """
         1. Add Port24 to VLAN10
@@ -449,6 +454,7 @@ class RemoveVlanmemberLearnTest(T0TestBase):
             self.client, self.dut.vlans[10].vlan_mport_oids[1])
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
+    @warm_test(is_runTest=False)
     def runTest(self):
         """
         1. Remove Port2 from VLAN10
@@ -512,6 +518,7 @@ class InvalidateVlanmemberNoLearnTest(T0TestBase):
         T0TestBase.setUp(self, is_reset_default_vlan=False)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
+    @warm_test(is_runTest=False)
     def runTest(self):
         """
         1. Create a packet with vlan_id=``VLAN11``
@@ -566,6 +573,7 @@ class BroadcastNoLearnTest(T0TestBase):
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
+    @warm_test(is_runTest=False)
     def runTest(self):
         """
         1. Create a packet with SMAC=``broadcast address``
@@ -619,6 +627,7 @@ class MulticastNoLearnTest(T0TestBase):
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
+    @warm_test(is_runTest=False)
     def runTest(self):
         """
         1. Create a packet with SMAC=``multicast address``
@@ -689,6 +698,7 @@ class FdbAgingTest(T0TestBase):
         self.assertEqual(sw_attr["fdb_aging_time"], self.age_time)
         print("Set aging time to {} sec".format(self.age_time))
 
+    @warm_test(is_runTest=True)
     def runTest(self):
         """
         1. Set FDB aging time=10
@@ -781,6 +791,7 @@ class FdbAgingAfterMoveTest(T0TestBase):
         self.assertEqual(sw_attr["fdb_aging_time"], self.age_time)
         print("Set aging time to {} sec".format(self.age_time))
 
+    @warm_test(is_runTest=True)
     def runTest(self):
         """
         1. Set FDB aging time=10
@@ -897,6 +908,7 @@ class FdbMacMovingAfterAgingTest(T0TestBase):
         self.assertEqual(sw_attr["fdb_aging_time"], self.age_time)
         print("Set aging time to {} sec".format(self.age_time))
 
+    @warm_test(is_runTest=True)
     def runTest(self):
         """
         1. Set FDB aging time=10
@@ -996,6 +1008,7 @@ class FdbFlushVlanStaticTest(T0TestBase):
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_STATIC)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
+    @warm_test(is_runTest=True)
     def runTest(self):
         """
         1. Flush with conditions : ``Static`` flush on ``VLAN10`` 
@@ -1048,6 +1061,7 @@ class FdbFlushPortStaticTest(T0TestBase):
         sai_thrift_flush_fdb_entries(
             self.client, bridge_port_id=self.dut.port_obj_list[1].bridge_port_oid, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_STATIC)
 
+    @warm_test(is_runTest=True)
     def runTest(self):
         """
         1. Flush with conditions : ``Static`` flush on ``Port1``
@@ -1100,6 +1114,7 @@ class FdbFlushAllStaticTest(T0TestBase):
         sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_STATIC)
 
+    @warm_test(is_runTest=True)
     def runTest(self):
         """
         1. Flush with conditions : flush for all ``Static`` 
@@ -1142,6 +1157,7 @@ class FdbFlushVlanDynamicTest(T0TestBase):
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
+    @warm_test(is_runTest=False)
     def runTest(self):
         """
         1. create packet with src mac ``MacX``, vlan tag 20
@@ -1223,6 +1239,7 @@ class FdbFlushPortDynamicTest(T0TestBase):
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
+    @warm_test(is_runTest=True)
     def runTest(self):
         """
         1. create packet with src mac ``MacX``, vlan tag 20
@@ -1305,6 +1322,7 @@ class FdbFlushAllDynamicTest(T0TestBase):
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
+    @warm_test(is_runTest=False)
     def runTest(self):
         """
         1. create packet with src mac ``MacX``, vlan tag 20
@@ -1393,6 +1411,7 @@ class FdbFlushAllTest(T0TestBase):
             is_reset_default_vlan=False,
             skip_reason = "SKIP! Unstable, flood cannot be recovered. Item:15002648")
 
+    @warm_test(is_runTest=False)
     def runTest(self):
         """
         1. create packet with src mac ``MacX``, vlan tag 20
@@ -1483,6 +1502,7 @@ class FdbDisableMacMoveDropTest(T0TestBase):
                                              allow_mac_move=False)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
+    @warm_test(is_runTest=True)
     def runTest(self):
         """
         1. Disable mac move for ``Port1 MAC`` on Port1
@@ -1527,6 +1547,7 @@ class FdbDynamicMacMoveTest(T0TestBase):
             entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
+    @warm_test(is_runTest=False)
     def runTest(self):
         """
         1. Flush All MAC
@@ -1609,6 +1630,7 @@ class FdbStaticMacMoveTest(T0TestBase):
                                              allow_mac_move=True)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
+    @warm_test(is_runTest=False)
     def runTest(self):
         """
         1. Flush All MAC
