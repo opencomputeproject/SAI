@@ -82,7 +82,7 @@ $(PY_SOURCES):  $(METADIR)sai.thrift
 	$(THRIFT) -o ./ --gen py -r $^
 
 $(SAI_PY_HEADERS): $(SAI_HEADERS)
-	$(CTYPESGEN) --output-language=py32 -I/usr/include -I$(SAI_HEADER_DIR) --include /usr/include/linux/limits.h $^ -o $@
+	$(CTYPESGEN) --output-language=py32 -I/usr/include -I$(SAI_HEADER_DIR) -I../../experimental --include /usr/include/linux/limits.h $^ -o $@
 
 $(ODIR)/%.o: gen-cpp/%.cpp meta
 	$(CXX) $(CPPFLAGS) -c $< -o $@  -I../../meta
