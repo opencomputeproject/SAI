@@ -1239,7 +1239,7 @@ class FdbFlushPortDynamicTest(T0TestBase):
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
-    @warm_test(is_runTest=True)
+    @warm_test(is_runTest=False)
     def runTest(self):
         """
         1. create packet with src mac ``MacX``, vlan tag 20
