@@ -1755,7 +1755,8 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Attribute data for #SAI_PORT_ATTR_AUTO_NEG_STATUS
      *
-     * Auto negotiation (AN) done state: 0 for AN in progress, 0 for AN done
+     * Auto negotiation (AN) done state: 0 for AN in progress, 1 for AN done
+     * If auto negotiation is off, the returned value should be 0.
      *
      * @type bool
      * @flags READ_ONLY
