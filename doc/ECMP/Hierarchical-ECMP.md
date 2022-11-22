@@ -25,12 +25,13 @@ Following new attribute is introduced in next hop group object.
     /**
      * @brief Hierarchical next hop group level.
      * false: Nexthop group consists of tunnel and IP nexthop
-     * true : Nexthop group consists of IP nexthop only
+     * true: Nexthop group consists of IP nexthop only
      *
      * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_UNORDERED_ECMP
+     * @flags CREATE_ONLY
+     * @default true
+     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_UNORDERED_ECMP or SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_ORDERED_ECMP
+     * @isresourcetype true
      */
     SAI_NEXT_HOP_GROUP_ATTR_HIERARCHICAL_NEXTHOP,
 ```
