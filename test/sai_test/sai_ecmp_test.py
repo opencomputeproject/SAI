@@ -2084,3 +2084,107 @@ class EcmpLagTwoLayersWithDiffHashOffsetTestV6(EcmpBaseTestV6):
 
     def tearDown(self):
         super().tearDown()
+
+class EcmpCoExistLagRouteV4(T0TestBase):
+    """
+    Verify loadbalance on NexthopGroup ipv4 by source port.
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process
+        """
+        T0TestBase.setUp(self)
+        nhop_groupv4_id = sai_thrift_create_next_hop_group(self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+
+        for lag_idx in range(lag_num):
+            t1_idx = lag_idx + 1
+            print("Create nexthop for port with in ip {}/{}".format(self.t1_list[t1_idx][101].ipv4, 24))
+            route_configer.create_neighbor_by_rif(rif=self.dut.rif_list[lag_idx],
+                                                  nexthop_device=self.t1_list[t1_idx][101].ipv4,
+                                                  no_host=False)
+            nhopv4_id = sai_thrift_create_next_hop(self.client, 
+                                                   ip=sai_ipaddress(self.t1_list[t1_idx][101].ipv4), 
+                                                   router_interface_id=self.dut.rif_list[lag_idx], 
+                                                   type=SAI_NEXT_HOP_TYPE_IP)
+            self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+
+            nhp_grpv4_member = sai_thrift_create_next_hop_group_member(
+                self.client,
+                next_hop_group_id=nhop_groupv4_id,
+                next_hop_id=nhopv4_id)
+            self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+
+    def test_ecmp_coexist_lag_routev4(self):
+        """
+        1. Generate different packets by updating src port
+        2. Send these packets on port1
+        3. Check if packets are received on ports of lag1-4 equally
+        """
+        print("Ecmp l3 load balancing test based on src port")
+        max_itrs = 400
+        begin_port = 2000
+        recv_dev_port_idxs = self.get_dev_port_indexes(
+            list(filter(lambda item: item != 1, self.dut.nhp_grpv4_list[0].member_port_indexs)))
+        cnt_ports = len(recv_dev_port_idxs)
+        rcv_count = [0 for _ in range(cnt_ports)]
+
+        ip_src = self.servers[0][1].ipv4
+        ip_dst = self.servers[60][1].ipv4
+        for port_index in range(0, max_itrs):
+            src_port = begin_port + port_index
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    eth_src=self.servers[1][1].mac,
+                                    ip_dst=ip_dst,
+                                    ip_src=ip_src,
+                                    tcp_sport= src_port,
+                                    ip_id=105,
+                                    ip_ttl=64)
+
+            exp_pkt1 = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         tcp_sport= src_port,
+                                         ip_id=105,
+                                         ip_ttl=63)
+
+            exp_pkt2 = simple_tcp_packet(eth_dst=self.t1_list[2][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         tcp_sport= src_port,
+                                         ip_id=105,
+                                         ip_ttl=63)
+
+            exp_pkt3 = simple_tcp_packet(eth_dst=self.t1_list[3][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         tcp_sport= src_port,
+                                         ip_id=105,
+                                         ip_ttl=63)
+
+            exp_pkt4 = simple_tcp_packet(eth_dst=self.t1_list[4][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         tcp_sport= src_port,
+                                         ip_id=105,
+                                         ip_ttl=63)
+            self.dataplane.flush()
+            send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
+            rcv_idx = verify_any_packet_any_port(
+                self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4], recv_dev_port_idxs)
+            rcv_count[rcv_idx] += 1
+
+        print(rcv_count)
+        for i in range(0, cnt_ports):
+            self.assertTrue((rcv_count[i] >= (max_itrs / cnt_ports * 0.8)), "Not all paths are equally balanced")
+
+    def runTest(self):
+        self.test_load_balance_on_sportv4()
+
+    def tearDown(self):
+        super().tearDown()
