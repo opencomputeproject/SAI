@@ -1196,17 +1196,22 @@ class SviMacLearningTest(T0TestBase):
                 self.client,
                 available_fdb_entry=True)['available_fdb_entry']
 
+        self.recv_dev_port_idxs = self.get_dev_port_indexes(self.servers[12][1].l3_lag_obj.member_port_indexs)
+
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                 eth_src=dmac4,
-                                ip_dst=self.servers[2][92].ipv4)
-        
-        exp_pkt = simple_tcp_packet(eth_dst=self.servers[2][92].mac,
-                                    eth_src=ROUTER_MAC,
-                                    ip_dst=self.servers[2][92].ipv4)
-        
+                                ip_dst=self.servers[12][1].ipv4,
+                                ip_id=105,
+                                ip_ttl=64)
+        exp_pkt = simple_tcp_packet(eth_src=ROUTER_MAC,
+                                    eth_dst=self.servers[12][1].l3_lag_obj.neighbor_mac,
+                                    ip_dst=self.servers[12][1].ipv4,
+                                    ip_id=105,
+                                    ip_ttl=63)
+
         send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt)
-        verify_packet(self, exp_pkt, self.dut.port_obj_list[10].dev_port_index)
-        
+        verify_packet_any_port(self, exp_pkt, self.recv_dev_port_idxs)
+
         sleep(5)  # wait for add mac entry
         available_fdb_entry_cnt_now = sai_thrift_get_switch_attribute(
                 self.client,
@@ -1248,17 +1253,20 @@ class SviMacLearningV6Test(T0TestBase):
                 self.client,
                 available_fdb_entry=True)['available_fdb_entry']
 
-        pkt_v6 = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
+        self.recv_dev_port_idxs = self.get_dev_port_indexes(self.servers[12][1].l3_lag_obj.member_port_indexs)
+
+        pkt_v6 = simple_udpv6_packet(eth_dst=ROUTER_MAC,
                                      eth_src=dmac4,
-                                     ipv6_dst=self.servers[2][92].ipv6)
+                                     ipv6_dst=self.servers[12][1].ipv6,
+                                     ipv6_hlim=64)
+        exp_pkt_v6 = simple_udpv6_packet(eth_src=ROUTER_MAC,
+                                         eth_dst=self.servers[12][1].l3_lag_obj.neighbor_mac,
+                                         ipv6_dst=self.servers[12][1].ipv6,
+                                         ipv6_hlim=63)
+        self.dataplane.flush()
+        send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt_v6)
+        verify_packet_any_port(self, exp_pkt_v6, self.recv_dev_port_idxs)
 
-        exp_pkt_v6 = simple_tcpv6_packet(eth_dst=self.servers[2][92].mac,
-                                         eth_src=ROUTER_MAC,
-                                         ipv6_dst=self.servers[2][92].ipv6)
-
-        send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt)
-        verify_packet(self, exp_pkt, self.dut.port_obj_list[10].dev_port_index)
-        
         sleep(5)  # wait for add mac entry
         available_fdb_entry_cnt_now = sai_thrift_get_switch_attribute(
                 self.client,
