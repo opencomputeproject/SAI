@@ -2277,8 +2277,6 @@ class EcmpReuseLagRouteV4(T0TestBase):
         Test the basic setup process
         """
         T0TestBase.setUp(self)
-        import pdb
-        pdb.set_trace()
         nhop_groupv4_id = sai_thrift_create_next_hop_group(self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
@@ -2351,8 +2349,6 @@ class EcmpReuseLagRouteV6(T0TestBase):
         Test the basic setup process
         """
         T0TestBase.setUp(self)
-        import pdb
-        pdb.set_trace()
         nhop_groupv6_id = sai_thrift_create_next_hop_group(self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
