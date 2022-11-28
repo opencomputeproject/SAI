@@ -582,33 +582,3 @@ class T0TestBase(ThriftInterfaceDataPlane):
             sai_thrift_remove_switch(self.client)
             # sai_thrift_api_uninitialize()
         super().tearDown()
-    
-    def skip_test_on_rebooting(is_skip_rebooting = True):
-        def skip_test_on_rebooting_decorator(func):
-            """
-            Decorator for determing whether skipping the test when rebooting.
-            Args:
-                errorcode: a list of the error code that test will be skipped.
-            """
-            @wraps(func)
-            def decorated(self,*args, **kwargs):
-                """
-                Args:
-                    args(List): original args
-                    kwargs(Dict): original kwargs
-                """
-                self.test_params = test_params_get()
-                self.loadTestRebootMode()
-                if self.test_reboot_stage == WARM_TEST_PRE_REBOOT:
-                    print("switch is pre-reboot, set up and skip this case")
-                    func(self, *args, **kwargs)
-                    self.persist_config() # persist common and local config
-                    raise SkipTest("switch is rebooting, skip this case")
-                elif self.test_reboot_stage == WARM_TEST_REBOOTING and is_skip_rebooting:
-                    print("switch is rebooting, skip this case")
-                    raise SkipTest("switch is rebooting, skip this case")
-                else:
-                    print("case is running at %s stage"%self.test_reboot_stage)
-                    T0TestBase.setUp(self)
-            return decorated
-        return skip_test_on_rebooting_decorator
