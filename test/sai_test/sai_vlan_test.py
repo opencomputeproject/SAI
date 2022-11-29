@@ -209,7 +209,6 @@ class TaggedFrameFilteringTest(T0TestBase):
     @warm_test(is_runTest=False)
     def runTest(self):
         print("\nTaggedFrameFilteringTest")
-        self.tmp_server_list = [self.servers[1][i] for i in [1, 5]] # need for warm reboot
         try:
             for tmp_server in self.tmp_server_list:
                 pkt = simple_udp_packet(eth_dst=tmp_server.mac,
@@ -240,7 +239,7 @@ class UnTaggedFrameFilteringTest(T0TestBase):
     def setUp(self):
         super().setUp()
         t0_fdb_tear_down_helper(self)
-        self.tmp_server_list = [self.servers[1][i] for i in [1, 5]] # need for warm reboot
+        self.tmp_server_list = [self.servers[1][i] for i in [1, 5]]
         self.fdb_configer.create_fdb_entries(
             switch_id=self.dut.switch_id,
             server_list=self.tmp_server_list,
@@ -251,7 +250,6 @@ class UnTaggedFrameFilteringTest(T0TestBase):
     def runTest(self):
         print("\nUnTaggedFrameFilteringTest")
         try:
-            self.tmp_server_list = [self.servers[1][i] for i in [1, 5]]
             for tmp_server in self.tmp_server_list:
                 pkt = simple_udp_packet(eth_dst=tmp_server.mac,
                                         eth_src=self.servers[1][1].mac,
