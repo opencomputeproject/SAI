@@ -150,20 +150,17 @@ class ThriftInterface(BaseTest):
         super(ThriftInterface, self).setUp()
 
         self.test_params = test_params_get()
-        # self.loadCommonConfigured()
+        self.loadCommonConfigured()
         self.loadTestRebootMode()
         self.loadPortMap()
-        self.needRPCOp =  (self.test_reboot_stage != WARM_TEST_REBOOTING)
-        if self.needRPCOp:
-            self.createRpcClient()
-            print('createRpcClient')
+        self.createRpcClient()
+        print('createRpcClient')
 
     def tearDown(self):
         """
         Clean up all the test env
         """
-        if self.needRPCOp:
-            self.transport.close()
+        self.transport.close()
 
         super(ThriftInterface, self).tearDown()
 
@@ -221,6 +218,19 @@ class ThriftInterface(BaseTest):
                     self.interface_to_front_mapping[iface_front_pair[0]] =  \
                         iface_front_pair[1].strip()
         self.port_map_loaded = True
+
+    def loadCommonConfigured(self):
+        '''
+        if common_configured = true:
+                set up common config
+        else:
+                skip commmon config
+        '''
+        if "common_configured" in self.test_params:
+            self.common_configured = True if self.test_params['common_configured'] == 'true' else False
+        else:
+            self.common_configured = False
+        print("\ncommon_configured is: {}".format(self.common_configured))
 
     def createRpcClient(self):
         """
@@ -401,9 +411,8 @@ class T0TestBase(ThriftInterfaceDataPlane):
                 is_create_vlan_interface=is_create_vlan_itf,
                 is_create_route_for_vlan=is_create_route_for_vlan_itf,
                 is_create_route_for_nhopgrp=is_create_route_for_nhopgrp)
-            if self.test_reboot_stage  != WARM_TEST_PRE_REBOOT:
-                print("common config done")
-                self.persist_config()
+            print("common config done")
+            self.persist_config()
             print("Waiting for switch to get ready before test, {} seconds ...".format(
                 wait_sec))
             time.sleep(wait_sec)
@@ -575,10 +584,4 @@ class T0TestBase(ThriftInterfaceDataPlane):
             if we change the common configure in ths case,
             we need persist dut again 
         '''
-        if self.test_reboot_stage  == WARM_TEST_PRE_REBOOT:
-            print("shutdown the swich in warm mode")
-            sai_thrift_set_switch_attribute(self.client, restart_warm=True)
-            sai_thrift_set_switch_attribute(self.client, pre_shutdown=True)
-            sai_thrift_remove_switch(self.client)
-            # sai_thrift_api_uninitialize()
         super().tearDown()

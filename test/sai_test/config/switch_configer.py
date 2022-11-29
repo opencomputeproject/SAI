@@ -19,7 +19,7 @@
 
 
 from sai_thrift.sai_adapter import *
-from constant import *
+from constant import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 from sai_utils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 from typing import TYPE_CHECKING
 
@@ -55,7 +55,7 @@ class SwitchConfiger(object):
 
         self.test_obj = test_obj
         self.client = test_obj.client
-    
+
     def start_switch(self, switch_init_wait=3, route_mac=ROUTER_MAC):
         """
         Start switch and wait seconds for a warm up.
