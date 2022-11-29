@@ -2161,6 +2161,44 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_MAX_FEC_SYMBOL_ERRORS_DETECTABLE,
 
     /**
+     * @brief Enable ARS on port. This enables the control for quality measure in switch pipeline.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_ARS_ENABLE,
+
+    /**
+     * @brief Scaling factor to account for different port speeds.
+     * Port speed is normalized using the scaling factor specified
+     * 10G:1, 25G:2.5, 40G:4, 50G:5, 100G:10, 200G:20, 400G:40
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_ATTR_ARS_PORT_LOAD_SCALING_FACTOR,
+
+    /**
+     * @brief Enable historical or past port load quality measure in switch pipeline
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_ARS_PORT_LOAD_PAST_ENABLE,
+
+    /**
+     * @brief Enable future load quality measure in switch pipeline
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_ARS_PORT_LOAD_FUTURE_ENABLE,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
