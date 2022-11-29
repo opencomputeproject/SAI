@@ -186,8 +186,8 @@ typedef enum _sai_next_hop_group_attr_t
 
     /**
      * @brief Hierarchical next hop group level.
-     * false: Nexthop group consists of tunnel and IP nexthop
-     * true: Nexthop group consists of IP nexthop only
+     * true: Nexthop group consists of tunnel and IP nexthop
+     * false: Nexthop group consists of IP nexthop only
      *
      * @type bool
      * @flags CREATE_ONLY

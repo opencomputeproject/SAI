@@ -15,17 +15,13 @@ Hierarchical ECMP provides two level route resolution for equal cost multipaths.
 Typical workflow is to first create a nexthop group and then add members to the nexthop group. Today there is no hint present in the nexthop group creation to indicate if it is carrying nexthops that are resolving through another nexthop group. SAI can do the deferred processing of nexthop group and wait for nexthop members to be added. But even then there is no easy way (short of keeping the entire route cache in SAI adapter layer) for SAI to determine the type of nexthops eventually a nexthop group may contain.
 This PR provides a hint to be set by NOS to indicate if nexthop group is containing mix of tunnel or IP nexthops or just single hierarchy of ip next hops.
 
-![Hierarchical ECMP](../figures/H-ECMP.png "Figure 1: Hierarchical ECMP")
-
-__Figure 1: NH resolution in Hierarchical Next Hop Group__
-
 
 Following new attribute is introduced in next hop group object.
 ```
     /**
      * @brief Hierarchical next hop group level.
-     * false: Nexthop group consists of tunnel and IP nexthop
-     * true: Nexthop group consists of IP nexthop only
+     * true: Nexthop group consists of tunnel and IP nexthop
+     * false: Nexthop group consists of IP nexthop only
      *
      * @type bool
      * @flags CREATE_ONLY
@@ -53,6 +49,6 @@ All the routes are modified to point to the new nexthop group.
 The old nexthop members and the nexthop group is deleted
 Hence, of there is a transition of a nexthop containing only ip nexthops to ip nexthop plus tunnel nexthop then a always a new nexthop group is created with the SAI_NEXT_HOP_GROUP_ATTR_IP_NEXTHOP_ONLY set to flase (earlier it would be true) and vice versa.
 
-Existing implementation will have a the default value of SAI_NEXT_HOP_GROUP_ATTR_HIERARCHICAL_NEXTHOP as false meaning the current behavior is maintained for backward compataiblity reasons.
+Existing implementation will have a the default value of SAI_NEXT_HOP_GROUP_ATTR_HIERARCHICAL_NEXTHOP as true meaning the current behavior is maintained for backward compataiblity reasons.
 
 Capability query can be used to find of out if a given HW supports hierarchical ECMP supporting SAI_NEXT_HOP_GROUP_ATTR_HIERARCHICAL_NEXTHOP flag.
