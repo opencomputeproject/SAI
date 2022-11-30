@@ -305,6 +305,14 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
 
+    def warm_start_switch(self):
+        """
+        Warm start switch.
+        """
+        self.switch_id = sai_thrift_create_switch(
+        self.client, init_switch=True, warm_recover=True)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+
     def setUp(self):
         super(SaiHelperBase, self).setUp()
         self.set_logger_name()
