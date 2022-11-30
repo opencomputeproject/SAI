@@ -199,14 +199,12 @@ def warm_test(is_runTest:bool=False, time_out=60, interval=1):
                 sai_thrift_set_switch_attribute(inst.client, restart_warm=True)
                 sai_thrift_set_switch_attribute(inst.client, pre_shutdown=True)
                 sai_thrift_remove_switch(inst.client)
-			#check and create file if not exist
-			# msg to promote change the text file content to rebooted
-                warm_file = open('/tmp/warm_reboot','w+')
-				# write content to reboot-requested
-                times = 0
+                # write content to reboot-requested
                 print("write rebooting to file")
+                warm_file = open('/tmp/warm_reboot','w+')
                 warm_file.write(WARM_TEST_REBOOTING)
                 warm_file.close()
+                times = 0
                 try:
                     while 1:
                         print("reading content in the warm_reboot")
