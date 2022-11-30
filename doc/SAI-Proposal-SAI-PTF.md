@@ -6,6 +6,7 @@
 | Status      | In review       |
 | Type        | Standards track |
 | Created     | 10/13/2021      |
+| Updated     | 06/07/2022      |
 | SAI-Version | 1.9             |
 
 ## Overview
@@ -15,8 +16,10 @@ SAI PTF (Packet Testing Framework) is an auto-generated Python based dataplane t
 The contribution consists of two parts:
 1. Auto-generation framework using existing SAI meta infrastructure
 2. New PTF tests using this new framework
+3. PTF tests using fewer ports (DASH use case)
 
-## Curent state of testing
+
+## Organization of tests
 
 Currently there are three main directories in which tests are stored:
 - basic_router (contains simple test to illustrate L3 route setup)
@@ -87,9 +90,9 @@ The tests themselves are based on python unittest framework (https://docs.python
 - runTest() - running proper test
 - tearDown() - removing all created objects
 
-Tests have to inherit from one of two base classes - SaiHelper or SaiHelperBase. SaiHelperBase is the base class that runs initial configuration for all tests. 
+Tests have to inherit from one of three base classes - SaiHelper, SaiHelperSimplified or SaiHelperBase.
 
-SaiHelperBase initializes switch, gets several switch attributes and stores them into class attributes that are later to be used in tests. The attributes that are stored are:
+SaiHelperBase is the base class that initializes switch, gets several switch attributes and stores them into class attributes that are later to be used in tests. The attributes that are stored are:
 - default_vlan_id
 - default_vrf
 - default_1q_bridge
@@ -98,7 +101,9 @@ SaiHelperBase initializes switch, gets several switch attributes and stores them
 - number_of_active_ports
 - port numbers stored into variables portX, where X is the number of port
 
-SaiHelper inherits from SaiHelperBase but provides additional configuration.
+SaiHelperUtilsMixin is a mixin class that provides common and convenient utils for DUT configuration.
+
+SaiHelper inherits from SaiHelperBase and SaiHelperUtilsMixin but provides additional configuration.
 The base configuration created by SaiHelper looks like this:
 
 | Port         | LAG          | member      | Bridge port  | VLAN         | member      | RIF          |
@@ -119,10 +124,82 @@ The base configuration created by SaiHelper looks like this:
 
 
 Ports 24-31 can be used by every test to create additional objects.
+If tests intend to have more complicated setUp() than the one that is created in the base class they need to implement setUp() method but remember to call the setUp() from the base class first.
 
-Both SaiHelper and SaiHelperBase classes are defined in sai_base_test.py file.
+SaiHelperSimplified inherits from SaiHelperBase and SaiHelperUtilsMixin and is designed to be used with test cases that doesn`t require SaiHelper setup configuration and use only required number of resources/ports. Test case that require more resources than available on DUT will be skipped. 
 
-If tests intend to have more complicated setUp() then the one that is created in the base class they need to implement setUp() method but remember to call the setUp() from the base class first.
+SaiHelper, SaiHelperSimplified, SaiHelperUtilsMixin and SaiHelperBase classes are defined in sai_base_test.py file.
+
+In context of DASH (Disaggregated API for SONiC Host) project, it is required to run existing PTF test cases on platforms that have less ports than required by SONiC switch. Current PTF approach assumes that we have device with more than 24 ports and all ports are preconfigured with different functions like lag, bridge member, router interface, etc. Each function is configured on different port which causes almost all ports to be used all the time.
+
+To run tests on platform that supports less ports than required by basic configuration created by SaiHelper, but the number of ports supported is enough to run the test case itself, the SaiHelperSimplified class can be used.
+
+In this case the base configuration will be omitted and test will be able to create its own device/port configuration to perform the test. To reference the physical port in the test case, the `port0`, `port1`, ... attribute of test class is used. If such port doesn't exist on the platform during `setUp()` or `runTest()` procedure, the test will be skipped with the message that there are no resources available to execute it. After that the tearDown() method will be executed to perform a proper cleanup.
+
+Example of such test is provided below:
+
+```python
+@group("draft")
+class SampleTest(SaiHelperSimplified):
+
+    def setUp(self):
+        """
+        Configuration
+        +----------+-----------+
+        | port0    | port0_rif |
+        +----------+-----------+
+        | port1    | port1_rif |
+        +----------+-----------+
+        """
+         
+        super(SampleTest, self).setUp()
+        
+        # SaiHelperUtilsMixin method
+        self.create_routing_interfaces(ports=[0, 1])
+        
+        self.nhop = sai_thrift_create_next_hop(self.client,
+                                               ip=sai_ipaddress('10.10.10.10'),
+                                               router_interface_id=self.port0_rif,
+                                               type=SAI_NEXT_HOP_TYPE_IP)
+        
+        self.neighbor_entry = sai_thrift_neighbor_entry_t(rif_id=self.port0_rif,
+                                                          ip_address=sai_ipaddress('10.10.10.10'))
+        sai_thrift_create_neighbor_entry(self.client, self.neighbor_entry,
+                                         dst_mac_address='00:99:99:99:99:99')
+
+        # rest of the configuration
+        
+        # ...
+
+    def runTest(self):
+        self.sampleTest()
+        # more test that use the same setup should be used here
+
+    def sampleTest(self):
+        """
+        Sample test description
+        """
+        # test case body
+        pass
+
+    def tearDown(self):
+        # destroy everything in reverse order
+        
+        # ...
+        
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry)
+        sai_thrift_remove_next_hop(self.client, self.nhop)
+        
+        #SaiHelperUtilsMixin method
+        self.destroy_routing_interfaces()
+
+        super(SampleTest, self).tearDown()
+
+```
+
+## Traffic generator reference
+
+Currently, to reference a traffic port in the test case, the `dev_portX` attribute of class is used. To avoid confision with regular port (`portX`), the new format (`tgX`) of traffic port reference is introduced. Please note, the old port format `dev_portX` is left for backward compatibility.
 
 ## Example API
 
@@ -575,7 +652,7 @@ void sai_thrift_get_route_entry_attribute(
 attr = sai_thrift_get_switch_attribute(self.client, default_virtual_router_id=True)
 default_vrf = attr['default_virtual_router_id']
 self.assertTrue(default_vrf != 0)
-            
+
 port10_rif = sai_thrift_create_router_interface(
                 self.client,
                 type=SAI_ROUTER_INTERFACE_TYPE_PORT,

@@ -93,6 +93,15 @@ def [% function.thrift_name %](client
     [%- FOREACH attr IN apis.$api.objects.${function.object}.attrs.${function.operation} -%]
 ,[% br %][% attr.simple_name %]=None
     [%- END -%]
+    [%- IF function.operation == 'stats' OR function.operation == 'clear' -%]
+        [%- FOREACH arg IN function.adapter_preprocessed_args -%]
+            [%- IF arg.is_list and arg.name == 'counter_ids' -%]
+,[% br %][% arg.name %]=[% function.name %]_[% arg.name %]
+            [%- ELSIF arg.is_attr %]
+        [% arg.name %] = None
+            [%- END -%]
+        [%- END -%]
+    [%- END -%] 
 ):
 [% END -%]
 
@@ -103,11 +112,30 @@ def [% function.thrift_name %](client
     [%- # but are required by thritft functions -%]
     [%- FOREACH arg IN function.adapter_preprocessed_args -%]
 
-        [%- IF arg.is_list %]
+        [%- IF arg.is_list AND arg.name!= 'counter_ids' %]
     [% arg.name %] = []
         [%- ELSIF arg.is_attr %]
     [% arg.name %] = None
         [%- END -%]
+    [%- END -%]
+[%- END -%]
+
+[%- BLOCK declare_stats_variables -%]
+    [%- IF function.operation == 'stats' OR function.operation == 'clear' %]
+        [%- FOREACH arg IN function.adapter_preprocessed_args -%]
+
+            [%- IF arg.is_list %]
+[% function.name %]_[% arg.name %] = []
+[% function.name %]_[% arg.name %]_dict = dict()
+            [%- ELSIF arg.is_attr %]
+        [% arg.name %] = None
+            [%- END -%]
+        [%- END -%]
+        [%- FOREACH stat IN apis.$api.objects.${function.object}.stats.all %]
+[% function.name %]_[% arg.name %].append([% stat.name %])
+[% function.name %]_[% arg.name %]_dict[[% stat.name %]] = "[% stat.name %]"
+        [%- END -%]
+
     [%- END -%]
 [%- END -%]
 
@@ -240,6 +268,7 @@ client.[% function.thrift_name %](
 [%- BLOCK preprocess_attributes %]
     [%- # For 'set attr' function we just do call the funtion for first argument -%]
     [%- IF function.operation == 'set' -%]
+    
     global status
     status = SAI_STATUS_SUCCESS
 
@@ -279,8 +308,10 @@ client.[% function.thrift_name %](
 
 [%- BLOCK preprocess_stats -%]
 
-    [%- FOREACH stat IN apis.$api.objects.${function.object}.stats.all %]
-    [% arg.name %].append([% stat.name %])
+    [%- IF arg.name != "counter_ids" -%]
+        [%- FOREACH stat IN apis.$api.objects.${function.object}.stats.all %]
+    [% function.name %]_[% arg.name %].append([% stat.name %])
+        [%- END -%]
     [%- END -%]
 
 [%- END -%]
@@ -292,11 +323,9 @@ client.[% function.thrift_name %](
 [%- BLOCK postprocess_stats %]
     stats = dict()
 
-    [%- i = 0 %]
-    [%- FOREACH stat IN apis.$api.objects.${function.object}.stats.all %]
-    stats["[% stat.name %]"] = [% function.rpc_return.name %][[% i %]]
-        [%- i = i + 1 -%]
-    [%- END %]
+    for index, item in enumerate(counter_ids):
+        stats[[% function.name %]_[% arg.name %]_dict[item]] = counters[index]
+
 
 [%- END -%]
 
@@ -308,13 +337,11 @@ client.[% function.thrift_name %](
     [%- # Basically we do it for each list variable, we assume we have one -%]
     [%- FOREACH arg IN function.adapter_preprocessed_args -%]
         [%- IF function.operation == 'stats' OR function.operation == 'clear' %]
-            [%- # For 'get stats' function create stats list -%]
+            [%- # For 'get stats' function NOT create stats list in function body -%]
             [%- PROCESS preprocess_stats %]
-
         [%- ELSIF function.operation != 'remove' %]
             [%- # For 'create' and 'get' functions create list of arguments -%]
             [%- PROCESS preprocess_attributes %]
-
         [%- END -%]
     [%- END -%]
 
@@ -400,17 +427,22 @@ client.[% function.thrift_name %](
 [%- ######################################################################## -%]
 
 [%- BLOCK function_body -%]
+    [%- PROCESS declare_stats_variables -%]
+
+
     [%- PROCESS decorate_method IF dev_utils -%]
+    [%- PROCESS decorate_skip_test_on_error IF skip_error -%]
+    [%- PROCESS decorate_invocation_logger IF adapter_logger -%]
     [%- PROCESS function_header %]
     [%- PROCESS function_docstring %]
 
     [%- IF has_body -%]
         [%- PROCESS declare_variables %]
-
         [%- PROCESS preprocess_args -%]
 
         [%- # Now, call the thrift function -%]
         [%- IF function.operation != 'set' -%]
+
     global status
     status = SAI_STATUS_SUCCESS
 
@@ -457,6 +489,8 @@ Thrift SAI interface basic tests
 # pylint: disable=too-many-return-statements,line-too-long,invalid-name
 
 [%- PROCESS dev_utils_imports IF dev_utils -%]
+[%- PROCESS skip_test_on_error_imports IF skip_error -%]
+[%- PROCESS invocation_logger_imports IF adapter_logger -%]
 
 from sai_thrift.ttypes import *
 from sai_thrift.sai_headers import *
@@ -472,6 +506,8 @@ CATCH_EXCEPTIONS = True
 status = 0
 
 [%- PROCESS dev_utils IF dev_utils -%]
+[%- PROCESS skip_error IF skip_error -%]
+[%- PROCESS invocation_logger IF adapter_logger -%]
 
 [%- FOREACH api IN apis.keys.sort -%]
     [%- IF apis.$api.functions.size %]

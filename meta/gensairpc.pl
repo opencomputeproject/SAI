@@ -90,6 +90,8 @@ my $sai_dir = catdir( dirname($script_dir) );
     [ 'verbose|v',       'Print more details',                                                                                    { default => 0 }        ],
     [ 'mandatory-attrs', 'Make mandatory attributes obligatory in sai_adapter.py',                                                { default => 0 }        ],
     [ 'dev-utils:s',     'Generate additional development utils within the generated code. Additional options: [=log,zero]',      { default => 0 }        ],
+    [ 'skip_error:s',    'Skip test on specified error code. Additional options: [=-2]',                                          { default => 0 }        ],
+    [ 'adapter_logger',  'Enable the logger in sai_adapter, it will log all the method invocation.',                              { default => 0}         ],
     [ 'attr-header',     'Generate additional header of attributes definitions (including object types)',                         { default => 0 }        ],
     [ 'help|h',          'Print this help',                                                                                       { shortcircuit => 1 }   ],
 );
@@ -114,6 +116,8 @@ my $experimental  = $args->experimental;
 my $clean         = $args->clean_meta;
 my $mandatory_attrs = $args->mandatory_attrs;
 my $dev_utils       = ( $args->dev_utils ne q{} ? $args->dev_utils : 1 );
+my $skip_error       = ( $args->skip_error ne q{} ? $args->skip_error : 1 );
+my $adapter_logger   = ( $args->adapter_logger ne q{} ? $args->adapter_logger : 1 );
 my $attr_header     = $args->attr_header;
 
 # Configure SAI meta
@@ -159,6 +163,8 @@ my $vars = {
     dbg             => $dbg,
     mandatory_attrs => $mandatory_attrs,
     dev_utils       => $dev_utils,
+    skip_error      => $skip_error,
+    adapter_logger  => $adapter_logger,
     templates_dir   => $templates_dir
 };
 

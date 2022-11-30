@@ -90,6 +90,15 @@ typedef enum _sai_hostif_trap_group_attr_t
     SAI_HOSTIF_TRAP_GROUP_ATTR_POLICER,
 
     /**
+     * @brief Hostif trap group object stage
+     *
+     * @type sai_object_stage_t
+     * @flags CREATE_ONLY
+     * @default SAI_OBJECT_STAGE_BOTH
+     */
+    SAI_HOSTIF_TRAP_GROUP_ATTR_OBJECT_STAGE,
+
+    /**
      * @brief End of attributes
      */
     SAI_HOSTIF_TRAP_GROUP_ATTR_END,
@@ -400,6 +409,30 @@ typedef enum _sai_hostif_trap_type_t
      * subnet' group multicast address (224.0.0.2) (default packet action is drop)
      */
     SAI_HOSTIF_TRAP_TYPE_LDP = 0x00004009,
+
+    /**
+     * @brief GNMI traffic (TCP dst port == 9339) to local router IP address
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_GNMI = 0x0000400a,
+
+    /**
+     * @brief P4RT traffic (TCP dst port == 9559) to local router IP address
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_P4RT = 0x0000400b,
+
+    /**
+     * @brief NTPCLIENT traffic (UDP/TCP src port == 123)
+     * to local router IP address (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_NTPCLIENT = 0x0000400c,
+
+    /**
+     * @brief NTPSERVER traffic (UDP/TCP dst port == 123)
+     * to local router IP address (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_NTPSERVER = 0x0000400d,
 
     /** Local IP traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_LOCAL_IP_CUSTOM_RANGE_BASE = 0x00005000,
