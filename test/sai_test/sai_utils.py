@@ -185,6 +185,12 @@ def warm_test(is_runTest:bool=False, time_out=60, interval=1):
     
     Depends on parameters [test_reboot_mode] and [test_reboot_stage].
     Runs different method, test_starting, setUp_post_start and runTest
+    
+    args:
+        is_runTest: whether running the test case when saiserver container shut down
+        time_out: check saiserver contianer restart is complete within a 
+                  certain time limit.if time limit if exceeded, raise error
+        interval: frequency of check
     """
     def _check_run_case(f):
         def test_director(inst, *args):
@@ -203,17 +209,19 @@ def warm_test(is_runTest:bool=False, time_out=60, interval=1):
                 warm_file.close()
                 try:
                     while 1:
+                        print("reading content in the warm_reboot")
                         warm_file = open('/tmp/warm_reboot','r')
                         txt = warm_file.readline()
                         warm_file.close()                
                         if 'post_reboot_done' in txt:
+                            print("warm reboot is done, next, we will run the case")
                             break
                         if is_runTest:
                             print("running in the rebooting stage, text is ", txt)
                             f(inst)
                         times = times + 1
                         time.sleep(interval)
-                        print(times)
+                        print("alreay wait for ",times)
                         if times > time_out:
                             raise Exception("time out")
                 except Exception as e:

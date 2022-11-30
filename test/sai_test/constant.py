@@ -54,6 +54,8 @@ SERVER_IPV6_PATTERN = 'fc02::{}:{}'
 T0_IPV6_PREFIX = 'fc00:0::{}:{}'
 T1_IPV6_PATTERN = 'fc00:1::{}:{}'
 
+"""Stand for the warm reboot stage"""
 WARM_TEST_REBOOTING = "rebooting"
 WARM_TEST_POST_REBOOT = "post_reboot"
+"""Stand for the shared file with sai_qualify"""
 SONIC_MGMT_SHARED_FILE = '/tmp/warm_reboot'
