@@ -179,7 +179,7 @@ def generate_ip_address_list(role, group, indexes):
         ip_list.append(role.format(group, index))
     return ip_list
 
-def warm_test(is_runTest:bool=False, time_out=60, interval=1):
+def warm_test(is_test_rebooting:bool=False, time_out=60, interval=1):
     """
     Method decorator for the method on warm testing.
     
@@ -187,7 +187,7 @@ def warm_test(is_runTest:bool=False, time_out=60, interval=1):
     Runs different method, test_starting, setUp_post_start and runTest
     
     args:
-        is_runTest: whether running the test case when saiserver container shut down
+        is_test_rebooting: whether running the test case when saiserver container shut down
         time_out: check saiserver contianer restart is complete within a 
                   certain time limit.if time limit if exceeded, raise error
         interval: frequency of check
@@ -214,7 +214,7 @@ def warm_test(is_runTest:bool=False, time_out=60, interval=1):
                         if 'post_reboot_done' in txt:
                             print("warm reboot is done, next, we will run the case")
                             break
-                        if is_runTest:
+                        if is_test_rebooting:
                             print("running in the rebooting stage, text is ", txt)
                             f(inst)
                         times = times + 1

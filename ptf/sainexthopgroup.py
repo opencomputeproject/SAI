@@ -3926,7 +3926,7 @@ class L3IPv4EcmpHostTwoLagsTest(L3IPv4EcmpLagTestHelper):
     def setUp(self):
         super(L3IPv4EcmpHostTwoLagsTest, self).setUp()
 
-    @warm_test(is_runTest=True)
+    @warm_test(is_test_rebooting=True)
     def runTest(self):
         print("l3IPv4EcmpHostTwoLagsTest")
 
@@ -3998,7 +3998,7 @@ class L3IPv4EcmpHostPortLagSharedMembersTest(L3IPv4EcmpLagTestHelper):
     def setUp(self):
         super(L3IPv4EcmpHostPortLagSharedMembersTest, self).setUp()
 
-    @warm_test(is_runTest=True)
+    @warm_test(is_test_rebooting=True)
     def runTest(self):
         print("l3IPv4EcmpHostPortLagSharedMembersTest")
         src_mac = '00:01:01:01:01:01'

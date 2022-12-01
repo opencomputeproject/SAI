@@ -40,7 +40,7 @@ class Vlan_Domain_Forwarding_Test(T0TestBase):
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
     
-    @warm_test(is_runTest=True)
+    @warm_test(is_test_rebooting=True)
     def runTest(self):
         """
         Test VLAN forwarding
@@ -97,7 +97,7 @@ class UntagAccessToAccessTest(T0TestBase):
     def setUp(self):
         super().setUp()
 
-    @warm_test(is_runTest=True)
+    @warm_test(is_test_rebooting=True)
     def runTest(self):
         """
         Forwarding between tagged ports with untagged pkt
@@ -149,7 +149,7 @@ class MismatchDropTest(T0TestBase):
     def setUp(self):
         super().setUp()
 
-    @warm_test(is_runTest=True)
+    @warm_test(is_test_rebooting=True)
     def runTest(self):
         """
         Dropping between tagged ports with mismatched tagged pkt
@@ -206,7 +206,7 @@ class TaggedFrameFilteringTest(T0TestBase):
             port_idxs=[1, 1],
             vlan_oid=self.dut.vlans[10].oid)
 
-    @warm_test(is_runTest=False)
+    @warm_test(is_test_rebooting=False)
     def runTest(self):
         print("\nTaggedFrameFilteringTest")
         try:
@@ -246,7 +246,7 @@ class UnTaggedFrameFilteringTest(T0TestBase):
             port_idxs=[1, 1],
             vlan_oid=self.dut.vlans[10].oid)
 
-    @warm_test(is_runTest=False)
+    @warm_test(is_test_rebooting=False)
     def runTest(self):
         print("\nUnTaggedFrameFilteringTest")
         try:
@@ -284,7 +284,7 @@ class TaggedVlanFloodingTest(T0TestBase):
             is_create_lag=False, 
             is_create_default_route=False)
 
-    @warm_test(is_runTest=True)
+    @warm_test(is_test_rebooting=True)
     def runTest(self):
         print("\nTaggedVlanFloodingTest")
         try:
@@ -323,7 +323,7 @@ class UnTaggedVlanFloodingTest(T0TestBase):
             is_create_lag=False, 
             is_create_default_route=False)
 
-    @warm_test(is_runTest=True)
+    @warm_test(is_test_rebooting=True)
     def runTest(self):
         print("\nUnTaggedVlanFloodingTest")
         try:
@@ -353,7 +353,7 @@ class BroadcastTest(T0TestBase):
     def setUp(self):
         super().setUp()
 
-    @warm_test(is_runTest=True)
+    @warm_test(is_test_rebooting=True)
     def runTest(self):
         print("\nBroadcastTest")
         try:
@@ -401,7 +401,7 @@ class UntaggedMacLearningTest(T0TestBase):
             is_create_lag=False, 
             is_create_default_route=False)
 
-    @warm_test(is_runTest=False)
+    @warm_test(is_test_rebooting=False)
     def runTest(self):
         print("\nUntaggedMacLearningTest")
         try:
@@ -452,7 +452,7 @@ class TaggedMacLearningTest(T0TestBase):
             is_create_lag=False, 
             is_create_default_route=False)
 
-    @warm_test(is_runTest=False)
+    @warm_test(is_test_rebooting=False)
     def runTest(self):
         print("\nTaggedMacLearningTest")
         try:
@@ -496,7 +496,7 @@ class VlanMemberListTest(T0TestBase):
     def setUp(self):
         T0TestBase.setUp(self)
 
-    @warm_test(is_runTest=False)
+    @warm_test(is_test_rebooting=False)
     def runTest(self):
         print("VlanMemberListTest")
         mbr_list = []
@@ -567,7 +567,7 @@ class VlanMemberInvalidTest(T0TestBase):
     def setUp(self):
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
-    @warm_test(is_runTest=False)
+    @warm_test(is_test_rebooting=False)
     def runTest(self):
         print("VlanMemberInvalidTest")
 
@@ -604,7 +604,7 @@ class DisableMacLearningTaggedTest(T0TestBase):
         self.assertEqual(status, SAI_STATUS_SUCCESS)
         print("MAC Learning disabled on VLAN")
 
-    @warm_test(is_runTest=False)
+    @warm_test(is_test_rebooting=False)
     def runTest(self):
         attr = sai_thrift_get_switch_attribute(
             self.client, available_fdb_entry=True)
@@ -651,7 +651,7 @@ class DisableMacLearningUntaggedTest(T0TestBase):
         self.assertEqual(status, SAI_STATUS_SUCCESS)
         print("MAC Learning disabled on VLAN")
 
-    @warm_test(is_runTest=False)
+    @warm_test(is_test_rebooting=False)
     def runTest(self):
         attr = sai_thrift_get_switch_attribute(
             self.client, available_fdb_entry=True)
@@ -690,7 +690,7 @@ class ArpRequestFloodingTest(T0TestBase):
             ip_tgt=ip2,
             hw_tgt=self.servers[1][2].mac)
 
-    @warm_test(is_runTest=True)
+    @warm_test(is_test_rebooting=True)
     def runTest(self):
         print("ArpRequestFloodingTest")
         send_packet(
@@ -712,7 +712,7 @@ class ArpRequestLearningTest(T0TestBase):
     def setUp(self):
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
-    @warm_test(is_runTest=True)
+    @warm_test(is_test_rebooting=True)
     def runTest(self):
         ip1 = "192.168.0.1"
         ip2 = "192.168.0.2"
@@ -747,7 +747,7 @@ class TaggedVlanStatusTest(T0TestBase):
     def setUp(self):
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
-    @warm_test(is_runTest=False)
+    @warm_test(is_test_rebooting=False)
     def runTest(self):
         print("TaggedVlanStatusTest")
         self.tagged_pkt = simple_udp_packet(eth_dst=self.servers[1][2].mac,
@@ -842,7 +842,7 @@ class UntaggedVlanStatusTest(T0TestBase):
     def setUp(self):
         T0TestBase.setUp(self, is_reset_default_vlan=False)
 
-    @warm_test(is_runTest=False)
+    @warm_test(is_test_rebooting=False)
     def runTest(self):
         print("UntaggedVlanStatusTest")
         self.untagged_pkt = simple_udp_packet(eth_dst=self.servers[1][2].mac,
