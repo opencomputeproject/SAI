@@ -1286,7 +1286,7 @@ class SviMacLearningV6Test(T0TestBase):
 
 class SviMacAgingTest(T0TestBase):
     """
-    Verifying if the dynamic FDB entry associated with the port is removed after the aging interval.
+    Verify route to svi and mac age.
     """
 
     def setUp(self):
@@ -1310,16 +1310,10 @@ class SviMacAgingTest(T0TestBase):
 
     def runTest(self):
         """
-        1. Set FDB aging time=10
-        2. Create Packet with SMAC=``MacX`` DMAC=``Port1 MAC`` 
-        3. Send packet on port2
-        4. verify only receive a packet on port1
-        5. Create a packet with DMAC=``MacX``
-        6. Send packet on port1
-        7. Verify only receive a packet on port2
-        8. Wait for the ``aging`` time
-        9. Send packet on port1
-        10. Verify flooding packet to VLAN10 ports, except port1
+        Set FDB aging time=10
+        Run step  in test_svi_mac_move
+        wait for FDB aging time
+        check if fdb entries decrease.
         """
 
         unknown_mac1 = "00:01:01:99:99:99"
@@ -1371,7 +1365,7 @@ class SviMacAgingTest(T0TestBase):
 
 class SviMacAgingV6Test(T0TestBase):
     """
-    Verifying if the dynamic FDB entry associated with the port is removed after the aging interval.
+    Verify route to svi and mac age.
     """
 
     def setUp(self):
@@ -1395,16 +1389,10 @@ class SviMacAgingV6Test(T0TestBase):
 
     def runTest(self):
         """
-        1. Set FDB aging time=10
-        2. Create Packet with SMAC=``MacX`` DMAC=``Port1 MAC`` 
-        3. Send packet on port2
-        4. verify only receive a packet on port1
-        5. Create a packet with DMAC=``MacX``
-        6. Send packet on port1
-        7. Verify only receive a packet on port2
-        8. Wait for the ``aging`` time
-        9. Send packet on port1
-        10. Verify flooding packet to VLAN10 ports, except port1
+        Set FDB aging time=10
+        Run step  in test_svi_mac_move
+        wait for FDB aging time
+        check if fdb entries decrease. 
         """
 
         unknown_mac1 = "00:01:01:99:99:99"
