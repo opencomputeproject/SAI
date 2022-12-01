@@ -318,7 +318,6 @@ class PortConfiger(object):
         port_list = sai_thrift_object_list_t(count=100)
         p_list = sai_thrift_get_switch_attribute(
             self.client, port_list=port_list)
-        import pdb
         for index, item in enumerate(p_list['port_list'].idlist):
             port: Port = Port(oid=item, port_index=index, rif_list=[
             ], nexthopv4_list=[], nexthopv6_list=[])
