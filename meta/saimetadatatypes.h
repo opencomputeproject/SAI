@@ -455,7 +455,7 @@ typedef enum _sai_attr_value_type_t
      * @brief Attribute value is IP prefix list.
      */
     SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST,
-    
+
     /**
      * @brief Attribute value is a latch's status.
      */
