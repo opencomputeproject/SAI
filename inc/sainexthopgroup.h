@@ -185,6 +185,19 @@ typedef enum _sai_next_hop_group_attr_t
     SAI_NEXT_HOP_GROUP_ATTR_SELECTION_MAP,
 
     /**
+     * @brief Hierarchical next hop group level.
+     * true: Nexthop group consists of tunnel and IP nexthop
+     * false: Nexthop group consists of IP nexthop only
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default true
+     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_UNORDERED_ECMP or SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_ORDERED_ECMP
+     * @isresourcetype true
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_HIERARCHICAL_NEXTHOP,
+
+    /**
      * @brief End of attributes
      */
     SAI_NEXT_HOP_GROUP_ATTR_END,
