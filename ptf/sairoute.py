@@ -23,19 +23,356 @@ from ptf.thriftutils import *
 
 from sai_base_test import *
 
+class multipleRoutesTest(PlatformSaiHelper):
+    '''
+    Verify forwarding with multiple route to the same nhop.
+    '''
+    def setUp(self):
+        super(multipleRoutesTest, self).setUp()
 
-@group("draft")
-class L3RouteSviTest(SaiHelper):
-    """
-    Route SVI test class
-    """
     def runTest(self):
-        self.sviNeighborTest()
+        print("multipleRoutesTest")
+        dmac = '00:11:22:33:44:55'
 
-    def sviNeighborTest(self):
-        '''
-        Function verifying correct SVI neighbor forwarding.
-        '''
+        nhop1 = sai_thrift_create_next_hop(
+            self.client, ip=sai_ipaddress('10.10.10.2'),
+            router_interface_id=self.port10_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        neighbor_entry = sai_thrift_neighbor_entry_t(
+            rif_id=self.port10_rif, ip_address=sai_ipaddress('10.10.10.2'))
+        sai_thrift_create_neighbor_entry(self.client, neighbor_entry,
+                                         dst_mac_address=dmac)
+
+        route_entry1 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
+        sai_thrift_create_route_entry(self.client, route_entry1,
+                                      next_hop_id=nhop1)
+
+        route_entry2 = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.2/32'))
+        sai_thrift_create_route_entry(self.client, route_entry2,
+                                      next_hop_id=nhop1)
+
+        pkt1 = simple_tcp_packet(
+            eth_dst=ROUTER_MAC,
+            eth_src='00:22:22:22:22:22',
+            ip_dst='10.10.10.1',
+            ip_src='192.168.0.1',
+            ip_id=105,
+            ip_ttl=64)
+        pkt2 = simple_tcp_packet(
+            eth_dst=ROUTER_MAC,
+            eth_src='00:22:22:22:22:22',
+            ip_dst='10.10.10.2',
+            ip_src='192.168.0.1',
+            ip_id=105,
+            ip_ttl=64)
+        exp_pkt1 = simple_tcp_packet(
+            eth_dst='00:11:22:33:44:55',
+            eth_src=ROUTER_MAC,
+            ip_dst='10.10.10.1',
+            ip_src='192.168.0.1',
+            ip_id=105,
+            ip_ttl=63)
+        exp_pkt2 = simple_tcp_packet(
+            eth_dst='00:11:22:33:44:55',
+            eth_src=ROUTER_MAC,
+            ip_dst='10.10.10.2',
+            ip_src='192.168.0.1',
+            ip_id=105,
+            ip_ttl=63)
+        try:
+            print("Sending packet on port %d, forward" % self.dev_port11)
+            send_packet(self, self.dev_port11, pkt1)
+            verify_packet(self, exp_pkt1, self.dev_port10)
+
+            print("Sending packet on port %d, forward" % self.dev_port11)
+            send_packet(self, self.dev_port11, pkt2)
+            verify_packet(self, exp_pkt2, self.dev_port10)
+
+        finally:
+            sai_thrift_remove_route_entry(self.client, route_entry1)
+            sai_thrift_remove_route_entry(self.client, route_entry2)
+            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry)
+            sai_thrift_remove_next_hop(self.client, nhop1)
+
+    def tearDown(self):
+        super(multipleRoutesTest, self).tearDown()
+
+
+class dropRouteTest(PlatformSaiHelper):
+    '''
+    Verify drop route.
+    '''
+    def setUp(self):
+        super(dropRouteTest, self).setUp()
+
+    def runTest(self):
+        print("dropRouteTest")
+        dmac = '00:11:22:33:44:55'
+
+        nhop = sai_thrift_create_next_hop(
+            self.client, ip=sai_ipaddress('10.10.10.2'),
+            router_interface_id=self.port10_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        neighbor_entry = sai_thrift_neighbor_entry_t(
+            rif_id=self.port10_rif, ip_address=sai_ipaddress('10.10.10.2'))
+        sai_thrift_create_neighbor_entry(self.client, neighbor_entry,
+                                         dst_mac_address=dmac)
+
+        route_entry = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
+        sai_thrift_create_route_entry(
+            self.client, route_entry, next_hop_id=nhop,
+            packet_action=SAI_PACKET_ACTION_TRAP)
+
+        pkt = simple_tcp_packet(
+            eth_dst=ROUTER_MAC,
+            eth_src='00:22:22:22:22:22',
+            ip_dst='10.10.10.1',
+            ip_src='192.168.0.1',
+            ip_id=105,
+            ip_ttl=64)
+        try:
+            pre_stats = sai_thrift_get_queue_stats(
+                self.client, self.cpu_queue0)
+            print("Sending packet on port %d, forward" % self.dev_port11)
+            send_packet(self, self.dev_port11, pkt)
+            time.sleep(4)
+            post_stats = sai_thrift_get_queue_stats(
+                self.client, self.cpu_queue0)
+            self.assertEqual(
+                post_stats["SAI_QUEUE_STAT_PACKETS"],
+                pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
+
+        finally:
+            sai_thrift_remove_route_entry(self.client, route_entry)
+            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry)
+            sai_thrift_remove_next_hop(self.client, nhop)
+
+    def tearDown(self):
+        super(dropRouteTest, self).tearDown()
+
+
+class routeUpdateTest(PlatformSaiHelper):
+    '''
+    Verify correct forwarding after route update.
+    '''
+    def setUp(self):
+        super(routeUpdateTest, self).setUp()
+
+    def runTest(self):
+        print("routeUpdateTest")
+        dmac = '00:11:22:33:44:55'
+        dmac2 = '00:11:22:33:44:66'
+
+        nhop1 = sai_thrift_create_next_hop(
+            self.client, ip=sai_ipaddress('10.10.10.2'),
+            router_interface_id=self.port10_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        neighbor_entry = sai_thrift_neighbor_entry_t(
+            rif_id=self.port10_rif, ip_address=sai_ipaddress('10.10.10.2'))
+        sai_thrift_create_neighbor_entry(self.client, neighbor_entry,
+                                         dst_mac_address=dmac)
+
+        route_entry = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
+        sai_thrift_create_route_entry(self.client, route_entry,
+                                      next_hop_id=nhop1)
+
+        pkt = simple_tcp_packet(
+            eth_dst=ROUTER_MAC,
+            eth_src='00:22:22:22:22:22',
+            ip_dst='10.10.10.1',
+            ip_src='192.168.0.1',
+            ip_id=105,
+            ip_ttl=64)
+        exp_pkt = simple_tcp_packet(
+            eth_dst='00:11:22:33:44:55',
+            eth_src=ROUTER_MAC,
+            ip_dst='10.10.10.1',
+            ip_src='192.168.0.1',
+            ip_id=105,
+            ip_ttl=63)
+        exp_pkt2 = simple_tcp_packet(
+            eth_dst='00:11:22:33:44:66',
+            eth_src=ROUTER_MAC,
+            ip_dst='10.10.10.1',
+            ip_src='192.168.0.1',
+            ip_id=105,
+            ip_ttl=63)
+        try:
+            print("Sending packet on port %d, forward" % self.dev_port11)
+            send_packet(self, self.dev_port11, pkt)
+            verify_packet(self, exp_pkt, self.dev_port10)
+
+            print("Updating route nexthop to different nexthop")
+            nhop2 = sai_thrift_create_next_hop(
+                self.client, ip=sai_ipaddress('10.10.10.3'),
+                router_interface_id=self.port10_rif,
+                type=SAI_NEXT_HOP_TYPE_IP)
+            neighbor_entry2 = sai_thrift_neighbor_entry_t(
+                rif_id=self.port10_rif, ip_address=sai_ipaddress('10.10.10.3'))
+            sai_thrift_create_neighbor_entry(self.client, neighbor_entry2,
+                                             dst_mac_address=dmac2)
+            sai_thrift_set_route_entry_attribute(self.client, route_entry,
+                                                 next_hop_id=nhop2)
+
+            print("Sending packet on port %d, forward" % self.dev_port11)
+            send_packet(self, self.dev_port11, pkt)
+            verify_packet(self, exp_pkt2, self.dev_port10)
+
+            print("Updating route nexthop to drop nexthop")
+            sai_thrift_set_route_entry_attribute(
+                self.client, route_entry, packet_action=SAI_PACKET_ACTION_DROP)
+
+            print("Sending packet on port %d, drop" % self.dev_port11)
+            send_packet(self, self.dev_port11, pkt)
+            verify_no_other_packets(self, timeout=3)
+
+            print("Updating route nexthop to regular nexthop")
+            sai_thrift_set_route_entry_attribute(
+                self.client, route_entry,
+                packet_action=SAI_PACKET_ACTION_FORWARD)
+
+            print("Sending packet on port %d, forward" % self.dev_port11)
+            send_packet(self, self.dev_port11, pkt)
+            verify_packet(self, exp_pkt2, self.dev_port10)
+
+            print("Updating route nexthop to CPU nexthop")
+            sai_thrift_set_route_entry_attribute(
+                self.client, route_entry, packet_action=SAI_PACKET_ACTION_TRAP)
+
+            pre_stats = sai_thrift_get_queue_stats(
+                self.client, self.cpu_queue0)
+            print("Sending packet on port %d, forward" % self.dev_port11)
+            send_packet(self, self.dev_port11, pkt)
+            time.sleep(4)
+            post_stats = sai_thrift_get_queue_stats(
+                self.client, self.cpu_queue0)
+            self.assertEqual(
+                post_stats["SAI_QUEUE_STAT_PACKETS"],
+                pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
+
+            print("Updating route nexthop to regular nexthop")
+            sai_thrift_set_route_entry_attribute(
+                self.client, route_entry,
+                packet_action=SAI_PACKET_ACTION_FORWARD)
+
+            print("Sending packet on port %d, forward" % self.dev_port11)
+            send_packet(self, self.dev_port11, pkt)
+            verify_packet(self, exp_pkt2, self.dev_port10)
+
+        finally:
+            sai_thrift_remove_route_entry(self.client, route_entry)
+            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry)
+            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry2)
+            sai_thrift_remove_next_hop(self.client, nhop1)
+            sai_thrift_remove_next_hop(self.client, nhop2)
+
+    def tearDown(self):
+        super(routeUpdateTest, self).tearDown()
+
+
+class routeIngressRifTest(PlatformSaiHelper):
+    '''
+    Verify forwarding to ingress rif.
+    '''
+    def setUp(self):
+        super(routeIngressRifTest, self).setUp()
+
+    def runTest(self):
+        print("routeIngressRifTest")
+        dmac = '00:11:22:33:44:55'
+
+        nhop1 = sai_thrift_create_next_hop(
+            self.client, ip=sai_ipaddress('10.10.10.2'),
+            router_interface_id=self.port10_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
+        neighbor_entry = sai_thrift_neighbor_entry_t(
+            rif_id=self.port10_rif, ip_address=sai_ipaddress('10.10.10.2'))
+        sai_thrift_create_neighbor_entry(self.client, neighbor_entry,
+                                         dst_mac_address=dmac)
+
+        route_entry = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
+        sai_thrift_create_route_entry(self.client, route_entry,
+                                      next_hop_id=nhop1)
+
+        pkt = simple_tcp_packet(
+            eth_dst=ROUTER_MAC,
+            eth_src='00:22:22:22:22:22',
+            ip_dst='10.10.10.1',
+            ip_src='192.168.0.1',
+            ip_id=105,
+            ip_ttl=64)
+        exp_pkt = simple_tcp_packet(
+            eth_dst='00:11:22:33:44:55',
+            eth_src=ROUTER_MAC,
+            ip_dst='10.10.10.1',
+            ip_src='192.168.0.1',
+            ip_id=105,
+            ip_ttl=63)
+        try:
+            print("Sending packet on port %d, forward" % self.dev_port10)
+            send_packet(self, self.dev_port10, pkt)
+            verify_packet(self, exp_pkt, self.dev_port10)
+
+        finally:
+            sai_thrift_remove_route_entry(self.client, route_entry)
+            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry)
+            sai_thrift_remove_next_hop(self.client, nhop1)
+
+    def tearDown(self):
+        super(routeIngressRifTest, self).tearDown()
+
+
+class emptyECMPGroupTest(PlatformSaiHelper):
+    '''
+    Verify drop on empty ECMP group.
+    '''
+    def setUp(self):
+        super(emptyECMPGroupTest, self).setUp()
+
+    def runTest(self):
+        print("emptyECMPGroupTest")
+
+        nhop_group = sai_thrift_create_next_hop_group(
+            self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+
+        route_entry = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
+        sai_thrift_create_route_entry(self.client, route_entry,
+                                      next_hop_id=nhop_group)
+
+        pkt = simple_tcp_packet(
+            eth_dst=ROUTER_MAC,
+            eth_src='00:22:22:22:22:22',
+            ip_dst='10.10.10.1',
+            ip_src='192.168.0.1',
+            ip_id=105,
+            ip_ttl=64)
+        try:
+            print("Sending packet on port %d, drop" % self.dev_port10)
+            send_packet(self, self.dev_port10, pkt)
+            verify_no_other_packets(self, timeout=3)
+
+        finally:
+            sai_thrift_remove_route_entry(self.client, route_entry)
+            sai_thrift_remove_next_hop_group(self.client, nhop_group)
+
+    def tearDown(self):
+        super(emptyECMPGroupTest, self).tearDown()
+
+
+class sviNeighborTest(PlatformSaiHelper):
+    '''
+    Function verifying correct SVI neighbor forwarding.
+    '''
+    def setUp(self):
+        super(sviNeighborTest, self).setUp()
+
+    def runTest(self):
         print("sviNeighborTest")
 
         port24_bp = sai_thrift_create_bridge_port(
@@ -131,13 +468,6 @@ class L3RouteSviTest(SaiHelper):
             ip_ttl=63)
 
         try:
-            print("Sending packet port %d to ports %d, %d, %d" %
-                  (self.dev_port10, self.dev_port24, self.dev_port25,
-                   self.dev_port26) + "(192.168.0.1 -> 10.10.10.1) Routed")
-            send_packet(self, self.dev_port10, pkt)
-            verify_packets(self, exp_pkt, [self.dev_port24, self.dev_port25,
-                                           self.dev_port26])
-
             mac_action = SAI_PACKET_ACTION_FORWARD
             fdb_entry1 = sai_thrift_fdb_entry_t(
                 switch_id=self.switch_id, mac_address=dmac1, bv_id=vlan100)
@@ -194,85 +524,18 @@ class L3RouteSviTest(SaiHelper):
             sai_thrift_remove_bridge_port(self.client, port25_bp)
             sai_thrift_remove_bridge_port(self.client, port24_bp)
 
-@group("draft")
-class L3RouteTest(SaiHelperSimplified):
-    """
-    Route test class
-    Configuration
-    +----------+-----------+
-    | port0    | port0_rif |
-    +----------+-----------+
-    | port1    | port1_rif |
-    +----------+-----------+
-    """
-    def setUp(self):
-        super(L3RouteTest, self).setUp()
+    def tearDown(self):
+        super(sviNeighborTest, self).tearDown()
 
-        self.create_routing_interfaces(ports=[0, 1])
+
+class cpuForwardTest(PlatformSaiHelper):
+    '''
+    Function verifying forwading to CPU.
+    '''
+    def setUp(self):
+        super(cpuForwardTest, self).setUp()
 
     def runTest(self):
-        self.routeIngressRifTest()
-        self.cpuForwardTest()
-        self.dropRouteTest()
-        self.emptyECMPGroupTest()
-        self.multipleRoutesTest()
-        self.routeNbrColisionTest()
-        self.routeUpdateTest()
-
-    def tearDown(self):
-        self.destroy_routing_interfaces()
-
-        super(L3RouteTest, self).tearDown()
-
-    def routeIngressRifTest(self):
-        '''
-        Verify forwarding to ingress rif.
-        '''
-        print("routeIngressRifTest")
-        dmac = '00:11:22:33:44:55'
-
-        nhop1 = sai_thrift_create_next_hop(
-            self.client, ip=sai_ipaddress('10.10.10.2'),
-            router_interface_id=self.port0_rif,
-            type=SAI_NEXT_HOP_TYPE_IP)
-        neighbor_entry = sai_thrift_neighbor_entry_t(
-            rif_id=self.port0_rif, ip_address=sai_ipaddress('10.10.10.2'))
-        sai_thrift_create_neighbor_entry(self.client, neighbor_entry,
-                                         dst_mac_address=dmac)
-
-        route_entry = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
-        sai_thrift_create_route_entry(self.client, route_entry,
-                                      next_hop_id=nhop1)
-
-        pkt = simple_tcp_packet(
-            eth_dst=ROUTER_MAC,
-            eth_src='00:22:22:22:22:22',
-            ip_dst='10.10.10.1',
-            ip_src='192.168.0.1',
-            ip_id=105,
-            ip_ttl=64)
-        exp_pkt = simple_tcp_packet(
-            eth_dst='00:11:22:33:44:55',
-            eth_src=ROUTER_MAC,
-            ip_dst='10.10.10.1',
-            ip_src='192.168.0.1',
-            ip_id=105,
-            ip_ttl=63)
-        try:
-            print("Sending packet on port %d, forward" % self.dev_port0)
-            send_packet(self, self.dev_port0, pkt)
-            verify_packet(self, exp_pkt, self.dev_port0)
-
-        finally:
-            sai_thrift_remove_route_entry(self.client, route_entry)
-            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry)
-            sai_thrift_remove_next_hop(self.client, nhop1)
-
-    def cpuForwardTest(self):
-        '''
-        Function verifying forwarding to CPU.
-        '''
         print("cpuForwardTest")
 
         cpu_port = sai_thrift_get_switch_attribute(self.client,
@@ -307,8 +570,8 @@ class L3RouteTest(SaiHelperSimplified):
             pre_stats = sai_thrift_get_queue_stats(
                 self.client, self.cpu_queue4)
             print("Sending packet on port %d, forward to CPU" %
-                  self.dev_port0)
-            send_packet(self, self.dev_port0, pkt)
+                  self.dev_port10)
+            send_packet(self, self.dev_port10, pkt)
             time.sleep(4)
             post_stats = sai_thrift_get_queue_stats(
                 self.client, self.cpu_queue4)
@@ -321,119 +584,19 @@ class L3RouteTest(SaiHelperSimplified):
             sai_thrift_remove_hostif_trap(self.client, trap)
             sai_thrift_remove_hostif_trap_group(self.client, trap_group)
 
-    def dropRouteTest(self):
-        '''
-        Verify drop route.
-        '''
-        print("dropRouteTest")
-        dmac = '00:11:22:33:44:55'
+    def tearDown(self):
+        super(cpuForwardTest, self).tearDown()
 
-        nhop = sai_thrift_create_next_hop(
-            self.client, ip=sai_ipaddress('10.10.10.2'),
-            router_interface_id=self.port0_rif,
-            type=SAI_NEXT_HOP_TYPE_IP)
-        neighbor_entry = sai_thrift_neighbor_entry_t(
-            rif_id=self.port0_rif, ip_address=sai_ipaddress('10.10.10.2'))
-        sai_thrift_create_neighbor_entry(self.client, neighbor_entry,
-                                         dst_mac_address=dmac)
 
-        route_entry = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
-        sai_thrift_create_route_entry(
-            self.client, route_entry, next_hop_id=nhop,
-            packet_action=SAI_PACKET_ACTION_DROP)
+class routeNbrColisionTest(PlatformSaiHelper):
+    '''
+    Verfies if packet is gleaned to CPU when nexthop id is RIF
+    for cases with and without a neighbor
+    '''
+    def setUp(self):
+        super(routeNbrColisionTest, self).setUp()
 
-        pkt = simple_tcp_packet(
-            eth_dst=ROUTER_MAC,
-            eth_src='00:22:22:22:22:22',
-            ip_dst='10.10.10.1',
-            ip_src='192.168.0.1',
-            ip_id=105,
-            ip_ttl=64)
-        try:
-            print("Sending packet on port %d, forward" % self.dev_port1)
-            send_packet(self, self.dev_port1, pkt)
-            verify_no_other_packets(self, timeout=3)
-
-        finally:
-            sai_thrift_remove_route_entry(self.client, route_entry)
-            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry)
-            sai_thrift_remove_next_hop(self.client, nhop)
-
-    def multipleRoutesTest(self):
-        '''
-        Verify forwarding with multiple route to the same nhop.
-        '''
-        print("multipleRoutesTest")
-        dmac = '00:11:22:33:44:55'
-
-        nhop1 = sai_thrift_create_next_hop(
-            self.client, ip=sai_ipaddress('10.10.10.2'),
-            router_interface_id=self.port0_rif,
-            type=SAI_NEXT_HOP_TYPE_IP)
-        neighbor_entry = sai_thrift_neighbor_entry_t(
-            rif_id=self.port0_rif, ip_address=sai_ipaddress('10.10.10.2'))
-        sai_thrift_create_neighbor_entry(self.client, neighbor_entry,
-                                         dst_mac_address=dmac)
-
-        route_entry1 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
-        sai_thrift_create_route_entry(self.client, route_entry1,
-                                      next_hop_id=nhop1)
-
-        route_entry2 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.2/32'))
-        sai_thrift_create_route_entry(self.client, route_entry2,
-                                      next_hop_id=nhop1)
-
-        pkt1 = simple_tcp_packet(
-            eth_dst=ROUTER_MAC,
-            eth_src='00:22:22:22:22:22',
-            ip_dst='10.10.10.1',
-            ip_src='192.168.0.1',
-            ip_id=105,
-            ip_ttl=64)
-        pkt2 = simple_tcp_packet(
-            eth_dst=ROUTER_MAC,
-            eth_src='00:22:22:22:22:22',
-            ip_dst='10.10.10.2',
-            ip_src='192.168.0.1',
-            ip_id=105,
-            ip_ttl=64)
-        exp_pkt1 = simple_tcp_packet(
-            eth_dst='00:11:22:33:44:55',
-            eth_src=ROUTER_MAC,
-            ip_dst='10.10.10.1',
-            ip_src='192.168.0.1',
-            ip_id=105,
-            ip_ttl=63)
-        exp_pkt2 = simple_tcp_packet(
-            eth_dst='00:11:22:33:44:55',
-            eth_src=ROUTER_MAC,
-            ip_dst='10.10.10.2',
-            ip_src='192.168.0.1',
-            ip_id=105,
-            ip_ttl=63)
-        try:
-            print("Sending packet on port %d, forward" % self.dev_port1)
-            send_packet(self, self.dev_port1, pkt1)
-            verify_packet(self, exp_pkt1, self.dev_port0)
-
-            print("Sending packet on port %d, forward" % self.dev_port1)
-            send_packet(self, self.dev_port1, pkt2)
-            verify_packet(self, exp_pkt2, self.dev_port0)
-
-        finally:
-            sai_thrift_remove_route_entry(self.client, route_entry1)
-            sai_thrift_remove_route_entry(self.client, route_entry2)
-            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry)
-            sai_thrift_remove_next_hop(self.client, nhop1)
-
-    def routeNbrColisionTest(self):
-        '''
-        Verfies if packet is gleaned to CPU when nexthop id is RIF
-        for cases with and without a neighbor
-        '''
+    def runTest(self):
         print("routeNbrColisionTest")
 
         ip_addr = '10.10.10.1'
@@ -457,67 +620,66 @@ class L3RouteTest(SaiHelperSimplified):
                                      ip_ttl=63)
 
         print("Creates nhop with %s ip address and %d router interface id"
-              % (ip_addr, self.port0_rif))
+              % (ip_addr, self.port10_rif))
         nhop = sai_thrift_create_next_hop(
             self.client, ip=sai_ipaddress(ip_addr),
-            router_interface_id=self.port0_rif,
+            router_interface_id=self.port10_rif,
             type=SAI_NEXT_HOP_TYPE_IP)
 
         print("Creates neighbor with %s ip address, %d router interface id and"
-              " %s destination mac" % (ip_addr, self.port0_rif, dmac))
+              " %s destination mac" % (ip_addr, self.port10_rif, dmac))
         nbr_entry = sai_thrift_neighbor_entry_t(
-            rif_id=self.port0_rif, ip_address=sai_ipaddress(ip_addr))
+            rif_id=self.port10_rif, ip_address=sai_ipaddress(ip_addr))
         sai_thrift_create_neighbor_entry(
             self.client, nbr_entry, dst_mac_address=dmac)
 
         try:
             print("Sending packet on port %d to port %d, forward from %s to %s"
-                  % (self.dev_port1, self.dev_port0, pkt_ip_src, pkt_ip_dst))
-            send_packet(self, self.dev_port1, pkt)
-            verify_packets(self, exp_pkt1, [self.dev_port0])
+                  % (self.dev_port11, self.dev_port10, pkt_ip_src, pkt_ip_dst))
+            send_packet(self, self.dev_port11, pkt)
+            verify_packets(self, exp_pkt1, [self.dev_port10])
 
             print("Creates route with %s ip prefix and %d router interface id"
-                  % (ip_addr_subnet, self.port0_rif))
+                  % (ip_addr_subnet, self.port10_rif))
             route_entry = sai_thrift_route_entry_t(
                 vr_id=self.default_vrf, destination=sai_ipprefix(
                     ip_addr_subnet))
             sai_thrift_create_route_entry(self.client, route_entry,
-                                          next_hop_id=self.port0_rif)
+                                          next_hop_id=self.port10_rif)
 
             print("Sending packet on port %d to port %d, forward from %s to %s"
-                  % (self.dev_port1, self.dev_port0, pkt_ip_src, pkt_ip_dst))
-            send_packet(self, self.dev_port1, pkt)
-            verify_packets(self, exp_pkt1, [self.dev_port0])
+                  % (self.dev_port11, self.dev_port10, pkt_ip_src, pkt_ip_dst))
+            send_packet(self, self.dev_port11, pkt)
+            verify_packets(self, exp_pkt1, [self.dev_port10])
 
             print("Removes route")
             sai_thrift_remove_route_entry(self.client, route_entry)
 
             print("Sending packet on port %d to port %d, forward from %s to %s"
-                  % (self.dev_port1, self.dev_port0, pkt_ip_src, pkt_ip_dst))
-            send_packet(self, self.dev_port1, pkt)
-            verify_packets(self, exp_pkt1, [self.dev_port0])
+                  % (self.dev_port11, self.dev_port10, pkt_ip_src, pkt_ip_dst))
+            send_packet(self, self.dev_port11, pkt)
+            verify_packets(self, exp_pkt1, [self.dev_port10])
 
             print("Creates route with %s ip prefix and %d router interface id"
-                  % (ip_addr_subnet, self.port0_rif))
+                  % (ip_addr_subnet, self.port10_rif))
             route_entry = sai_thrift_route_entry_t(
                 vr_id=self.default_vrf, destination=sai_ipprefix(
                     ip_addr_subnet))
             sai_thrift_create_route_entry(self.client, route_entry,
-                                          next_hop_id=self.port0_rif)
+                                          next_hop_id=self.port10_rif)
 
             print("Sending packet on port %d to port %d, forward from %s to %s"
-                  % (self.dev_port1, self.dev_port0, pkt_ip_src, pkt_ip_dst))
-            send_packet(self, self.dev_port1, pkt)
-            verify_packets(self, exp_pkt1, [self.dev_port0])
+                  % (self.dev_port11, self.dev_port10, pkt_ip_src, pkt_ip_dst))
+            send_packet(self, self.dev_port11, pkt)
+            verify_packets(self, exp_pkt1, [self.dev_port10])
 
             print("Removes neighbor")
             sai_thrift_remove_neighbor_entry(self.client, nbr_entry)
 
             pre_stats = sai_thrift_get_queue_stats(
                 self.client, self.cpu_queue0)
-            print("Sending packet on port %d, glean to cpu" % self.dev_port1)
-            send_packet(self, self.dev_port1, pkt)
-            verify_no_other_packets(self, timeout=1)
+            print("Sending packet on port %d, glean to cpu" % self.dev_port11)
+            send_packet(self, self.dev_port11, pkt)
             time.sleep(4)
             post_stats = sai_thrift_get_queue_stats(
                 self.client, self.cpu_queue0)
@@ -526,39 +688,38 @@ class L3RouteTest(SaiHelperSimplified):
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
 
             print("Creates neighbor with %s ip address, %d router interface id"
-                  " and %s destination mac" % (ip_addr, self.port0_rif, dmac))
+                  " and %s destination mac" % (ip_addr, self.port10_rif, dmac))
             nbr_entry = sai_thrift_neighbor_entry_t(
-                rif_id=self.port0_rif, ip_address=sai_ipaddress(ip_addr))
+                rif_id=self.port10_rif, ip_address=sai_ipaddress(ip_addr))
             sai_thrift_create_neighbor_entry(
                 self.client, nbr_entry, dst_mac_address=dmac)
 
             print("Sending packet on port %d to port %d, forward from %s to %s"
-                  % (self.dev_port1, self.dev_port0, pkt_ip_src, pkt_ip_dst))
-            send_packet(self, self.dev_port1, pkt)
-            verify_packets(self, exp_pkt1, [self.dev_port0])
+                  % (self.dev_port11, self.dev_port10, pkt_ip_src, pkt_ip_dst))
+            send_packet(self, self.dev_port11, pkt)
+            verify_packets(self, exp_pkt1, [self.dev_port10])
 
             print("Removes route")
             sai_thrift_remove_route_entry(self.client, route_entry)
             print("Removes neighbor")
             sai_thrift_remove_neighbor_entry(self.client, nbr_entry)
 
-            print("Sending packet on port %d, dropped" % (self.dev_port1))
-            send_packet(self, self.dev_port1, pkt)
+            print("Sending packet on port %d, dropped" % (self.dev_port11))
+            send_packet(self, self.dev_port11, pkt)
             verify_no_other_packets(self)
 
             print("Creates route with %s ip prefix and %d router interface id"
-                  % (ip_addr_subnet, self.port0_rif))
+                  % (ip_addr_subnet, self.port10_rif))
             route_entry = sai_thrift_route_entry_t(
                 vr_id=self.default_vrf, destination=sai_ipprefix(
                     ip_addr_subnet))
             sai_thrift_create_route_entry(self.client, route_entry,
-                                          next_hop_id=self.port0_rif)
+                                          next_hop_id=self.port10_rif)
 
             pre_stats = sai_thrift_get_queue_stats(
                 self.client, self.cpu_queue0)
-            print("Sending packet on port %d, glean to cpu" % self.dev_port1)
-            send_packet(self, self.dev_port1, pkt)
-            verify_no_other_packets(self, timeout=1)
+            print("Sending packet on port %d, glean to cpu" % self.dev_port11)
+            send_packet(self, self.dev_port11, pkt)
             time.sleep(4)
             post_stats = sai_thrift_get_queue_stats(
                 self.client, self.cpu_queue0)
@@ -567,172 +728,32 @@ class L3RouteTest(SaiHelperSimplified):
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
 
             print("Creates neighbor with %s ip address, %d router interface id"
-                  " and %s destination mac" % (ip_addr, self.port0_rif, dmac))
+                  " and %s destination mac" % (ip_addr, self.port10_rif, dmac))
             nbr_entry = sai_thrift_neighbor_entry_t(
-                rif_id=self.port0_rif, ip_address=sai_ipaddress(ip_addr))
+                rif_id=self.port10_rif, ip_address=sai_ipaddress(ip_addr))
             sai_thrift_create_neighbor_entry(
                 self.client, nbr_entry, dst_mac_address=dmac)
 
             print("Sending packet on port %d to port %d, forward from %s to %s"
-                  % (self.dev_port1, self.dev_port0, pkt_ip_src, pkt_ip_dst))
-            send_packet(self, self.dev_port1, pkt)
-            verify_packets(self, exp_pkt1, [self.dev_port0])
+                  % (self.dev_port11, self.dev_port10, pkt_ip_src, pkt_ip_dst))
+            send_packet(self, self.dev_port11, pkt)
+            verify_packets(self, exp_pkt1, [self.dev_port10])
 
         finally:
             sai_thrift_remove_route_entry(self.client, route_entry)
             sai_thrift_remove_neighbor_entry(self.client, nbr_entry)
             sai_thrift_remove_next_hop(self.client, nhop)
 
-    def routeUpdateTest(self):
-        '''
-        Verify correct forwarding after route update.
-        '''
-        print("routeUpdateTest")
-        dmac = '00:11:22:33:44:55'
-        dmac2 = '00:11:22:33:44:66'
-
-        nhop1 = sai_thrift_create_next_hop(
-            self.client, ip=sai_ipaddress('10.10.10.2'),
-            router_interface_id=self.port0_rif,
-            type=SAI_NEXT_HOP_TYPE_IP)
-        neighbor_entry = sai_thrift_neighbor_entry_t(
-            rif_id=self.port0_rif, ip_address=sai_ipaddress('10.10.10.2'))
-        sai_thrift_create_neighbor_entry(self.client, neighbor_entry,
-                                         dst_mac_address=dmac)
-
-        route_entry = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
-        sai_thrift_create_route_entry(self.client, route_entry,
-                                      next_hop_id=nhop1)
-
-        pkt = simple_tcp_packet(
-            eth_dst=ROUTER_MAC,
-            eth_src='00:22:22:22:22:22',
-            ip_dst='10.10.10.1',
-            ip_src='192.168.0.1',
-            ip_id=105,
-            ip_ttl=64)
-        exp_pkt = simple_tcp_packet(
-            eth_dst='00:11:22:33:44:55',
-            eth_src=ROUTER_MAC,
-            ip_dst='10.10.10.1',
-            ip_src='192.168.0.1',
-            ip_id=105,
-            ip_ttl=63)
-        exp_pkt2 = simple_tcp_packet(
-            eth_dst='00:11:22:33:44:66',
-            eth_src=ROUTER_MAC,
-            ip_dst='10.10.10.1',
-            ip_src='192.168.0.1',
-            ip_id=105,
-            ip_ttl=63)
-        try:
-            print("Sending packet on port %d, forward" % self.dev_port1)
-            send_packet(self, self.dev_port1, pkt)
-            verify_packet(self, exp_pkt, self.dev_port0)
-
-            print("Updating route nexthop to different nexthop")
-            nhop2 = sai_thrift_create_next_hop(
-                self.client, ip=sai_ipaddress('10.10.10.3'),
-                router_interface_id=self.port0_rif,
-                type=SAI_NEXT_HOP_TYPE_IP)
-            neighbor_entry2 = sai_thrift_neighbor_entry_t(
-                rif_id=self.port0_rif, ip_address=sai_ipaddress('10.10.10.3'))
-            sai_thrift_create_neighbor_entry(self.client, neighbor_entry2,
-                                             dst_mac_address=dmac2)
-            sai_thrift_set_route_entry_attribute(self.client, route_entry,
-                                                 next_hop_id=nhop2)
-
-            print("Sending packet on port %d, forward" % self.dev_port1)
-            send_packet(self, self.dev_port1, pkt)
-            verify_packet(self, exp_pkt2, self.dev_port0)
-
-            print("Updating route nexthop to drop nexthop")
-            sai_thrift_set_route_entry_attribute(
-                self.client, route_entry, packet_action=SAI_PACKET_ACTION_DROP)
-
-            print("Sending packet on port %d, drop" % self.dev_port1)
-            send_packet(self, self.dev_port1, pkt)
-            verify_no_other_packets(self, timeout=3)
-
-            print("Updating route nexthop to regular nexthop")
-            sai_thrift_set_route_entry_attribute(
-                self.client, route_entry,
-                packet_action=SAI_PACKET_ACTION_FORWARD)
-
-            print("Sending packet on port %d, forward" % self.dev_port1)
-            send_packet(self, self.dev_port1, pkt)
-            verify_packet(self, exp_pkt2, self.dev_port0)
-
-            print("Updating route nexthop to CPU nexthop")
-            sai_thrift_set_route_entry_attribute(
-                self.client, route_entry, packet_action=SAI_PACKET_ACTION_TRAP)
-
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
-            print("Sending packet on port %d, forward" % self.dev_port1)
-            send_packet(self, self.dev_port1, pkt)
-            time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
-            self.assertEqual(
-                post_stats["SAI_QUEUE_STAT_PACKETS"],
-                pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
-
-            print("Updating route nexthop to regular nexthop")
-            sai_thrift_set_route_entry_attribute(
-                self.client, route_entry,
-                packet_action=SAI_PACKET_ACTION_FORWARD)
-
-            print("Sending packet on port %d, forward" % self.dev_port1)
-            send_packet(self, self.dev_port1, pkt)
-            verify_packet(self, exp_pkt2, self.dev_port0)
-
-        finally:
-            sai_thrift_remove_route_entry(self.client, route_entry)
-            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry)
-            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry2)
-            sai_thrift_remove_next_hop(self.client, nhop1)
-            sai_thrift_remove_next_hop(self.client, nhop2)
-
-    def emptyECMPGroupTest(self):
-        '''
-        Verify drop on empty ECMP group.
-        '''
-        print("emptyECMPGroupTest")
-
-        nhop_group = sai_thrift_create_next_hop_group(
-            self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
-
-        route_entry = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
-        sai_thrift_create_route_entry(self.client, route_entry,
-                                      next_hop_id=nhop_group)
-
-        pkt = simple_tcp_packet(
-            eth_dst=ROUTER_MAC,
-            eth_src='00:22:22:22:22:22',
-            ip_dst='10.10.10.1',
-            ip_src='192.168.0.1',
-            ip_id=105,
-            ip_ttl=64)
-        try:
-            print("Sending packet on port %d, drop" % self.dev_port0)
-            send_packet(self, self.dev_port0, pkt)
-            verify_no_other_packets(self, timeout=3)
-
-        finally:
-            sai_thrift_remove_route_entry(self.client, route_entry)
-            sai_thrift_remove_next_hop_group(self.client, nhop_group)
+    def tearDown(self):
+        super(routeNbrColisionTest, self).tearDown()
 
 
-@group("draft")
-class L3DirBcastRouteTest(SaiHelper):
-    """
+class L3DirBcastRouteTestHelper(PlatformSaiHelper):
+    '''
     Verifies direct broadcast routing
-    """
+    '''
     def setUp(self):
-        super(L3DirBcastRouteTest, self).setUp()
+        super(L3DirBcastRouteTestHelper, self).setUp()
 
         vlan100_id = 100
 
@@ -783,10 +804,6 @@ class L3DirBcastRouteTest(SaiHelper):
             virtual_router_id=self.default_vrf,
             vlan_id=self.vlan100)
 
-    def runTest(self):
-        self.gleanEndForwardTest()
-        self.forwardTest()
-
     def tearDown(self):
         print("Removes router interface %d" % self.vlan100_rif)
         sai_thrift_remove_router_interface(self.client, self.vlan100_rif)
@@ -813,160 +830,172 @@ class L3DirBcastRouteTest(SaiHelper):
         print("Removes bridge port %d" % self.port25_bp)
         sai_thrift_remove_bridge_port(self.client, self.port25_bp)
 
-        super(L3DirBcastRouteTest, self).tearDown()
+        super(L3DirBcastRouteTestHelper, self).tearDown()
 
     def trafficTrapTest1(self):
         """
         Verifies the test packets are gleaned to CPU when neighbors don't exist
         """
-        pkt_ip_src = '192.168.0.1'
-        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                eth_src='00:22:22:22:22:21',
-                                ip_dst=self.ip_addr1,
-                                ip_src=pkt_ip_src,
-                                ip_id=105,
-                                ip_ttl=64)
-        pre_stats = sai_thrift_get_queue_stats(
-            self.client, self.cpu_queue0)
-        print("Sending packet on port %d, glean to cpu" % self.dev_port10)
-        send_packet(self, self.dev_port10, pkt)
-        verify_no_other_packets(self, timeout=1)
-        time.sleep(4)
-        post_stats = sai_thrift_get_queue_stats(
-            self.client, self.cpu_queue0)
-        self.assertEqual(
-            post_stats["SAI_QUEUE_STAT_PACKETS"],
-            pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
+        try:
+            pkt_ip_src = '192.168.0.1'
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    eth_src='00:22:22:22:22:21',
+                                    ip_dst=self.ip_addr1,
+                                    ip_src=pkt_ip_src,
+                                    ip_id=105,
+                                    ip_ttl=64)
+            pre_stats = sai_thrift_get_queue_stats(
+                self.client, self.cpu_queue0)
+            print("Sending packet on port %d, glean to cpu" % self.dev_port10)
+            send_packet(self, self.dev_port10, pkt)
+            time.sleep(4)
+            post_stats = sai_thrift_get_queue_stats(
+                self.client, self.cpu_queue0)
+            self.assertEqual(
+                post_stats["SAI_QUEUE_STAT_PACKETS"],
+                pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
 
-        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                eth_src='00:22:22:22:22:22',
-                                ip_dst=self.ip_addr2,
-                                ip_src=pkt_ip_src,
-                                ip_id=105,
-                                ip_ttl=64)
-        pre_stats = sai_thrift_get_queue_stats(
-            self.client, self.cpu_queue0)
-        print("Sending packet on port %d, glean to cpu" % self.dev_port24)
-        send_packet(self, self.dev_port24, pkt)
-        verify_no_other_packets(self, timeout=1)
-        time.sleep(4)
-        post_stats = sai_thrift_get_queue_stats(
-            self.client, self.cpu_queue0)
-        self.assertEqual(
-            post_stats["SAI_QUEUE_STAT_PACKETS"],
-            pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    eth_src='00:22:22:22:22:22',
+                                    ip_dst=self.ip_addr2,
+                                    ip_src=pkt_ip_src,
+                                    ip_id=105,
+                                    ip_ttl=64)
+            pre_stats = sai_thrift_get_queue_stats(
+                self.client, self.cpu_queue0)
+            print("Sending packet on port %d, glean to cpu" % self.dev_port24)
+            send_packet(self, self.dev_port24, pkt)
+            time.sleep(4)
+            post_stats = sai_thrift_get_queue_stats(
+                self.client, self.cpu_queue0)
+            self.assertEqual(
+                post_stats["SAI_QUEUE_STAT_PACKETS"],
+                pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
+
+        finally:
+            pass
 
     def trafficTrapTest2(self):
         """
         Verifies the test packets are gleaned to CPU when neighbors don't exist
         """
-        pkt_ip_src = '192.168.0.1'
-        pkt_ip_dst = '10.10.10.2'
-        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                eth_src='00:22:22:22:22:21',
-                                ip_dst=pkt_ip_dst,
-                                ip_src=pkt_ip_src,
-                                ip_id=105,
-                                ip_ttl=64)
-        pre_stats = sai_thrift_get_queue_stats(
-            self.client, self.cpu_queue0)
-        print("Sending packet on port %d, glean to cpu" % self.dev_port10)
-        send_packet(self, self.dev_port10, pkt)
-        verify_no_other_packets(self, timeout=1)
-        time.sleep(4)
-        post_stats = sai_thrift_get_queue_stats(
-            self.client, self.cpu_queue0)
-        self.assertEqual(
-            post_stats["SAI_QUEUE_STAT_PACKETS"],
-            pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
+        try:
+            pkt_ip_src = '192.168.0.1'
+            pkt_ip_dst = '10.10.10.2'
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    eth_src='00:22:22:22:22:21',
+                                    ip_dst=pkt_ip_dst,
+                                    ip_src=pkt_ip_src,
+                                    ip_id=105,
+                                    ip_ttl=64)
+            pre_stats = sai_thrift_get_queue_stats(
+                self.client, self.cpu_queue0)
+            print("Sending packet on port %d, glean to cpu" % self.dev_port10)
+            send_packet(self, self.dev_port10, pkt)
+            time.sleep(4)
+            post_stats = sai_thrift_get_queue_stats(
+                self.client, self.cpu_queue0)
+            self.assertEqual(
+                post_stats["SAI_QUEUE_STAT_PACKETS"],
+                pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
 
-        pkt_ip_dst = '20.20.20.2'
-        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                eth_src='00:22:22:22:22:22',
-                                ip_dst=pkt_ip_dst,
-                                ip_src=pkt_ip_src,
-                                ip_id=105,
-                                ip_ttl=64)
-        pre_stats = sai_thrift_get_queue_stats(
-            self.client, self.cpu_queue0)
-        print("Sending packet on port %d, glean to cpu" % self.dev_port24)
-        send_packet(self, self.dev_port24, pkt)
-        verify_no_other_packets(self, timeout=1)
-        time.sleep(4)
-        post_stats = sai_thrift_get_queue_stats(
-            self.client, self.cpu_queue0)
-        self.assertEqual(
-            post_stats["SAI_QUEUE_STAT_PACKETS"],
-            pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
+            pkt_ip_dst = '20.20.20.2'
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    eth_src='00:22:22:22:22:22',
+                                    ip_dst=pkt_ip_dst,
+                                    ip_src=pkt_ip_src,
+                                    ip_id=105,
+                                    ip_ttl=64)
+            pre_stats = sai_thrift_get_queue_stats(
+                self.client, self.cpu_queue0)
+            print("Sending packet on port %d, glean to cpu" % self.dev_port24)
+            send_packet(self, self.dev_port24, pkt)
+            time.sleep(4)
+            post_stats = sai_thrift_get_queue_stats(
+                self.client, self.cpu_queue0)
+            self.assertEqual(
+                post_stats["SAI_QUEUE_STAT_PACKETS"],
+                pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
+
+        finally:
+            pass
 
     def trafficTest(self):
         """
         Verfies if test packets are properly forwarded
         """
-        pkt_ip_src = '192.168.0.1'
-        # send the test packet(s)
-        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                eth_src='00:22:22:22:22:21',
-                                ip_dst=self.ip_addr1,
-                                ip_src=pkt_ip_src,
-                                ip_id=105,
-                                ip_ttl=64)
-        exp_pkt = simple_tcp_packet(eth_dst=self.dmac1,
-                                    eth_src=ROUTER_MAC,
+        try:
+            pkt_ip_src = '192.168.0.1'
+            # send the test packet(s)
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    eth_src='00:22:22:22:22:21',
                                     ip_dst=self.ip_addr1,
                                     ip_src=pkt_ip_src,
                                     ip_id=105,
-                                    ip_ttl=63)
-        print("Sending packet on port %d to port %d, forward from %s to %s"
-              % (self.dev_port10, self.dev_port24, pkt_ip_src,
-                 self.ip_addr1))
-        send_packet(self, self.dev_port10, pkt)
-        verify_packets(self, exp_pkt, [self.dev_port24])
+                                    ip_ttl=64)
+            exp_pkt = simple_tcp_packet(eth_dst=self.dmac1,
+                                        eth_src=ROUTER_MAC,
+                                        ip_dst=self.ip_addr1,
+                                        ip_src=pkt_ip_src,
+                                        ip_id=105,
+                                        ip_ttl=63)
+            print("Sending packet on port %d to port %d, forward from %s to %s"
+                  % (self.dev_port10, self.dev_port24, pkt_ip_src,
+                     self.ip_addr1))
+            send_packet(self, self.dev_port10, pkt)
+            verify_packets(self, exp_pkt, [self.dev_port24])
 
-        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                eth_src='00:22:22:22:22:22',
-                                ip_dst=self.dir_bcast_ip_addr1,
-                                ip_src=pkt_ip_src,
-                                ip_id=105,
-                                ip_ttl=64)
-        exp_pkt = simple_tcp_packet(eth_dst=self.dir_bcast_dmac1,
-                                    eth_src=ROUTER_MAC,
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    eth_src='00:22:22:22:22:22',
                                     ip_dst=self.dir_bcast_ip_addr1,
                                     ip_src=pkt_ip_src,
                                     ip_id=105,
-                                    ip_ttl=63)
-        print("Sending packet on port %d to port %d and %d, forward from "
-              "%s to %s" % (self.dev_port10, self.dev_port24,
-                            self.dev_port25, pkt_ip_src,
-                            self.dir_bcast_ip_addr1))
-        send_packet(self, self.dev_port10, pkt)
-        verify_packets(self, exp_pkt, ports=[self.dev_port24,
-                                             self.dev_port25])
+                                    ip_ttl=64)
+            exp_pkt = simple_tcp_packet(eth_dst=self.dir_bcast_dmac1,
+                                        eth_src=ROUTER_MAC,
+                                        ip_dst=self.dir_bcast_ip_addr1,
+                                        ip_src=pkt_ip_src,
+                                        ip_id=105,
+                                        ip_ttl=63)
+            print("Sending packet on port %d to port %d and %d, forward from "
+                  "%s to %s" % (self.dev_port10, self.dev_port24,
+                                self.dev_port25, pkt_ip_src,
+                                self.dir_bcast_ip_addr1))
+            send_packet(self, self.dev_port10, pkt)
+            verify_packets(self, exp_pkt, ports=[self.dev_port24,
+                                                 self.dev_port25])
 
-        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                eth_src='00:22:22:22:22:23',
-                                ip_dst=self.ip_addr2,
-                                ip_src=pkt_ip_src,
-                                ip_id=105,
-                                ip_ttl=64)
-        exp_pkt = simple_tcp_packet(eth_dst=self.dmac2,
-                                    eth_src=ROUTER_MAC,
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    eth_src='00:22:22:22:22:23',
                                     ip_dst=self.ip_addr2,
                                     ip_src=pkt_ip_src,
                                     ip_id=105,
-                                    ip_ttl=63)
-        print("Sending packet on port %d to port %d, forward from %s to %s"
-              % (self.dev_port25, self.dev_port10, pkt_ip_src,
-                 self.ip_addr2))
-        send_packet(self, self.dev_port25, pkt)
-        verify_packets(self, exp_pkt, [self.dev_port10])
+                                    ip_ttl=64)
+            exp_pkt = simple_tcp_packet(eth_dst=self.dmac2,
+                                        eth_src=ROUTER_MAC,
+                                        ip_dst=self.ip_addr2,
+                                        ip_src=pkt_ip_src,
+                                        ip_id=105,
+                                        ip_ttl=63)
+            print("Sending packet on port %d to port %d, forward from %s to %s"
+                  % (self.dev_port25, self.dev_port10, pkt_ip_src,
+                     self.ip_addr2))
+            send_packet(self, self.dev_port25, pkt)
+            verify_packets(self, exp_pkt, [self.dev_port10])
 
-    def gleanEndForwardTest(self):
-        """
-        Verifies if frame is frowarded to cpu when there is only route without
-        neighbor then if frame is forwarded properly after creating neighbor
-        and nhop
-        """
+        finally:
+            pass
+
+class gleanEndForwardTest(L3DirBcastRouteTestHelper):
+    """
+    Verifies if frame is frowarded to cpu when there is only route without
+    neighbor then if frame is forwarded properly after creating neighbor
+    and nhop
+    """
+    def setUp(self):
+        super(gleanEndForwardTest, self).setUp()
+
+    def runTest(self):
         nhop1 = 0
         nhop2 = 0
 
@@ -1050,10 +1079,19 @@ class L3DirBcastRouteTest(SaiHelper):
             sai_thrift_remove_neighbor_entry(self.client, nbr_entry2)
             sai_thrift_remove_neighbor_entry(self.client, nbr_entry0)
 
-    def forwardTest(self):
-        """
-        Verifies if frame is forwarded properly when configuration is correct
-        """
+    def tearDown(self):
+        super(gleanEndForwardTest, self).tearDown()
+
+
+class forwardTest(L3DirBcastRouteTestHelper):
+    """
+    Verifies if frame is forwarded properly when configuration is correct
+    """
+
+    def setUp(self):
+        super(forwardTest, self).setUp()
+
+    def runTest(self):
         nhop1 = 0
         nhop2 = 0
 
@@ -1134,3 +1172,6 @@ class L3DirBcastRouteTest(SaiHelper):
             sai_thrift_remove_neighbor_entry(self.client, nbr_entry1)
             sai_thrift_remove_neighbor_entry(self.client, nbr_entry2)
             sai_thrift_remove_neighbor_entry(self.client, nbr_entry0)
+
+    def tearDown(self):
+        super(forwardTest, self).tearDown()
