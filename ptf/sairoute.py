@@ -23,6 +23,7 @@ from ptf.thriftutils import *
 
 from sai_base_test import *
 
+@group("draft")
 class multipleRoutesTest(PlatformSaiHelper):
     '''
     Verify forwarding with multiple route to the same nhop.
@@ -34,14 +35,14 @@ class multipleRoutesTest(PlatformSaiHelper):
         print("multipleRoutesTest")
         dmac = '00:11:22:33:44:55'
 
-        nhop1 = sai_thrift_create_next_hop(
-            self.client, ip=sai_ipaddress('10.10.10.2'),
-            router_interface_id=self.port10_rif,
-            type=SAI_NEXT_HOP_TYPE_IP)
         neighbor_entry = sai_thrift_neighbor_entry_t(
             rif_id=self.port10_rif, ip_address=sai_ipaddress('10.10.10.2'))
         sai_thrift_create_neighbor_entry(self.client, neighbor_entry,
                                          dst_mac_address=dmac)
+        nhop1 = sai_thrift_create_next_hop(
+            self.client, ip=sai_ipaddress('10.10.10.2'),
+            router_interface_id=self.port10_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
 
         route_entry1 = sai_thrift_route_entry_t(
             vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
@@ -93,13 +94,14 @@ class multipleRoutesTest(PlatformSaiHelper):
         finally:
             sai_thrift_remove_route_entry(self.client, route_entry1)
             sai_thrift_remove_route_entry(self.client, route_entry2)
-            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry)
             sai_thrift_remove_next_hop(self.client, nhop1)
+            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry)
 
     def tearDown(self):
         super(multipleRoutesTest, self).tearDown()
 
 
+@group("draft")
 class dropRouteTest(PlatformSaiHelper):
     '''
     Verify drop route.
@@ -111,14 +113,14 @@ class dropRouteTest(PlatformSaiHelper):
         print("dropRouteTest")
         dmac = '00:11:22:33:44:55'
 
-        nhop = sai_thrift_create_next_hop(
-            self.client, ip=sai_ipaddress('10.10.10.2'),
-            router_interface_id=self.port10_rif,
-            type=SAI_NEXT_HOP_TYPE_IP)
         neighbor_entry = sai_thrift_neighbor_entry_t(
             rif_id=self.port10_rif, ip_address=sai_ipaddress('10.10.10.2'))
         sai_thrift_create_neighbor_entry(self.client, neighbor_entry,
                                          dst_mac_address=dmac)
+        nhop = sai_thrift_create_next_hop(
+            self.client, ip=sai_ipaddress('10.10.10.2'),
+            router_interface_id=self.port10_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
 
         route_entry = sai_thrift_route_entry_t(
             vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
@@ -147,13 +149,14 @@ class dropRouteTest(PlatformSaiHelper):
 
         finally:
             sai_thrift_remove_route_entry(self.client, route_entry)
-            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry)
             sai_thrift_remove_next_hop(self.client, nhop)
+            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry)
 
     def tearDown(self):
         super(dropRouteTest, self).tearDown()
 
 
+@group("draft")
 class routeUpdateTest(PlatformSaiHelper):
     '''
     Verify correct forwarding after route update.
@@ -166,14 +169,14 @@ class routeUpdateTest(PlatformSaiHelper):
         dmac = '00:11:22:33:44:55'
         dmac2 = '00:11:22:33:44:66'
 
-        nhop1 = sai_thrift_create_next_hop(
-            self.client, ip=sai_ipaddress('10.10.10.2'),
-            router_interface_id=self.port10_rif,
-            type=SAI_NEXT_HOP_TYPE_IP)
         neighbor_entry = sai_thrift_neighbor_entry_t(
             rif_id=self.port10_rif, ip_address=sai_ipaddress('10.10.10.2'))
         sai_thrift_create_neighbor_entry(self.client, neighbor_entry,
                                          dst_mac_address=dmac)
+        nhop1 = sai_thrift_create_next_hop(
+            self.client, ip=sai_ipaddress('10.10.10.2'),
+            router_interface_id=self.port10_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
 
         route_entry = sai_thrift_route_entry_t(
             vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
@@ -207,14 +210,14 @@ class routeUpdateTest(PlatformSaiHelper):
             verify_packet(self, exp_pkt, self.dev_port10)
 
             print("Updating route nexthop to different nexthop")
-            nhop2 = sai_thrift_create_next_hop(
-                self.client, ip=sai_ipaddress('10.10.10.3'),
-                router_interface_id=self.port10_rif,
-                type=SAI_NEXT_HOP_TYPE_IP)
             neighbor_entry2 = sai_thrift_neighbor_entry_t(
                 rif_id=self.port10_rif, ip_address=sai_ipaddress('10.10.10.3'))
             sai_thrift_create_neighbor_entry(self.client, neighbor_entry2,
                                              dst_mac_address=dmac2)
+            nhop2 = sai_thrift_create_next_hop(
+                self.client, ip=sai_ipaddress('10.10.10.3'),
+                router_interface_id=self.port10_rif,
+                type=SAI_NEXT_HOP_TYPE_IP)
             sai_thrift_set_route_entry_attribute(self.client, route_entry,
                                                  next_hop_id=nhop2)
 
@@ -265,15 +268,16 @@ class routeUpdateTest(PlatformSaiHelper):
 
         finally:
             sai_thrift_remove_route_entry(self.client, route_entry)
-            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry)
-            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry2)
             sai_thrift_remove_next_hop(self.client, nhop1)
             sai_thrift_remove_next_hop(self.client, nhop2)
+            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry)
+            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry2)
 
     def tearDown(self):
         super(routeUpdateTest, self).tearDown()
 
 
+@group("draft")
 class routeIngressRifTest(PlatformSaiHelper):
     '''
     Verify forwarding to ingress rif.
@@ -285,14 +289,14 @@ class routeIngressRifTest(PlatformSaiHelper):
         print("routeIngressRifTest")
         dmac = '00:11:22:33:44:55'
 
-        nhop1 = sai_thrift_create_next_hop(
-            self.client, ip=sai_ipaddress('10.10.10.2'),
-            router_interface_id=self.port10_rif,
-            type=SAI_NEXT_HOP_TYPE_IP)
         neighbor_entry = sai_thrift_neighbor_entry_t(
             rif_id=self.port10_rif, ip_address=sai_ipaddress('10.10.10.2'))
         sai_thrift_create_neighbor_entry(self.client, neighbor_entry,
                                          dst_mac_address=dmac)
+        nhop1 = sai_thrift_create_next_hop(
+            self.client, ip=sai_ipaddress('10.10.10.2'),
+            router_interface_id=self.port10_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
 
         route_entry = sai_thrift_route_entry_t(
             vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
@@ -320,13 +324,14 @@ class routeIngressRifTest(PlatformSaiHelper):
 
         finally:
             sai_thrift_remove_route_entry(self.client, route_entry)
-            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry)
             sai_thrift_remove_next_hop(self.client, nhop1)
+            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry)
 
     def tearDown(self):
         super(routeIngressRifTest, self).tearDown()
 
 
+@group("draft")
 class emptyECMPGroupTest(PlatformSaiHelper):
     '''
     Verify drop on empty ECMP group.
@@ -365,6 +370,7 @@ class emptyECMPGroupTest(PlatformSaiHelper):
         super(emptyECMPGroupTest, self).tearDown()
 
 
+@group("draft")
 class sviNeighborTest(PlatformSaiHelper):
     '''
     Function verifying correct SVI neighbor forwarding.
@@ -413,14 +419,14 @@ class sviNeighborTest(PlatformSaiHelper):
         dmac2 = '00:22:22:33:44:55'
         dmac3 = '00:33:22:33:44:55'
         # create nhop1, nhop2 & nhop3 on SVI
-        nhop1 = sai_thrift_create_next_hop(
-            self.client, ip=sai_ipaddress('10.10.0.1'),
-            router_interface_id=vlan100_rif,
-            type=SAI_NEXT_HOP_TYPE_IP)
         neighbor_entry1 = sai_thrift_neighbor_entry_t(
             rif_id=vlan100_rif, ip_address=sai_ipaddress('10.10.0.1'))
         sai_thrift_create_neighbor_entry(self.client, neighbor_entry1,
                                          dst_mac_address=dmac1)
+        nhop1 = sai_thrift_create_next_hop(
+            self.client, ip=sai_ipaddress('10.10.0.1'),
+            router_interface_id=vlan100_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
         route_entry1 = sai_thrift_route_entry_t(
             vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
         sai_thrift_create_route_entry(self.client, route_entry1,
@@ -500,13 +506,13 @@ class sviNeighborTest(PlatformSaiHelper):
             sai_thrift_remove_route_entry(self.client, route_entry2)
             sai_thrift_remove_route_entry(self.client, route_entry1)
 
-            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry3)
-            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry2)
-            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry1)
-
             sai_thrift_remove_next_hop(self.client, nhop3)
             sai_thrift_remove_next_hop(self.client, nhop2)
             sai_thrift_remove_next_hop(self.client, nhop1)
+
+            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry3)
+            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry2)
+            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry1)
 
             sai_thrift_remove_router_interface(self.client, vlan100_rif)
             sai_thrift_set_port_attribute(self.client, self.port24,
@@ -528,6 +534,7 @@ class sviNeighborTest(PlatformSaiHelper):
         super(sviNeighborTest, self).tearDown()
 
 
+@group("draft")
 class cpuForwardTest(PlatformSaiHelper):
     '''
     Function verifying forwading to CPU.
@@ -588,6 +595,7 @@ class cpuForwardTest(PlatformSaiHelper):
         super(cpuForwardTest, self).tearDown()
 
 
+@group("draft")
 class routeNbrColisionTest(PlatformSaiHelper):
     '''
     Verfies if packet is gleaned to CPU when nexthop id is RIF
@@ -619,19 +627,19 @@ class routeNbrColisionTest(PlatformSaiHelper):
                                      ip_id=105,
                                      ip_ttl=63)
 
-        print("Creates nhop with %s ip address and %d router interface id"
-              % (ip_addr, self.port10_rif))
-        nhop = sai_thrift_create_next_hop(
-            self.client, ip=sai_ipaddress(ip_addr),
-            router_interface_id=self.port10_rif,
-            type=SAI_NEXT_HOP_TYPE_IP)
-
         print("Creates neighbor with %s ip address, %d router interface id and"
               " %s destination mac" % (ip_addr, self.port10_rif, dmac))
         nbr_entry = sai_thrift_neighbor_entry_t(
             rif_id=self.port10_rif, ip_address=sai_ipaddress(ip_addr))
         sai_thrift_create_neighbor_entry(
             self.client, nbr_entry, dst_mac_address=dmac)
+
+        print("Creates nhop with %s ip address and %d router interface id"
+              % (ip_addr, self.port10_rif))
+        nhop = sai_thrift_create_next_hop(
+            self.client, ip=sai_ipaddress(ip_addr),
+            router_interface_id=self.port10_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
 
         try:
             print("Sending packet on port %d to port %d, forward from %s to %s"
@@ -741,13 +749,14 @@ class routeNbrColisionTest(PlatformSaiHelper):
 
         finally:
             sai_thrift_remove_route_entry(self.client, route_entry)
-            sai_thrift_remove_neighbor_entry(self.client, nbr_entry)
             sai_thrift_remove_next_hop(self.client, nhop)
+            sai_thrift_remove_neighbor_entry(self.client, nbr_entry)
 
     def tearDown(self):
         super(routeNbrColisionTest, self).tearDown()
 
 
+@group("draft")
 class L3DirBcastRouteTestHelper(PlatformSaiHelper):
     '''
     Verifies direct broadcast routing
@@ -986,14 +995,15 @@ class L3DirBcastRouteTestHelper(PlatformSaiHelper):
         finally:
             pass
 
-class gleanEndForwardTest(L3DirBcastRouteTestHelper):
+@group("draft")
+class DirBcastGleanAndForwardTest(L3DirBcastRouteTestHelper):
     """
     Verifies if frame is frowarded to cpu when there is only route without
     neighbor then if frame is forwarded properly after creating neighbor
     and nhop
     """
     def setUp(self):
-        super(gleanEndForwardTest, self).setUp()
+        super(DirBcastGleanAndForwardTest, self).setUp()
 
     def runTest(self):
         nhop1 = 0
@@ -1080,16 +1090,17 @@ class gleanEndForwardTest(L3DirBcastRouteTestHelper):
             sai_thrift_remove_neighbor_entry(self.client, nbr_entry0)
 
     def tearDown(self):
-        super(gleanEndForwardTest, self).tearDown()
+        super(DirBcastGleanAndForwardTest, self).tearDown()
 
 
-class forwardTest(L3DirBcastRouteTestHelper):
+@group("draft")
+class DirBcastForwardTest(L3DirBcastRouteTestHelper):
     """
     Verifies if frame is forwarded properly when configuration is correct
     """
 
     def setUp(self):
-        super(forwardTest, self).setUp()
+        super(DirBcastForwardTest, self).setUp()
 
     def runTest(self):
         nhop1 = 0
@@ -1174,4 +1185,4 @@ class forwardTest(L3DirBcastRouteTestHelper):
             sai_thrift_remove_neighbor_entry(self.client, nbr_entry0)
 
     def tearDown(self):
-        super(forwardTest, self).tearDown()
+        super(DirBcastForwardTest, self).tearDown()
