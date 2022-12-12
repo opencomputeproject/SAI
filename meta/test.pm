@@ -231,7 +231,7 @@ sub CreateApiNameTest
 
         if (IsSpecialObject($ot))
         {
-            # those obejcts are special, just attributes, no APIs
+            # those objects are special, just attributes, no APIs
             WriteTest "    checked[(int)$ot] = $ot;";
             next;
         }
@@ -335,7 +335,7 @@ sub CreateApiNameTest
     WriteTest "        printf(\"checking: %s checked (%d) == index (%d)\\n\",";
     WriteTest "             sai_metadata_enum_sai_object_type_t.valuesnames[index],";
     WriteTest "             checked[index],(sai_object_type_t)index);";
-    WriteTest "        TEST_ASSERT_TRUE(checked[index] == (sai_object_type_t)index, \"not all obejcts were processed\");";
+    WriteTest "        TEST_ASSERT_TRUE(checked[index] == (sai_object_type_t)index, \"not all objects were processed\");";
     WriteTest "    }";
 
     WriteTest "    PP(dummy);";
@@ -361,7 +361,7 @@ sub CreateStructListTest
 
     for my $struct (sort keys %StructLists)
     {
-        WriteTest "    TEST_ASSERT_TRUE(sizeof($struct) == sizeof(sai_object_list_t), \"struct $struct sizeof is differenat than sai_object_list_t\");";
+        WriteTest "    TEST_ASSERT_TRUE(sizeof($struct) == sizeof(sai_object_list_t), \"struct $struct sizeof is different than sai_object_list_t\");";
         WriteTest "    $struct s_$struct;";
         WriteTest "    memset(&s_$struct,0, sizeof($struct));";
         WriteTest "    count = s_$struct.count;";
