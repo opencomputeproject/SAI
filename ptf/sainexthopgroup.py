@@ -486,30 +486,30 @@ class L3IPv4EcmpHost(SaiHelper):
         """
         print("l3IPv4EcmpRoutingTest")
         for n_packet in range(4):
-            host_ip = '{}.{}'.format(random.randint(2, 255), random.randint(3, 255))
+            host_ip = '10.10.{}.{}'.format(random.randint(2, 255), random.randint(3, 255))
 
             pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                     eth_src='00:22:22:22:22:22',
-                                    ip_dst=f'10.10.{host_ip}',
+                                    ip_dst=host_ip,
                                     ip_src='192.168.0.1',
                                     ip_id=106,
                                     ip_ttl=64)
             exp_pkt1 = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
                                         eth_src=ROUTER_MAC,
-                                        ip_dst=f'10.10.{host_ip}',
+                                        ip_dst=host_ip,
                                         ip_src='192.168.0.1',
                                         ip_id=106,
                                         # ip_tos=3,
                                         ip_ttl=63)
             exp_pkt2 = simple_tcp_packet(eth_dst='00:11:22:33:44:56',
                                         eth_src=ROUTER_MAC,
-                                        ip_dst=f'10.10.{host_ip}',
+                                        ip_dst=host_ip,
                                         ip_src='192.168.0.1',
                                         ip_id=106,
                                         # ip_tos=3,
                                         ip_ttl=63)
             print("Sending packet port %d -> port [%d,%d]"
-                "(192.168.0.1 -> 10.10.%s [id = 101])" % (
+                "(192.168.0.1 -> %s [id = 101])" % (
                     self.dev_port13, self.dev_port11, self.dev_port12, host_ip))
             send_packet(self, self.dev_port13, pkt)
             verify_any_packet_any_port(
@@ -673,27 +673,27 @@ class L3IPv6EcmpHost(SaiHelper):
         """
         print("l3IPv6EcmpRoutingTest")
         for n_packet in range(4):
-            host_ip = f'{random.randint(3, 1000)}'
+            host_ip = f'5000:1:1:0:0:0:0:{random.randint(3, 1000)}'
             pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
                                         eth_src='00:22:22:22:22:22',
-                                        ipv6_dst=f'5000:1:1:0:0:0:0:{host_ip}',
+                                        ipv6_dst=host_ip,
                                         ipv6_src='2000:1:1:0:0:0:0:1',
                                         tcp_sport=0x1234,
                                         ipv6_hlim=64)
             exp_pkt1 = simple_tcpv6_packet(eth_dst='00:11:22:33:44:55',
                                             eth_src=ROUTER_MAC,
-                                            ipv6_dst=f'5000:1:1:0:0:0:0:{host_ip}',
+                                            ipv6_dst=host_ip,
                                             ipv6_src='2000:1:1:0:0:0:0:1',
                                             tcp_sport=0x1234,
                                             ipv6_hlim=63)
             exp_pkt2 = simple_tcpv6_packet(eth_dst='00:11:22:33:44:56',
                                             eth_src=ROUTER_MAC,
-                                            ipv6_dst=f'5000:1:1:0:0:0:0:{host_ip}',
+                                            ipv6_dst=host_ip,
                                             ipv6_src='2000:1:1:0:0:0:0:1',
                                             tcp_sport=0x1234,
                                             ipv6_hlim=63)
             print("Sending packet port %d -> port [%d,%d]"
-              "(2000:1:1:0:0:0:0:1 -> 5000:1:1:0:0:0:0:%s [id = 101])" % (
+              "(2000:1:1:0:0:0:0:1 -> %s [id = 101])" % (
                   self.dev_port13, self.dev_port11, self.dev_port12, host_ip))
             send_packet(self, self.dev_port13, pkt)
             verify_any_packet_any_port(
