@@ -149,6 +149,7 @@ UDF - User-Defined Field
 UDP - User Datagram Protocol
 USD - Ultimate Segment Decapsulation
 USP - Ultimate Segment Pop
+USXGMII - Universal Serial 10 Gigabit Media Independent Interface
 VNI - Virtual Network Interface
 VNID - Virtual Network Identifier
 VOQ - Virtual Output Queue

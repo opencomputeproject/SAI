@@ -328,6 +328,9 @@ typedef enum _sai_port_interface_type_t
     /** Interface type LR8 */
     SAI_PORT_INTERFACE_TYPE_LR8,
 
+    /** Interface type USXGMII */
+    SAI_PORT_INTERFACE_TYPE_USXGMII,
+
     /** Interface type MAX */
     SAI_PORT_INTERFACE_TYPE_MAX,
 
