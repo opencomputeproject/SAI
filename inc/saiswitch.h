@@ -2781,11 +2781,11 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_ARS_QUALITY_MAP
+     * @objects SAI_OBJECT_TYPE_ARS_PROFILE
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
-    SAI_SWITCH_ATTR_ARS_QUALITY_MAP,
+    SAI_SWITCH_ATTR_ARS_PROFILE,
 
     /**
      * @brief End of attributes

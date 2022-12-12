@@ -27,7 +27,7 @@
 
 #include "saiacl.h"
 #include "saiars.h"
-#include "saiarsqualitymap.h"
+#include "saiarsprofile.h"
 #include "saibridge.h"
 #include "saibuffer.h"
 #include "saicounter.h"
@@ -143,7 +143,7 @@ typedef enum _sai_api_t
     SAI_API_IPSEC            = 46, /**< sai_ipsec_api_t */
     SAI_API_GENERIC_PROGRAMMABLE = 47, /**<sai_generic_programmable_t */
     SAI_API_ARS              = 48, /**< sai_ars_api_t */
-    SAI_API_ARS_QUALITY_MAP  = 49, /**< sai_ars_quality_map_api_t */
+    SAI_API_ARS_PROFILE      = 49, /**< sai_ars_profile_api_t */
     SAI_API_MAX,                   /**< total number of APIs */
 } sai_api_t;
 

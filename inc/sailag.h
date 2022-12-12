@@ -177,6 +177,17 @@ typedef enum _sai_lag_attr_t
     SAI_LAG_ATTR_LABEL,
 
     /**
+     * @brief Adaptive routing and switching object for this group.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ARS
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_LAG_ATTR_ARS_OBJECT_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_LAG_ATTR_END,

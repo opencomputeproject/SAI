@@ -17,18 +17,18 @@
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
  *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
- * @file    saiarsqualitymap.h
+ * @file    saiarsprofile.h
  *
  * @brief   This module defines SAI QOS Maps interface
  */
 
-#if !defined (__SAIARSQUALITYMAP_H_)
-#define __SAIARSQUALITYMAP_H_
+#if !defined (__SAIARSPROFILE_H_)
+#define __SAIARSPROFILE_H_
 
 #include <saitypes.h>
 
 /**
- * @defgroup SAIARSQUALITYMAP SAI - ARS quality map specific API definitions.
+ * @defgroup SAIARSPROFILE SAI - ARS profile specific API definitions.
  *
  * @{
  */
@@ -36,31 +36,31 @@
 /**
  * @brief Adaptive Routing and Switching quality measure algorithm
  */
-typedef enum _sai_ars_quality_map_algo_t
+typedef enum _sai_ars_profile_algo_t
 {
     /** Exponentially weighted moving average */
-    SAI_ARS_QUALITY_MAP_ALGO_EWMA,
+    SAI_ARS_PROFILE_ALGO_EWMA,
 
-} sai_ars_quality_map_algo_t;
+} sai_ars_profile_algo_t;
 
 /**
- * @brief Enum defining attributes for ARS quality map.
+ * @brief Enum defining attributes for ARS profile.
  */
-typedef enum _sai_ars_quality_map_attr_t
+typedef enum _sai_ars_profile_attr_t
 {
     /**
      * @brief Start of attributes
      */
-    SAI_ARS_QUALITY_MAP_ATTR_START,
+    SAI_ARS_PROFILE_ATTR_START,
 
     /**
      * @brief ARS algorithm used for quality computation
      *
-     * @type sai_ars_quality_map_algo_t
+     * @type sai_ars_profile_algo_t
      * @flags CREATE_AND_SET
-     * @default SAI_ARS_QUALITY_MAP_ALGO_EWMA
+     * @default SAI_ARS_PROFILE_ALGO_EWMA
      */
-    SAI_ARS_QUALITY_MAP_ATTR_ALGO = SAI_ARS_QUALITY_MAP_ATTR_START,
+    SAI_ARS_PROFILE_ATTR_ALGO = SAI_ARS_PROFILE_ATTR_START,
 
     /**
      * @brief Sampling interval in microseconds of data for quality measure computation
@@ -69,7 +69,7 @@ typedef enum _sai_ars_quality_map_attr_t
      * @flags CREATE_AND_SET
      * @default 16
      */
-    SAI_ARS_QUALITY_MAP_ATTR_SAMPLING_INTERVAL,
+    SAI_ARS_PROFILE_ATTR_SAMPLING_INTERVAL,
 
     /**
      * @brief Random seed for adaptive routing and switching
@@ -78,7 +78,7 @@ typedef enum _sai_ars_quality_map_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_ARS_QUALITY_MAP_ATTR_ARS_RANDOM_SEED,
+    SAI_ARS_PROFILE_ATTR_ARS_RANDOM_SEED,
 
     /**
      * @brief Maximum number of ECMP ARS groups
@@ -86,7 +86,7 @@ typedef enum _sai_ars_quality_map_attr_t
      * @type sai_uint32_t
      * @flags READ_ONLY
      */
-    SAI_ARS_QUALITY_MAP_ATTR_ECMP_ARS_MAX_GROUPS,
+    SAI_ARS_PROFILE_ATTR_ECMP_ARS_MAX_GROUPS,
 
     /**
      * @brief Maximum number of members per ECMP ARS group
@@ -94,7 +94,7 @@ typedef enum _sai_ars_quality_map_attr_t
      * @type sai_uint32_t
      * @flags READ_ONLY
      */
-    SAI_ARS_QUALITY_MAP_ATTR_ECMP_ARS_MAX_MEMBERS_PER_GROUP,
+    SAI_ARS_PROFILE_ATTR_ECMP_ARS_MAX_MEMBERS_PER_GROUP,
 
     /**
      * @brief Maximum number of LAG ARS groups
@@ -102,7 +102,7 @@ typedef enum _sai_ars_quality_map_attr_t
      * @type sai_uint32_t
      * @flags READ_ONLY
      */
-    SAI_ARS_QUALITY_MAP_ATTR_LAG_ARS_MAX_GROUPS,
+    SAI_ARS_PROFILE_ATTR_LAG_ARS_MAX_GROUPS,
 
     /**
      * @brief Maximum number of members per LAG ARS group
@@ -110,7 +110,7 @@ typedef enum _sai_ars_quality_map_attr_t
      * @type sai_uint32_t
      * @flags READ_ONLY
      */
-    SAI_ARS_QUALITY_MAP_ATTR_LAG_ARS_MAX_MEMBERS_PER_GROUP,
+    SAI_ARS_PROFILE_ATTR_LAG_ARS_MAX_MEMBERS_PER_GROUP,
 
     /**
      * @brief Enable past port load as the quality parameter. This is the average egress bytes measured on a port
@@ -118,9 +118,9 @@ typedef enum _sai_ars_quality_map_attr_t
      * @type bool
      * @flags CREATE_AND_SET
      * @default true
-     * @validonly SAI_ARS_QUALITY_MAP_ATTR_ALGO == SAI_ARS_QUALITY_MAP_ALGO_EWMA
+     * @validonly SAI_ARS_PROFILE_ATTR_ALGO == SAI_ARS_PROFILE_ALGO_EWMA
      */
-    SAI_ARS_QUALITY_MAP_ATTR_PORT_LOAD_PAST,
+    SAI_ARS_PROFILE_ATTR_PORT_LOAD_PAST,
 
     /**
      * @brief Weight attribute is used in EWMA calculations.
@@ -129,9 +129,9 @@ typedef enum _sai_ars_quality_map_attr_t
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 16
-     * @validonly SAI_ARS_QUALITY_MAP_ATTR_ALGO == SAI_ARS_QUALITY_MAP_ALGO_EWMA
+     * @validonly SAI_ARS_PROFILE_ATTR_ALGO == SAI_ARS_PROFILE_ALGO_EWMA
      */
-    SAI_ARS_QUALITY_MAP_ATTR_PORT_LOAD_PAST_WEIGHT,
+    SAI_ARS_PROFILE_ATTR_PORT_LOAD_PAST_WEIGHT,
 
     /**
      * @brief Enable future port load as the quality parameter. This is the average queued bytes measured on a port.
@@ -139,9 +139,9 @@ typedef enum _sai_ars_quality_map_attr_t
      * @type bool
      * @flags CREATE_AND_SET
      * @default true
-     * @validonly SAI_ARS_QUALITY_MAP_ATTR_ALGO == SAI_ARS_QUALITY_MAP_ALGO_EWMA
+     * @validonly SAI_ARS_PROFILE_ATTR_ALGO == SAI_ARS_PROFILE_ALGO_EWMA
      */
-    SAI_ARS_QUALITY_MAP_ATTR_PORT_LOAD_FUTURE,
+    SAI_ARS_PROFILE_ATTR_PORT_LOAD_FUTURE,
 
     /**
      * @brief Weight attribute is used in EWMA calculations.
@@ -150,9 +150,9 @@ typedef enum _sai_ars_quality_map_attr_t
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 16
-     * @validonly SAI_ARS_QUALITY_MAP_ATTR_ALGO == SAI_ARS_QUALITY_MAP_ALGO_EWMA
+     * @validonly SAI_ARS_PROFILE_ATTR_ALGO == SAI_ARS_PROFILE_ALGO_EWMA
      */
-    SAI_ARS_QUALITY_MAP_ATTR_PORT_LOAD_FUTURE_WEIGHT,
+    SAI_ARS_PROFILE_ATTR_PORT_LOAD_FUTURE_WEIGHT,
 
     /**
      * @brief Set port loading value to current sampled value when sampled value is less than the average.
@@ -160,9 +160,9 @@ typedef enum _sai_ars_quality_map_attr_t
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
-     * @validonly SAI_ARS_QUALITY_MAP_ATTR_ALGO == SAI_ARS_QUALITY_MAP_ALGO_EWMA
+     * @validonly SAI_ARS_PROFILE_ATTR_ALGO == SAI_ARS_PROFILE_ALGO_EWMA
      */
-    SAI_ARS_QUALITY_MAP_ATTR_PORT_LOAD_CURRENT,
+    SAI_ARS_PROFILE_ATTR_PORT_LOAD_CURRENT,
 
     /**
      * @brief EWMA exponent used in port loading computation. Larger the exponent, larger is the weight to previously computed port loading value.
@@ -170,9 +170,9 @@ typedef enum _sai_ars_quality_map_attr_t
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 2
-     * @validonly SAI_ARS_QUALITY_MAP_ATTR_ALGO == SAI_ARS_QUALITY_MAP_ALGO_EWMA
+     * @validonly SAI_ARS_PROFILE_ATTR_ALGO == SAI_ARS_PROFILE_ALGO_EWMA
      */
-    SAI_ARS_QUALITY_MAP_ATTR_PORT_LOAD_EXPONENT,
+    SAI_ARS_PROFILE_ATTR_PORT_LOAD_EXPONENT,
 
     /**
      * @brief Number of quantization bands support for quality map.
@@ -180,7 +180,7 @@ typedef enum _sai_ars_quality_map_attr_t
      * @type sai_uint8_t
      * @flags READ_ONLY
      */
-    SAI_ARS_QUALITY_MAP_ATTR_QUANT_BANDS,
+    SAI_ARS_PROFILE_ATTR_QUANT_BANDS,
 
     /**
      * @brief Minimum threshold used for quantization process in Mbps for band 0.
@@ -189,7 +189,7 @@ typedef enum _sai_ars_quality_map_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_ARS_QUALITY_MAP_ATTR_QUANT_BAND_0_MIN_THRESHOLD,
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_0_MIN_THRESHOLD,
 
     /**
      * @brief Maximum threshold used for quantization process in Mbps for band 0.
@@ -198,7 +198,7 @@ typedef enum _sai_ars_quality_map_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_ARS_QUALITY_MAP_ATTR_QUANT_BAND_0_MAX_THRESHOLD,
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_0_MAX_THRESHOLD,
 
     /**
      * @brief Minimum threshold used for quantization process in Mbps for band 1.
@@ -207,7 +207,7 @@ typedef enum _sai_ars_quality_map_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_ARS_QUALITY_MAP_ATTR_QUANT_BAND_1_MIN_THRESHOLD,
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_1_MIN_THRESHOLD,
 
     /**
      * @brief Maximum threshold used for quantization process in Mbps for band 1.
@@ -216,7 +216,7 @@ typedef enum _sai_ars_quality_map_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_ARS_QUALITY_MAP_ATTR_QUANT_BAND_1_MAX_THRESHOLD,
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_1_MAX_THRESHOLD,
 
     /**
      * @brief Minimum threshold used for quantization process in Mbps for band 2.
@@ -225,7 +225,7 @@ typedef enum _sai_ars_quality_map_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_ARS_QUALITY_MAP_ATTR_QUANT_BAND_2_MIN_THRESHOLD,
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_2_MIN_THRESHOLD,
 
     /**
      * @brief Maximum threshold used for quantization process in Mbps for band 2.
@@ -234,7 +234,7 @@ typedef enum _sai_ars_quality_map_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_ARS_QUALITY_MAP_ATTR_QUANT_BAND_2_MAX_THRESHOLD,
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_2_MAX_THRESHOLD,
 
     /**
      * @brief Minimum threshold used for quantization process in Mbps for band 3.
@@ -243,7 +243,7 @@ typedef enum _sai_ars_quality_map_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_ARS_QUALITY_MAP_ATTR_QUANT_BAND_3_MIN_THRESHOLD,
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_3_MIN_THRESHOLD,
 
     /**
      * @brief Maximum threshold used for quantization process in Mbps for band 3.
@@ -252,7 +252,7 @@ typedef enum _sai_ars_quality_map_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_ARS_QUALITY_MAP_ATTR_QUANT_BAND_3_MAX_THRESHOLD,
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_3_MAX_THRESHOLD,
 
     /**
      * @brief Minimum threshold used for quantization process in Mbps for band 4.
@@ -261,7 +261,7 @@ typedef enum _sai_ars_quality_map_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_ARS_QUALITY_MAP_ATTR_QUANT_BAND_4_MIN_THRESHOLD,
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_4_MIN_THRESHOLD,
 
     /**
      * @brief Maximum threshold used for quantization process in Mbps for band 4.
@@ -270,7 +270,7 @@ typedef enum _sai_ars_quality_map_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_ARS_QUALITY_MAP_ATTR_QUANT_BAND_4_MAX_THRESHOLD,
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_4_MAX_THRESHOLD,
 
     /**
      * @brief Minimum threshold used for quantization process in Mbps for band 5.
@@ -279,7 +279,7 @@ typedef enum _sai_ars_quality_map_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_ARS_QUALITY_MAP_ATTR_QUANT_BAND_5_MIN_THRESHOLD,
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_5_MIN_THRESHOLD,
 
     /**
      * @brief Maximum threshold used for quantization process in Mbps for band 5.
@@ -288,7 +288,7 @@ typedef enum _sai_ars_quality_map_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_ARS_QUALITY_MAP_ATTR_QUANT_BAND_5_MAX_THRESHOLD,
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_5_MAX_THRESHOLD,
 
     /**
      * @brief Minimum threshold used for quantization process in Mbps for band 6.
@@ -297,7 +297,7 @@ typedef enum _sai_ars_quality_map_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_ARS_QUALITY_MAP_ATTR_QUANT_BAND_6_MIN_THRESHOLD,
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_6_MIN_THRESHOLD,
 
     /**
      * @brief Maximum threshold used for quantization process in Mbps for band 6.
@@ -306,7 +306,7 @@ typedef enum _sai_ars_quality_map_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_ARS_QUALITY_MAP_ATTR_QUANT_BAND_6_MAX_THRESHOLD,
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_6_MAX_THRESHOLD,
 
     /**
      * @brief Minimum threshold used for quantization process in Mbps for band 7.
@@ -315,7 +315,7 @@ typedef enum _sai_ars_quality_map_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_ARS_QUALITY_MAP_ATTR_QUANT_BAND_7_MIN_THRESHOLD,
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_7_MIN_THRESHOLD,
 
     /**
      * @brief Maximum threshold used for quantization process in Mbps for band 7.
@@ -324,86 +324,86 @@ typedef enum _sai_ars_quality_map_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_ARS_QUALITY_MAP_ATTR_QUANT_BAND_7_MAX_THRESHOLD,
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_7_MAX_THRESHOLD,
 
     /**
      * @brief End of attributes
      */
-    SAI_ARS_QUALITY_MAP_ATTR_END,
+    SAI_ARS_PROFILE_ATTR_END,
 
     /** Custom range base value */
-    SAI_ARS_QUALITY_MAP_ATTR_CUSTOM_RANGE_START = 0x10000000,
+    SAI_ARS_PROFILE_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /** End of custom range base */
-    SAI_ARS_QUALITY_MAP_ATTR_CUSTOM_RANGE_END
+    SAI_ARS_PROFILE_ATTR_CUSTOM_RANGE_END
 
-} sai_ars_quality_map_attr_t;
+} sai_ars_profile_attr_t;
 
 /**
- * @brief Create ARS Quality Map
+ * @brief Create ARS Profile
  *
- * @param[out] ars_quality_map_id ARS Quality Map Id
+ * @param[out] ars_profile_id ARS Profile Id
  * @param[in] switch_id Switch id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t (*sai_create_ars_quality_map_fn)(
-        _Out_ sai_object_id_t *ars_quality_map_id,
+typedef sai_status_t (*sai_create_ars_profile_fn)(
+        _Out_ sai_object_id_t *ars_profile_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Remove ARS Quality Map
+ * @brief Remove ARS Profile
  *
- * @param[in] ars_quality_map_id ARS Quality Map id to be removed.
+ * @param[in] ars_profile_id ARS Profile id to be removed.
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t (*sai_remove_ars_quality_map_fn)(
-        _In_ sai_object_id_t ars_quality_map_id);
+typedef sai_status_t (*sai_remove_ars_profile_fn)(
+        _In_ sai_object_id_t ars_profile_id);
 
 /**
- * @brief Set attributes for ARS quality map
+ * @brief Set attributes for ARS profile
  *
- * @param[in] ars_quality_map_id ARS Quality Map Id
+ * @param[in] ars_profile_id ARS Profile Id
  * @param[in] attr Attribute to set
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t (*sai_set_ars_quality_map_attribute_fn)(
-        _In_ sai_object_id_t ars_quality_map_id,
+typedef sai_status_t (*sai_set_ars_profile_attribute_fn)(
+        _In_ sai_object_id_t ars_profile_id,
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get attributes of ARS quality map
+ * @brief Get attributes of ARS profile
  *
- * @param[in] ars_quality_map_id ARS Quality Map id
+ * @param[in] ars_profile_id ARS Profile id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success, failure status code on error
  */
-typedef sai_status_t (*sai_get_ars_quality_map_attribute_fn)(
-        _In_ sai_object_id_t ars_quality_map_id,
+typedef sai_status_t (*sai_get_ars_profile_attribute_fn)(
+        _In_ sai_object_id_t ars_profile_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief ARS Quality Map methods table retrieved with sai_api_query()
+ * @brief ARS Profile methods table retrieved with sai_api_query()
  */
-typedef struct _sai_ars_quality_map_api_t
+typedef struct _sai_ars_profile_api_t
 {
-    sai_create_ars_quality_map_fn         create_ars_quality_map;
-    sai_remove_ars_quality_map_fn         remove_ars_quality_map;
-    sai_set_ars_quality_map_attribute_fn  set_ars_quality_map_attribute;
-    sai_get_ars_quality_map_attribute_fn  get_ars_quality_map_attribute;
+    sai_create_ars_profile_fn         create_ars_profile;
+    sai_remove_ars_profile_fn         remove_ars_profile;
+    sai_set_ars_profile_attribute_fn  set_ars_profile_attribute;
+    sai_get_ars_profile_attribute_fn  get_ars_profile_attribute;
 
-} sai_ars_quality_map_api_t;
+} sai_ars_profile_api_t;
 
 /**
  * @}
  */
-#endif /** __SAIARSQUALITYMAP_H_ */
+#endif /** __SAIARSPROFILE_H_ */
