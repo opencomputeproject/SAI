@@ -74,8 +74,8 @@ In this FDB test, the example packet structure is below.
 - test_new_vlan_member_learn: Verify newly added VLAN members can learn.
 - test_remove_vlan_member_no_learn: Verify no MAC addresses are learned on the removed vlan member.
 - test_no_learn_invalidate_vlan: Verify no MAC addresses are learned on invalidate vlan ID.
-- test_no_learn_broadcast_src: Verify broadcast mac address is learned.
-- test_no_learn_multicast_src: Verify multicast mac address is learned.
+- test_no_learn_broadcast_src: Verify broadcast mac address is not learned.
+- test_no_learn_multicast_src: Verify multicast mac address is not learned.
 
 ### Test steps: <!-- omit in toc --> 
 
@@ -187,7 +187,7 @@ In this FDB test, the example packet structure is below.
 7. Verify only receive a packet on port2
 9. Wait for the ``aging`` time
 10. Send packet on port3
-11. Verify flooding packet to VLAN10 ports, except port1
+11. Verify flooding packet to VLAN10 ports, except port3
 
 - test_mac_moving_after_aging
 
@@ -218,24 +218,54 @@ In this FDB test, the example packet structure is below.
 Verify flushing of static/dynamic entries on VLAN/Port/All.
 ### Test steps: <!-- omit in toc --> 
 - test_flush_vlan_static
+
+1. Flush with condition for each case: ``Static`` flush on ``VLAN10`` 
+2. Send packets: ``port1`` DMAC=``Port2 MAC``
+3. Verify flooding happened, packets received in related VLAN, except the ingress port.
+4. Send packets:  ``Port9`` DMAC=``Port10 MAC``
+5. Verify unicast to the corresponding port
+
 - test_flush_port_static
+
+1. Flush with condition: ``Static`` flush on ``Port1``
+2. Send packets: ``Port2`` DMAC=``Port1 MAC``
+3. Verify flooding happened, packets received in related VLAN, except the ingress port.
+4. Send packets:  ``Port10`` DMAC=``Port9 MAC``
+5. Verify unicast to the corresponding port
+
 - test_flush_all_static
 
-1. Flush with conditions for each case: ``Static`` flush on ``VLAN10``; ``Static`` flush on ``Port1``; flush for all ``Static`` 
-2. Send packets for each case in sequence: ``port1`` DMAC=``Port2 MAC``; ``Port2`` DMAC=``Port1 MAC``; ``port1`` DMAC=``Port2 MAC``
+1. Flush with condition: flush for all ``Static`` 
+2. Send packets for each case in sequence:``port1`` DMAC=``Port2 MAC``
 3. Verify flooding happened, packets received in related VLAN, except the ingress port.
-4. Send packets for each case in sequence:  ``Port9`` DMAC=``Port10 MAC``; ``Port10`` DMAC=``Port9 MAC``; `  ``Port9`` DMAC=``Port10 MAC``
-5. Verify flush happens in a certain domain, unicast to the corresponding port.
+4. Send packets:``Port9`` DMAC=``Port10 MAC``
+5. Verify flush happens in a certain domain
 
 - test_flush_vlan_dynamic
+
+1. Flush with condition: ``Dynamic`` flush on ``VLAN20``
+2. Send packets for each case in sequence: ``Port9`` DMAC=``Port10 MAC``
+3. Verify flooding happened, packets received in related VLAN, except the ingress port.
+4. Send packets for each case in sequence:  ``port1`` DMAC=``Port2 MAC``
+5. Verify unicast to the corresponding port
+
+
 - test_flush_port_dynamic
+
+1. Flush with condition: ``Dynamic`` flush on ``Port9``
+2. Send packets: ``Port10`` DMAC=``Port9 MAC``
+3. Verify flooding happened, packets received in related VLAN, except the ingress port.
+4. Send packets:  ``Port2`` DMAC=``Port1 MAC``
+5. Verify unicast to the corresponding port
+
+
 - test_flush_all_dynamic
   
-1. Flush with conditions for each case in sequence: ``Dynamic`` flush on ``VLAN20``;  ``Dynamic`` flush on ``Port9``; flush for all ``Dynamic`` 
-2. Send packets for each case in sequence: ``Port9`` DMAC=``Port10 MAC``;  ``Port10`` DMAC=``Port9 MAC``; ``Port9`` DMAC=``Port10 MAC``
+1. Flush with condition: flush for all ``Dynamic`` 
+2. Send packets for each case in sequence: ``Port9`` DMAC=``Port10 MAC``
 3. Verify flooding happened, packets received in related VLAN, except the ingress port.
-4. Send packets for each case in sequence:  ``port1`` DMAC=``Port2 MAC``;``Port2`` DMAC=``Port1 MAC``; ``port1`` DMAC=``Port2 MAC``;
-5.  Verify flush happens in a certain domain, unicast to the corresponding port.
+4. Send packets for each case in sequence: ``port1`` DMAC=``Port2 MAC``
+5. Verify flush happens in a certain domain
 
 - test_flush_all
 
