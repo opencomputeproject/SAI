@@ -235,7 +235,10 @@ def invocation_logger(func):
         logging.info("sai_adapter_invoke func:[{}] args: [{}]".format(func.__name__, args_dict))
 
         args_values = args_dict.values()
-        return func(*args, **kwargs)
+
+        retval = func(*args, **kwargs)
+        logging.info("sai_adapter_return func:[{}] retval:[{}]".format(func.__name__, repr(retval)))
+        return retval
  
     return inner_logger
 [%- END -%]
