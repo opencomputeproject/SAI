@@ -42,6 +42,8 @@ class TestAdapterLogger(BasicMockedTest):
                                  init_switch=True, 
                                  hardware_access_bus="11:11:11:11:11:11")
         self.check_file_contains(LOG_FILE_PATH, 'hardware_access_bus')
+        sai_thrift_get_acl_table_attribute(self.client, acl_table_oid=1, acl_stage=1)
+        self.check_file_contains(LOG_FILE_PATH, 'SAI_ACL_TABLE_ATTR_ACL_STAGE')
         
     
     def check_file_contains(self, file, content):
