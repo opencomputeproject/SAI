@@ -16,15 +16,11 @@
     - [Open interface for test stage control (support manual or tools)](#open-interface-for-test-stage-control-support-manual-or-tools)
     - [One tag only to Upgrade existing test cases - @warm\_test](#one-tag-only-to-upgrade-existing-test-cases---warm_test)
     - [Automated whole process with SONiC-MGMT](#automated-whole-process-with-sonic-mgmt)
-  - [SAI-PTF Automatic structure introduction](#sai-ptf-automatic-structure-introduction)
+  - [Warm reboot on SAI-PTF Automatic structure](#warm-reboot-on-sai-ptf-automatic-structure)
+    - [SAI PTF v2](#sai-ptf-v2)
       - [PTF](#ptf)
       - [DUT](#dut)
-    - [sonic mgmt](#sonic-mgmt)
-  - [Warm reboot components](#warm-reboot-components)
-    - [SAI PTF v2](#sai-ptf-v2)
-      - [PTF](#ptf-1)
-      - [DUT](#dut-1)
-    - [SONiC-MGMT](#sonic-mgmt-1)
+    - [SONiC-MGMT](#sonic-mgmt)
   - [Warm reboot workflow](#warm-reboot-workflow)
     - [dut-ptf](#dut-ptf)
     - [mgmt-dut](#mgmt-dut)
@@ -67,7 +63,7 @@ Just need add ``@warm_test`` to enable the warm reboot tests, then you can use t
 ### Automated whole process with SONiC-MGMT
 SONiC-MGMT can control DUT side and control the whole Test process automatically, from test environment setup, warm reboot configurations, warm reboot process. 
 
-## SAI-PTF Automatic structure introduction
+## Warm reboot on SAI-PTF Automatic structure
 SAI-PTF Automatic, we seperate the whole system into two components, they are
  - SAI PTF v2
  - SONiC MGMT
@@ -75,34 +71,8 @@ SAI-PTF Automatic, we seperate the whole system into two components, they are
 
 ![warm_logic_connection](img/warm_logic_connection.png)
 
-For more details please refer to doc [SAI-PTFv2 Overview](https://github.com/opencomputeproject/SAI/blob/master/ptf/docs/SAI-PTFv2Overview.md). Below is the brief introduction about each part.
+For more details please refer to doc [SAI-PTFv2 Overview](https://github.com/opencomputeproject/SAI/blob/master/ptf/docs/SAI-PTFv2Overview.md). 
 
-#### PTF
-PTF container - run test cases, and use an RPC client to invoke the SAI interfaces on DUTPTF container - run test cases, and use an RPC client to invoke the SAI interfaces on DUT
-PTF has two parts
-- collection of test cases which is based on unittest. The code structure is as follows:
-  ```python
-  def setUp(self): # make settings
-  def runTest(self): # run test
-  def tearDown(self): # remove the setting and clear the test environment
-  ```
-- as RPC client, invoke the SAI interfaces to configure switch on DUT.
-
-#### DUT
-SAI Server container - run inside DUT/switch, which exposes the SAI SDK APIs from the libsaiSAI Server container - run inside DUT/switch, which exposes the SAI SDK APIs from the libsai
-DUT also has two parts
-- SAI: The Switch Abstraction Interface (SAI) defines the API to provide a vendor-independent way of controlling forwarding elements, such as a switching ASIC, an NPU or a software switch in a uniform manner.  
-- saiserver: We create `saiserver` containter as rpc server so that we can call sai api through rpc in ptf.
-
- 
-### sonic mgmt
-[sonic-mgmt](https://github.com/sonic-net/sonic-mgmt) is for SONiC testbed deployment and setup, SONiC testing, test report processing.
-Ansible is the main tool powering all the tasks for SONiC testing. The tasks include:
-* Deploy and setup testbed
-* Interact with various devices in testbed in ansible playbooks and in pytest scripts.
-
-
-## Warm reboot components
 Base on the existing SAI-PTFv2 structure, we upgrade the whole system for warm reboot test.
 The new structure as below.
 
