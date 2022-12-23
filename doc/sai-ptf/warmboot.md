@@ -9,13 +9,23 @@
 | **SAI-Version** | **V1.7** |
 
 - [SAI-PTF for Warm reboot](#sai-ptf-for-warm-reboot)
-  - [SAI-PTF for Warm reboot](#sai-ptf-for-warm-reboot-1)
-  - [Warm reboot test structure](#warm-reboot-test-structure)
-    - [SAI PTF v2](#sai-ptf-v2)
+  - [Background for Warm reboot test](#background-for-warm-reboot-test)
+  - [SAI warm reboot feature points](#sai-warm-reboot-feature-points)
+    - [Containerized test environment](#containerized-test-environment)
+    - [Expose SAI local API as RPC APIs](#expose-sai-local-api-as-rpc-apis)
+    - [Open interface for test stage control (support manual or tools)](#open-interface-for-test-stage-control-support-manual-or-tools)
+    - [One tag only to Upgrade existing test cases - @warm\_test](#one-tag-only-to-upgrade-existing-test-cases---warm_test)
+    - [Automated whole process with SONiC-MGMT](#automated-whole-process-with-sonic-mgmt)
+  - [SAI-PTF Automatic structure introduction](#sai-ptf-automatic-structure-introduction)
       - [PTF](#ptf)
       - [DUT](#dut)
     - [sonic mgmt](#sonic-mgmt)
-  - [system architecture](#system-architecture)
+  - [Warm reboot components](#warm-reboot-components)
+    - [SAI PTF v2](#sai-ptf-v2)
+      - [PTF](#ptf-1)
+      - [DUT](#dut-1)
+    - [SONiC-MGMT](#sonic-mgmt-1)
+  - [Warm reboot workflow](#warm-reboot-workflow)
     - [dut-ptf](#dut-ptf)
     - [mgmt-dut](#mgmt-dut)
     - [mgmt-ptf](#mgmt-ptf)
@@ -31,24 +41,44 @@
   - [test result](#test-result)
 
 
-## SAI-PTF for Warm reboot
-In order to use the SAI-PTF structure to verify the functionality in a warm reboot scenario, we need to add the following feature to the SAI-PTF structure
-1. Lightweight docker which can expose the SAI interface to invoke the SAI interface remotely
-1. PTF test case can support different DUT running statuses with its different processes - setUp, runTest, and tearDown
-1. By interacting with sonic-mgmt，One test case can run once can verify whether as expected in different DUT running status - before the restart, starting, and started
-1. Reuse already existing functional test cases and re-organize them into a warm reboot structure
+## Background for Warm reboot test
+For warm reboot test we need to meet following requirements
+1. Preparing configurations on DUT(device under test) for warm reboot
+2. Setup DUT for testing purpose, like deployment test purpose dockers, expose SAI API for testing
+3. Controlling and monitoring DUT for different warm reboot stage
+4. Controlling case running steps on different DUT status(prepare reboot, rebooting or post reboot)
+5. Ability to check the DUT function during warm reboot(packat can forwarded)
+6. Nice to be able to automate the whole process
+7. Nice to be able to reuse all the functionality testcases
 
-## Warm reboot test structure
-Warm reboot test structure is based on SAI PTF v2. And realize the verification of warmreboot without affecting other functions
+## SAI warm reboot feature points
+### Containerized test environment
+Lightweight docker which can be easily deployed in DUT to satisfy testing pexpose
+
+### Expose SAI local API as RPC APIs
+Lightweight docker contains the RPC server which can expose the SAI interface to invoke the SAI interface remotely
+
+### Open interface for test stage control (support manual or tools)
+Human readable file to control the cases running stage, which can be used by automaticatic tools or manual test
+
+### One tag only to Upgrade existing test cases - @warm_test
+Just need add ``@warm_test`` to enable the warm reboot tests, then you can use the output file to control the whole process for warm reboot.
+
+### Automated whole process with SONiC-MGMT
+SONiC-MGMT can control DUT side and control the whole Test process automatically, from test environment setup, warm reboot configurations, warm reboot process. 
+
+## SAI-PTF Automatic structure introduction
+SAI-PTF Automatic, we seperate the whole system into two components, they are
+ - SAI PTF v2
+ - SONiC MGMT
+
+
 ![warm_logic_connection](img/warm_logic_connection.png)
 
-### SAI PTF v2
+For more details please refer to doc [SAI-PTFv2 Overview](https://github.com/opencomputeproject/SAI/blob/master/ptf/docs/SAI-PTFv2Overview.md). Below is the brief introduction about each part.
 
-![logic_connection](img/logic_connection.png)  
-In the chart above the components are:
-* PTF container - run test cases, and use an RPC client to invoke the SAI interfaces on DUT
-* SAI Server container - run inside DUT/switch, which exposes the SAI SDK APIs from the libsai
 #### PTF
+PTF container - run test cases, and use an RPC client to invoke the SAI interfaces on DUTPTF container - run test cases, and use an RPC client to invoke the SAI interfaces on DUT
 PTF has two parts
 - collection of test cases which is based on unittest. The code structure is as follows:
   ```python
@@ -58,24 +88,12 @@ PTF has two parts
   ```
 - as RPC client, invoke the SAI interfaces to configure switch on DUT.
 
- Update for warm-reboot  
- 1. we need to add wrapper to the runTest function. The warpper contains the process of warm-reboot.
-more detail see [ptf-mgmt](#ptf-mgmt)
-    ```python
-    def setUp(self): # make settings before reboot
-    @warm_test(is_test_rebooting=True) # does test run at rebooting
-    def runTest(self): # run test 
-    def tearDown(self): # remove the setting and clear the test environment
-    ```
- 2. create file `/tmp/warm_reboot` as shared memory to communicate with `sonic-mgmt`
 #### DUT
+SAI Server container - run inside DUT/switch, which exposes the SAI SDK APIs from the libsaiSAI Server container - run inside DUT/switch, which exposes the SAI SDK APIs from the libsai
 DUT also has two parts
 - SAI: The Switch Abstraction Interface (SAI) defines the API to provide a vendor-independent way of controlling forwarding elements, such as a switching ASIC, an NPU or a software switch in a uniform manner.  
 - saiserver: We create `saiserver` containter as rpc server so that we can call sai api through rpc in ptf.
 
-Update for warm-reboot  
-  1. sai-warmboot.bin: Save the configuration of dut to sai-warmboot.bin
-  2. sai.profile: Decide how to start `saiserver`
  
 ### sonic mgmt
 [sonic-mgmt](https://github.com/sonic-net/sonic-mgmt) is for SONiC testbed deployment and setup, SONiC testing, test report processing.
@@ -83,26 +101,60 @@ Ansible is the main tool powering all the tasks for SONiC testing. The tasks inc
 * Deploy and setup testbed
 * Interact with various devices in testbed in ansible playbooks and in pytest scripts.
 
-We can use sonic-mgmt to automate the construction of the SAI warmreboot environment and the verification of use cases. [sai-qualify](https://github.com/sonic-net/sonic-mgmt/tree/master/tests/sai_qualify) is a submodule of sonic-mgmt.It mainly has the following functions
+
+## Warm reboot components
+Base on the existing SAI-PTFv2 structure, we upgrade the whole system for warm reboot test.
+The new structure as below.
+
+![architecture](img/warm_architecture.png)
+For each part, the details as below.
+
+### SAI PTF v2
+
+#### PTF
+
+ 1. To make the test running process can be controlled outside, by tools or manually, create file `/tmp/warm_reboot` as an open interface to communicate with outside, like `sonic-mgmt`
+ 2. To reuse existing cases, we need to add tag to enable the wrapper for the runTest function. 
+     - The warpper ``@warm_test`` contains the process of warm-reboot.
+more detail see [ptf-mgmt](#ptf-mgmt)
+    ```python
+    def setUp(self): # make settings before reboot
+    @warm_test(is_test_rebooting=True) # does test run at rebooting
+    def runTest(self): # run test 
+    def tearDown(self): # remove the setting and clear the test environment
+    ```
+  3. In order to trigger a warm reboot test, we use warm reboot API to make a warm reboot
+  
+#### DUT
+
+In DUT, in order to support warm reboot, we make the following changes
+  1. sai-warmboot.bin: Save the configuration of dut to sai-warmboot.bin
+  2. sai.profile: Decide how to start `saiserver`
+ 
+### SONiC-MGMT
+
+SONiC-MGMT component, It mainly has the following functions
 
 1. SONiC testbed deployment and setup
-1. pull `SAI` to the ptf ， the script about `saiserver` is pulled to dut
-1. start `saiserver` contatiner
-1. check whether can connect rpc server in `saiserver`
-1. prf test running
-1. stop `saiserver` container
-1. organize and upload result
-1. teardown
+2. pull `SAI` to the ptf ， the script about `saiserver` is pulled to dut
+3. start `saiserver` contatiner
+4. check whether can connect rpc server in `saiserver`
+5. prf test running
+6. stop `saiserver` container
+7. organize and upload result
+8. teardown
 Each SAI test case will repeat 3-6 steps. Wait until all the cases in the caselist are executed, and then go to the 7th step.
 
-Update for warm-reboot
-1. creat Warmboot-Watcher daemon: Responsible for the communication between sonic-mgmt and ptf, the warm-reboot of saiserver  
+For warm-reboot, we made following upgrade
+1. Set warm reboot configurations: setup the files in [DUT Upgrade](#DUT-Upgrade)
+2. creat Warmboot-Watcher daemon: check the Open Interface [PTF-Upgrade](#PTF-Upgrade)
+3. Coordinate DUT and PTF: Monitor status DUT status in step1 and test status in step2
 
-Of course, we can also manually modify the status file and control the startup and shutdown of `saiserver`.
-## system architecture
+> Note, SONiC-MGMT is a coordanitor between DUT and PTF, we can manually manipulate the status file and control the startup and shutdown of `saiserver` or use other automatic tools/script for that, we can also manually modify .
+
+## Warm reboot workflow
 The entire automated system for testing SAI in the warmboot scenario includes three parts(PTF,DUT,sonic-mgmt), and they are closely related. Next I will introduce the communication between the modules.  
-The overview of the architecture is as follows
-![architecture](img/warm_architecture.png)
+
 The sequence graph among dut,ptf and sonic-mgmt is as follows
 ![sequence](img/sequence.png)
 ### dut-ptf
@@ -138,7 +190,7 @@ Mgmt can remotely control ptf through anisble and execute shell commands. So we 
 
 ### dut-ptf
 Before dut notifies mgmt to close saiserver for the first time，Warm shut down automatically.  
-The code for making the warm shutdown is
+The code for making the warm shutdown is 
 
    ```python
   print("shutdown the swich in warm mode")
