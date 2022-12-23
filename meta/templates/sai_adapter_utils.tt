@@ -232,6 +232,7 @@ def invocation_logger(func):
 
         args_dict = dict(zip(args_name, args))
         args_dict.update(kwargs)
+        args_dict = { key:str(value) for (key,value) in args_dict.items()}
         logging.info("sai_adapter_invoke func:[{}] args: [{}]".format(func.__name__, args_dict))
 
         args_values = args_dict.values()
