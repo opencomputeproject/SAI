@@ -43,23 +43,23 @@ For warm reboot test we need to meet following requirements
 7. Nice to be able to reuse all the functionality testcases
 
 ## SAI warm reboot key features
-- Containerized test environment
+- **Containerized test environment**
   
   Lightweight docker which can be easily deployed in DUT to satisfy testing pexpose
 
-- Expose SAI local API as RPC APIs
+- **Expose SAI local API as RPC APIs**
   
    Lightweight docker contains the RPC server which can expose the SAI interface to invoke the SAI interface remotely
 
-- Open interface for test stage control (support manual or tools)
+- **Open interface for test stage control (support manual or tools)**
 
   Human readable file to control the cases running stage, which can be used by automaticatic tools or manual test
 
-- One tag only to Upgrade existing test cases - @warm_test
+- **One tag only to Upgrade existing test cases - @warm_test**
  
   Just need add ``@warm_test`` to enable the warm reboot tests, then you can use the output file to control the whole process for warm reboot.
 
-- Automated whole process with SONiC-MGMT
+- **Automated whole process with SONiC-MGMT**
 
   SONiC-MGMT can control DUT side and control the whole Test process automatically, from test environment setup, warm reboot configurations, warm reboot process. 
 
