@@ -10,13 +10,8 @@
 
 - [SAI-PTF for Warm reboot](#sai-ptf-for-warm-reboot)
   - [Background for Warm reboot test](#background-for-warm-reboot-test)
-  - [SAI warm reboot feature points](#sai-warm-reboot-feature-points)
-    - [Containerized test environment](#containerized-test-environment)
-    - [Expose SAI local API as RPC APIs](#expose-sai-local-api-as-rpc-apis)
-    - [Open interface for test stage control (support manual or tools)](#open-interface-for-test-stage-control-support-manual-or-tools)
-    - [One tag only to Upgrade existing test cases - @warm\_test](#one-tag-only-to-upgrade-existing-test-cases---warm_test)
-    - [Automated whole process with SONiC-MGMT](#automated-whole-process-with-sonic-mgmt)
-  - [Warm reboot on SAI-PTF Automatic structure](#warm-reboot-on-sai-ptf-automatic-structure)
+  - [SAI warm reboot key features](#sai-warm-reboot-key-features)
+  - [Warm reboot structure](#warm-reboot-structure)
     - [SAI PTF v2](#sai-ptf-v2)
       - [PTF](#ptf)
       - [DUT](#dut)
@@ -25,7 +20,7 @@
     - [dut-ptf](#dut-ptf)
     - [mgmt-dut](#mgmt-dut)
     - [mgmt-ptf](#mgmt-ptf)
-  - [sample code \& example](#sample-code--example)
+  - [sample code](#sample-code)
     - [dut-ptf](#dut-ptf-1)
     - [dut-mgmt](#dut-mgmt)
       - [Mounting of sai.profile](#mounting-of-saiprofile)
@@ -34,7 +29,7 @@
       - [Prepare for second start](#prepare-for-second-start)
       - [Restore after warmboot test](#restore-after-warmboot-test)
     - [ptf-mgmt](#ptf-mgmt)
-  - [test result](#test-result)
+  - [Example and test result](#example-and-test-result)
 
 
 ## Background for Warm reboot test
@@ -47,23 +42,28 @@ For warm reboot test we need to meet following requirements
 6. Nice to be able to automate the whole process
 7. Nice to be able to reuse all the functionality testcases
 
-## SAI warm reboot feature points
-### Containerized test environment
-Lightweight docker which can be easily deployed in DUT to satisfy testing pexpose
+## SAI warm reboot key features
+- Containerized test environment
+  
+  Lightweight docker which can be easily deployed in DUT to satisfy testing pexpose
 
-### Expose SAI local API as RPC APIs
-Lightweight docker contains the RPC server which can expose the SAI interface to invoke the SAI interface remotely
+- Expose SAI local API as RPC APIs
+  
+   Lightweight docker contains the RPC server which can expose the SAI interface to invoke the SAI interface remotely
 
-### Open interface for test stage control (support manual or tools)
-Human readable file to control the cases running stage, which can be used by automaticatic tools or manual test
+- Open interface for test stage control (support manual or tools)
 
-### One tag only to Upgrade existing test cases - @warm_test
-Just need add ``@warm_test`` to enable the warm reboot tests, then you can use the output file to control the whole process for warm reboot.
+  Human readable file to control the cases running stage, which can be used by automaticatic tools or manual test
 
-### Automated whole process with SONiC-MGMT
-SONiC-MGMT can control DUT side and control the whole Test process automatically, from test environment setup, warm reboot configurations, warm reboot process. 
+- One tag only to Upgrade existing test cases - @warm_test
+ 
+  Just need add ``@warm_test`` to enable the warm reboot tests, then you can use the output file to control the whole process for warm reboot.
 
-## Warm reboot on SAI-PTF Automatic structure
+- Automated whole process with SONiC-MGMT
+
+  SONiC-MGMT can control DUT side and control the whole Test process automatically, from test environment setup, warm reboot configurations, warm reboot process. 
+
+## Warm reboot structure
 SAI-PTF Automatic, we seperate the whole system into two components, they are
  - SAI PTF v2
  - SONiC MGMT
@@ -156,7 +156,7 @@ Mgmt can remotely control ptf through anisble and execute shell commands. So we 
    4. ptf writes 'post_reboot_done' to `/tmp/warmboot` to notify ptf that warmreboot is done.
 
 
-## sample code & example
+## sample code
 
 ### dut-ptf
 Before dut notifies mgmt to close saiserver for the first time，Warm shut down automatically.  
@@ -241,4 +241,4 @@ SAI_NUM_ECMP_MEMBERS=32
 ```
 ### ptf-mgmt
 
-## test result
+## Example and test result
