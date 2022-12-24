@@ -191,6 +191,12 @@ client.[% function.thrift_name %](
 [%- BLOCK catch_exception -%]
     except sai_thrift_exception as e:
         status = e.status
+        if SKIP_TEST_ON_EXPECTED_ERROR and status in EXPECTED_ERROR_CODE:
+            reason = "SkipTest on expected error. [% function.thrift_name %] with errorcode: {} error: {}".format(
+                status, e)
+            print(reason)
+            testutils.skipped_test_count=1
+            raise SkipTest(reason)
         if CATCH_EXCEPTIONS:
     [%- IF function.operation == 'stats' %]
             pass
@@ -409,6 +415,12 @@ client.[% function.thrift_name %](
 [%- BLOCK return_from_empty_function -%]
     global status
     status = SAI_STATUS_NOT_SUPPORTED
+    if SKIP_TEST_ON_EXPECTED_ERROR and status in EXPECTED_ERROR_CODE:
+        reason = "SkipTest on expected error. [% function.name %] with errorcode: {} error: {}".format(
+            status, e)
+        print(reason)
+        testutils.skipped_test_count=1
+        raise SkipTest(reason)
 
     if CATCH_EXCEPTIONS:
     [%- IF function.operation == 'create' AND NOT function.rpc_return.is_list %]
@@ -431,7 +443,6 @@ client.[% function.thrift_name %](
 
 
     [%- PROCESS decorate_method IF dev_utils -%]
-    [%- PROCESS decorate_skip_test_on_error IF skip_error -%]
     [%- PROCESS decorate_invocation_logger IF adapter_logger -%]
     [%- PROCESS function_header %]
     [%- PROCESS function_docstring %]
@@ -489,8 +500,10 @@ Thrift SAI interface basic tests
 # pylint: disable=too-many-return-statements,line-too-long,invalid-name
 
 [%- PROCESS dev_utils_imports IF dev_utils -%]
-[%- PROCESS skip_test_on_error_imports IF skip_error -%]
 [%- PROCESS invocation_logger_imports IF adapter_logger -%]
+
+from unittest import SkipTest
+from ptf import testutils
 
 from sai_thrift.ttypes import *
 from sai_thrift.sai_headers import *
@@ -503,10 +516,16 @@ from sai_thrift.sai_headers import *
 # In order to catch exceptions and get error codes
 # in the application, it should be disabled.
 CATCH_EXCEPTIONS = True
+# Expected error code
+# Used with SKIP_TEST_ON_EXPECTED_ERROR
+# For some expected errors in test
+# Like SAI_STATUS_NOT_SUPPORTED = -2
+EXPECTED_ERROR_CODE = [-2]
+# Skip test when hitting an expected error
+SKIP_TEST_ON_EXPECTED_ERROR = True
 status = 0
 
 [%- PROCESS dev_utils IF dev_utils -%]
-[%- PROCESS skip_error IF skip_error -%]
 [%- PROCESS invocation_logger IF adapter_logger -%]
 
 [%- FOREACH api IN apis.keys.sort -%]
