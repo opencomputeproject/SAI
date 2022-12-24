@@ -11,7 +11,7 @@ import unittest
 """
 Class use to test the template.
 Run command under folder 'meta'
-    perl -Irpc gensairpc.pl --adapter_logger --skip_error=-2
+    perl -Irpc gensairpc.pl --adapter_logger
     copy sai_adaptor to ./test/saithriftv2/gen-py/sai
     cd ./test/saithriftv2
     sudo python3 setup.py install
