@@ -313,9 +313,18 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.client, init_switch=True, warm_recover=True)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
+
+    def set_accepted_exception(self):
+        """
+        Set accepted exceptions.
+        """
+        adapter.CATCH_EXCEPTIONS=True
+
+
     def setUp(self):
         super(SaiHelperBase, self).setUp()
         self.set_logger_name()
+        self.set_accepted_exception()
         self.getSwitchPorts()
         # initialize switch
         self.start_switch()
