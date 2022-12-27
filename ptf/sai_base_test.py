@@ -52,21 +52,109 @@ platform_map = {'broadcom': 'brcm', 'barefoot': 'bfn',
 class ThriftInterface(BaseTest):
     """
     Get and format a port map, retrieve test params, and create an RPC client
+
+    Have the following class attributes:
+        port_map_loaded: If the Port map loaded when Test init
+        transport: Thrift socket object
+        test_reboot_mode: reboot mode, which will be read from system env
+        test_reboot_stage: reboot stage, which will be read from system env
+        test_params: All the values passed via test-params if present
+        interface_to_front_mapping: Config from port_map_file for the interface (local) to front(PTF) mapping
+        protocol: Thrift protocol object
+        client: RPC client which used in Thrift
     """
+
+
+    def __init__(self, *args, **kwargs):
+        """
+        Init ThriftInterface.
+
+        Set the following class attributes:
+            port_map_loaded: If the Port map loaded when Test init
+            transport: Thrift socket object
+            test_reboot_mode: reboot mode, which will be read from system env
+            test_reboot_stage: reboot stage, which will be read from system env
+            test_params: All the values passed via test-params if present
+            interface_to_front_mapping: Config from port_map_file for the interface (local) to front(PTF) mapping
+            protocol: Thrift protocol object
+            client: RPC client which used in Thrift
+        """
+        super().__init__(*args, **kwargs)
+        self.port_map_loaded = False
+        """
+        If the Port map loaded when Test init
+        """
+
+        self.transport = None
+        """
+        Thrift socket object
+        """
+
+        self.test_reboot_mode = None
+        """
+        reboot mode, which will be read from system env
+        """
+        self.test_reboot_stage = None
+        """
+        reboot stage, which will be read from system env
+        """
+
+        self.interface_to_front_mapping = {}
+        """
+        Config from port_map_file for the interface (local) to front(PTF) mapping 
+        """
+
+        self.test_params = None
+        """
+        All the values passed via test-params if present
+        """
+
+        self.protocol = None
+        """
+        Thrift protocol object
+        """
+
+        self.client = None
+        """
+        RPC client which used in Thrift
+        """
+
+
     def setUp(self):
         super(ThriftInterface, self).setUp()
-        self.interface_to_front_mapping = {}
-        self.port_map_loaded = False
-        self.transport = None
 
         self.test_params = test_params_get()
+        self.loadTestRebootMode()
         self.loadPortMap()
         self.createRpcClient()
 
+
+    def loadTestRebootMode(self):
+        """
+        Get if test the reboot mode and what's the reboot mode need to be tested
+
+        In reboot mode, test will run many times in different reboot stage.
+        Tests in different stage might be different.
+
+        Set the following class attributes:
+            test_reboot_loaded - if the reboot mode already loaded
+            test_reboot_mode - reboot mode
+            test_reboot_stage - reboot stage, can be [setup|starting|post]
+        """
+        self.test_reboot_stage = None
+        if "test_reboot_mode" in self.test_params:
+            self.test_reboot_mode = self.test_params['test_reboot_mode']
+
+        else:
+            self.test_reboot_mode = 'cold'
+
+        print("Reboot mode is: {}".format(self.test_reboot_mode))
+
+
     def tearDown(self):
         self.transport.close()
-
         super(ThriftInterface, self).tearDown()
+
 
     def loadPortMap(self):
         """
