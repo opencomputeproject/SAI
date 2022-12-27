@@ -5,7 +5,7 @@
 | **Authors** | **Richard Yu, Junyi Xiao** |
 | **Status** | **In review** |
 | **Created** | **22/03/2022** |
-| **Modified** | **22/03/2022** |
+| **Modified** | **27/12/2022** |
 | **SAI-Version** | **V1.7** |
 
 - [SAI-PTF for Warm reboot](#sai-ptf-for-warm-reboot)
@@ -17,12 +17,12 @@
       - [DUT](#dut)
     - [SONiC-MGMT](#sonic-mgmt)
   - [Warm reboot workflow](#warm-reboot-workflow)
-    - [dut-ptf](#dut-ptf)
+    - [ptf-dut](#ptf-dut)
     - [mgmt-dut](#mgmt-dut)
     - [mgmt-ptf](#mgmt-ptf)
   - [sample code](#sample-code)
-    - [dut-ptf](#dut-ptf-1)
-    - [dut-mgmt](#dut-mgmt)
+    - [ptf-dut](#ptf-dut-1)
+    - [mgmt-dut](#mgmt-dut-1)
       - [Mounting of sai.profile](#mounting-of-saiprofile)
       - [Mounting of sai-warmboot.bin](#mounting-of-sai-warmbootbin)
       - [Prepare for first start](#prepare-for-first-start)
@@ -30,6 +30,8 @@
       - [Restore after warmboot test](#restore-after-warmboot-test)
     - [ptf-mgmt](#ptf-mgmt)
   - [Example and test result](#example-and-test-result)
+    - [Test case detail](#test-case-detail)
+    - [Results](#results)
 
 
 ## Background for Warm reboot test
@@ -51,7 +53,7 @@ For warm reboot test we need to meet following requirements
   
    Lightweight docker contains the RPC server which can expose the SAI interface to invoke the SAI interface remotely
 
-- **Open interface for test stage control (support manual or tools)**
+- **Open interface for test stage control (support manual or auto)**
 
   Human readable file to control the cases running stage, which can be used by automaticatic tools or manual test
 
@@ -69,14 +71,14 @@ SAI-PTF Automatic, we seperate the whole system into two components, they are
  - SONiC MGMT
 
 
-![warm_logic_connection](img/warm_logic_connection.png)
+![warm_logic_connection](img/warmreboot_logic_connection.png)
 
 For more details please refer to doc [SAI-PTFv2 Overview](https://github.com/opencomputeproject/SAI/blob/master/ptf/docs/SAI-PTFv2Overview.md). 
 
 Base on the existing SAI-PTFv2 structure, we upgrade the whole system for warm reboot test.
 The new structure as below.
 
-![architecture](img/warm_architecture.png)
+![architecture](img/warmreboot_architecture.png)
 For each part, the details as below.
 
 ### SAI PTF v2
@@ -116,8 +118,8 @@ SONiC-MGMT component, It mainly has the following functions
 Each SAI test case will repeat 3-6 steps. Wait until all the cases in the caselist are executed, and then go to the 7th step.
 
 For warm-reboot, we made following upgrade
-1. Set warm reboot configurations: setup the files in [DUT Upgrade](#DUT-Upgrade)
-2. creat Warmboot-Watcher daemon: check the Open Interface [PTF-Upgrade](#PTF-Upgrade)
+1. Set warm reboot configurations: setup the files in [DUT Upgrade](#dut)
+2. creat Warmboot-Watcher daemon: check the Open Interface [PTF-Upgrade](#ptf)
 3. Coordinate DUT and PTF: Monitor status DUT status in step1 and test status in step2
 
 > Note, SONiC-MGMT is a coordanitor between DUT and PTF, we can manually manipulate the status file and control the startup and shutdown of `saiserver` or use other automatic tools/script for that, we can also manually modify .
@@ -125,9 +127,9 @@ For warm-reboot, we made following upgrade
 ## Warm reboot workflow
 The entire automated system for testing SAI in the warmboot scenario includes three parts(PTF,DUT,sonic-mgmt), and they are closely related. Next I will introduce the communication between the modules.  
 
-The sequence graph among dut,ptf and sonic-mgmt is as follows
-![sequence](img/sequence.png)
-### dut-ptf
+The sequence graph among `dut`, `ptf` and `sonic-mgmt` is as follows
+![sequence](img/wamreboot_sequence.png)
+### ptf-dut
  Warm shut down `saiserver` automatically after the setUp method.
  In order not to affect the previous test, add a wrapper to handle the rebooing stage
 ### mgmt-dut
@@ -158,9 +160,9 @@ Mgmt can remotely control ptf through anisble and execute shell commands. So we 
 
 ## sample code
 
-### dut-ptf
+### ptf-dut
 Before dut notifies mgmt to close saiserver for the first time，Warm shut down automatically.  
-The code for making the warm shutdown is 
+The [code](https://github.com/ms-junyi/SAI/blob/junyi-warmboot/test/sai_test/sai_utils.py#L213) for making the warm shutdown is 
 
    ```python
   print("shutdown the swich in warm mode")
@@ -170,8 +172,8 @@ The code for making the warm shutdown is
   sai_thrift_api_uninitialize(self.client)
    ```
   
-### dut-mgmt
-
+### mgmt-dut
+The related code is at [sai_warm_profile.sh](https://github.com/sonic-net/sonic-mgmt/blob/master/tests/scripts/sai_qualify/sai_warm_profile.sh)
 #### Mounting of sai.profile
 Path on the `saiserver`: `/etc/sai.d/sai.profile`  
 Path on the dut host varies with different PLATFORMs and HWSKUs: it can be obtained through shell commands
@@ -241,4 +243,115 @@ SAI_NUM_ECMP_MEMBERS=32
 ```
 ### ptf-mgmt
 
+mgmt code is at [sai_infra.py](https://github.com/sonic-net/sonic-mgmt/blob/master/tests/sai_qualify/sai_infra.py#L86-L137)  
+1. Create a thread every second to check status
+  ```
+    @pytest.fixture(scope="module")
+    def start_warm_reboot_watcher(duthost, request, ptfhost):
+      logger.info("create and clean up the shared file with ptf")
+      ptfhost.shell("touch {}".format("/tmp/warm_reboot"))
+      ptfhost.shell("echo  > {}".format("/tmp/warm_reboot"))
+
+      logger.info("start warm reboot watcher")
+      close_apschedule_log()
+      scheduler = BackgroundScheduler(
+          {'apscheduler.job_defaults.max_instances': 1}) 
+      scheduler.add_job(warm_reboot_change_handler, "cron", [
+                        duthost, request, ptfhost], second="*/1")
+      scheduler.start()
+  ```
+ 2. Loop to monitor whether the switch setup of the ptf test is completed.  
+   If setup ends ('rebooting' is obtained from the file)
+    1. Stop the saiserver container
+    2. Update the script to start saiserver so that the next startup is a warm reboot,
+        using the previous configuration
+    3. Restart saiserver
+    4. Write 'post_reboot_done' in the shared file to notify ptf that warm reboot is done
+```
+def warm_reboot_change_handler(duthost, request, ptfhost):
+    result = ptfhost.shell("cat {}".format("/tmp/warm_reboot"))
+    if result["stdout_lines"] and result["stdout_lines"][0] == 'rebooting':
+        duthost.shell(USR_BIN_DIR + "/saiserver.sh" + " stop")
+        saiserver_warmboot_config(duthost, "start")
+        result = ptfhost.shell(
+            "echo rebooting_done > {}".format("/tmp/warm_reboot"))
+
+        start_sai_test_conatiner_with_retry(
+            duthost, get_sai_test_container_name(request))
+        logger.info("saiserver start warm reboot")
+        result = ptfhost.shell(
+            "echo post_reboot_done > {}".format("/tmp/warm_reboot"))
+```
+
+sai code is at [sai_utils.py](https://github.com/ms-junyi/SAI/blob/junyi-warmboot/test/sai_test/sai_utils.py#L219-L249)
+```
+ # write content to reboot-requested
+  print("write rebooting to file")
+  warm_file = open('/tmp/warm_reboot','w+')
+  warm_file.write(WARM_TEST_REBOOTING)
+  warm_file.close()
+  times = 0
+  try:
+      while 1:
+          print("reading content in the warm_reboot")
+          warm_file = open('/tmp/warm_reboot','r')
+          txt = warm_file.readline()
+          warm_file.close()                
+          if 'post_reboot_done' in txt:
+              print("warm reboot is done, next, we will run the case")
+              break
+          if is_test_rebooting:
+              print("running in the rebooting stage, text is ", txt)
+              f(inst)
+          times = times + 1
+          time.sleep(interval)
+          print("alreay wait for ",times)
+          if times > time_out:
+              raise Exception("time out")
+  except Exception as e:
+      print(e)
+  
+  inst.createRpcClient()
+  inst.test_reboot_stage  = WARM_TEST_POST_REBOOT
+  t0_switch_config_helper(inst)
+```
 ## Example and test result
+### Test case detail
+ We reuse the code in the [UntagAccessToAccessTest](https://github.com/opencomputeproject/SAI/blob/master/test/sai_test/sai_vlan_test.py#L31) as warm reboot testsample. In general, in this test case, we 
+- Setup
+  1. create VLANs for each port
+  2. create MACs for ports (mapped with index)
+  3. create route rules by adding mac and port
+  4. create ``Untagged`` packet with ``mac2`` as dest mac.
+  5. then send packet on Port1.
+- Check
+  1. Verify ``Untagged`` packet received port2.
+
+With that basic VLAN and FDB functionality, we expect in a warm reboot scenario, we can get the test case and expectations below
+1. Pre-warm-reboot
+    - Setup as normal
+    - `warm shut down`
+2. Rebooting
+    - Check test as normal continually
+
+*In this stage, like a switch running in starting mode, sai switch is not getting started, we will only verify the packet transit*
+    
+3. Post-warm-reboot
+    - APIs start the switch in warm mode
+    - Check test as normal
+
+*In this stage, the switch gets started, and we can use warm reboot API to start the switch.*
+
+In [TaggedFrameFilteringTest](https://github.com/opencomputeproject/SAI/blob/master/test/sai_test/sai_vlan_test.py#L195), we will not check test in rebooting because RPC will be used.
+1. Pre-warm-reboot
+    - Setup as normal
+    - `warm shut down`
+2. Rebooting
+    - wait until `saiserver` container reboots
+3. Post-warm-reboot
+    - APIs start the switch in warm mode
+    - Check test as normal
+
+### Results
+This is the result of running the azure pipeline, which efficiently completed the vlan test in warm-reboot scenario.
+![result](img/warmreboot_result.png)
