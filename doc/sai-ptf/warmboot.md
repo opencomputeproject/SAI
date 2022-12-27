@@ -137,10 +137,12 @@ In this section, I will introduce the workflow/process of warm reboot and the co
 The sequence diagram among `DUT`, `PTF` and `SONiC-MGMT` is as follows
 ![sequence](img/wamreboot_sequence.png)
 ### PTF-DUT
- Between PTF-DUT, PTF uses special APIs to warm shut down `saiserver`  after the warm reboot setUp (Sample code: [PTF-DUT](#ptf-dut-1))
- In PTF especially, for the test case part, in order to reuse the previous test, add a wrapper to handle the rebooting stage
+ Between PTF-DUT, PTF uses special APIs to warm shut down `saiserver`  after the warm reboot setUp 
+
+ In PTF especially, for the test case part, in order to reuse the previous test, add a wrapper to handle the rebooting stage (Sample code: [PTF-DUT](#ptf-dut-1)).
 ### MGMT-DUT
 Between MGMT and DUT, Mgmt modifies the `\etc\sai.d\sai.profile` in DUT and controls the startup and shutdown of `saiserver` deployed in DUT.
+
 Before the ``Rebooting`` stage, as shown from the sequence diagram, MGMT will run DUT in ``pre-reboot`` stage, details as below:
 1. Before starting `saiserver` for the first time, we will update `sai.profile`, and save the configuration of DUT in the setup function of the case, for the next warm reboot of saiserver. (Sample code: [Mounting of sai.profile](#mounting-of-saiprofile))
 2. Start `saiserver` container
@@ -179,6 +181,7 @@ In this part, I will present some sample code, for a better understanding of the
 
 ### PTF-DUT
 Before DUT notifies MGMT to close saiserver for the first time(by setting ``rebooting`` state in the open interface file), the warm shut down automatically.  
+
 The [code](https://github.com/ms-junyi/SAI/blob/junyi-warmboot/test/sai_test/sai_utils.py#L213) for making the warm shutdown is 
 
    ```python
@@ -193,6 +196,7 @@ The [code](https://github.com/ms-junyi/SAI/blob/junyi-warmboot/test/sai_test/sai
 The related code is at [sai_warm_profile.sh](https://github.com/sonic-net/sonic-mgmt/blob/master/tests/scripts/sai_qualify/sai_warm_profile.sh)
 #### Mounting of sai.profile
 Path on the `saiserver`: `/etc/sai.d/sai.profile`  
+
 A path on the DUT host varies with different PLATFORMs and HWSKUs: it can be obtained through shell commands
 
 ```shell
@@ -206,6 +210,7 @@ profile_path=/usr/share/sonic/device/$PLATFORM/$HWSKU
 
 #### Mounting of sai-warmboot.bin
 Path on the `saiserver`:`/var/warmboot`  
+
 Path on the DUT host:`/host/warmboot`
 
 #### Prepare for first start
@@ -235,6 +240,7 @@ SAI_WARM_BOOT_READ_FILE=/var/warmboot/sai-warmboot.bin
 ```
 
 `SAI_WARM_BOOT_WRITE_FILE` and `SAI_WARM_BOOT_READ_FILE` are used to define where SAI will save and load the data backup file.
+
 The configuration data of DUT in the setup will be backed up to /var/warmboot/sai-warmboot.bin. So even after closing the saiserver container, the backup data will be saved in DUT.
 #### Prepare for the second start
 Enable the warm start
