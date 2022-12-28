@@ -69,7 +69,7 @@ For the warm reboot test, we need to meet the following requirements
 
 In this section, we will see the components that consist of the warm reboot structure.
 
-![warm_reboot_upgrade](img/warmboot_architecture_upgrade.jpg)
+![warm_reboot_upgrade](img/warmboot_architecture_upgrade.png)
 
 As the diagram above, the warm reboot structure was upgraded from the existing SAI-PTF Automatic structure.
 
@@ -77,7 +77,7 @@ SAI-PTF Automatic structure contains two components, which are
  - SAI PTF v2
  - SONiC MGMT
 
-For more details about the SAI-PTF Automatic structure, please refer to doc [SAI-PTFv2 Overview](https://github.com/opencomputeproject/SAI/blob/master/PTF/docs/SAI-PTFv2Overview.md). 
+For more details about the SAI-PTF Automatic structure, please refer to doc [SAI-PTFv2 Overview](https://github.com/opencomputeproject/SAI/blob/master/ptf/docs/SAI-PTFv2Overview.md). 
 
 Based on the existing SAI-PTFv2 structure, we upgrade the whole system for a warm reboot test.
 
@@ -377,5 +377,5 @@ In [TaggedFrameFilteringTest](https://github.com/opencomputeproject/SAI/blob/mas
     - Check test as normal
 
 ### Results
-This is the result of running the azure pipeline, which efficiently completed the VLAN test in a warm-reboot scenario.
+This is the result of running the azure pipeline, which efficiently completed the VLAN test in the warm-reboot scenario.
 ![result](img/warmreboot_result.png)
