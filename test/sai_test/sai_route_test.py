@@ -2083,10 +2083,10 @@ class SviMacAgeAfterMoveV4Test(T0TestBase):
 
     def sviMacMove(self):
         """
-        Run step 1-6 in test_svi_mac_learning
-        Send packet with DMAC: SWITCH_MAC, SMAC:ServerX_MAC and DIP: Port10 Server_IP on port5 (mac ServerX_MAC move to port3)
-        Received packet with the DMAC:Port10 Server_MAC, SMAC: SWITCH_MAC and DIP: Port10 Server_IP on lag1
-        For check mac learning from L2, check if fdb entries increase.
+        1.Run step 1-6 in test_svi_mac_learning
+        2.Send packet with DMAC: SWITCH_MAC, SMAC:ServerX_MAC and DIP: Port10 Server_IP on port5 (mac ServerX_MAC move to port3)
+        3.Received packet with the DMAC:Port10 Server_MAC, SMAC: SWITCH_MAC and DIP: Port10 Server_IP on lag1
+        4.For check mac learning from L2, check if fdb entries increase.
         """
 
         dmac4 = '00:11:22:33:44:55'
@@ -2181,10 +2181,10 @@ class SviMacAgeAfterMoveV6Test(T0TestBase):
 
     def sviMacMove(self):
         """
-        Run step 1-6 in test_svi_mac_learning
-        Send packet with DMAC: SWITCH_MAC, SMAC:ServerX_MAC and DIP: Port10 Server_IP on port5 (mac ServerX_MAC move to port3)
-        Received packet with the DMAC:Port10 Server_MAC, SMAC: SWITCH_MAC and DIP: Port10 Server_IP on lag1
-        For check mac learning from L2, check if fdb entries increase.
+        1.Run step 1-6 in test_svi_mac_learning
+        2.Send packet with DMAC: SWITCH_MAC, SMAC:ServerX_MAC and DIP: Port10 Server_IP on port5 (mac ServerX_MAC move to port3)
+        3.Received packet with the DMAC:Port10 Server_MAC, SMAC: SWITCH_MAC and DIP: Port10 Server_IP on lag1
+        4.For check mac learning from L2, check if fdb entries increase.
         """
 
         dmac4 = '00:11:22:33:44:55'
@@ -2265,10 +2265,10 @@ class SviMacrMoveStressV4Test(T0TestBase):
         
     def sviMacMove(self):
         """
-        Run step 1-6 in test_svi_mac_learning
-        Send packet with DMAC: SWITCH_MAC, SMAC:ServerX_MAC and DIP: Port10 Server_IP on port5 (mac ServerX_MAC move to port3)
-        Received packet with the DMAC:Port10 Server_MAC, SMAC: SWITCH_MAC and DIP: Port10 Server_IP on lag1
-        For check mac learning from L2, check if fdb entries increase.
+        1.Run step 1-6 in test_svi_mac_learning
+        2.Send packet with DMAC: SWITCH_MAC, SMAC:ServerX_MAC and DIP: Port10 Server_IP on port5 (mac ServerX_MAC move to port3)
+        3.Received packet with the DMAC:Port10 Server_MAC, SMAC: SWITCH_MAC and DIP: Port10 Server_IP on lag1
+        4.For check mac learning from L2, check if fdb entries increase.
         """
 
         dmac4 = '00:11:22:33:44:55'
@@ -2386,10 +2386,10 @@ class SviMacrMoveStressV6Test(T0TestBase):
         
     def sviMacMove(self):
         """
-        Run step 1-6 in test_svi_mac_learning
-        Send packet with DMAC: SWITCH_MAC, SMAC:ServerX_MAC and DIP: Port10 Server_IP on port5 (mac ServerX_MAC move to port3)
-        Received packet with the DMAC:Port10 Server_MAC, SMAC: SWITCH_MAC and DIP: Port10 Server_IP on lag1
-        For check mac learning from L2, check if fdb entries increase.
+        1.Run step 1-6 in test_svi_mac_learning
+        2.Send packet with DMAC: SWITCH_MAC, SMAC:ServerX_MAC and DIP: Port10 Server_IP on port5 (mac ServerX_MAC move to port3)
+        3.Received packet with the DMAC:Port10 Server_MAC, SMAC: SWITCH_MAC and DIP: Port10 Server_IP on lag1
+        4.For check mac learning from L2, check if fdb entries increase.
         """
         print("SviMacLearningTest")
 
