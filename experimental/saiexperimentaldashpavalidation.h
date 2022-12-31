@@ -40,8 +40,6 @@ typedef enum _sai_pa_validation_entry_action_t
 {
     SAI_PA_VALIDATION_ENTRY_ACTION_PERMIT,
 
-    SAI_PA_VALIDATION_ENTRY_ACTION_DENY,
-
 } sai_pa_validation_entry_action_t;
 
 /**

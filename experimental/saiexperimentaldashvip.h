@@ -40,8 +40,6 @@ typedef enum _sai_vip_entry_action_t
 {
     SAI_VIP_ENTRY_ACTION_ACCEPT,
 
-    SAI_VIP_ENTRY_ACTION_DENY,
-
 } sai_vip_entry_action_t;
 
 /**

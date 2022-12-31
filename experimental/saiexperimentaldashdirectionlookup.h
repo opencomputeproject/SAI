@@ -40,8 +40,6 @@ typedef enum _sai_direction_lookup_entry_action_t
 {
     SAI_DIRECTION_LOOKUP_ENTRY_ACTION_SET_OUTBOUND_DIRECTION,
 
-    SAI_DIRECTION_LOOKUP_ENTRY_ACTION_DENY,
-
 } sai_direction_lookup_entry_action_t;
 
 /**

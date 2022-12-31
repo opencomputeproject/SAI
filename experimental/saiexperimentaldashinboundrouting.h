@@ -42,8 +42,6 @@ typedef enum _sai_inbound_routing_entry_action_t
 
     SAI_INBOUND_ROUTING_ENTRY_ACTION_VXLAN_DECAP_PA_VALIDATE,
 
-    SAI_INBOUND_ROUTING_ENTRY_ACTION_DENY,
-
 } sai_inbound_routing_entry_action_t;
 
 /**
