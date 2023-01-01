@@ -259,7 +259,7 @@ class L2SanityTest(PlatformSaiHelper):
         #Init switch
         SaiHelperBase.setUp(self)
 
-        mac4=  '00:12:12:12:12:13'
+        mac4=  '00:55:55:55:55:55'
 
         self.vlan_id = 10
         self.gen_mac()
@@ -287,6 +287,14 @@ class L2SanityTest(PlatformSaiHelper):
 
 
     def runTest(self):
+        self.test_flooding_to_ports()
+        # A protential bug here
+        # Although the port is up, cannot use it immediately.
+        time.sleep(5)
+        self.test_forwad_to_each_port()
+
+
+    def test_forwad_to_each_port(self):
         try:
             for index in range(1, len(self.port_list)):
                 self.dataplane.flush()
@@ -295,6 +303,28 @@ class L2SanityTest(PlatformSaiHelper):
                 exp_pkt = getattr(self, 'exp_pkt%s' % index)
                 send_packet(self, self.dev_port0, target_pkt)
                 verify_packet(self, exp_pkt, index)
+        finally:
+            pass
+
+
+    def test_flooding_to_ports(self):
+        """
+        Test fdb forwarding
+        """
+        unknown_mac1 = "00:01:01:99:99:99"
+        unknown_mac2 = "00:01:02:99:99:99"
+        pkt = simple_udp_packet(eth_dst=unknown_mac1,
+                                eth_src=unknown_mac2,
+                                ip_id=101,
+                                ip_ttl=64)
+        try:
+            # Unknown mac, flooding to all the other ports.
+            print("Sanity test, check all the ports be flooded.")
+            self.dataplane.flush()
+            send_packet(
+                self, 1, pkt)
+            received_index = verify_each_packet_on_multiple_port_lists(
+                self, [pkt], [range(2,31)])
         finally:
             pass
 

@@ -19,6 +19,7 @@ Thrift SAI interface basic utils.
 import time
 import struct
 import socket
+import json
 
 from functools import wraps
 
@@ -26,6 +27,9 @@ from ptf.packet import *
 from ptf.testutils import *
 
 from sai_thrift.sai_adapter import *
+
+from typing import List, Dict
+from typing import TYPE_CHECKING
 
 
 def sai_thrift_query_attribute_enum_values_capability(client,
@@ -395,3 +399,82 @@ def warm_test(is_test_rebooting:bool=False, time_out=60, interval=1):
             return f(inst)
         return test_director
     return _check_run_case
+
+class ConfigDBOpertion():
+    '''
+    read config from config_db.json
+    '''
+
+    def __init__(self):
+        path = os.path.join(os.path.dirname(__file__),
+                            "resources/config_db.json")  # REPLACE
+        self.config_json = None
+        with open(path, mode='r') as f:
+            self.config_json = json.load(f)
+
+    def get_port_config(self):
+        '''
+        RETURN:
+            dict: port config
+        '''
+        port_conf = self.config_json.get('PORT')
+        key_0 = list(port_conf.keys())[0]
+        return self.config_json.get('PORT').get(key_0)
+
+
+class Port():
+    """
+    Represent the port object.
+    Attrs:
+        port_index: port index
+        dev_port_index: device port, local device port index
+        port_oid: port object id
+        bridge_port_oid: bridge port object id
+    """
+
+    def __init__(
+            self,
+            oid=None,
+            port_index=None,
+            dev_port_index=None,
+            dev_port_eth=None,
+            bridge_port_oid=None):
+        """
+        Init Port Object
+        Init following attrs:
+            oid: port object id     
+            port_index: port index
+            dev_port_index: device port, local device port index
+            dev_port_eth: local device port eth name
+            bridge_port_oid: bridge port object id
+        """
+
+        self.oid = oid
+        """
+        object id
+        """
+        self.port_index = port_index
+        """
+        port index
+        """
+        self.dev_port_index = dev_port_index
+        """
+        device port, local device port index
+        """
+        self.dev_port_eth = dev_port_eth
+        """
+        local device port eth name
+        """
+        self.bridge_port_oid = bridge_port_oid
+        """
+        bridge port object id
+        """
+        self.port_config:Dict = {}
+        self.host_itf_idx = None
+        """
+        Port binded host interface index, the object saved in dut.hostif_list
+        """
+        self.default_lane_list = []
+        """
+        default lane list after switch init.
+        """
