@@ -121,6 +121,11 @@ class FdbConfiger(object):
                 bridge_port_id=self.test_obj.dut.port_obj_list[port_index].bridge_port_oid,
                 packet_action=packet_action,
                 allow_mac_move=allow_mac_move)
+            print("create FDB index: {} port oid： {} bp_oid:{} mac:{}".format(
+                port_index,
+                self.test_obj.dut.port_obj_list[port_index].oid,
+                self.test_obj.dut.port_obj_list[port_index].bridge_port_oid,
+                srv.mac))
             self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
             fdb_list.append(fdb_entry)
             srv.l2_egress_port_idx = port_index
