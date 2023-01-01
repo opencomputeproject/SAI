@@ -7,7 +7,9 @@
     - [Physical Connection](#physical-connection)
       - [Key components/devices in the physical connection:](#key-componentsdevices-in-the-physical-connection)
   - [Setup Testbed](#setup-testbed)
+    - [Download SAI-PTFv2 components](#download-sai-ptfv2-components)
     - [Build SAI-PTFv2 components](#build-sai-ptfv2-components)
+      - [Code for Build SAI-PTFv2 components](#code-for-build-sai-ptfv2-components)
     - [Setup the testbed by sonic-mgmt](#setup-the-testbed-by-sonic-mgmt)
     - [Setup DUT (Device under testing)](#setup-dut-device-under-testing)
     - [Setup ptf-sai docker](#setup-ptf-sai-docker)
@@ -17,13 +19,14 @@
     - [sonic-buildimage user guide](#sonic-buildimage-user-guide)
     - [Deploy SAI Test Topology With SONiC-MGMT](#deploy-sai-test-topology-with-sonic-mgmt)
     - [Setup Docker builder for debugging](#setup-docker-builder-for-debugging)
+    - [SAI-PTF\_resources\_download](#sai-ptf_resources_download)
 
 
 
 ## SAI PTF v2 introduction
 *In this part, we will get to know what's the SAI-PTF v2 framework.*
 
-SAI-PTF v2 is upgraded from previous [SAI-PTF fremework](../../test/saithrift/README.md).
+SAI-PTF v2 is upgraded from the previous [SAI-PTF fremework](../../test/saithrift/README.md).
 SAI PTFv2 has two parts, [PTF (Packet Test Framework)](https://github.com/p4lang/ptf) and [SAI RPC framework](../../meta/rpc/README.md).
 
 ### Logical Topology
@@ -65,16 +68,25 @@ Device and equipment needed in this doc
 ## Setup Testbed
 *In this part, we will build SAI-PTFv2 infras using sonic-buildimage.*
 
- > Note: We use sonic-buildimage and sonic-mgmt to automatically set up testbed by some script. Please refer to [SAI PTF introduction and manually setup Testbed](ManuallySetupTestbedGuide.md) for setup if manually.
+ > Note: We use sonic-buildimage and sonic-mgmt to automatically set up the testbed by some script. Please refer to [SAI PTF introduction and manually setup Testbed](ManuallySetupTestbedGuide.md) for setup if manually.
 
  > For more introduction about how to use the sonic-buildimage, please refer to [sonic-buildimage user guide](https://github.com/Azure/sonic-buildimage)
 
-In the following, we use other SONiC scripts to help setup the [SAI PTF topology](https://github.com/sonic-net/sonic-mgmt/blob/master/docs/testbed/README.testbed.Overview.md#ptf-type-topology) environment with all the testing components mentioned in [SAI PTF introduction and manually setup Testbed](ManuallySetupTestbedGuide.md).
+In the sections below, we will see how to get the sai-related resources.
+
+### Download SAI-PTFv2 components
+For test-related resources, we already enable pipeline build for some ASICs and on some versions. 
+
+Please refer to this page for the links on support ASICs and versions. [SAI-PTF_resources_download](SAI-PTF_resources_download.md)
 
 ### Build SAI-PTFv2 components
-*In this section, we will build the test-related resources.*
+*In this section, we will get the test-related resources.*
 
-For SAI-PTFv2 test, we need to build components:
+If you need those test-related resources on some other ASICs or Versions that have not been built by pipeline, you can also build them manually.
+
+In the following, we use other SONiC scripts to help setup the [SAI PTF topology](https://github.com/sonic-net/sonic-mgmt/blob/master/docs/testbed/README.testbed.Overview.md#ptf-type-topology) environment with all the testing components mentioned in [SAI PTF introduction and manually setup Testbed](ManuallySetupTestbedGuide.md).
+
+For SAI-PTFv2 test, we can build the components:
 1. Docker PTF, which contains all the runtime dependencies
 2. Docker SAIServerv2, which contains the RPC Server, SAI SDK, and all the running dependences
 3. python-saithrift, the RPC client, this binary will be generated when building the docker saiserverv2
@@ -83,14 +95,14 @@ For SAI-PTFv2 test, we need to build components:
 
 Precondition:
 
-Before starting the build process, please make sure you get the right sonic buildimage branch.
+Before starting the build process, please make sure you get the right sonic build image branch.
 For how to check the sai header version and sonic branch from a certain sonic image please refer to
 [Check SAI Header Version And SONiC Branch](CheckVersion.md)
 
 > Note: the example below is based on the sonic 202205 branch
 
 1. Checkout code in sonic-buildimage repo
-    > please check the branch and commit id previous checked   
+    > please check the branch and commit id previously checked   
 
     ```
     git clone https://github.com/Azure/sonic-buildimage.git
@@ -133,7 +145,12 @@ For how to check the sai header version and sonic branch from a certain sonic im
 
         > Note: for different platform (BLDENV=buster), the output folder might be different, i.e. BLDENV=bullseye, it will be <local_folder>/target/debs/bullseye
 
-Now, you have built all PFT-SAIv2 componets: docker saiserverv2, docker ptf-sai, and python_saithrift. The next step is to upload those dockers, i.e. tag and push them to your local available docker registry. After this, you can pull those dockers in the DUT with our script. 
+Now, you have built all PFT-SAIv2 components: docker saiserverv2, docker ptf-sai, and python_saithrift. The next step is to upload those dockers, i.e. tag and push them to your local available docker registry. After this, you can pull those dockers in the DUT with our script. 
+
+#### Code for Build SAI-PTFv2 components
+In cases, you want to enable (Build SAI-PTFv2 components)[#code-for-build-sai-ptfv2-components] on a platform or versions from scratch, where doesn't have docker-saiserver at all.
+
+Please refer to this PR ([SAI-PTF][BFN]Enable saiserver test container on bfn platform)[https://github.com/sonic-net/sonic-buildimage/pull/13166] and make the similar and necessary changes to add the build script and pipeline build.
 
 ### Setup the testbed by sonic-mgmt
 
@@ -230,7 +247,7 @@ You have a local docker registry that can be used to push and pull dockers.
    cd DUTScript
    ```
 
-3. Login to the docker of your local repo and make sure it is accessible
+3. Log in to the docker of your local repo and make sure it is accessible
     ```
     docker login <local_docker_reg>
     ```
@@ -270,7 +287,7 @@ You have a local docker registry that can be used to push and pull dockers.
     change saiserver version to v2
     Start saiserver service
             sudo systemctl start saiserver
-    Start sai server manually, run inside saiserver container with:
+    Start sai server manually, and run inside saiserver container with:
             /usr/bin/start.sh
             /usr/sbin/saiserver -p /etc/sai.d/sai.profile -f /usr/share/sonic/hwsku/port_config.ini
     ```
@@ -340,14 +357,19 @@ Start SAI-PTFv2 testing within ptf-sai docker
     # run a sanitytest
     ptf --test-dir ptf saisanity.L2SanityTest --interface '<Port_index@eth_name>' -t "thrift_server='<DUT ip address>'"
 
+    ptf --test-dir ptf saisanity.L2SanityTest --interface '<Port_index@eth_name>' -t "thrift_server='<DUT ip address>';port_config_ini='<port_ini path>';config_db_json='<config_db.json path>'"
+
     # use a Broadcom switch with 32-port as an example 
     export PLATFORM=brcm
     export DUTIP=<DUT_IP>
     ptf --test-dir /tmp/SAI/ptf saisanity.L2SanityTest --interface '0@eth0' --interface '1@eth1' --interface '2@eth2' --interface '3@eth3' --interface '4@eth4' --interface '5@eth5' --interface '6@eth6' --interface '7@eth7' --interface '8@eth8' --interface '9@eth9' --interface '10@eth10' --interface '11@eth11' --interface '12@eth12' --interface '13@eth13' --interface '14@eth14' --interface '15@eth15' --interface '16@eth16' --interface '17@eth17' --interface '18@eth18' --interface '19@eth19' --interface '20@eth20' --interface '21@eth21' --interface '22@eth22' --interface '23@eth23' --interface '24@eth24' --interface '25@eth25' --interface '26@eth26' --interface '27@eth27' --interface '28@eth28' --interface '29@eth29' --interface '30@eth30' --interface '31@eth31' "--test-params=thrift_server=$DUTIP"
+
+    or
+    ptf --test-dir test/sai_test sai_fdb_test.L2PortForwardingTest --relax --xunit --xunit-dir "/tmp/sai_qualify/test_results_tmp" --interface '0-0@eth0' --interface '0-1@eth1' --interface '0-2@eth2' --interface '0-3@eth3' --interface '0-4@eth4' --interface '0-5@eth5' --interface '0-6@eth6' --interface '0-7@eth7' --interface '0-8@eth8' --interface '0-9@eth9' --interface '0-10@eth10' --interface '0-11@eth11' --interface '0-12@eth12' --interface '0-13@eth13' --interface '0-14@eth14' --interface '0-15@eth15' --interface '0-16@eth16' --interface '0-17@eth17' --interface '0-18@eth18' --interface '0-19@eth19' --interface '0-20@eth20' --interface '0-21@eth21' --interface '0-22@eth22' --interface '0-23@eth23' --interface '0-24@eth24' --interface '0-25@eth25' --interface '0-26@eth26' --interface '0-27@eth27' --interface '0-28@eth28' --interface '0-29@eth29' --interface '0-30@eth30' --interface '0-31@eth31' --relax "--test-params=thrift_server='$DUTIP';port_config_ini='/tmp/sai_qualify/sai_test/resources/port_config.ini';config_db_json='/tmp/sai_qualify/sai_test/resources/config_db.json'"
     
     
 
-> Note: The hardware information for the testing device as below. Please make adjustment according to your actual device.
+> Note: The hardware information for the testing device as below. Please make adjustments according to your actual device.
 
 ```
 Platform: x86_64-dell_s6000_s1220-r0
@@ -369,12 +391,77 @@ eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 9216
 eth1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 9216
 ...
 ```
+
 - eth_name
 ```python
 # eth0, eth1 ... are the eth_name
 # Port_index will be used in test cases like
 # If we have parameter 1@eth1, then 1 will map to eth1
 send_packet(self, 1, pkt)
+```
+
+- config_db_json
+
+This file contains the port configurations, like ``fec`` and ``mtu``.
+
+By default, if this parameter has not been set, it will use the file under the resource folder, here is a sample of the config file  [config_db.json](https://github.com/opencomputeproject/SAI/tree/master/ptf/resources/config_db.json)
+> Note, in convenience, we can copy the config_db.json from the sonic device to the PTF testing environment, but it is not mandatory, you can change it and add other definitions as needed.
+
+Below is an example
+```
+{
+    "_comment": "This is a sample config for port configurations",
+    "PORT": {
+        "Ethernet0": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet4": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet8": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+...
+        "Ethernet124": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        }
+    }
+}
+```
+
+- port_config_ini
+
+This file contains the Port setup information with the host interface, alias, and lanes.
+
+For example, When creating a port and bridge port, it will read the lanes and use it as port information to map the host interface and create a bridge port in order.
+
+By default, if this parameter has not been set, it will use the file under the resource folder, here is a sample of the config file  [port_config.ini](https://github.com/opencomputeproject/SAI/tree/master/ptf/resources/port_config.ini)
+
+
+Below is an example
+```
+# name           lanes                alias      speed       index
+Ethernet0        65,66,67,68          etp1       100000      1
+Ethernet4        69,70,71,72          etp2       100000      2
+Ethernet8        73,74,75,76          etp3       100000      3
+Ethernet12       77,78,79,80          etp4       100000      4
+...
+Ethernet112      113,114,115,116      etp29      100000      29
+Ethernet116      117,118,119,120      etp30      100000      30
+Ethernet120      121,122,123,124      etp31      100000      31
+Ethernet124      125,126,127,128      etp32      100000      32
 ```
 
 Finally, we can see the result as shown below:
@@ -404,3 +491,4 @@ OK
 ### [sonic-buildimage user guide](https://github.com/Azure/sonic-buildimage)
 ### [Deploy SAI Test Topology With SONiC-MGMT](DeploySAITestTopologyWithSONiC-MGMT.md)
 ### [Setup Docker builder for debugging](SetupDockerBuilderForDebugging.md)
+### [SAI-PTF_resources_download](SAI-PTF_resources_download.md)
