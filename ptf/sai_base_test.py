@@ -245,7 +245,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
     """
 
     platform = 'common'
-    
+
     def set_logger_name(self):
         """
         Set Logger name as filename:classname
@@ -285,6 +285,17 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         #Gets self.portX objects for all active ports
         for i, _ in enumerate(self.port_list):
             setattr(self, 'port%s' % i, self.port_list[i])
+
+    def config_port(self):
+        '''
+        Method to config the ports.
+        '''
+        self.turn_up_and_check_ports()
+        # get default 1Q bridge OID
+        self.get_default_1q_bridge_id()
+
+        #remove all default 1Q bridge port
+        self.reset_1q_bridge_ports()
 
 
     def turn_up_and_check_ports(self):
@@ -440,6 +451,8 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
 
     def setUp(self):
         super(SaiHelperBase, self).setUp()
+        self.def_bridge_port_list = []
+        self.def_vlan_member_list = []
         self.set_logger_name()
         self.set_accepted_exception()
         self.getSwitchPorts()
@@ -465,13 +478,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.default_vrf = attr['default_virtual_router_id']
         self.assertNotEqual(self.default_vrf, 0)
 
-        self.turn_up_and_check_ports()
-
-        # get default 1Q bridge OID
-        self.get_default_1q_bridge_id()
-
-        #remove all default 1Q bridge port
-        self.reset_1q_bridge_ports()
+        self.config_port()
 
         # get cpu port
         attr = sai_thrift_get_switch_attribute(self.client, cpu_port=True)
