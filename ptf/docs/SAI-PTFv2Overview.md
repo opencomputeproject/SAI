@@ -14,6 +14,8 @@
     - [Setup DUT (Device under testing)](#setup-dut-device-under-testing)
     - [Setup ptf-sai docker](#setup-ptf-sai-docker)
     - [Run test](#run-test)
+      - [cases in: test/sai\_test vs ptf](#cases-in-testsai_test-vs-ptf)
+      - [Parameters](#parameters)
   - [Reference](#reference)
     - [SAI PTF introduction and manually setup Testbed](#sai-ptf-introduction-and-manually-setup-testbed)
     - [sonic-buildimage user guide](#sonic-buildimage-user-guide)
@@ -349,24 +351,30 @@ Right here saiserver should be started, you can check it by
 ### Run test
 
 Start SAI-PTFv2 testing within ptf-sai docker
-
+```shell
         
-    # set the platform name
-    export PLATFORM=<vendor name>
+# set the platform name
+export PLATFORM=<vendor name>
 
-    # run a sanitytest
-    ptf --test-dir ptf saisanity.L2SanityTest --interface '<Port_index@eth_name>' -t "thrift_server='<DUT ip address>'"
+# run a sanitytest
+ptf --test-dir ptf saisanity.L2SanityTest --interface '<Port_index@eth_name>' -t "thrift_server='<DUT ip address>'"
 
-    ptf --test-dir ptf saisanity.L2SanityTest --interface '<Port_index@eth_name>' -t "thrift_server='<DUT ip address>';port_config_ini='<port_ini path>';config_db_json='<config_db.json path>'"
+ptf --test-dir ptf saisanity.L2SanityTest --interface '<Port_index@eth_name>' -t "thrift_server='<DUT ip address>';port_config_ini='<port_ini path>';config_db_json='<config_db.json path>'"
 
-    # use a Broadcom switch with 32-port as an example 
-    export PLATFORM=brcm
-    export DUTIP=<DUT_IP>
-    ptf --test-dir /tmp/SAI/ptf saisanity.L2SanityTest --interface '0@eth0' --interface '1@eth1' --interface '2@eth2' --interface '3@eth3' --interface '4@eth4' --interface '5@eth5' --interface '6@eth6' --interface '7@eth7' --interface '8@eth8' --interface '9@eth9' --interface '10@eth10' --interface '11@eth11' --interface '12@eth12' --interface '13@eth13' --interface '14@eth14' --interface '15@eth15' --interface '16@eth16' --interface '17@eth17' --interface '18@eth18' --interface '19@eth19' --interface '20@eth20' --interface '21@eth21' --interface '22@eth22' --interface '23@eth23' --interface '24@eth24' --interface '25@eth25' --interface '26@eth26' --interface '27@eth27' --interface '28@eth28' --interface '29@eth29' --interface '30@eth30' --interface '31@eth31' "--test-params=thrift_server=$DUTIP"
+# use a Broadcom switch with 32-port as an example 
 
-    or
-    ptf --test-dir test/sai_test sai_fdb_test.L2PortForwardingTest --relax --xunit --xunit-dir "/tmp/sai_qualify/test_results_tmp" --interface '0-0@eth0' --interface '0-1@eth1' --interface '0-2@eth2' --interface '0-3@eth3' --interface '0-4@eth4' --interface '0-5@eth5' --interface '0-6@eth6' --interface '0-7@eth7' --interface '0-8@eth8' --interface '0-9@eth9' --interface '0-10@eth10' --interface '0-11@eth11' --interface '0-12@eth12' --interface '0-13@eth13' --interface '0-14@eth14' --interface '0-15@eth15' --interface '0-16@eth16' --interface '0-17@eth17' --interface '0-18@eth18' --interface '0-19@eth19' --interface '0-20@eth20' --interface '0-21@eth21' --interface '0-22@eth22' --interface '0-23@eth23' --interface '0-24@eth24' --interface '0-25@eth25' --interface '0-26@eth26' --interface '0-27@eth27' --interface '0-28@eth28' --interface '0-29@eth29' --interface '0-30@eth30' --interface '0-31@eth31' --relax "--test-params=thrift_server='$DUTIP';port_config_ini='/tmp/sai_qualify/sai_test/resources/port_config.ini';config_db_json='/tmp/sai_qualify/sai_test/resources/config_db.json'"
-    
+export PLATFORM=brcm
+export DUTIP=<DUT_IP>
+ptf --test-dir /tmp/SAI/ptf saisanity.L2SanityTest --interface '0@eth0' --interface '1@eth1' --interface '2@eth2' --interface '3@eth3' --interface '4@eth4' --interface '5@eth5' --interface '6@eth6' --interface '7@eth7' --interface '8@eth8' --interface '9@eth9' --interface '10@eth10' --interface '11@eth11' --interface '12@eth12' --interface '13@eth13' --interface '14@eth14' --interface '15@eth15' --interface '16@eth16' --interface '17@eth17' --interface '18@eth18' --interface '19@eth19' --interface '20@eth20' --interface '21@eth21' --interface '22@eth22' --interface '23@eth23' --interface '24@eth24' --interface '25@eth25' --interface '26@eth26' --interface '27@eth27' --interface '28@eth28' --interface '29@eth29' --interface '30@eth30' --interface '31@eth31' "--test-params=thrift_server=$DUTIP"
+
+# or
+
+# test/sai_test test set
+ptf --test-dir test/sai_test sai_fdb_test.L2PortForwardingTest --relax --xunit --xunit-dir "/tmp/sai_qualify/test_results_tmp" --interface '0-0@eth0' --interface '0-1@eth1' --interface '0-2@eth2' --interface '0-3@eth3' --interface '0-4@eth4' --interface '0-5@eth5' --interface '0-6@eth6' --interface '0-7@eth7' --interface '0-8@eth8' --interface '0-9@eth9' --interface '0-10@eth10' --interface '0-11@eth11' --interface '0-12@eth12' --interface '0-13@eth13' --interface '0-14@eth14' --interface '0-15@eth15' --interface '0-16@eth16' --interface '0-17@eth17' --interface '0-18@eth18' --interface '0-19@eth19' --interface '0-20@eth20' --interface '0-21@eth21' --interface '0-22@eth22' --interface '0-23@eth23' --interface '0-24@eth24' --interface '0-25@eth25' --interface '0-26@eth26' --interface '0-27@eth27' --interface '0-28@eth28' --interface '0-29@eth29' --interface '0-30@eth30' --interface '0-31@eth31' --relax "--test-params=thrift_server='$DUTIP';port_config_ini='/tmp/sai_qualify/sai_test/resources/port_config.ini';config_db_json='/tmp/sai_qualify/sai_test/resources/config_db.json'"
+
+# ptf test set
+ptf --test-dir /tmp/SAI/ptf saisanity.L2SanityTest --interface '0@eth0' --interface '1@eth1' --interface '2@eth2' --interface '3@eth3' --interface '4@eth4' --interface '5@eth5' --interface '6@eth6' --interface '7@eth7' --interface '8@eth8' --interface '9@eth9' --interface '10@eth10' --interface '11@eth11' --interface '12@eth12' --interface '13@eth13' --interface '14@eth14' --interface '15@eth15' --interface '16@eth16' --interface '17@eth17' --interface '18@eth18' --interface '19@eth19' --interface '20@eth20' --interface '21@eth21' --interface '22@eth22' --interface '23@eth23' --interface '24@eth24' --interface '25@eth25' --interface '26@eth26' --interface '27@eth27' --interface '28@eth28' --interface '29@eth29' --interface '30@eth30' --interface '31@eth31' "--test-params=thrift_server=$DUTIP;port_config_ini='/tmp/sai_qualify/sai_test/resources/port_config.ini';config_db_json='/tmp/sai_qualify/sai_test/resources/config_db.json'"
+```  
     
 
 > Note: The hardware information for the testing device as below. Please make adjustments according to your actual device.
@@ -379,7 +387,16 @@ ASIC Count: 1
 Serial Number: DQBRX42
 Uptime: 07:30:52 up  2:12,  3 users,  load average: 2.06, 1.93, 1.84
 ```
+#### cases in: test/sai_test vs ptf
+There are two test sets, they are under test/sai_test or under PTF folder.
 
+- ptf
+Test cases under ``ptf`` folder are cases more concentrated on API functionality testing
+
+- test/sai_test
+Test cases under ``ptf`` folder are cases more concentrated on some certain scenario, like T0 environment, so in this case set, there is a common config for simulating the business environment.
+
+#### Parameters
 Specification for parameter ``--interface '<Port_index@eth_name>'``
 - Port_index
 ```shell
@@ -405,7 +422,7 @@ send_packet(self, 1, pkt)
 This file contains the port configurations, like ``fec`` and ``mtu``.
 
 By default, if this parameter has not been set, it will use the file under the resource folder, here is a sample of the config file  [config_db.json](https://github.com/opencomputeproject/SAI/tree/master/ptf/resources/config_db.json)
-> Note, in convenience, we can copy the config_db.json from the sonic device to the PTF testing environment, but it is not mandatory, you can change it and add other definitions as needed.
+> Note, by convenience, we can copy the config_db.json from the sonic device to the PTF testing environment, but it is not mandatory, you can change it and add other definitions as needed.
 
 Below is an example
 ```
