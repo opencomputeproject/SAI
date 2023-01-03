@@ -179,6 +179,21 @@ def generate_ip_address_list(role, group, indexes):
         ip_list.append(role.format(group, index))
     return ip_list
 
+
+def sai_thrift_api_uninitialize(client):
+    """
+    sai_thrift_api_uninitialize() RPC client function
+    implementation
+    Args:
+        client (Client): SAI RPC client
+    Returns:
+        uint: object type
+    """
+    obj_type = client.sai_thrift_api_uninitialize()
+
+    return obj_type
+
+
 def warm_test(is_test_rebooting:bool=False, time_out=60, interval=1):
     """
     Method decorator for the method on warm testing.
@@ -199,6 +214,7 @@ def warm_test(is_test_rebooting:bool=False, time_out=60, interval=1):
                 sai_thrift_set_switch_attribute(inst.client, restart_warm=True)
                 sai_thrift_set_switch_attribute(inst.client, pre_shutdown=True)
                 sai_thrift_remove_switch(inst.client)
+                sai_thrift_api_uninitialize(inst.client)
                 # write content to reboot-requested
                 print("write rebooting to file")
                 warm_file = open('/tmp/warm_reboot','w+')

@@ -60,6 +60,7 @@ class ThriftInterface(BaseTest):
         self.transport = None
 
         self.test_params = test_params_get()
+        self.test_reboot_mode = self.test_params['test_reboot_mode']
         self.loadPortMap()
         self.createRpcClient()
 
