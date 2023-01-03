@@ -1168,10 +1168,10 @@ class FdbFlushVlanDynamicTest(T0TestBase):
     def runTest(self):
         """
         1. create packet with src mac ``MacX``, vlan tag 20
-        2. Send packets on port9:  ``port9`` DMAC=``Port10 MAC``
-        3. Verify unicast happen
+        2. Send packets on port9:  ``port9``
+        3. Verify vlan flooding on vlan20 except port9
         4. Send packet on port10: DMAC=``MacX``
-        5. Verify unicast happen
+        5. Verify packet received on port9
         6. flush vlan dynamic fdb
         7. check the fdb entries, no new entries get from previsou step
         8. send packet same as step 4
