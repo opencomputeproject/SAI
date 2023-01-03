@@ -4,13 +4,7 @@
 from __future__ import print_function
 from collections import defaultdict
 from collections import Counter
-[% IF NOT skip_error %]from functools import wraps[% END %]
-[% END -%]
-
-[%- BLOCK skip_test_on_error_imports %]
 from functools import wraps
-from unittest import SkipTest
-from ptf import testutils
 [% END -%]
 
 [%- BLOCK invocation_logger_imports %]
@@ -27,13 +21,6 @@ import logging
 # dev utils
 
 [% PROCESS instance_counter %]
-[% END -%]
-
-[%- BLOCK skip_error %]
-
-# skip_error
-
-[% PROCESS skip_test_on_error %]
 [% END -%]
 
 [%- BLOCK invocation_logger %]
@@ -186,38 +173,6 @@ instance_counter.removed = defaultdict(Counter)
 instance_counter.not_removed = defaultdict(Counter)
 [%- END -%]
 
-[%- BLOCK skip_test_on_error -%]
-def skip_test_on_error(errorcode=[-2]):
-    def skip_test_on_error_decorator(func):
-        """
-        Decorator for skip the test when error happened.
-        Args:
-            errorcode: a list of the error code that test will be skipped.
-        """
-
-        @wraps(func)
-        def decorated(*args, **kwargs):
-            """
-            Check the return value and check if the status is the error code
-            on which the test should be skipped.
-
-            Args:
-                args(List): original args
-                kwargs(Dict): original kwargs
-            Returns:
-                retval(Any): the original return value
-            """
-            retval = func(*args, **kwargs)
-            global status             
-            if status in errorcode:
-                reason = "SkipTest: {} with errorcode: {}".format(func.__name__, status)
-                print(reason)
-                testutils.skipped_test_count=1
-                raise SkipTest(reason)
-            return retval
-        return decorated
-    return skip_test_on_error_decorator
-[%- END -%]
 
 [%- BLOCK invocation_logger_func -%]
 def invocation_logger(func):
@@ -252,9 +207,6 @@ def invocation_logger(func):
 @instance_counter("[% function.object %]", "[% function.operation %]"[% IF dev_utils.match('log') %], log=True[% END %][% IF dev_utils.match('zero') %], zero=True[% END %])
 [%- END -%]
 
-[%- BLOCK decorate_skip_test_on_error %]
-@skip_test_on_error([% IF skip_error %]errorcode=[[% skip_error %]][% END %])
-[%- END -%]
 
 [%- BLOCK decorate_invocation_logger %]
 @invocation_logger
