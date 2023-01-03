@@ -193,7 +193,14 @@ def invocation_logger(func):
         args_values = args_dict.values()
 
         retval = func(*args, **kwargs)
-        logging.info("sai_adapter_return func:[{}] retval:[{}]".format(func.__name__, repr(retval)))
+        # Base on some vendor's requirement, 
+        # need to convert all the values in the dict to a string
+        retDict = eval(repr(retval))
+        if type(retDict) is dict:
+            retDict = { key:str(value) for (key,value) in retDict.items()}
+            logging.info("sai_adapter_return func:[{}] retval:[{}]".format(func.__name__, retDict))
+        else:
+            logging.info("sai_adapter_return func:[{}] retval:[{}]".format(func.__name__, repr(retval)))
         return retval
  
     return inner_logger
