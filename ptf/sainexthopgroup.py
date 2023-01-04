@@ -21,10 +21,10 @@ from sai_thrift.sai_headers import *
 
 from sai_base_test import *
 
-TEST_ECMP_SEED = 37
-TEST_LAG_SEED = 127
+TEST_ECMP_SEED = 0xabcdef
+TEST_LAG_SEED = 0xfedcba
 ROUTER_MAC = '00:77:66:55:44:00'
-MAX_ITRS = 120
+MAX_ITRS = 160
 
 
 def nhg_members_count(client, next_hop_group):
@@ -105,8 +105,10 @@ def release_hash(self, ipv4_hash_id, ipv6_hash_id):
         self.lag_ipv4_hash_id = 0
     if ipv6_hash_id != 0:
         sai_thrift_remove_hash(self.client, ipv6_hash_id)
+        ipv6_hash_id = 0
     if ipv4_hash_id != 0:
         sai_thrift_remove_hash(self.client, ipv4_hash_id)
+        ipv4_hash_id = 0
 
 
 def print_number_of_available_nhg_resources(self):
@@ -166,13 +168,13 @@ def save_number_of_available_nhg_resources(self, debug=False):
 
 
 @group("draft")
-class L3IPv4EcmpHost(SaiHelper):
+class L3IPv4EcmpHostHelper(PlatformSaiHelper):
     """
     Base ECMP tests for IPv4 and ECMP members as regular L3 port RIFs
     """
     def setUp(self):
 
-        super(L3IPv4EcmpHost, self).setUp()
+        super(L3IPv4EcmpHostHelper, self).setUp()
 
         dmac1 = '00:11:22:33:44:55'
         dmac2 = '00:11:22:33:44:56'
@@ -225,10 +227,6 @@ class L3IPv4EcmpHost(SaiHelper):
         # define IPv4 IPv6 LagIPv4Hash and LagIPv6Hash
         self.ipv4_hash_id, self.ipv6_hash_id = setup_hash(self)
 
-    def runTest(self):
-        self.l3SaiNhgSetGetTest()
-        self.l3IPv4EcmpHostTest()
-
     def tearDown(self):
         try:
             sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry1)
@@ -243,17 +241,24 @@ class L3IPv4EcmpHost(SaiHelper):
             sai_thrift_remove_next_hop_group(self.client, self.nhop_group1)
             sai_thrift_remove_next_hop(self.client, self.nhop1)
             sai_thrift_remove_next_hop(self.client, self.nhop2)
-            resources_valid = self.verifyNumberOfAvaiableResources(debug=True)
+            self.switch_resources = self.saveNumberOfAvaiableResources(debug=True)
+            resources_valid = self.verifyNumberOfAvaiableResources(self.switch_resources, debug=True)
             self.assertEqual(resources_valid, True)
             release_hash(self, self.ipv4_hash_id, self.ipv6_hash_id)
         finally:
-            super(L3IPv4EcmpHost, self).tearDown()
+            super(L3IPv4EcmpHostHelper, self).tearDown()
 
-    def l3SaiNhgSetGetTest(self):
-        """
-        Checks SAI switch ECMP attributes and validates
-        get and set attributes
-        """
+
+@group("draft")
+class l3SaiNhgSetGetTest(L3IPv4EcmpHostHelper):
+    """
+    Checks SAI switch ECMP attributes and validates
+    get and set attributes
+    """
+    def setUp(self):
+        super(l3SaiNhgSetGetTest, self).setUp()
+
+    def runTest(self):
         print("l3SaiNhgSetGetTest")
         try:
             # predefined NHG self.nhop_group1 with 2 memners
@@ -395,10 +400,19 @@ class L3IPv4EcmpHost(SaiHelper):
                 attr_list["SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_ID"],
                 self.nhop2)
 
-    def l3IPv4EcmpHostTest(self):
-        """
-        IPv4 ECMP tests with all members which are port RIFs
-        """
+    def tearDown(self):
+        super(l3SaiNhgSetGetTest, self).tearDown()
+
+
+@group("draft")
+class l3IPv4EcmpHostTest(L3IPv4EcmpHostHelper):
+    """
+    IPv4 ECMP tests with all members which are port RIFs
+    """
+    def setUp(self):
+        super(l3IPv4EcmpHostTest, self).setUp()
+
+    def runTest(self):
         print("l3IPv4EcmpHostTest")
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                 eth_src='00:22:22:22:22:22',
@@ -453,15 +467,17 @@ class L3IPv4EcmpHost(SaiHelper):
         verify_any_packet_any_port(
             self, [exp_pkt2, exp_pkt1], [self.dev_port11, self.dev_port12])
 
+    def tearDown(self):
+        super(l3IPv4EcmpHostTest, self).tearDown()
 
 @group("draft")
-class L3ipv6EcmpHost(SaiHelper):
+class L3ipv6EcmpHostHelper(PlatformSaiHelper):
     """
     Basic ECMP tests for IPv6 and regular L3 port RIFs
     """
     def setUp(self):
 
-        super(L3ipv6EcmpHost, self).setUp()
+        super(L3ipv6EcmpHostHelper, self).setUp()
 
         ip_addr1 = '5000:1:1:0:0:0:0:1'
         ip_addr2 = '5000:1:1:0:0:0:0:2'
@@ -516,9 +532,6 @@ class L3ipv6EcmpHost(SaiHelper):
         # define IPv4 IPv6 LagIPv4Hash and LagIPv6Hash
         self.ipv4_hash_id, self.ipv6_hash_id = setup_hash(self)
 
-    def runTest(self):
-        self.saiL3ipv6EcmpHostTest()
-
     def tearDown(self):
         sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry1)
         sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry2)
@@ -531,15 +544,22 @@ class L3ipv6EcmpHost(SaiHelper):
         sai_thrift_remove_next_hop_group(self.client, self.nhop_group1)
         sai_thrift_remove_next_hop(self.client, self.nhop1)
         sai_thrift_remove_next_hop(self.client, self.nhop2)
-        self.assertEqual(True, self.verifyNumberOfAvaiableResources())
+        self.switch_resources = self.saveNumberOfAvaiableResources(debug=True)
+        self.assertEqual(True, self.verifyNumberOfAvaiableResources(self.switch_resources))
         release_hash(self, self.ipv4_hash_id, self.ipv6_hash_id)
 
-        super(L3ipv6EcmpHost, self).tearDown()
+        super(L3ipv6EcmpHostHelper, self).tearDown()
 
-    def saiL3ipv6EcmpHostTest(self):
-        """
-        IPv6 ECMP tests with all members as regular L3 port RIFs
-        """
+
+@group("draft")
+class saiL3ipv6EcmpHostTest(L3ipv6EcmpHostHelper):
+    """
+    IPv6 ECMP tests with all members as regular L3 port RIFs
+    """
+    def setUp(self):
+        super(saiL3ipv6EcmpHostTest, self).setUp()
+
+    def runTest(self):
         print("saiL3ipv6EcmpHostTest")
         # send the test packet(s)
         pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
@@ -585,15 +605,18 @@ class L3ipv6EcmpHost(SaiHelper):
         verify_any_packet_any_port(
             self, [exp_pkt2, exp_pkt1], [self.dev_port11, self.dev_port12])
 
+    def tearDown(self):
+        super(saiL3ipv6EcmpHostTest, self).tearDown()
+
 
 @group("draft")
-class L3IPv4EcmpLpmTest(SaiHelper):
+class L3IPv4EcmpLpmTestHelper(PlatformSaiHelper):
     """
     Base ECMP tests with LPM routes for IPv4
     """
     def setUp(self):
 
-        super(L3IPv4EcmpLpmTest, self).setUp()
+        super(L3IPv4EcmpLpmTestHelper, self).setUp()
 
         dmac1 = '00:11:22:33:44:55'
         dmac2 = '00:11:22:33:44:56'
@@ -707,10 +730,6 @@ class L3IPv4EcmpLpmTest(SaiHelper):
         # define IPv4 IPv6 LagIPv4Hash and LagIPv6Hash
         self.ipv4_hash_id, self.ipv6_hash_id = setup_hash(self)
 
-    def runTest(self):
-        self.l3IPv4EcmpLpmTest()
-        self.l3Ipv4EcmpLpmAddRemoveNhopTest()
-
     def tearDown(self):
 
         sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry11)
@@ -735,12 +754,18 @@ class L3IPv4EcmpLpmTest(SaiHelper):
         sai_thrift_remove_router_interface(self.client, self.port15_rif)
         release_hash(self, self.ipv4_hash_id, self.ipv6_hash_id)
 
-        super(L3IPv4EcmpLpmTest, self).tearDown()
+        super(L3IPv4EcmpLpmTestHelper, self).tearDown()
 
-    def l3IPv4EcmpLpmTest(self):
-        """
-        Verifies ECMP load balancing with LPM routes configured
-        """
+
+@group("draft")
+class l3IPv4EcmpLpmTest(L3IPv4EcmpLpmTestHelper):
+    """
+    Verifies ECMP load balancing with LPM routes configured
+    """
+    def setUp(self):
+        super(l3IPv4EcmpLpmTest, self).setUp()
+
+    def runTest(self):
         print("l3IPv4EcmpLpmTest")
         count = [0, 0, 0]
         dst_ip = int(binascii.hexlify(socket.inet_aton('10.10.10.1')), 16)
@@ -784,10 +809,19 @@ class L3IPv4EcmpLpmTest(SaiHelper):
                 (count[i] >= ((MAX_ITRS / 3) * 0.8)),
                 "Not all paths are equally balanced, %s" % count)
 
-    def l3Ipv4EcmpLpmAddRemoveNhopTest(self):  # to be removed from here
-        """
-        IPv4 ECMP rebalance test with removal of a nexthop member
-        """
+    def tearDown(self):
+        super(l3IPv4EcmpLpmTest, self).tearDown()
+
+
+@group("draft")
+class l3Ipv4EcmpLpmAddRemoveNhopTest(L3IPv4EcmpLpmTestHelper):  # to be removed from here
+    """
+    IPv4 ECMP rebalance test with removal of a nexthop member
+    """
+    def setUp(self):
+        super(l3Ipv4EcmpLpmAddRemoveNhopTest, self).setUp()
+
+    def runTest(self):
         print("l3Ipv4EcmpLpmAddRemoveNhopTest")
         src_mac_start = '00:22:22:22:22:'
         nhop_ip4 = '44.44.44.44'
@@ -906,384 +940,9 @@ class L3IPv4EcmpLpmTest(SaiHelper):
         finally:
             sai_thrift_remove_next_hop(self.client, nhop4)
 
-
-@group("draft")
-class L3IPv4EcmpLagTest(SaiHelper):
-    """
-    Base ECMP tests with lag for IPv4
-    """
-    def setUp(self):
-
-        super(L3IPv4EcmpLagTest, self).setUp()
-
-        dmac1 = '00:11:11:11:11:11'
-        dmac2 = '00:22:22:22:22:22'
-        dmac3 = '00:33:33:33:33:33'
-        dmac4 = '00:44:44:44:44:44'
-        dmac5 = '00:55:55:55:55:55'
-        dmac6 = '00:66:66:66:66:66'
-        nhop_ip1 = '11.11.11.11'
-        nhop_ip2 = '22.22.22.22'
-        nhop_ip3 = '33.33.33.33'
-        nhop_ip4 = '44.44.44.44'
-        nhop_ip5 = '44.55.55.55'
-        nhop_ip6 = '44.66.66.66'
-        # set switch src mac address
-        sai_thrift_set_switch_attribute(
-            self.client, src_mac_address=ROUTER_MAC)
-        sai_thrift_set_switch_attribute(
-            self.client, ecmp_default_hash_seed=TEST_ECMP_SEED)
-        sai_thrift_set_switch_attribute(
-            self.client, lag_default_hash_seed=TEST_LAG_SEED)
-        self.lag1_rif = sai_thrift_create_router_interface(
-            self.client,
-            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-            virtual_router_id=self.default_vrf,
-            port_id=self.lag1,
-            admin_v4_state=True)
-        self.lag2_rif = sai_thrift_create_router_interface(
-            self.client,
-            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-            virtual_router_id=self.default_vrf,
-            port_id=self.lag2,
-            admin_v4_state=True)
-        self.port15_rif = sai_thrift_create_router_interface(
-            self.client,
-            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
-            virtual_router_id=self.default_vrf,
-            port_id=self.port15,
-            admin_v4_state=True)
-        # test neighbor creation
-        self.neighbor_entry11 = sai_thrift_neighbor_entry_t(
-            self.switch_id, self.port11_rif, sai_ipaddress(nhop_ip1))
-        sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry11, dst_mac_address=dmac1)
-        self.neighbor_entry12 = sai_thrift_neighbor_entry_t(
-            self.switch_id, self.port12_rif, sai_ipaddress(nhop_ip2))
-        sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry12, dst_mac_address=dmac2)
-        self.neighbor_entry13 = sai_thrift_neighbor_entry_t(
-            self.switch_id, self.lag1_rif, sai_ipaddress(nhop_ip3))
-        sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry13, dst_mac_address=dmac3)
-        self.neighbor_entry14 = sai_thrift_neighbor_entry_t(
-            self.switch_id, self.lag2_rif, sai_ipaddress(nhop_ip4))
-        sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry14, dst_mac_address=dmac4)
-        self.neighbor_entry15 = sai_thrift_neighbor_entry_t(
-            self.switch_id, self.lag1_rif, sai_ipaddress(nhop_ip5))
-        sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry15, dst_mac_address=dmac5)
-        self.neighbor_entry16 = sai_thrift_neighbor_entry_t(
-            self.switch_id, self.lag2_rif, sai_ipaddress(nhop_ip6))
-        sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry16, dst_mac_address=dmac6)
-        self.nhop1 = sai_thrift_create_next_hop(
-            self.client,
-            type=SAI_NEXT_HOP_TYPE_IP,
-            router_interface_id=self.port11_rif,
-            ip=sai_ipaddress(nhop_ip1))
-        self.nhop2 = sai_thrift_create_next_hop(
-            self.client,
-            type=SAI_NEXT_HOP_TYPE_IP,
-            router_interface_id=self.port12_rif,
-            ip=sai_ipaddress(nhop_ip2))
-        self.nhop3_lag1 = sai_thrift_create_next_hop(
-            self.client,
-            type=SAI_NEXT_HOP_TYPE_IP,
-            router_interface_id=self.lag1_rif,
-            ip=sai_ipaddress(nhop_ip3))
-        self.nhop4_lag2 = sai_thrift_create_next_hop(
-            self.client,
-            type=SAI_NEXT_HOP_TYPE_IP,
-            router_interface_id=self.lag2_rif,
-            ip=sai_ipaddress(nhop_ip4))
-        self.nhop5_lag1 = sai_thrift_create_next_hop(
-            self.client,
-            type=SAI_NEXT_HOP_TYPE_IP,
-            router_interface_id=self.lag1_rif,
-            ip=sai_ipaddress(nhop_ip5))
-        self.nhop6_lag2 = sai_thrift_create_next_hop(
-            self.client,
-            type=SAI_NEXT_HOP_TYPE_IP,
-            router_interface_id=self.lag2_rif,
-            ip=sai_ipaddress(nhop_ip6))
-        self.nhop_group1 = sai_thrift_create_next_hop_group(
-            self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
-        self.nh_group1_member1 = sai_thrift_create_next_hop_group_member(
-            self.client,
-            next_hop_group_id=self.nhop_group1,
-            next_hop_id=self.nhop1)
-        self.nh_group1_member2 = sai_thrift_create_next_hop_group_member(
-            self.client,
-            next_hop_group_id=self.nhop_group1,
-            next_hop_id=self.nhop2)
-        self.nh_group1_member3 = sai_thrift_create_next_hop_group_member(
-            self.client,
-            next_hop_group_id=self.nhop_group1,
-            next_hop_id=self.nhop3_lag1)
-        self.nh_group1_member4 = sai_thrift_create_next_hop_group_member(
-            self.client,
-            next_hop_group_id=self.nhop_group1,
-            next_hop_id=self.nhop4_lag2)
-        self.nhop_group2 = sai_thrift_create_next_hop_group(
-            self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
-        self.nh_group2_member1 = sai_thrift_create_next_hop_group_member(
-            self.client,
-            next_hop_group_id=self.nhop_group2,
-            next_hop_id=self.nhop5_lag1)
-        self.nh_group2_member2 = sai_thrift_create_next_hop_group_member(
-            self.client,
-            next_hop_group_id=self.nhop_group2,
-            next_hop_id=self.nhop6_lag2)
-        # create route entries
-        self.route0 = sai_thrift_route_entry_t(
-            switch_id=self.switch_id,
-            destination=sai_ipprefix('10.10.10.1/16'),
-            vr_id=self.default_vrf)
-        status = sai_thrift_create_route_entry(
-            self.client, self.route0, next_hop_id=self.nhop_group1)
-        self.assertEqual(status, SAI_STATUS_SUCCESS)
-        self.route1 = sai_thrift_route_entry_t(
-            switch_id=self.switch_id,
-            destination=sai_ipprefix('20.20.20.1/16'),
-            vr_id=self.default_vrf)
-        status = sai_thrift_create_route_entry(
-            self.client, self.route1, next_hop_id=self.nhop_group2)
-        self.assertEqual(status, SAI_STATUS_SUCCESS)
-        # define IPv4 IPv6 LagIPv4Hash and LagIPv6Hash
-        self.ipv4_hash_id, self.ipv6_hash_id = setup_hash(self)
-
-    def runTest(self):
-        self.l3IPv4EcmpHostTwoLagsTest()
-        self.l3IPv4EcmpHostTwoLagsDisabledLagMembersTest()
-        self.l3IPv4EcmpHostPortLagTest()
-        self.l3IPv4EcmpHostPortLagSharedMembersTest()
-        self.l3IPv4EcmpHashPortLagTest()
-
     def tearDown(self):
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry11)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry12)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry13)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry14)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry15)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry16)
-        sai_thrift_remove_next_hop_group_member(self.client,
-                                                self.nh_group1_member1)
-        sai_thrift_remove_next_hop_group_member(self.client,
-                                                self.nh_group1_member2)
-        sai_thrift_remove_next_hop_group_member(self.client,
-                                                self.nh_group1_member3)
-        sai_thrift_remove_next_hop_group_member(self.client,
-                                                self.nh_group1_member4)
-        sai_thrift_remove_next_hop_group_member(self.client,
-                                                self.nh_group2_member1)
-        sai_thrift_remove_next_hop_group_member(self.client,
-                                                self.nh_group2_member2)
-        self.assertEqual(nhg_members_count(self.client, self.nhop_group1), 0)
-        self.assertEqual(nhg_members_count(self.client, self.nhop_group2), 0)
-        sai_thrift_remove_route_entry(self.client, self.route0)
-        sai_thrift_remove_route_entry(self.client, self.route1)
-        sai_thrift_remove_next_hop_group(self.client, self.nhop_group1)
-        sai_thrift_remove_next_hop_group(self.client, self.nhop_group2)
-        sai_thrift_remove_next_hop(self.client, self.nhop1)
-        sai_thrift_remove_next_hop(self.client, self.nhop2)
-        sai_thrift_remove_next_hop(self.client, self.nhop3_lag1)
-        sai_thrift_remove_next_hop(self.client, self.nhop4_lag2)
-        sai_thrift_remove_next_hop(self.client, self.nhop5_lag1)
-        sai_thrift_remove_next_hop(self.client, self.nhop6_lag2)
-        sai_thrift_remove_router_interface(self.client, self.lag1_rif)
-        sai_thrift_remove_router_interface(self.client, self.lag2_rif)
-        sai_thrift_remove_router_interface(self.client, self.port15_rif)
-        release_hash(self, self.ipv4_hash_id, self.ipv6_hash_id)
+        super(l3Ipv4EcmpLpmAddRemoveNhopTest, self).tearDown()
 
-        super(L3IPv4EcmpLagTest, self).tearDown()
-
-    def l3IPv4EcmpHostTwoLagsDisabledLagMembersTest(self):
-        """
-        IPv4 ECMP tests with LAG RIF and some LAG member in disable state
-        """
-        print("l3IPv4EcmpHostTwoLagsDisabledLagMembersTest")
-        print("Disable LAG1 member 4 and 5")
-        status = sai_thrift_set_lag_member_attribute(
-            self.client, self.lag1_member4, egress_disable=True)
-        self.assertEqual(status, SAI_STATUS_SUCCESS)
-        status = sai_thrift_set_lag_member_attribute(
-            self.client, self.lag1_member5, egress_disable=True)
-        self.assertEqual(status, SAI_STATUS_SUCCESS)
-        try:
-            count = [0, 0, 0, 0, 0, 0]
-            dst_ip = int(binascii.hexlify(socket.inet_aton('20.20.20.1')), 16)
-            src_mac_start = '00:22:22:22:{0}:{1}'
-            for i in range(0, MAX_ITRS):
-                dst_ip_addr = socket.inet_ntoa(
-                    binascii.unhexlify(hex(dst_ip)[2:].zfill(8)))
-                src_mac = src_mac_start.format(
-                    str(i).zfill(4)[:2],
-                    str(i).zfill(4)[2:])
-                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                        eth_src=src_mac,
-                                        ip_dst=dst_ip_addr,
-                                        ip_src='192.168.8.1',
-                                        ip_id=106,
-                                        ip_ttl=64)
-                exp_pkt1 = simple_tcp_packet(eth_dst='00:55:55:55:55:55',
-                                             eth_src=ROUTER_MAC,
-                                             ip_dst=dst_ip_addr,
-                                             ip_src='192.168.8.1',
-                                             ip_id=106,
-                                             ip_ttl=63)
-                exp_pkt2 = simple_tcp_packet(eth_dst='00:66:66:66:66:66',
-                                             eth_src=ROUTER_MAC,
-                                             ip_dst=dst_ip_addr,
-                                             ip_src='192.168.8.1',
-                                             ip_id=106,
-                                             ip_ttl=63)
-                send_packet(self, self.dev_port15, pkt)
-                ports_to_verify = [
-                    self.dev_port4,  # LAG1 ports
-                    self.dev_port5,
-                    self.dev_port6,
-                    self.dev_port7,  # LAG2 ports
-                    self.dev_port8,
-                    self.dev_port9
-                ]
-                rcv_idx = verify_any_packet_any_port(
-                    self, [exp_pkt1, exp_pkt2], ports_to_verify)
-                count[rcv_idx] += 1
-                dst_ip += 1
-            print("PORT lb counts", count)
-            ecmp_count = [(count[0] + count[1] + count[2]),
-                          (count[3] + count[4] + count[5])]
-            # check LAG1 traffic
-            self.assertEqual(count[0], 0)  # LAG1 member 1 port4 disabled
-            self.assertEqual(count[1], 0)  # LAG1 member 2 port5 disabled
-            self.assertTrue((count[2] >= ((MAX_ITRS / 2) * 0.6)),
-                            "Lag path1 is not equally balanced")
-            print("ECMP count:", ecmp_count)
-            for i in range(0, 2):
-                self.assertTrue((ecmp_count[i] >= ((MAX_ITRS / 2) * 0.75)),
-                                "Ecmp paths are not equally balanced")
-            # check LAG2 traffic
-            for i in range(3, 6):
-                self.assertTrue((count[i] >= ((MAX_ITRS / 6) * 0.6)),
-                                "Lag path2 is not equally balanced")
-        finally:
-            print("Enable LAG1 member 4 and 5")
-            status = sai_thrift_set_lag_member_attribute(
-                self.client, self.lag1_member4, egress_disable=False)
-            self.assertEqual(status, SAI_STATUS_SUCCESS)
-            status = sai_thrift_set_lag_member_attribute(
-                self.client, self.lag1_member5, egress_disable=False)
-            self.assertEqual(status, SAI_STATUS_SUCCESS)
-
-    def l3IPv4EcmpHostPortLagSharedMembersTest(self):
-        """
-        IPv4 multiples ECMP with shared nexthop members
-        """
-        print("l3IPv4EcmpHostPortLagSharedMembersTest")
-        src_mac = '00:01:01:01:01:01'
-        # verify NG1 route
-        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                eth_src=src_mac,
-                                ip_dst='10.10.10.1',
-                                ip_src='192.168.8.1',
-                                ip_id=106,
-                                ip_ttl=64)
-        exp_pkt1 = simple_tcp_packet(eth_dst='00:11:11:11:11:11',
-                                     eth_src=ROUTER_MAC,
-                                     ip_dst='10.10.10.1',
-                                     ip_src='192.168.8.1',
-                                     ip_id=106,
-                                     ip_ttl=63)
-        exp_pkt2 = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
-                                     eth_src=ROUTER_MAC,
-                                     ip_dst='10.10.10.1',
-                                     ip_src='192.168.8.1',
-                                     ip_id=106,
-                                     ip_ttl=63)
-        exp_pkt3 = simple_tcp_packet(eth_dst='00:33:33:33:33:33',
-                                     eth_src=ROUTER_MAC,
-                                     ip_dst='10.10.10.1',
-                                     ip_src='192.168.8.1',
-                                     ip_id=106,
-                                     ip_ttl=63)
-        exp_pkt4 = simple_tcp_packet(eth_dst='00:44:44:44:44:44',
-                                     eth_src=ROUTER_MAC,
-                                     ip_dst='10.10.10.1',
-                                     ip_src='192.168.8.1',
-                                     ip_id=106,
-                                     ip_ttl=63)
-        send_packet(self, self.dev_port15, pkt)
-        ports_to_verify = [
-            self.dev_port11,
-            self.dev_port12,
-            self.dev_port4,  # LAG1 ports
-            self.dev_port5,
-            self.dev_port6,
-            self.dev_port7,  # LAG2 ports
-            self.dev_port8,
-            self.dev_port9
-        ]
-        verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2, exp_pkt3,
-                                          exp_pkt4], ports_to_verify)
-        # verify NG2 traffic
-        dst_ip = "20.20.1.21"
-        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                eth_src=src_mac,
-                                ip_dst=dst_ip,
-                                ip_src='192.168.1.1',
-                                ip_id=106,
-                                ip_ttl=64)
-        exp_pkt1 = simple_tcp_packet(eth_dst='00:55:55:55:55:55',
-                                     eth_src=ROUTER_MAC,
-                                     ip_dst=dst_ip,
-                                     ip_src='192.168.1.1',
-                                     ip_id=106,
-                                     ip_ttl=63)
-        exp_pkt2 = simple_tcp_packet(eth_dst='00:66:66:66:66:66',
-                                     eth_src=ROUTER_MAC,
-                                     ip_dst=dst_ip,
-                                     ip_src='192.168.1.1',
-                                     ip_id=106,
-                                     ip_ttl=63)
-        send_packet(self, self.dev_port15, pkt)
-        ports_to_verify = [
-            self.dev_port4,  # LAG1 ports
-            self.dev_port5,
-            self.dev_port6,
-            self.dev_port7,  # LAG2 ports
-            self.dev_port8,
-            self.dev_port9
-        ]
-        verify_any_packet_any_port(self, [exp_pkt1, exp_pkt2],
-                                   ports_to_verify)
-
-    def setupECMPIPv4Hash(self, hash_field_list=None):
-        """
-        Setups ECMP IPv4 hash
-
-        Args:
-            hash_field_list (list): list of hash fields
-        """
-        print("Setting the ECMP IPv4 hash fields..")
-        if hash_field_list is None:
-            hash_field_list = [
-                SAI_NATIVE_HASH_FIELD_SRC_IP,
-                SAI_NATIVE_HASH_FIELD_DST_IP,
-                SAI_NATIVE_HASH_FIELD_IP_PROTOCOL,
-                SAI_NATIVE_HASH_FIELD_L4_DST_PORT,
-                SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
-            ]
-        s32list = sai_thrift_s32_list_t(
-            count=len(hash_field_list), int32list=hash_field_list)
-        if self.ipv4_hash_id == 0:
-            self.ipv4_hash_id = sai_thrift_create_hash(
-                self.client, native_hash_field_list=s32list)
-        else:
-            status = sai_thrift_set_hash_attribute(
-                self.client, self.ipv4_hash_id, native_hash_field_list=s32list)
-            self.assertEqual(status, SAI_STATUS_SUCCESS)
 
     def setupECMPHash(self, hash_fields_list):
         """
@@ -1313,315 +972,6 @@ class L3IPv4EcmpLagTest(SaiHelper):
             self.client, hash_id, native_hash_field_list=hash_field_list)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
-    def l3IPv4EcmpHostTwoLagsTest(self):
-        """
-        IPv4 ECMP tests with all LAG RIFs members
-        """
-        print("l3IPv4EcmpHostTwoLagsTest")
-        count = [0, 0, 0, 0, 0, 0]
-        dst_ip = int(binascii.hexlify(socket.inet_aton('20.20.20.1')), 16)
-        src_mac_start = '00:22:22:22:{0}:{1}'
-        for i in range(0, MAX_ITRS):
-            dst_ip_addr = socket.inet_ntoa(
-                binascii.unhexlify(hex(dst_ip)[2:].zfill(8)))
-            src_mac = src_mac_start.format(
-                str(i).zfill(4)[:2],
-                str(i).zfill(4)[2:])
-            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                    eth_src=src_mac,
-                                    ip_dst=dst_ip_addr,
-                                    ip_src='192.168.8.1',
-                                    ip_id=106,
-                                    ip_ttl=64)
-            exp_pkt1 = simple_tcp_packet(eth_dst='00:55:55:55:55:55',
-                                         eth_src=ROUTER_MAC,
-                                         ip_dst=dst_ip_addr,
-                                         ip_src='192.168.8.1',
-                                         ip_id=106,
-                                         ip_ttl=63)
-            exp_pkt2 = simple_tcp_packet(eth_dst='00:66:66:66:66:66',
-                                         eth_src=ROUTER_MAC,
-                                         ip_dst=dst_ip_addr,
-                                         ip_src='192.168.8.1',
-                                         ip_id=106,
-                                         ip_ttl=63)
-            send_packet(self, self.dev_port15, pkt)
-            ports_to_verify = [
-                self.dev_port4,  # LAG1 ports
-                self.dev_port5,
-                self.dev_port6,
-                self.dev_port7,  # LAG2 ports
-                self.dev_port8,
-                self.dev_port9
-            ]
-            rcv_idx = verify_any_packet_any_port(
-                self, [exp_pkt1, exp_pkt2], ports_to_verify)
-            count[rcv_idx] += 1
-            dst_ip += 1
-        print("PORT lb counts", count)
-        ecmp_count = [(count[0] + count[1] + count[2]),
-                      (count[3] + count[4] + count[5])]
-        print("ECMP count:", ecmp_count)
-        for i in range(0, 2):
-            self.assertTrue((ecmp_count[i] >= ((MAX_ITRS / 2) * 0.7)),
-                            "Ecmp paths are not equally balanced")
-        for i in range(0, 3):
-            self.assertTrue((count[i] >= ((MAX_ITRS / 6) * 0.6)),
-                            "Lag path1 is not equally balanced")
-
-        for i in range(3, 6):
-            self.assertTrue((count[i] >= ((MAX_ITRS / 6) * 0.6)),
-                            "Lag path2 is not equally balanced")
-
-    def l3IPv4EcmpHostPortLagTest(self):
-        """
-        IPv4 ECMP load balance tests to check fair share on all members
-        """
-        print("l3IPv4EcmpHostPortLagTest")
-        count = [0, 0, 0, 0, 0, 0, 0, 0]
-        dst_ip = int(binascii.hexlify(socket.inet_aton('10.10.10.1')), 16)
-        for i in range(0, MAX_ITRS):
-            dst_ip_addr = socket.inet_ntoa(
-                binascii.unhexlify(hex(dst_ip)[2:].zfill(8)))
-            src_mac = '00:22:22:22:00:00'
-            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                    eth_src=src_mac,
-                                    ip_dst=dst_ip_addr,
-                                    ip_src='192.168.8.1',
-                                    ip_id=106,
-                                    ip_ttl=64)
-            exp_pkt1 = simple_tcp_packet(eth_dst='00:11:11:11:11:11',
-                                         eth_src=ROUTER_MAC,
-                                         ip_dst=dst_ip_addr,
-                                         ip_src='192.168.8.1',
-                                         ip_id=106,
-                                         ip_ttl=63)
-            exp_pkt2 = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
-                                         eth_src=ROUTER_MAC,
-                                         ip_dst=dst_ip_addr,
-                                         ip_src='192.168.8.1',
-                                         ip_id=106,
-                                         ip_ttl=63)
-            exp_pkt3 = simple_tcp_packet(eth_dst='00:33:33:33:33:33',
-                                         eth_src=ROUTER_MAC,
-                                         ip_dst=dst_ip_addr,
-                                         ip_src='192.168.8.1',
-                                         ip_id=106,
-                                         ip_ttl=63)
-            exp_pkt4 = simple_tcp_packet(eth_dst='00:44:44:44:44:44',
-                                         eth_src=ROUTER_MAC,
-                                         ip_dst=dst_ip_addr,
-                                         ip_src='192.168.8.1',
-                                         ip_id=106,
-                                         ip_ttl=63)
-            send_packet(self, self.dev_port15, pkt)
-            ports_to_verify = [
-                self.dev_port11,
-                self.dev_port12,
-                self.dev_port4,  # LAG1 ports
-                self.dev_port5,
-                self.dev_port6,
-                self.dev_port7,  # LAG2 ports
-                self.dev_port8,
-                self.dev_port9
-            ]
-            rcv_idx = verify_any_packet_any_port(
-                self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4],
-                ports_to_verify)
-            count[rcv_idx] += 1
-            dst_ip += 1
-        print("PORT lb counts", count)
-        ecmp_count = [
-            count[0],
-            count[1],
-            (count[2] + count[3] + count[4]),
-            (count[5] + count[6] + count[7])]
-        print("ECMP count:", ecmp_count)
-        for i in range(0, 4):
-            self.assertTrue((ecmp_count[i] >= ((MAX_ITRS / 4) * 0.5)),
-                            "Ecmp paths are not equally balanced")
-        for i in range(2, 5):
-            self.assertTrue((count[i] >= ((MAX_ITRS / 12) * 0.5)),
-                            "Lag path1 is not equally balanced")
-        for i in range(5, 8):
-            self.assertTrue((count[i] >= ((MAX_ITRS / 12) * 0.5)),
-                            "Lag path2 is not equally balanced")
-
-    def l3IPv4EcmpHashPortLagTest(self):
-        """
-        Creates hash object and sends multiple packets
-        Validates that there is no load balancing with various fields
-        in ECMP hash
-        """
-        print("l3IPv4EcmpHashPortLagTest")
-        # setup the ECMP hash to SRC IP
-        print("Limit ECMP IPv4 hash to SRC_IP only.")
-        # for our test it will disable LB.
-        self.setupECMPIPv4Hash([SAI_NATIVE_HASH_FIELD_SRC_IP])
-        count = [0, 0, 0, 0, 0, 0, 0, 0]
-        dst_ip = int(binascii.hexlify(socket.inet_aton('10.10.10.1')), 16)
-        for i in range(0, MAX_ITRS):
-            dst_ip_addr = socket.inet_ntoa(
-                binascii.unhexlify(hex(dst_ip)[2:].zfill(8)))
-            src_mac = '00:22:22:22:22:22'
-            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                    eth_src=src_mac,
-                                    ip_dst=dst_ip_addr,
-                                    ip_src='192.168.8.1',
-                                    ip_id=106,
-                                    ip_ttl=64)
-            exp_pkt1 = simple_tcp_packet(eth_dst='00:11:11:11:11:11',
-                                         eth_src=ROUTER_MAC,
-                                         ip_dst=dst_ip_addr,
-                                         ip_src='192.168.8.1',
-                                         ip_id=106,
-                                         ip_ttl=63)
-            exp_pkt2 = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
-                                         eth_src=ROUTER_MAC,
-                                         ip_dst=dst_ip_addr,
-                                         ip_src='192.168.8.1',
-                                         ip_id=106,
-                                         ip_ttl=63)
-            exp_pkt3 = simple_tcp_packet(eth_dst='00:33:33:33:33:33',
-                                         eth_src=ROUTER_MAC,
-                                         ip_dst=dst_ip_addr,
-                                         ip_src='192.168.8.1',
-                                         ip_id=106,
-                                         ip_ttl=63)
-            exp_pkt4 = simple_tcp_packet(eth_dst='00:44:44:44:44:44',
-                                         eth_src=ROUTER_MAC,
-                                         ip_dst=dst_ip_addr,
-                                         ip_src='192.168.8.1',
-                                         ip_id=106,
-                                         ip_ttl=63)
-            send_packet(self, self.dev_port15, pkt)
-            ports_to_verify = [
-                self.dev_port11,
-                self.dev_port12,
-                self.dev_port4,  # LAG1 ports
-                self.dev_port5,
-                self.dev_port6,
-                self.dev_port7,  # LAG2 ports
-                self.dev_port8,
-                self.dev_port9
-            ]
-            rcv_idx = verify_any_packet_any_port(
-                self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4],
-                ports_to_verify)
-            count[rcv_idx] += 1
-            dst_ip += 1
-        print("PORT lb counts:", count)
-        ecmp_count = [
-            count[0],
-            count[1],
-            (count[2] + count[3] + count[4]),
-            (count[5] + count[6] + count[7])]
-        print("ECMP count:", ecmp_count)
-        # Traffic should not be ballanced, should apear on single port or
-        # LAG
-        if ecmp_count[0] != 0:
-            self.assertTrue(ecmp_count[0] == MAX_ITRS,
-                            "100% expected on this port")
-            self.assertTrue(ecmp_count[1] == 0,
-                            "No traffic expected on this port")
-            self.assertTrue(ecmp_count[2] == 0,
-                            "No traffic expected on this port")
-            self.assertTrue(ecmp_count[3] == 0,
-                            "No traffic expected on this port")
-        elif ecmp_count[1] != 0:
-            self.assertTrue(ecmp_count[0] == 0,
-                            "No traffic expected on this port")
-            self.assertTrue(ecmp_count[1] == MAX_ITRS,
-                            "100% expected on this port")
-            self.assertTrue(ecmp_count[2] == 0,
-                            "No traffic expected on this port")
-            self.assertTrue(ecmp_count[3] == 0,
-                            "No traffic expected on this port")
-        elif ecmp_count[2] != 0:
-            self.assertTrue(ecmp_count[0] == 0,
-                            "No traffic expected on this port")
-            self.assertTrue(ecmp_count[1] == 0,
-                            "No traffic expected on this port")
-            self.assertTrue(ecmp_count[2] == MAX_ITRS,
-                            "100% expected on this port")
-            self.assertTrue(ecmp_count[3] == 0,
-                            "No traffic expected on this port")
-        elif ecmp_count[3] != 0:
-            self.assertTrue(ecmp_count[0] == 0,
-                            "No traffic expected on this port")
-            self.assertTrue(ecmp_count[1] == 0,
-                            "No traffic expected on this port")
-            self.assertTrue(ecmp_count[2] == 0,
-                            "No traffic expected on this port")
-            self.assertTrue(ecmp_count[3] == MAX_ITRS,
-                            "100% expected on this port")
-        # enable LB back to IPv4 full fields list
-        print("Enable ECMP IPv4 LB")
-        self.setupECMPIPv4Hash()
-        count = [0, 0, 0, 0, 0, 0, 0, 0]
-        dst_ip = int(binascii.hexlify(socket.inet_aton('10.10.10.1')), 16)
-        for i in range(0, MAX_ITRS):
-            dst_ip_addr = socket.inet_ntoa(
-                binascii.unhexlify(hex(dst_ip)[2:].zfill(8)))
-            src_mac = '00:22:22:22:22:22'
-            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                    eth_src=src_mac,
-                                    ip_dst=dst_ip_addr,
-                                    ip_src='192.168.8.1',
-                                    ip_id=106,
-                                    ip_ttl=64)
-            exp_pkt1 = simple_tcp_packet(eth_dst='00:11:11:11:11:11',
-                                         eth_src=ROUTER_MAC,
-                                         ip_dst=dst_ip_addr,
-                                         ip_src='192.168.8.1',
-                                         ip_id=106,
-                                         ip_ttl=63)
-            exp_pkt2 = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
-                                         eth_src=ROUTER_MAC,
-                                         ip_dst=dst_ip_addr,
-                                         ip_src='192.168.8.1',
-                                         ip_id=106,
-                                         ip_ttl=63)
-            exp_pkt3 = simple_tcp_packet(eth_dst='00:33:33:33:33:33',
-                                         eth_src=ROUTER_MAC,
-                                         ip_dst=dst_ip_addr,
-                                         ip_src='192.168.8.1',
-                                         ip_id=106,
-                                         ip_ttl=63)
-            exp_pkt4 = simple_tcp_packet(eth_dst='00:44:44:44:44:44',
-                                         eth_src=ROUTER_MAC,
-                                         ip_dst=dst_ip_addr,
-                                         ip_src='192.168.8.1',
-                                         ip_id=106,
-                                         ip_ttl=63)
-            send_packet(self, self.dev_port15, pkt)
-            ports_to_verify = [
-                self.dev_port11,
-                self.dev_port12,
-                self.dev_port4,  # LAG1 ports
-                self.dev_port5,
-                self.dev_port6,
-                self.dev_port7,  # LAG2 ports
-                self.dev_port8,
-                self.dev_port9
-            ]
-            rcv_idx = verify_any_packet_any_port(
-                self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4],
-                ports_to_verify)
-            count[rcv_idx] += 1
-            dst_ip += 1
-        print("PORT lb counts:", count)
-        ecmp_count = [
-            count[0],
-            count[1],
-            (count[2] + count[3] + count[4]),
-            (count[5] + count[6] + count[7])]
-        print("ECMP count:", ecmp_count)
-        # Traffic should equally be ballanced, should apear on all  port or
-        # LAG
-        for i in range(0, 4):
-            self.assertTrue((ecmp_count[i] >= ((MAX_ITRS / 4) * 0.5)),
-                            "Ecmp paths are not equally balanced")
 
     def l3IPv4EcmpHashSeedPortLag(self):
         """
@@ -1780,13 +1130,13 @@ class L3IPv4EcmpLagTest(SaiHelper):
 
 
 @group("draft")
-class L3IPv6EcmpLagTest(SaiHelper):
+class L3IPv6EcmpLagTestHelper(PlatformSaiHelper):
     """
     Base ECMP tests with ECMP members as LAG RIFs
     """
-    def setUp(self):
 
-        super(L3IPv6EcmpLagTest, self).setUp()
+    def setUp(self):
+        super(L3IPv6EcmpLagTestHelper, self).setUp()
 
         dmac1 = '00:11:11:11:11:11'
         dmac2 = '00:22:22:22:22:22'
@@ -1794,19 +1144,23 @@ class L3IPv6EcmpLagTest(SaiHelper):
         dmac4 = '00:44:44:44:44:44'
         dmac5 = '00:55:55:55:55:55'
         dmac6 = '00:66:66:66:66:66'
+
         nhop_ip1 = '1000:1:1:0:0:0:0:1'
         nhop_ip2 = '2000:1:1:0:0:0:0:1'
         nhop_ip3 = '3000:1:1:0:0:0:0:1'
         nhop_ip4 = '4000:1:1:0:0:0:0:1'
         nhop_ip5 = '5000:1:1:0:0:0:0:1'
         nhop_ip6 = '6000:1:1:0:0:0:0:1'
+
         # set switch src mac address
         sai_thrift_set_switch_attribute(
             self.client, src_mac_address=ROUTER_MAC)
-        sai_thrift_set_switch_attribute(
+
+        status = sai_thrift_set_switch_attribute(
             self.client, ecmp_default_hash_seed=TEST_ECMP_SEED)
-        sai_thrift_set_switch_attribute(
+        status = sai_thrift_set_switch_attribute(
             self.client, lag_default_hash_seed=TEST_LAG_SEED)
+
         self.lag1_rif = sai_thrift_create_router_interface(
             self.client,
             type=SAI_ROUTER_INTERFACE_TYPE_PORT,
@@ -1825,31 +1179,52 @@ class L3IPv6EcmpLagTest(SaiHelper):
             virtual_router_id=self.default_vrf,
             port_id=self.port15,
             admin_v6_state=True)
+
         # test neighbor creation
         self.neighbor_entry11 = sai_thrift_neighbor_entry_t(
             self.switch_id, self.port11_rif, sai_ipaddress(nhop_ip1))
         sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry11, dst_mac_address=dmac1)
+            self.client,
+            self.neighbor_entry11,
+            dst_mac_address=dmac1,
+            no_host_route=True)
         self.neighbor_entry12 = sai_thrift_neighbor_entry_t(
             self.switch_id, self.port12_rif, sai_ipaddress(nhop_ip2))
         sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry12, dst_mac_address=dmac2)
+            self.client,
+            self.neighbor_entry12,
+            dst_mac_address=dmac2,
+            no_host_route=True)
         self.neighbor_entry13 = sai_thrift_neighbor_entry_t(
             self.switch_id, self.lag1_rif, sai_ipaddress(nhop_ip3))
         sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry13, dst_mac_address=dmac3)
+            self.client,
+            self.neighbor_entry13,
+            dst_mac_address=dmac3,
+            no_host_route=True)
         self.neighbor_entry14 = sai_thrift_neighbor_entry_t(
             self.switch_id, self.lag2_rif, sai_ipaddress(nhop_ip4))
         sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry14, dst_mac_address=dmac4)
+            self.client,
+            self.neighbor_entry14,
+            dst_mac_address=dmac4,
+            no_host_route=True)
+
         self.neighbor_entry15 = sai_thrift_neighbor_entry_t(
             self.switch_id, self.lag1_rif, sai_ipaddress(nhop_ip5))
         sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry15, dst_mac_address=dmac5)
+            self.client,
+            self.neighbor_entry15,
+            dst_mac_address=dmac5,
+            no_host_route=True)
         self.neighbor_entry16 = sai_thrift_neighbor_entry_t(
             self.switch_id, self.lag2_rif, sai_ipaddress(nhop_ip6))
         sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry16, dst_mac_address=dmac6)
+            self.client,
+            self.neighbor_entry16,
+            dst_mac_address=dmac6,
+            no_host_route=True)
+
         self.nhop1 = sai_thrift_create_next_hop(
             self.client,
             type=SAI_NEXT_HOP_TYPE_IP,
@@ -1870,6 +1245,7 @@ class L3IPv6EcmpLagTest(SaiHelper):
             type=SAI_NEXT_HOP_TYPE_IP,
             router_interface_id=self.lag2_rif,
             ip=sai_ipaddress(nhop_ip4))
+
         self.nhop5_lag1 = sai_thrift_create_next_hop(
             self.client,
             type=SAI_NEXT_HOP_TYPE_IP,
@@ -1880,8 +1256,10 @@ class L3IPv6EcmpLagTest(SaiHelper):
             type=SAI_NEXT_HOP_TYPE_IP,
             router_interface_id=self.lag2_rif,
             ip=sai_ipaddress(nhop_ip6))
+
         self.nhop_group1 = sai_thrift_create_next_hop_group(
             self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+
         self.nh_group1_member1 = sai_thrift_create_next_hop_group_member(
             self.client,
             next_hop_group_id=self.nhop_group1,
@@ -1898,6 +1276,7 @@ class L3IPv6EcmpLagTest(SaiHelper):
             self.client,
             next_hop_group_id=self.nhop_group1,
             next_hop_id=self.nhop4_lag2)
+
         self.nhop_group2 = sai_thrift_create_next_hop_group(
             self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
         self.nh_group2_member1 = sai_thrift_create_next_hop_group_member(
@@ -1908,6 +1287,7 @@ class L3IPv6EcmpLagTest(SaiHelper):
             self.client,
             next_hop_group_id=self.nhop_group2,
             next_hop_id=self.nhop6_lag2)
+
         # create route entries
         self.route0 = sai_thrift_route_entry_t(
             switch_id=self.switch_id,
@@ -1916,6 +1296,7 @@ class L3IPv6EcmpLagTest(SaiHelper):
         status = sai_thrift_create_route_entry(
             self.client, self.route0, next_hop_id=self.nhop_group1)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
+
         self.route1 = sai_thrift_route_entry_t(
             switch_id=self.switch_id,
             destination=sai_ipprefix('5500:1:1:0:0:0:0:1/65'),
@@ -1923,25 +1304,19 @@ class L3IPv6EcmpLagTest(SaiHelper):
         status = sai_thrift_create_route_entry(
             self.client, self.route1, next_hop_id=self.nhop_group2)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
+
         # define IPv4 IPv6 LagIPv4Hash and LagIPv6Hash
         self.ipv4_hash_id, self.ipv6_hash_id = setup_hash(self)
 
-    def runTest(self):
-        self.l3IPv6EcmpHostTwoLagsTest()
-        self.l3IPv6EcmpHostTwoLagsDisabledLagMembersTest()
-        self.l3IPv6EcmpHostPortLagTest()
-        self.l3IPv6EcmpHostPortLagSharedMembersTest()
-        self.l3IPv6EcmpHashPortLagTest()
-        self.l3Ipv6EcmpAddRemoveNhopTest()
-        self.l3Ipv6EcmpLpmTest()
-
     def tearDown(self):
+
         sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry11)
         sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry12)
         sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry13)
         sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry14)
         sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry15)
         sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry16)
+
         sai_thrift_remove_next_hop_group_member(self.client,
                                                 self.nh_group1_member1)
         sai_thrift_remove_next_hop_group_member(self.client,
@@ -1950,14 +1325,18 @@ class L3IPv6EcmpLagTest(SaiHelper):
                                                 self.nh_group1_member3)
         sai_thrift_remove_next_hop_group_member(self.client,
                                                 self.nh_group1_member4)
+
         sai_thrift_remove_next_hop_group_member(self.client,
                                                 self.nh_group2_member1)
         sai_thrift_remove_next_hop_group_member(self.client,
                                                 self.nh_group2_member2)
+
         sai_thrift_remove_route_entry(self.client, self.route0)
         sai_thrift_remove_route_entry(self.client, self.route1)
+
         self.assertEqual(nhg_members_count(self.client, self.nhop_group1), 0)
         self.assertEqual(nhg_members_count(self.client, self.nhop_group2), 0)
+
         sai_thrift_remove_next_hop_group(self.client, self.nhop_group1)
         sai_thrift_remove_next_hop_group(self.client, self.nhop_group2)
         sai_thrift_remove_next_hop(self.client, self.nhop1)
@@ -1966,12 +1345,15 @@ class L3IPv6EcmpLagTest(SaiHelper):
         sai_thrift_remove_next_hop(self.client, self.nhop4_lag2)
         sai_thrift_remove_next_hop(self.client, self.nhop5_lag1)
         sai_thrift_remove_next_hop(self.client, self.nhop6_lag2)
+
         sai_thrift_remove_router_interface(self.client, self.lag1_rif)
         sai_thrift_remove_router_interface(self.client, self.lag2_rif)
         sai_thrift_remove_router_interface(self.client, self.port15_rif)
+
         release_hash(self, self.ipv4_hash_id, self.ipv6_hash_id)
 
-        super(L3IPv6EcmpLagTest, self).tearDown()
+        super(L3IPv6EcmpLagTestHelper, self).tearDown()
+
 
     def setupECMPIPv6Hash(self, hash_field_list=None):
         """
@@ -1999,10 +1381,16 @@ class L3IPv6EcmpLagTest(SaiHelper):
                 self.client, self.ipv6_hash_id, native_hash_field_list=s32list)
             self.assertEqual(status, SAI_STATUS_SUCCESS)
 
-    def l3Ipv6EcmpLpmTest(self):
-        """
-        Base ECMP tests with LPM routes for IPv6
-        """
+
+@group("draft")
+class l3Ipv6EcmpLpmTest(L3IPv6EcmpLagTestHelper):
+    """
+    Base ECMP tests with LPM routes for IPv6
+    """
+    def setUp(self):
+        super(l3Ipv6EcmpLpmTest, self).setUp()
+
+    def runTest(self):
         print("l3Ipv6EcmpLpmTest")
         dmac7 = '00:77:77:77:77:77'
         nhop_ip7 = '7000:1:1:0:0:0:0:1'
@@ -2074,10 +1462,20 @@ class L3IPv6EcmpLagTest(SaiHelper):
             sai_thrift_remove_next_hop_group(self.client, nhop_group3)
             sai_thrift_remove_next_hop(self.client, nhop7)
 
-    def l3IPv6EcmpHostTwoLagsTest(self):
-        """
-        IPv6 ECMP tests with all members with RIF as LAG
-        """
+    def tearDown(self):
+        super(l3Ipv6EcmpLpmTest, self).tearDown()
+
+
+@group("draft")
+class l3IPv6EcmpHostTwoLagsTest(L3IPv6EcmpLagTestHelper):
+    """
+    IPv6 ECMP tests with all members with RIF as LAG
+    """
+    def setUp(self):
+        super(l3IPv6EcmpHostTwoLagsTest, self).setUp()
+
+    @warm_test(is_test_rebooting=True)
+    def runTest(self):
         print("l3IPv6EcmpHostTwoLagsTest")
         count = [0, 0, 0, 0, 0, 0]
         dst_ip = socket.inet_pton(socket.AF_INET6, '5500:1:1:0:0:0:0:1')
@@ -2125,243 +1523,334 @@ class L3IPv6EcmpLagTest(SaiHelper):
             self.assertTrue((ecmp_count[i] >= ((MAX_ITRS / 2) * 0.5)),
                             "Ecmp paths are not equally balanced")
 
-    def l3IPv6EcmpHostPortLagTest(self):
-        """
-        IPv6 ECMP tests with members combination of port and LAG RIFs
-        """
-        print("l3IPv6EcmpHostPortLagTest")
-        count = [0, 0, 0, 0, 0, 0, 0, 0]
-        dst_ip = socket.inet_pton(socket.AF_INET6, '1000:1:1:0:0:0:0:1')
-        dst_ip_arr = list(dst_ip)
-        src_mac_start = '00:22:22:22:{0}:{1}'
-        for i in range(0, MAX_ITRS):
-            dst_ip_addr = socket.inet_ntop(socket.AF_INET6, dst_ip)
-            src_mac = src_mac_start.format(
-                str(i).zfill(4)[:2],
-                str(i).zfill(4)[2:])
-            pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
-                                      eth_src=src_mac,
-                                      ipv6_dst=dst_ip_addr,
-                                      ipv6_src='5000:1:1:0:0:0:0:1',
-                                      ipv6_hlim=64)
-            exp_pkt1 = simple_tcpv6_packet(eth_dst='00:11:11:11:11:11',
-                                           eth_src=ROUTER_MAC,
-                                           ipv6_dst=dst_ip_addr,
-                                           ipv6_src='5000:1:1:0:0:0:0:1',
-                                           ipv6_hlim=63)
-            exp_pkt2 = simple_tcpv6_packet(eth_dst='00:22:22:22:22:22',
-                                           eth_src=ROUTER_MAC,
-                                           ipv6_dst=dst_ip_addr,
-                                           ipv6_src='5000:1:1:0:0:0:0:1',
-                                           ipv6_hlim=63)
-            exp_pkt3 = simple_tcpv6_packet(eth_dst='00:33:33:33:33:33',
-                                           eth_src=ROUTER_MAC,
-                                           ipv6_dst=dst_ip_addr,
-                                           ipv6_src='5000:1:1:0:0:0:0:1',
-                                           ipv6_hlim=63)
-            exp_pkt4 = simple_tcpv6_packet(eth_dst='00:44:44:44:44:44',
-                                           eth_src=ROUTER_MAC,
-                                           ipv6_dst=dst_ip_addr,
-                                           ipv6_src='5000:1:1:0:0:0:0:1',
-                                           ipv6_hlim=63)
-            send_packet(self, self.dev_port15, pkt)
-            ports_to_verify = [
-                self.dev_port11,
-                self.dev_port12,
-                self.dev_port4,  # LAG1 ports
-                self.dev_port5,
-                self.dev_port6,
-                self.dev_port7,  # LAG2 ports
-                self.dev_port8,
-                self.dev_port9
-            ]
-            rcv_idx = verify_any_packet_any_port(
-                self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4],
-                ports_to_verify)
-            count[rcv_idx] += 1
-            dst_ip_arr[15] = dst_ip_arr[15] + 1
-            dst_ip = bytearray(dst_ip_arr)
-        print("PORT lb counts", count)
-        ecmp_count = [
-            count[0],
-            count[1],
-            (count[2] + count[3] + count[4]),
-            (count[5] + count[6] + count[7])]
-        print("ECMP counts", ecmp_count)
-        for i in range(0, 4):
-            self.assertTrue((ecmp_count[i] >= ((MAX_ITRS / 4) * 0.5)),
-                            "Ecmp paths are not equally balanced")
+    def tearDown(self):
+        super(l3IPv6EcmpHostTwoLagsTest, self).tearDown()
 
-    def l3IPv6EcmpHashPortLagTest(self):
-        """
-        IPv6 ECMP loads balance tests to check fair share on all members
-        """
+
+@group("draft")
+class l3IPv6EcmpHostPortLagTest(L3IPv6EcmpLagTestHelper):
+    """
+    IPv6 ECMP tests with members combination of port and LAG RIFs
+    """
+    def setUp(self):
+        super(l3IPv6EcmpHostPortLagTest, self).setUp()
+
+    def runTest(self):
+        print("l3IPv6EcmpHostPortLagTest")
+        try:
+            count = [0, 0, 0, 0, 0, 0, 0, 0]
+            dst_ip = socket.inet_pton(socket.AF_INET6, '1000:1:1:0:0:0:0:1')
+            dst_ip_arr = list(dst_ip)
+            src_mac_start = '00:22:22:22:{0}:{1}'
+            for i in range(0, MAX_ITRS):
+                dst_ip_addr = socket.inet_ntop(socket.AF_INET6, dst_ip)
+                src_mac = src_mac_start.format(
+                    str(i).zfill(4)[:2],
+                    str(i).zfill(4)[2:])
+                pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
+                                          eth_src=src_mac,
+                                          ipv6_dst=dst_ip_addr,
+                                          ipv6_src='5000:1:1:0:0:0:0:1',
+                                          ipv6_hlim=64)
+
+                exp_pkt1 = simple_tcpv6_packet(eth_dst='00:11:11:11:11:11',
+                                               eth_src=ROUTER_MAC,
+                                               ipv6_dst=dst_ip_addr,
+                                               ipv6_src='5000:1:1:0:0:0:0:1',
+                                               ipv6_hlim=63)
+                exp_pkt2 = simple_tcpv6_packet(eth_dst='00:22:22:22:22:22',
+                                               eth_src=ROUTER_MAC,
+                                               ipv6_dst=dst_ip_addr,
+                                               ipv6_src='5000:1:1:0:0:0:0:1',
+                                               ipv6_hlim=63)
+                exp_pkt3 = simple_tcpv6_packet(eth_dst='00:33:33:33:33:33',
+                                               eth_src=ROUTER_MAC,
+                                               ipv6_dst=dst_ip_addr,
+                                               ipv6_src='5000:1:1:0:0:0:0:1',
+                                               ipv6_hlim=63)
+                exp_pkt4 = simple_tcpv6_packet(eth_dst='00:44:44:44:44:44',
+                                               eth_src=ROUTER_MAC,
+                                               ipv6_dst=dst_ip_addr,
+                                               ipv6_src='5000:1:1:0:0:0:0:1',
+                                               ipv6_hlim=63)
+
+                send_packet(self, self.dev_port15, pkt)
+                ports_to_verify = [
+                    self.dev_port11,
+                    self.dev_port12,
+                    self.dev_port4,  # LAG1 ports
+                    self.dev_port5,
+                    self.dev_port6,
+                    self.dev_port7,  # LAG2 ports
+                    self.dev_port8,
+                    self.dev_port9
+                ]
+                rcv_idx = verify_any_packet_any_port(
+                    self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4],
+                    ports_to_verify)
+                count[rcv_idx] += 1
+                dst_ip_arr[15] = dst_ip_arr[15] + 1
+                dst_ip = bytearray(dst_ip_arr)
+
+            print("PORT lb counts", count)
+            ecmp_count = [
+                count[0],
+                count[1],
+                (count[2] + count[3] + count[4]),
+                (count[5] + count[6] + count[7])]
+            print("ECMP counts", ecmp_count)
+            for i in range(0, 4):
+                self.assertTrue((ecmp_count[i] >= ((MAX_ITRS / 4) * 0.5)),
+                                "Ecmp paths are not equally balanced")
+
+        finally:
+            pass
+
+    def tearDown(self):
+        super(l3IPv6EcmpHostPortLagTest, self).tearDown()
+
+
+@group("draft")
+class l3IPv6EcmpHashPortLagTest(L3IPv6EcmpLagTestHelper):
+    """
+    IPv6 ECMP loads balance tests to check fair share on all members
+    """
+    def setUp(self):
+        super(l3IPv6EcmpHashPortLagTest, self).setUp()
+
+    def runTest(self):
         print("l3IPv6EcmpHashPortLagTest")
+
         print("Limit ECMP IPv6 hash to SRC_IP only.")
         # for our test it will disable LB.
         self.setupECMPIPv6Hash([SAI_NATIVE_HASH_FIELD_SRC_IP])
-        count = [0, 0, 0, 0, 0, 0, 0, 0]
-        dst_ip = socket.inet_pton(socket.AF_INET6, '1000:1:1:0:0:0:0:1')
-        dst_ip_arr = list(dst_ip)
-        for i in range(0, MAX_ITRS):
-            dst_ip_addr = socket.inet_ntop(socket.AF_INET6, dst_ip)
-            src_mac = '00:22:22:22:22:22'
-            pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
-                                      eth_src=src_mac,
-                                      ipv6_dst=dst_ip_addr,
-                                      ipv6_src='5000:1:1:0:0:0:0:1',
-                                      ipv6_hlim=64)
-            exp_pkt1 = simple_tcpv6_packet(eth_dst='00:11:11:11:11:11',
-                                           eth_src=ROUTER_MAC,
-                                           ipv6_dst=dst_ip_addr,
-                                           ipv6_src='5000:1:1:0:0:0:0:1',
-                                           ipv6_hlim=63)
-            exp_pkt2 = simple_tcpv6_packet(eth_dst='00:22:22:22:22:22',
-                                           eth_src=ROUTER_MAC,
-                                           ipv6_dst=dst_ip_addr,
-                                           ipv6_src='5000:1:1:0:0:0:0:1',
-                                           ipv6_hlim=63)
-            exp_pkt3 = simple_tcpv6_packet(eth_dst='00:33:33:33:33:33',
-                                           eth_src=ROUTER_MAC,
-                                           ipv6_dst=dst_ip_addr,
-                                           ipv6_src='5000:1:1:0:0:0:0:1',
-                                           ipv6_hlim=63)
-            exp_pkt4 = simple_tcpv6_packet(eth_dst='00:44:44:44:44:44',
-                                           eth_src=ROUTER_MAC,
-                                           ipv6_dst=dst_ip_addr,
-                                           ipv6_src='5000:1:1:0:0:0:0:1',
-                                           ipv6_hlim=63)
-            send_packet(self, self.dev_port15, pkt)
-            ports_to_verify = [
-                self.dev_port11,
-                self.dev_port12,
-                self.dev_port4,  # LAG1 ports
-                self.dev_port5,
-                self.dev_port6,
-                self.dev_port7,  # LAG2 ports
-                self.dev_port8,
-                self.dev_port9
-            ]
-            rcv_idx = verify_any_packet_any_port(
-                self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4],
-                ports_to_verify)
-            count[rcv_idx] += 1
-            dst_ip_arr[15] = dst_ip_arr[15] + 1
-            dst_ip = bytearray(dst_ip_arr)
-        print("PORT lb counts:", count)
-        ecmp_count = [
-            count[0],
-            count[1],
-            (count[2] + count[3] + count[4]),
-            (count[5] + count[6] + count[7])]
-        print("ECMP count:", ecmp_count)
-        # Traffic should not be ballanced, should apear on single port or
-        # LAG
-        if ecmp_count[0] != 0:
-            self.assertTrue(ecmp_count[0] == MAX_ITRS,
-                            "100% expected on this port")
-            self.assertTrue(ecmp_count[1] == 0,
-                            "No traffic expected on this port")
-            self.assertTrue(ecmp_count[2] == 0,
-                            "No traffic expected on this port")
-            self.assertTrue(ecmp_count[3] == 0,
-                            "No traffic expected on this port")
-        elif ecmp_count[1] != 0:
-            self.assertTrue(ecmp_count[0] == 0,
-                            "No traffic expected on this port")
-            self.assertTrue(ecmp_count[1] == MAX_ITRS,
-                            "100% expected on this port")
-            self.assertTrue(ecmp_count[2] == 0,
-                            "No traffic expected on this port")
-            self.assertTrue(ecmp_count[3] == 0,
-                            "No traffic expected on this port")
-        elif ecmp_count[2] != 0:
-            self.assertTrue(ecmp_count[0] == 0,
-                            "No traffic expected on this port")
-            self.assertTrue(ecmp_count[1] == 0,
-                            "No traffic expected on this port")
-            self.assertTrue(ecmp_count[2] == MAX_ITRS,
-                            "100% expected on this port")
-            self.assertTrue(ecmp_count[3] == 0,
-                            "No traffic expected on this port")
-        elif ecmp_count[3] != 0:
-            self.assertTrue(ecmp_count[0] == 0,
-                            "No traffic expected on this port")
-            self.assertTrue(ecmp_count[1] == 0,
-                            "No traffic expected on this port")
-            self.assertTrue(ecmp_count[2] == 0,
-                            "No traffic expected on this port")
-            self.assertTrue(ecmp_count[3] == MAX_ITRS,
-                            "100% expected on this port")
-        # enable LB back to IPv4 full fields list
-        print("Enable ECMP IPv6 LB")
-        self.setupECMPIPv6Hash()
-        count = [0, 0, 0, 0, 0, 0, 0, 0]
-        dst_ip = socket.inet_pton(socket.AF_INET6, '1000:1:1:0:0:0:0:1')
-        dst_ip_arr = list(dst_ip)
-        for i in range(0, MAX_ITRS):
-            dst_ip_addr = socket.inet_ntop(socket.AF_INET6, dst_ip)
-            src_mac = '00:22:22:22:22:22'
-            pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
-                                      eth_src=src_mac,
-                                      ipv6_dst=dst_ip_addr,
-                                      ipv6_src='5000:1:1:0:0:0:0:1',
-                                      ipv6_hlim=64)
-            exp_pkt1 = simple_tcpv6_packet(eth_dst='00:11:11:11:11:11',
-                                           eth_src=ROUTER_MAC,
-                                           ipv6_dst=dst_ip_addr,
-                                           ipv6_src='5000:1:1:0:0:0:0:1',
-                                           ipv6_hlim=63)
-            exp_pkt2 = simple_tcpv6_packet(eth_dst='00:22:22:22:22:22',
-                                           eth_src=ROUTER_MAC,
-                                           ipv6_dst=dst_ip_addr,
-                                           ipv6_src='5000:1:1:0:0:0:0:1',
-                                           ipv6_hlim=63)
-            exp_pkt3 = simple_tcpv6_packet(eth_dst='00:33:33:33:33:33',
-                                           eth_src=ROUTER_MAC,
-                                           ipv6_dst=dst_ip_addr,
-                                           ipv6_src='5000:1:1:0:0:0:0:1',
-                                           ipv6_hlim=63)
-            exp_pkt4 = simple_tcpv6_packet(eth_dst='00:44:44:44:44:44',
-                                           eth_src=ROUTER_MAC,
-                                           ipv6_dst=dst_ip_addr,
-                                           ipv6_src='5000:1:1:0:0:0:0:1',
-                                           ipv6_hlim=63)
-            send_packet(self, self.dev_port15, pkt)
-            ports_to_verify = [
-                self.dev_port11,
-                self.dev_port12,
-                self.dev_port4,
-                self.dev_port5,
-                self.dev_port6,
-                self.dev_port7,
-                self.dev_port8,
-                self.dev_port9
-            ]
-            rcv_idx = verify_any_packet_any_port(
-                self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4],
-                ports_to_verify)
-            count[rcv_idx] += 1
-            dst_ip_arr[15] = dst_ip_arr[15] + 1
-            dst_ip = bytearray(dst_ip_arr)
-        print("PORT lb counts:", count)
-        ecmp_count = [
-            count[0],
-            count[1],
-            (count[2] + count[3] + count[4]),
-            (count[5] + count[6] + count[7])]
-        print("ECMP count:", ecmp_count)
-        # Traffic should equally be ballanced, should apear on all  port or
-        # LAG
-        for i in range(0, 4):
-            print("ecmp_count=", ecmp_count, (MAX_ITRS / 4) * 0.5)
-            self.assertTrue((ecmp_count[i] >= ((MAX_ITRS / 4) * 0.5)),
-                            "Ecmp paths are not equally balanced")
 
-    def l3IPv6EcmpHostTwoLagsDisabledLagMembersTest(self):
-        """
-        IPv6 ECMP tests with LAG RIF and some LAG member in disable state
-        """
+        try:
+            count = [0, 0, 0, 0, 0, 0, 0, 0]
+            dst_ip = socket.inet_pton(socket.AF_INET6, '1000:1:1:0:0:0:0:1')
+            dst_ip_arr = list(dst_ip)
+            src_mac_start = '00:22:22:22:{0}:{1}'
+            for i in range(0, MAX_ITRS):
+                dst_ip_addr = socket.inet_ntop(socket.AF_INET6, dst_ip)
+                src_mac = src_mac_start.format(
+                    str(i).zfill(4)[:2],
+                    str(i).zfill(4)[2:])
+                src_mac = '00:22:22:22:22:22'
+                pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
+                                          eth_src=src_mac,
+                                          ipv6_dst=dst_ip_addr,
+                                          ipv6_src='5000:1:1:0:0:0:0:1',
+                                          ipv6_hlim=64)
+
+                exp_pkt1 = simple_tcpv6_packet(eth_dst='00:11:11:11:11:11',
+                                               eth_src=ROUTER_MAC,
+                                               ipv6_dst=dst_ip_addr,
+                                               ipv6_src='5000:1:1:0:0:0:0:1',
+                                               ipv6_hlim=63)
+                exp_pkt2 = simple_tcpv6_packet(eth_dst='00:22:22:22:22:22',
+                                               eth_src=ROUTER_MAC,
+                                               ipv6_dst=dst_ip_addr,
+                                               ipv6_src='5000:1:1:0:0:0:0:1',
+                                               ipv6_hlim=63)
+                exp_pkt3 = simple_tcpv6_packet(eth_dst='00:33:33:33:33:33',
+                                               eth_src=ROUTER_MAC,
+                                               ipv6_dst=dst_ip_addr,
+                                               ipv6_src='5000:1:1:0:0:0:0:1',
+                                               ipv6_hlim=63)
+                exp_pkt4 = simple_tcpv6_packet(eth_dst='00:44:44:44:44:44',
+                                               eth_src=ROUTER_MAC,
+                                               ipv6_dst=dst_ip_addr,
+                                               ipv6_src='5000:1:1:0:0:0:0:1',
+                                               ipv6_hlim=63)
+
+                send_packet(self, self.dev_port15, pkt)
+                ports_to_verify = [
+                    self.dev_port11,
+                    self.dev_port12,
+                    self.dev_port4,  # LAG1 ports
+                    self.dev_port5,
+                    self.dev_port6,
+                    self.dev_port7,  # LAG2 ports
+                    self.dev_port8,
+                    self.dev_port9
+                ]
+                rcv_idx = verify_any_packet_any_port(
+                    self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4],
+                    ports_to_verify)
+                count[rcv_idx] += 1
+                dst_ip_arr[15] = dst_ip_arr[15] + 1
+                dst_ip = bytearray(dst_ip_arr)
+
+            print("PORT lb counts:", count)
+            ecmp_count = [
+                count[0],
+                count[1],
+                (count[2] + count[3] + count[4]),
+                (count[5] + count[6] + count[7])]
+            print("ECMP count:", ecmp_count)
+            # Traffic should not be ballanced, should apear on single port or
+            # LAG
+            if ecmp_count[0] != 0:
+                self.assertTrue(
+                    ecmp_count[0] == MAX_ITRS,
+                    "100 % traffic({}) expected on port: {}, but received only"
+                    "{} packets".format(MAX_ITRS, self.dev_port11,
+                                        ecmp_count[0]))  # port 11
+                self.assertTrue(
+                    ecmp_count[1] == 0,
+                    "No traffic expected on port:{}".format(
+                        self.dev_port12))  # port 12
+                self.assertTrue(ecmp_count[2] == 0,
+                                "No traffic expected on ports: {}"
+                                .format([self.dev_port4, self.dev_port5,
+                                         self.dev_port6]))  # LAG 1
+                self.assertTrue(ecmp_count[3] == 0,
+                                "No traffic expected on ports:{}"
+                                .format([self.dev_port7, self.dev_port8,
+                                         self.dev_port9]))  # LAG 2
+            elif ecmp_count[1] != 0:
+                self.assertTrue(
+                    ecmp_count[0] == 0,
+                    "No traffic expected on port:{}"
+                    .format(self.dev_port11))
+                self.assertTrue(
+                    ecmp_count[1] == MAX_ITRS,
+                    "100 % traffic({}) expected on port: {}, but received"
+                    "only {} packets".format(MAX_ITRS, self.dev_port12,
+                                             ecmp_count[1]))
+                self.assertTrue(ecmp_count[2] == 0,
+                                "No traffic expected on ports:{}"
+                                .format([self.dev_port4, self.dev_port5,
+                                         self.dev_port6]))
+                self.assertTrue(ecmp_count[3] == 0,
+                                "No traffic expected on ports:{}"
+                                .format([self.dev_port7, self.dev_port8,
+                                         self.dev_port9]))
+            elif ecmp_count[2] != 0:
+                self.assertTrue(
+                    ecmp_count[0] == 0,
+                    "No traffic expected on port:{}".format(self.dev_port11))
+                self.assertTrue(
+                    ecmp_count[1] == 0,
+                    "No traffic expected on port:{}".format(self.dev_port12))
+                self.assertTrue(
+                    ecmp_count[2] == MAX_ITRS,
+                    "100 % traffic({}) expected on ports: {}, but received"
+                    "only {} packets".format(MAX_ITRS,
+                                             [self.dev_port4, self.dev_port5,
+                                              self.dev_port6],
+                                             ecmp_count[2]))
+                self.assertTrue(ecmp_count[3] == 0,
+                                "No traffic expected on ports:{}"
+                                .format([self.dev_port7, self.dev_port8,
+                                         self.dev_port9]))
+            elif ecmp_count[3] != 0:
+                self.assertTrue(
+                    ecmp_count[0] == 0,
+                    "No traffic expected on port:{}".format(self.dev_port11))
+                self.assertTrue(
+                    ecmp_count[1] == 0,
+                    "No traffic expected on port:{}".format(self.dev_port12))
+                self.assertTrue(ecmp_count[2] == 0,
+                                "No traffic expected on ports:{}"
+                                .format([self.dev_port4, self.dev_port5,
+                                         self.dev_port6]))
+                self.assertTrue(
+                    ecmp_count[3] == MAX_ITRS,
+                    "100 % traffic({}) expected on ports: {}, but received"
+                    "only {} pakets".format(MAX_ITRS,
+                                            [self.dev_port7, self.dev_port8,
+                                             self.dev_port9], ecmp_count[3]))
+
+            # enable LB back to IPv4 full fields list
+            print("Enable ECMP IPv6 LB")
+            self.setupECMPIPv6Hash()
+
+            count = [0, 0, 0, 0, 0, 0, 0, 0]
+            dst_ip = socket.inet_pton(socket.AF_INET6, '1000:1:1:0:0:0:0:1')
+            dst_ip_arr = list(dst_ip)
+            src_mac_start = '00:22:22:22:{0}:{1}'
+            for i in range(0, MAX_ITRS):
+                dst_ip_addr = socket.inet_ntop(socket.AF_INET6, dst_ip)
+                src_mac = src_mac_start.format(
+                    str(i).zfill(4)[:2],
+                    str(i).zfill(4)[2:])
+                src_mac = '00:22:22:22:22:22'
+                pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
+                                          eth_src=src_mac,
+                                          ipv6_dst=dst_ip_addr,
+                                          ipv6_src='5000:1:1:0:0:0:0:1',
+                                          ipv6_hlim=64)
+
+                exp_pkt1 = simple_tcpv6_packet(eth_dst='00:11:11:11:11:11',
+                                               eth_src=ROUTER_MAC,
+                                               ipv6_dst=dst_ip_addr,
+                                               ipv6_src='5000:1:1:0:0:0:0:1',
+                                               ipv6_hlim=63)
+                exp_pkt2 = simple_tcpv6_packet(eth_dst='00:22:22:22:22:22',
+                                               eth_src=ROUTER_MAC,
+                                               ipv6_dst=dst_ip_addr,
+                                               ipv6_src='5000:1:1:0:0:0:0:1',
+                                               ipv6_hlim=63)
+                exp_pkt3 = simple_tcpv6_packet(eth_dst='00:33:33:33:33:33',
+                                               eth_src=ROUTER_MAC,
+                                               ipv6_dst=dst_ip_addr,
+                                               ipv6_src='5000:1:1:0:0:0:0:1',
+                                               ipv6_hlim=63)
+                exp_pkt4 = simple_tcpv6_packet(eth_dst='00:44:44:44:44:44',
+                                               eth_src=ROUTER_MAC,
+                                               ipv6_dst=dst_ip_addr,
+                                               ipv6_src='5000:1:1:0:0:0:0:1',
+                                               ipv6_hlim=63)
+
+                send_packet(self, self.dev_port15, pkt)
+                ports_to_verify = [
+                    self.dev_port11,
+                    self.dev_port12,
+                    self.dev_port4,  # LAG1 ports
+                    self.dev_port5,
+                    self.dev_port6,
+                    self.dev_port7,  # LAG2 ports
+                    self.dev_port8,
+                    self.dev_port9
+                ]
+                rcv_idx = verify_any_packet_any_port(
+                    self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4],
+                    ports_to_verify)
+                count[rcv_idx] += 1
+                dst_ip_arr[15] = dst_ip_arr[15] + 1
+                dst_ip = bytearray(dst_ip_arr)
+
+            print("PORT lb counts:", count)
+            ecmp_count = [
+                count[0],
+                count[1],
+                (count[2] + count[3] + count[4]),
+                (count[5] + count[6] + count[7])]
+            print("ECMP count:", ecmp_count)
+            # Traffic should equally be ballanced, should apear on all  port or
+            # LAG
+            for i in range(0, 4):
+                print("ecmp_count=", ecmp_count, (MAX_ITRS / 4) * 0.5)
+                self.assertTrue((ecmp_count[i] >= ((MAX_ITRS / 4) * 0.5)),
+                                "Ecmp paths are not equally balanced")
+
+        finally:
+            pass
+
+    def tearDown(self):
+        super(l3IPv6EcmpHashPortLagTest, self).tearDown()
+
+
+@group("draft")
+class l3IPv6EcmpHostTwoLagsDisabledLagMembersTest(L3IPv6EcmpLagTestHelper):
+    """
+    IPv6 ECMP tests with LAG RIF and some LAG member in disable state
+    """
+    def setUp(self):
+        super(l3IPv6EcmpHostTwoLagsDisabledLagMembersTest, self).setUp()
+
+    def runTest(self):
         print("l3IPv6EcmpHostTwoLagsDisabledLagMembersTest")
         print("Disable LAG1 member 4 and 5")
         print("Disable LAG2 member 7")
@@ -2445,10 +1934,19 @@ class L3IPv6EcmpLagTest(SaiHelper):
                 self.client, self.lag2_member7, egress_disable=False)
             self.assertEqual(status, SAI_STATUS_SUCCESS)
 
-    def l3Ipv6EcmpAddRemoveNhopTest(self):
-        """
-        IPv6 ECMP rebalance test with removal of a nexthop member
-        """
+    def tearDown(self):
+        super(l3IPv6EcmpHostTwoLagsDisabledLagMembersTest, self).tearDown()
+
+
+@group("draft")
+class l3Ipv6EcmpAddRemoveNhopTest(L3IPv6EcmpLagTestHelper):
+    """
+    IPv6 ECMP rebalance test with removal of a nexthop member
+    """
+    def setUp(self):
+        super(l3Ipv6EcmpAddRemoveNhopTest, self).setUp()
+
+    def runTest(self):
         print("l3Ipv6EcmpAddRemoveNhopTest")
         print("Add new nhg member")
         dmac7 = '00:77:77:77:77:77'
@@ -2607,10 +2105,20 @@ class L3IPv6EcmpLagTest(SaiHelper):
                 self.assertTrue((ecmp_count[i] >= ((MAX_ITRS / 4) * 0.5)),
                                 "Ecmp paths are not equally balanced")
 
-    def l3IPv6EcmpHostPortLagSharedMembersTest(self):
-        """
-        IPv6 Multiple ECMP with shared nexthop members
-        """
+    def tearDown(self):
+        super(l3Ipv6EcmpAddRemoveNhopTest, self).tearDown()
+
+
+@group("draft")
+class l3IPv6EcmpHostPortLagSharedMembersTest(L3IPv6EcmpLagTestHelper):
+    """
+    IPv6 Multiple ECMP with shared nexthop members
+    """
+    def setUp(self):
+        super(l3IPv6EcmpHostPortLagSharedMembersTest, self).setUp()
+
+    @warm_test(is_test_rebooting=True)
+    def runTest(self):
         print("l3IPv6EcmpHostPortLagSharedMembersTest")
         try:
             count = [0, 0, 0, 0, 0, 0]
@@ -2730,15 +2238,18 @@ class L3IPv6EcmpLagTest(SaiHelper):
                 self.assertTrue((ecmp_count[i] >= ((MAX_ITRS / 4) * 0.5)),
                                 "Ecmp paths are not equally balanced")
 
+    def tearDown(self):
+        super(l3IPv6EcmpHostPortLagSharedMembersTest, self).tearDown()
+
 
 @group("draft")
-class L3IPv4SVIEcmpTest(SaiHelper):
+class L3IPv4SVIEcmpTestHelper(PlatformSaiHelper):
     """
     Base ECMP tests for IPv4 and ECMP members as SVI RIFs
     """
     def setUp(self):
 
-        super(L3IPv4SVIEcmpTest, self).setUp()
+        super(L3IPv4SVIEcmpTestHelper, self).setUp()
 
         self.vlan100_rif_counter_in = 0
         self.vlan100_rif_counter_out = 0
@@ -2807,33 +2318,33 @@ class L3IPv4SVIEcmpTest(SaiHelper):
         dmac6 = '00:22:33:33:44:55'
         dmac7 = '00:44:33:33:44:55'
         # create nhop1, nhop2 & nhop3 on SVI
-        self.nhop1 = sai_thrift_create_next_hop(
-            self.client,
-            ip=sai_ipaddress('10.10.0.1'),
-            router_interface_id=self.vlan100_rif,
-            type=SAI_NEXT_HOP_TYPE_IP)
         self.neighbor_entry1 = sai_thrift_neighbor_entry_t(
             rif_id=self.vlan100_rif, ip_address=sai_ipaddress('10.10.0.1'))
         sai_thrift_create_neighbor_entry(
             self.client, self.neighbor_entry1, dst_mac_address=dmac1)
-        self.nhop2 = sai_thrift_create_next_hop(
+        self.nhop1 = sai_thrift_create_next_hop(
             self.client,
-            ip=sai_ipaddress('10.10.0.2'),
+            ip=sai_ipaddress('10.10.0.1'),
             router_interface_id=self.vlan100_rif,
             type=SAI_NEXT_HOP_TYPE_IP)
         self.neighbor_entry2 = sai_thrift_neighbor_entry_t(
             rif_id=self.vlan100_rif, ip_address=sai_ipaddress('10.10.0.2'))
         sai_thrift_create_neighbor_entry(
             self.client, self.neighbor_entry2, dst_mac_address=dmac2)
-        self.nhop3 = sai_thrift_create_next_hop(
+        self.nhop2 = sai_thrift_create_next_hop(
             self.client,
-            ip=sai_ipaddress('10.10.0.3'),
+            ip=sai_ipaddress('10.10.0.2'),
             router_interface_id=self.vlan100_rif,
             type=SAI_NEXT_HOP_TYPE_IP)
         self.neighbor_entry3 = sai_thrift_neighbor_entry_t(
             rif_id=self.vlan100_rif, ip_address=sai_ipaddress('10.10.0.3'))
         sai_thrift_create_neighbor_entry(
             self.client, self.neighbor_entry3, dst_mac_address=dmac3)
+        self.nhop3 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('10.10.0.3'),
+            router_interface_id=self.vlan100_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
         self.nhop_group1 = sai_thrift_create_next_hop_group(
             self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
         self.nh_group1_member1 = sai_thrift_create_next_hop_group_member(
@@ -2857,15 +2368,15 @@ class L3IPv4SVIEcmpTest(SaiHelper):
             self.client, self.route0, next_hop_id=self.nhop_group1)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
         # create nhop and route to L2 intf
+        self.neighbor_entry4 = sai_thrift_neighbor_entry_t(
+            rif_id=self.port10_rif, ip_address=sai_ipaddress('11.11.0.2'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry4, dst_mac_address=dmac4)
         self.nhop4 = sai_thrift_create_next_hop(
             self.client,
             ip=sai_ipaddress('11.11.0.2'),
             router_interface_id=self.port10_rif,
             type=SAI_NEXT_HOP_TYPE_IP)
-        self.neighbor_entry4 = sai_thrift_neighbor_entry_t(
-            rif_id=self.port10_rif, ip_address=sai_ipaddress('11.11.0.2'))
-        sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry4, dst_mac_address=dmac4)
         self.lag10 = sai_thrift_create_lag(self.client)
         self.lag10_bp = sai_thrift_create_bridge_port(
             self.client,
@@ -2906,33 +2417,33 @@ class L3IPv4SVIEcmpTest(SaiHelper):
             virtual_router_id=self.default_vrf,
             vlan_id=self.vlan200)
         # Create nhop5 and nhop6 on SVI
-        self.nhop5 = sai_thrift_create_next_hop(
-            self.client,
-            ip=sai_ipaddress('20.10.0.1'),
-            router_interface_id=self.vlan200_rif,
-            type=SAI_NEXT_HOP_TYPE_IP)
         self.neighbor_entry5 = sai_thrift_neighbor_entry_t(
             rif_id=self.vlan200_rif, ip_address=sai_ipaddress('20.10.0.1'))
         sai_thrift_create_neighbor_entry(
             self.client, self.neighbor_entry5, dst_mac_address=dmac5)
-        self.nhop6 = sai_thrift_create_next_hop(
+        self.nhop5 = sai_thrift_create_next_hop(
             self.client,
-            ip=sai_ipaddress('20.10.0.2'),
+            ip=sai_ipaddress('20.10.0.1'),
             router_interface_id=self.vlan200_rif,
             type=SAI_NEXT_HOP_TYPE_IP)
         self.neighbor_entry6 = sai_thrift_neighbor_entry_t(
             rif_id=self.vlan200_rif, ip_address=sai_ipaddress('20.10.0.2'))
         sai_thrift_create_neighbor_entry(
             self.client, self.neighbor_entry6, dst_mac_address=dmac6)
-        self.nhop7 = sai_thrift_create_next_hop(
+        self.nhop6 = sai_thrift_create_next_hop(
             self.client,
-            ip=sai_ipaddress('21.11.0.2'),
-            router_interface_id=self.port11_rif,
+            ip=sai_ipaddress('20.10.0.2'),
+            router_interface_id=self.vlan200_rif,
             type=SAI_NEXT_HOP_TYPE_IP)
         self.neighbor_entry7 = sai_thrift_neighbor_entry_t(
             rif_id=self.port11_rif, ip_address=sai_ipaddress('21.11.0.2'))
         sai_thrift_create_neighbor_entry(
             self.client, self.neighbor_entry7, dst_mac_address=dmac7)
+        self.nhop7 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('21.11.0.2'),
+            router_interface_id=self.port11_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
         self.nhop_group2 = sai_thrift_create_next_hop_group(
             self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
         self.nh_group2_member1 = sai_thrift_create_next_hop_group_member(
@@ -2961,16 +2472,8 @@ class L3IPv4SVIEcmpTest(SaiHelper):
         # define IPv4 IPv6 LagIPv4Hash and LagIPv6Hash
         self.ipv4_hash_id, self.ipv6_hash_id = setup_hash(self)
 
-    def runTest(self):
-        self.l3IPv4EcmpSVIHostTest()
-        self.l3IPv4EcmpSVILagHostTest()
-
     def tearDown(self):
         sai_thrift_remove_route_entry(self.client, self.route1)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry4)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry5)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry6)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry7)
         sai_thrift_remove_next_hop_group_member(self.client,
                                                 self.nh_group2_member1)
         sai_thrift_remove_next_hop_group_member(self.client,
@@ -2985,6 +2488,10 @@ class L3IPv4SVIEcmpTest(SaiHelper):
         sai_thrift_remove_next_hop(self.client, self.nhop5)
         sai_thrift_remove_next_hop(self.client, self.nhop6)
         sai_thrift_remove_next_hop(self.client, self.nhop7)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry4)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry5)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry6)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry7)
         sai_thrift_set_lag_attribute(self.client, self.lag10, port_vlan_id=0)
         sai_thrift_set_lag_attribute(self.client, self.lag11, port_vlan_id=0)
         sai_thrift_remove_router_interface(self.client, self.vlan200_rif)
@@ -3000,9 +2507,6 @@ class L3IPv4SVIEcmpTest(SaiHelper):
         sai_thrift_remove_lag(self.client, self.lag10)
         sai_thrift_remove_lag(self.client, self.lag11)
         sai_thrift_remove_route_entry(self.client, self.route0)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry1)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry2)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry3)
         sai_thrift_remove_next_hop_group_member(self.client,
                                                 self.nh_group1_member1)
         sai_thrift_remove_next_hop_group_member(self.client,
@@ -3013,6 +2517,9 @@ class L3IPv4SVIEcmpTest(SaiHelper):
         sai_thrift_remove_next_hop(self.client, self.nhop1)
         sai_thrift_remove_next_hop(self.client, self.nhop2)
         sai_thrift_remove_next_hop(self.client, self.nhop3)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry1)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry2)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry3)
         sai_thrift_remove_router_interface(self.client, self.vlan100_rif)
         sai_thrift_set_port_attribute(self.client, self.port24, port_vlan_id=0)
         sai_thrift_set_port_attribute(self.client, self.port25, port_vlan_id=0)
@@ -3026,12 +2533,18 @@ class L3IPv4SVIEcmpTest(SaiHelper):
         sai_thrift_remove_bridge_port(self.client, self.port26_bp)
         release_hash(self, self.ipv4_hash_id, self.ipv6_hash_id)
 
-        super(L3IPv4SVIEcmpTest, self).tearDown()
+        super(L3IPv4SVIEcmpTestHelper, self).tearDown()
 
-    def l3IPv4EcmpSVIHostTest(self):
-        """
-        IPv4 ECMP tests with SVI RIF as member
-        """
+
+@group("draft")
+class l3IPv4EcmpSVIHostTest(L3IPv4SVIEcmpTestHelper):
+    """
+    IPv4 ECMP tests with SVI RIF as member
+    """
+    def setUp(self):
+        super(l3IPv4EcmpSVIHostTest, self).setUp()
+
+    def runTest(self):
         print("l3IPv4EcmpSVIHostTest")
         mac_action = SAI_PACKET_ACTION_FORWARD
         fdb_entry1 = sai_thrift_fdb_entry_t(
@@ -3117,10 +2630,19 @@ class L3IPv4SVIEcmpTest(SaiHelper):
             sai_thrift_remove_fdb_entry(self.client, fdb_entry2)
             sai_thrift_remove_fdb_entry(self.client, fdb_entry3)
 
-    def l3IPv4EcmpSVILagHostTest(self):
-        """
-        IPv4 ECMP tests with Port, LAG and SVI RIFs as nexthop members
-        """
+    def tearDown(self):
+        super(l3IPv4EcmpSVIHostTest, self).tearDown()
+
+
+@group("draft")
+class l3IPv4EcmpSVILagHostTest(L3IPv4SVIEcmpTestHelper):
+    """
+    IPv4 ECMP tests with Port, LAG and SVI RIFs as nexthop members
+    """
+    def setUp(self):
+        super(l3IPv4EcmpSVILagHostTest, self).setUp()
+
+    def runTest(self):
         print("l3IPv4EcmpSVILagHostTest")
         mac_action = SAI_PACKET_ACTION_FORWARD
         fdb_entry1 = sai_thrift_fdb_entry_t(
@@ -3217,15 +2739,18 @@ class L3IPv4SVIEcmpTest(SaiHelper):
             sai_thrift_remove_fdb_entry(self.client, fdb_entry1)
             sai_thrift_remove_fdb_entry(self.client, fdb_entry2)
 
+    def tearDown(self):
+        super(l3IPv4EcmpSVILagHostTest, self).tearDown()
+
 
 @group("draft")
-class L3IPv6SVIEcmpTest(SaiHelper):
+class L3IPv6SVIEcmpTestHelper(PlatformSaiHelper):
     """
     Base ECMP tests for IPv6 and ECMP members as SVI RIFs
     """
     def setUp(self):
 
-        super(L3IPv6SVIEcmpTest, self).setUp()
+        super(L3IPv6SVIEcmpTestHelper, self).setUp()
 
         self.vlan100_rif_counter_in = 0
         self.vlan100_rif_counter_out = 0
@@ -3305,19 +2830,14 @@ class L3IPv6SVIEcmpTest(SaiHelper):
         dmac6 = '00:11:00:00:00:06'
         dmac7 = '00:11:00:00:00:07'
         # create nhop1, nhop2 & nhop3 on SVI
-        self.nhop1 = sai_thrift_create_next_hop(
-            self.client,
-            ip=sai_ipaddress('1000:1:1:0:0:0:0:1'),
-            router_interface_id=self.vlan100_rif,
-            type=SAI_NEXT_HOP_TYPE_IP)
         self.neighbor_entry1 = sai_thrift_neighbor_entry_t(
             rif_id=self.vlan100_rif,
             ip_address=sai_ipaddress('1000:1:1:0:0:0:0:1'))
         sai_thrift_create_neighbor_entry(
             self.client, self.neighbor_entry1, dst_mac_address=dmac1)
-        self.nhop2 = sai_thrift_create_next_hop(
+        self.nhop1 = sai_thrift_create_next_hop(
             self.client,
-            ip=sai_ipaddress('1000:1:1:0:0:0:0:2'),
+            ip=sai_ipaddress('1000:1:1:0:0:0:0:1'),
             router_interface_id=self.vlan100_rif,
             type=SAI_NEXT_HOP_TYPE_IP)
         self.neighbor_entry2 = sai_thrift_neighbor_entry_t(
@@ -3325,9 +2845,9 @@ class L3IPv6SVIEcmpTest(SaiHelper):
             ip_address=sai_ipaddress('1000:1:1:0:0:0:0:2'))
         sai_thrift_create_neighbor_entry(
             self.client, self.neighbor_entry2, dst_mac_address=dmac2)
-        self.nhop3 = sai_thrift_create_next_hop(
+        self.nhop2 = sai_thrift_create_next_hop(
             self.client,
-            ip=sai_ipaddress('1000:1:1:0:0:0:0:3'),
+            ip=sai_ipaddress('1000:1:1:0:0:0:0:2'),
             router_interface_id=self.vlan100_rif,
             type=SAI_NEXT_HOP_TYPE_IP)
         self.neighbor_entry3 = sai_thrift_neighbor_entry_t(
@@ -3335,6 +2855,11 @@ class L3IPv6SVIEcmpTest(SaiHelper):
             ip_address=sai_ipaddress('1000:1:1:0:0:0:0:3'))
         sai_thrift_create_neighbor_entry(
             self.client, self.neighbor_entry3, dst_mac_address=dmac3)
+        self.nhop3 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('1000:1:1:0:0:0:0:3'),
+            router_interface_id=self.vlan100_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
         self.nhop_group1 = sai_thrift_create_next_hop_group(
             self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
         self.nh_group1_member1 = sai_thrift_create_next_hop_group_member(
@@ -3412,30 +2937,25 @@ class L3IPv6SVIEcmpTest(SaiHelper):
             virtual_router_id=self.default_vrf,
             vlan_id=self.vlan200,
             admin_v6_state=True)
-        self.nhop4 = sai_thrift_create_next_hop(
-            self.client,
-            ip=sai_ipaddress('2010:1:1:0:0:0:0:1'),
-            router_interface_id=self.port10_rif,
-            type=SAI_NEXT_HOP_TYPE_IP)
         self.neighbor_entry4 = sai_thrift_neighbor_entry_t(
             rif_id=self.port10_rif,
             ip_address=sai_ipaddress('2010:1:1:0:0:0:0:1'))
         sai_thrift_create_neighbor_entry(
             self.client, self.neighbor_entry4, dst_mac_address=dmac4)
-        # Create nhop5 and nhop6 on SVI
-        self.nhop5 = sai_thrift_create_next_hop(
+        self.nhop4 = sai_thrift_create_next_hop(
             self.client,
-            ip=sai_ipaddress('2010:1:1:0:0:0:0:2'),
-            router_interface_id=self.vlan200_rif,
+            ip=sai_ipaddress('2010:1:1:0:0:0:0:1'),
+            router_interface_id=self.port10_rif,
             type=SAI_NEXT_HOP_TYPE_IP)
+        # Create nhop5 and nhop6 on SVI
         self.neighbor_entry5 = sai_thrift_neighbor_entry_t(
             rif_id=self.vlan200_rif,
             ip_address=sai_ipaddress('2010:1:1:0:0:0:0:2'))
         sai_thrift_create_neighbor_entry(
             self.client, self.neighbor_entry5, dst_mac_address=dmac5)
-        self.nhop6 = sai_thrift_create_next_hop(
+        self.nhop5 = sai_thrift_create_next_hop(
             self.client,
-            ip=sai_ipaddress('2010:1:1:0:0:0:0:3'),
+            ip=sai_ipaddress('2010:1:1:0:0:0:0:2'),
             router_interface_id=self.vlan200_rif,
             type=SAI_NEXT_HOP_TYPE_IP)
         self.neighbor_entry6 = sai_thrift_neighbor_entry_t(
@@ -3443,16 +2963,21 @@ class L3IPv6SVIEcmpTest(SaiHelper):
             ip_address=sai_ipaddress('2010:1:1:0:0:0:0:3'))
         sai_thrift_create_neighbor_entry(
             self.client, self.neighbor_entry6, dst_mac_address=dmac6)
-        self.nhop7 = sai_thrift_create_next_hop(
+        self.nhop6 = sai_thrift_create_next_hop(
             self.client,
-            ip=sai_ipaddress('2010:1:1:0:0:0:0:4'),
-            router_interface_id=self.port11_rif,
+            ip=sai_ipaddress('2010:1:1:0:0:0:0:3'),
+            router_interface_id=self.vlan200_rif,
             type=SAI_NEXT_HOP_TYPE_IP)
         self.neighbor_entry7 = sai_thrift_neighbor_entry_t(
             rif_id=self.port11_rif,
             ip_address=sai_ipaddress('2010:1:1:0:0:0:0:4'))
         sai_thrift_create_neighbor_entry(
             self.client, self.neighbor_entry7, dst_mac_address=dmac7)
+        self.nhop7 = sai_thrift_create_next_hop(
+            self.client,
+            ip=sai_ipaddress('2010:1:1:0:0:0:0:4'),
+            router_interface_id=self.port11_rif,
+            type=SAI_NEXT_HOP_TYPE_IP)
         self.nhop_group2 = sai_thrift_create_next_hop_group(
             self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
         self.nh_group2_member1 = sai_thrift_create_next_hop_group_member(
@@ -3481,17 +3006,9 @@ class L3IPv6SVIEcmpTest(SaiHelper):
         # define IPv4 IPv6 LagIPv4Hash and LagIPv6Hash
         self.ipv4_hash_id, self.ipv6_hash_id = setup_hash(self)
 
-    def runTest(self):
-        self.l3IPv6EcmpSVIPortLagHostTest()
-        self.l3IPv6EcmpSVIHostTest()
-
     def tearDown(self):
 
         sai_thrift_remove_route_entry(self.client, self.route1)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry4)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry5)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry6)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry7)
         sai_thrift_remove_next_hop_group_member(self.client,
                                                 self.nh_group2_member1)
         sai_thrift_remove_next_hop_group_member(self.client,
@@ -3506,6 +3023,10 @@ class L3IPv6SVIEcmpTest(SaiHelper):
         sai_thrift_remove_next_hop(self.client, self.nhop5)
         sai_thrift_remove_next_hop(self.client, self.nhop6)
         sai_thrift_remove_next_hop(self.client, self.nhop7)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry4)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry5)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry6)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry7)
         sai_thrift_set_lag_attribute(self.client, self.lag10, port_vlan_id=0)
         sai_thrift_set_lag_attribute(self.client, self.lag11, port_vlan_id=0)
         sai_thrift_set_port_attribute(self.client, self.port10, port_vlan_id=0)
@@ -3527,9 +3048,6 @@ class L3IPv6SVIEcmpTest(SaiHelper):
         sai_thrift_remove_bridge_port(self.client, self.port10_bp)
         sai_thrift_remove_bridge_port(self.client, self.port11_bp)
         sai_thrift_remove_route_entry(self.client, self.route0)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry1)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry2)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry3)
         sai_thrift_remove_next_hop_group_member(self.client,
                                                 self.nh_group1_member1)
         sai_thrift_remove_next_hop_group_member(self.client,
@@ -3540,6 +3058,9 @@ class L3IPv6SVIEcmpTest(SaiHelper):
         sai_thrift_remove_next_hop(self.client, self.nhop1)
         sai_thrift_remove_next_hop(self.client, self.nhop2)
         sai_thrift_remove_next_hop(self.client, self.nhop3)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry1)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry2)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry3)
         sai_thrift_remove_router_interface(self.client, self.vlan100_rif)
         sai_thrift_set_port_attribute(self.client, self.port24, port_vlan_id=0)
         sai_thrift_set_port_attribute(self.client, self.port25, port_vlan_id=0)
@@ -3553,12 +3074,18 @@ class L3IPv6SVIEcmpTest(SaiHelper):
         sai_thrift_remove_bridge_port(self.client, self.port26_bp)
         release_hash(self, self.ipv4_hash_id, self.ipv6_hash_id)
 
-        super(L3IPv6SVIEcmpTest, self).tearDown()
+        super(L3IPv6SVIEcmpTestHelper, self).tearDown()
 
-    def l3IPv6EcmpSVIHostTest(self):
-        """
-        IPv6 ECMP tests with SVI RIF members
-        """
+
+@group("draft")
+class l3IPv6EcmpSVIHostTest(L3IPv6SVIEcmpTestHelper):
+    """
+    IPv6 ECMP tests with SVI RIF members
+    """
+    def setUp(self):
+        super(l3IPv6EcmpSVIHostTest, self).setUp()
+
+    def runTest(self):
         print("l3IPv6EcmpSVIHostTest")
         mac_action = SAI_PACKET_ACTION_FORWARD
         fdb_entry1 = sai_thrift_fdb_entry_t(
@@ -3644,10 +3171,20 @@ class L3IPv6SVIEcmpTest(SaiHelper):
             sai_thrift_remove_fdb_entry(self.client, fdb_entry2)
             sai_thrift_remove_fdb_entry(self.client, fdb_entry3)
 
-    def l3IPv6EcmpSVIPortLagHostTest(self):
-        """
-        IPv6 ECMP tests with Port, LAG and SVI RIFs as ECMP members
-        """
+
+    def tearDown(self):
+        super(l3IPv6EcmpSVIHostTest, self).tearDown()
+
+
+@group("draft")
+class l3IPv6EcmpSVIPortLagHostTest(L3IPv6SVIEcmpTestHelper):
+    """
+    IPv6 ECMP tests with Port, LAG and SVI RIFs as ECMP members
+    """
+    def setUp(self):
+        super(l3IPv6EcmpSVIPortLagHostTest, self).setUp()
+
+    def runTest(self):
         print("l3IPv6EcmpSVIPortLagHostTest")
         mac_action = SAI_PACKET_ACTION_FORWARD
         fdb_entry1 = sai_thrift_fdb_entry_t(
@@ -3732,12 +3269,15 @@ class L3IPv6SVIEcmpTest(SaiHelper):
             sai_thrift_remove_fdb_entry(self.client, fdb_entry1)
             sai_thrift_remove_fdb_entry(self.client, fdb_entry2)
 
+    def tearDown(self):
+        super(l3IPv6EcmpSVIPortLagHostTest, self).tearDown()
 
+
+@group("draft")
 class L3IPv4EcmpLagTestHelper(PlatformSaiHelper):
     """
     Base ECMP tests common setup and teardown with lag for IPv4
     """
-    
     def setUp(self):
         super(L3IPv4EcmpLagTestHelper, self).setUp()
 
@@ -3880,12 +3420,6 @@ class L3IPv4EcmpLagTestHelper(PlatformSaiHelper):
         self.ipv4_hash_id, self.ipv6_hash_id = setup_hash(self)
 
     def tearDown(self):
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry11)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry12)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry13)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry14)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry15)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry16)
         sai_thrift_remove_next_hop_group_member(self.client,
                                                 self.nh_group1_member1)
         sai_thrift_remove_next_hop_group_member(self.client,
@@ -3910,6 +3444,12 @@ class L3IPv4EcmpLagTestHelper(PlatformSaiHelper):
         sai_thrift_remove_next_hop(self.client, self.nhop4_lag2)
         sai_thrift_remove_next_hop(self.client, self.nhop5_lag1)
         sai_thrift_remove_next_hop(self.client, self.nhop6_lag2)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry11)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry12)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry13)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry14)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry15)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry16)
         sai_thrift_remove_router_interface(self.client, self.lag1_rif)
         sai_thrift_remove_router_interface(self.client, self.lag2_rif)
         sai_thrift_remove_router_interface(self.client, self.port15_rif)
@@ -3918,6 +3458,7 @@ class L3IPv4EcmpLagTestHelper(PlatformSaiHelper):
         super(L3IPv4EcmpLagTestHelper, self).tearDown()
 
 
+@group("draft")
 class L3IPv4EcmpHostTwoLagsTest(L3IPv4EcmpLagTestHelper):
     """
     IPv4 ECMP tests with all LAG RIFs members
@@ -3926,7 +3467,6 @@ class L3IPv4EcmpHostTwoLagsTest(L3IPv4EcmpLagTestHelper):
     def setUp(self):
         super(L3IPv4EcmpHostTwoLagsTest, self).setUp()
 
-    @warm_test(is_test_rebooting=True)
     def runTest(self):
         print("l3IPv4EcmpHostTwoLagsTest")
 
@@ -3990,6 +3530,7 @@ class L3IPv4EcmpHostTwoLagsTest(L3IPv4EcmpLagTestHelper):
         super(L3IPv4EcmpHostTwoLagsTest, self).tearDown()
 
 
+@group("draft")
 class L3IPv4EcmpHostPortLagSharedMembersTest(L3IPv4EcmpLagTestHelper):
     """
     IPv4 multiples ECMP with shared nexthop members
@@ -3998,7 +3539,6 @@ class L3IPv4EcmpHostPortLagSharedMembersTest(L3IPv4EcmpLagTestHelper):
     def setUp(self):
         super(L3IPv4EcmpHostPortLagSharedMembersTest, self).setUp()
 
-    @warm_test(is_test_rebooting=True)
     def runTest(self):
         print("l3IPv4EcmpHostPortLagSharedMembersTest")
         src_mac = '00:01:01:01:01:01'
@@ -4082,3 +3622,766 @@ class L3IPv4EcmpHostPortLagSharedMembersTest(L3IPv4EcmpLagTestHelper):
     def tearDown(self):
         super(L3IPv4EcmpHostPortLagSharedMembersTest, self).tearDown()
 
+
+@group("draft")
+class L3IPv4EcmpHostTwoLagsDisabledLagMembersTest(L3IPv4EcmpLagTestHelper):
+    """
+    IPv4 ECMP tests with LAG RIF and some LAG member in disable state
+    """
+
+    def setUp(self):
+        super(L3IPv4EcmpHostTwoLagsDisabledLagMembersTest, self).setUp()
+
+    def runTest(self):
+        print("l3IPv4EcmpHostTwoLagsDisabledLagMembersTest")
+        print("Disable LAG1 member 4 and 5")
+
+        status = sai_thrift_set_lag_member_attribute(
+            self.client, self.lag1_member4, egress_disable=True)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        status = sai_thrift_set_lag_member_attribute(
+            self.client, self.lag1_member5, egress_disable=True)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        try:
+            count = [0, 0, 0, 0, 0, 0]
+            dst_ip = int(binascii.hexlify(socket.inet_aton('20.20.20.1')), 16)
+            src_ip = int(binascii.hexlify(socket.inet_aton('192.168.8.1')), 16)
+            src_mac_start = '00:22:22:22:{0}:{1}'
+            for i in range(0, MAX_ITRS):
+                dst_ip_addr = socket.inet_ntoa(
+                    binascii.unhexlify(hex(dst_ip)[2:].zfill(8)))
+                src_ip_addr = socket.inet_ntoa(
+                    binascii.unhexlify(hex(src_ip)[2:].zfill(8)))
+                src_mac = src_mac_start.format(
+                    str(i).zfill(4)[:2],
+                    str(i).zfill(4)[2:])
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                        eth_src=src_mac,
+                                        ip_dst=dst_ip_addr,
+                                        ip_src=src_ip_addr,
+                                        ip_id=106,
+                                        ip_ttl=64)
+
+                exp_pkt1 = simple_tcp_packet(eth_dst='00:55:55:55:55:55',
+                                             eth_src=ROUTER_MAC,
+                                             ip_dst=dst_ip_addr,
+                                             ip_src=src_ip_addr,
+                                             ip_id=106,
+                                             ip_ttl=63)
+                exp_pkt2 = simple_tcp_packet(eth_dst='00:66:66:66:66:66',
+                                             eth_src=ROUTER_MAC,
+                                             ip_dst=dst_ip_addr,
+                                             ip_src=src_ip_addr,
+                                             ip_id=106,
+                                             ip_ttl=63)
+
+                send_packet(self, self.dev_port15, pkt)
+                ports_to_verify = [
+                    self.dev_port4,  # LAG1 ports
+                    self.dev_port5,
+                    self.dev_port6,
+                    self.dev_port7,  # LAG2 ports
+                    self.dev_port8,
+                    self.dev_port9
+                ]
+                rcv_idx = verify_any_packet_any_port(
+                    self, [exp_pkt1, exp_pkt2], ports_to_verify)
+                count[rcv_idx] += 1
+                dst_ip += 1
+                src_ip += 1
+
+            print("PORT lb counts", count)
+            ecmp_count = [(count[0] + count[1] + count[2]),
+                          (count[3] + count[4] + count[5])]
+
+            # check LAG1 traffic
+            self.assertTrue(count[0] == 0)  # LAG1 member 1 port4 disabled
+            self.assertTrue(count[1] == 0)  # LAG1 member 2 port5 disabled
+            self.assertTrue((count[2] >= ((MAX_ITRS / 2) * 0.6)),
+                            "Lag path1 is not equally balanced")
+            print("ECMP count:", ecmp_count)
+            for i in range(0, 2):
+                self.assertTrue((ecmp_count[i] >= ((MAX_ITRS / 2) * 0.75)),
+                                "Ecmp paths are not equally balanced")
+
+            # check LAG2 traffic
+            for i in range(3, 6):
+                self.assertTrue((count[i] >= ((MAX_ITRS / 6) * 0.6)),
+                                "Lag path2 is not equally balanced")
+        finally:
+            print("Enable LAG1 member 4 and 5")
+            status = sai_thrift_set_lag_member_attribute(
+                self.client, self.lag1_member4, egress_disable=False)
+            self.assertEqual(status, SAI_STATUS_SUCCESS)
+            status = sai_thrift_set_lag_member_attribute(
+                self.client, self.lag1_member5, egress_disable=False)
+            self.assertEqual(status, SAI_STATUS_SUCCESS)
+
+    def tearDown(self):
+        super(L3IPv4EcmpHostTwoLagsDisabledLagMembersTest, self).tearDown()
+
+
+@group("draft")
+class L3IPv4EcmpHostPortLagTest(L3IPv4EcmpLagTestHelper):
+    """
+    IPv4 ECMP load balance tests to check fair share on all members
+    """
+    def setUp(self):
+        super(L3IPv4EcmpHostPortLagTest, self).setUp()
+
+    def runTest(self):
+        print("l3IPv4EcmpHostPortLagTest")
+        try:
+            count = [0, 0, 0, 0, 0, 0, 0, 0]
+
+            dst_ip = int(binascii.hexlify(socket.inet_aton('10.10.10.1')), 16)
+            src_ip = int(binascii.hexlify(socket.inet_aton('192.168.8.1')), 16)
+            src_mac_start = '00:22:22:22:{0}:{1}'
+            for i in range(0, MAX_ITRS):
+                dst_ip_addr = socket.inet_ntoa(
+                    binascii.unhexlify(hex(dst_ip)[2:].zfill(8)))
+                src_ip_addr = socket.inet_ntoa(
+                    binascii.unhexlify(hex(src_ip)[2:].zfill(8)))
+                src_mac = src_mac_start.format(
+                    str(i).zfill(4)[:2],
+                    str(i).zfill(4)[2:])
+                src_mac = '00:22:22:22:00:00'
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                        eth_src=src_mac,
+                                        ip_dst=dst_ip_addr,
+                                        ip_src=src_ip_addr,
+                                        ip_id=106,
+                                        ip_ttl=64)
+
+                exp_pkt1 = simple_tcp_packet(eth_dst='00:11:11:11:11:11',
+                                             eth_src=ROUTER_MAC,
+                                             ip_dst=dst_ip_addr,
+                                             ip_src=src_ip_addr,
+                                             ip_id=106,
+                                             ip_ttl=63)
+                exp_pkt2 = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
+                                             eth_src=ROUTER_MAC,
+                                             ip_dst=dst_ip_addr,
+                                             ip_src=src_ip_addr,
+                                             ip_id=106,
+                                             ip_ttl=63)
+                exp_pkt3 = simple_tcp_packet(eth_dst='00:33:33:33:33:33',
+                                             eth_src=ROUTER_MAC,
+                                             ip_dst=dst_ip_addr,
+                                             ip_src=src_ip_addr,
+                                             ip_id=106,
+                                             ip_ttl=63)
+                exp_pkt4 = simple_tcp_packet(eth_dst='00:44:44:44:44:44',
+                                             eth_src=ROUTER_MAC,
+                                             ip_dst=dst_ip_addr,
+                                             ip_src=src_ip_addr,
+                                             ip_id=106,
+                                             ip_ttl=63)
+
+                send_packet(self, self.dev_port15, pkt)
+                ports_to_verify = [
+                    self.dev_port11,
+                    self.dev_port12,
+                    self.dev_port4,  # LAG1 ports
+                    self.dev_port5,
+                    self.dev_port6,
+                    self.dev_port7,  # LAG2 ports
+                    self.dev_port8,
+                    self.dev_port9
+                ]
+                rcv_idx = verify_any_packet_any_port(
+                    self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4],
+                    ports_to_verify)
+                count[rcv_idx] += 1
+                dst_ip += 1
+                src_ip += 1
+
+            print("PORT lb counts", count)
+            ecmp_count = [
+                count[0],
+                count[1],
+                (count[2] + count[3] + count[4]),
+                (count[5] + count[6] + count[7])]
+            print("ECMP count:", ecmp_count)
+            for i in range(0, 4):
+                self.assertTrue((ecmp_count[i] >= ((MAX_ITRS / 4) * 0.5)),
+                                "Ecmp paths are not equally balanced")
+
+            for i in range(2, 5):
+                self.assertTrue((count[i] >= ((MAX_ITRS / 12) * 0.5)),
+                                "Lag path1 is not equally balanced")
+
+            for i in range(5, 8):
+                self.assertTrue((count[i] >= ((MAX_ITRS / 12) * 0.5)),
+                                "Lag path2 is not equally balanced")
+        finally:
+            pass
+
+    def tearDown(self):
+        super(L3IPv4EcmpHostPortLagTest, self).tearDown()
+
+
+@group("draft")
+class L3IPv4EcmpHashPortLagTest(L3IPv4EcmpLagTestHelper):
+    """
+    Creates hash object and sends multiple packets
+    Validates that there is no load balancing with various fields
+    in ECMP hash
+    """
+    def setUp(self):
+        super(L3IPv4EcmpHashPortLagTest, self).setUp()
+
+    def runTest(self):
+        print("l3IPv4EcmpHashPortLagTest")
+
+        # setup the ECMP hash to SRC IP
+        print("Limit ECMP IPv4 hash to SRC_IP only.")
+        # for our test it will disable LB.
+        self.setupECMPIPv4Hash([SAI_NATIVE_HASH_FIELD_SRC_IP])
+
+        try:
+            count = [0, 0, 0, 0, 0, 0, 0, 0]
+            dst_ip = int(binascii.hexlify(socket.inet_aton('10.10.10.1')), 16)
+            src_mac_start = '00:22:22:22:{0}:{1}'
+            for i in range(0, MAX_ITRS):
+                dst_ip_addr = socket.inet_ntoa(
+                    binascii.unhexlify(hex(dst_ip)[2:].zfill(8)))
+                src_mac = src_mac_start.format(
+                    str(i).zfill(4)[:2],
+                    str(i).zfill(4)[2:])
+                src_mac = '00:22:22:22:22:22'
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                        eth_src=src_mac,
+                                        ip_dst=dst_ip_addr,
+                                        ip_src='192.168.8.1',
+                                        ip_id=106,
+                                        ip_ttl=64)
+
+                exp_pkt1 = simple_tcp_packet(eth_dst='00:11:11:11:11:11',
+                                             eth_src=ROUTER_MAC,
+                                             ip_dst=dst_ip_addr,
+                                             ip_src='192.168.8.1',
+                                             ip_id=106,
+                                             ip_ttl=63)
+                exp_pkt2 = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
+                                             eth_src=ROUTER_MAC,
+                                             ip_dst=dst_ip_addr,
+                                             ip_src='192.168.8.1',
+                                             ip_id=106,
+                                             ip_ttl=63)
+                exp_pkt3 = simple_tcp_packet(eth_dst='00:33:33:33:33:33',
+                                             eth_src=ROUTER_MAC,
+                                             ip_dst=dst_ip_addr,
+                                             ip_src='192.168.8.1',
+                                             ip_id=106,
+                                             ip_ttl=63)
+                exp_pkt4 = simple_tcp_packet(eth_dst='00:44:44:44:44:44',
+                                             eth_src=ROUTER_MAC,
+                                             ip_dst=dst_ip_addr,
+                                             ip_src='192.168.8.1',
+                                             ip_id=106,
+                                             ip_ttl=63)
+
+                send_packet(self, self.dev_port15, pkt)
+                ports_to_verify = [
+                    self.dev_port11,
+                    self.dev_port12,
+                    self.dev_port4,  # LAG1 ports
+                    self.dev_port5,
+                    self.dev_port6,
+                    self.dev_port7,  # LAG2 ports
+                    self.dev_port8,
+                    self.dev_port9
+                ]
+                rcv_idx = verify_any_packet_any_port(
+                    self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4],
+                    ports_to_verify)
+                count[rcv_idx] += 1
+                dst_ip += 1
+
+            print("PORT lb counts:", count)
+            ecmp_count = [
+                count[0],
+                count[1],
+                (count[2] + count[3] + count[4]),
+                (count[5] + count[6] + count[7])]
+            print("ECMP count:", ecmp_count)
+            # Traffic should not be ballanced, should apear on single port or
+            # LAG
+            if ecmp_count[0] != 0:
+                self.assertTrue(ecmp_count[0] == MAX_ITRS,
+                                "100% expected on this port")
+                self.assertTrue(ecmp_count[1] == 0,
+                                "No traffic expected on this port")
+                self.assertTrue(ecmp_count[2] == 0,
+                                "No traffic expected on this port")
+                self.assertTrue(ecmp_count[3] == 0,
+                                "No traffic expected on this port")
+            elif ecmp_count[1] != 0:
+                self.assertTrue(ecmp_count[0] == 0,
+                                "No traffic expected on this port")
+                self.assertTrue(ecmp_count[1] == MAX_ITRS,
+                                "100% expected on this port")
+                self.assertTrue(ecmp_count[2] == 0,
+                                "No traffic expected on this port")
+                self.assertTrue(ecmp_count[3] == 0,
+                                "No traffic expected on this port")
+            elif ecmp_count[2] != 0:
+                self.assertTrue(ecmp_count[0] == 0,
+                                "No traffic expected on this port")
+                self.assertTrue(ecmp_count[1] == 0,
+                                "No traffic expected on this port")
+                self.assertTrue(ecmp_count[2] == MAX_ITRS,
+                                "100% expected on this port")
+                self.assertTrue(ecmp_count[3] == 0,
+                                "No traffic expected on this port")
+            elif ecmp_count[3] != 0:
+                self.assertTrue(ecmp_count[0] == 0,
+                                "No traffic expected on this port")
+                self.assertTrue(ecmp_count[1] == 0,
+                                "No traffic expected on this port")
+                self.assertTrue(ecmp_count[2] == 0,
+                                "No traffic expected on this port")
+                self.assertTrue(ecmp_count[3] == MAX_ITRS,
+                                "100% expected on this port")
+
+            # enable LB back to IPv4 full fields list
+            print("Enable ECMP IPv4 LB")
+            self.setupECMPIPv4Hash()
+            count = [0, 0, 0, 0, 0, 0, 0, 0]
+            dst_ip = int(binascii.hexlify(socket.inet_aton('10.10.10.1')), 16)
+            src_mac_start = '00:22:22:22:{0}:{1}'
+            for i in range(0, MAX_ITRS):
+                dst_ip_addr = socket.inet_ntoa(
+                    binascii.unhexlify(hex(dst_ip)[2:].zfill(8)))
+                src_mac = src_mac_start.format(
+                    str(i).zfill(4)[:2],
+                    str(i).zfill(4)[2:])
+                src_mac = '00:22:22:22:22:22'
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                        eth_src=src_mac,
+                                        ip_dst=dst_ip_addr,
+                                        ip_src='192.168.8.1',
+                                        ip_id=106,
+                                        ip_ttl=64)
+
+                exp_pkt1 = simple_tcp_packet(eth_dst='00:11:11:11:11:11',
+                                             eth_src=ROUTER_MAC,
+                                             ip_dst=dst_ip_addr,
+                                             ip_src='192.168.8.1',
+                                             ip_id=106,
+                                             ip_ttl=63)
+                exp_pkt2 = simple_tcp_packet(eth_dst='00:22:22:22:22:22',
+                                             eth_src=ROUTER_MAC,
+                                             ip_dst=dst_ip_addr,
+                                             ip_src='192.168.8.1',
+                                             ip_id=106,
+                                             ip_ttl=63)
+                exp_pkt3 = simple_tcp_packet(eth_dst='00:33:33:33:33:33',
+                                             eth_src=ROUTER_MAC,
+                                             ip_dst=dst_ip_addr,
+                                             ip_src='192.168.8.1',
+                                             ip_id=106,
+                                             ip_ttl=63)
+                exp_pkt4 = simple_tcp_packet(eth_dst='00:44:44:44:44:44',
+                                             eth_src=ROUTER_MAC,
+                                             ip_dst=dst_ip_addr,
+                                             ip_src='192.168.8.1',
+                                             ip_id=106,
+                                             ip_ttl=63)
+
+                send_packet(self, self.dev_port15, pkt)
+                ports_to_verify = [
+                    self.dev_port11,
+                    self.dev_port12,
+                    self.dev_port4,  # LAG1 ports
+                    self.dev_port5,
+                    self.dev_port6,
+                    self.dev_port7,  # LAG2 ports
+                    self.dev_port8,
+                    self.dev_port9
+                ]
+                rcv_idx = verify_any_packet_any_port(
+                    self, [exp_pkt1, exp_pkt2, exp_pkt3, exp_pkt4],
+                    ports_to_verify)
+                count[rcv_idx] += 1
+                dst_ip += 1
+
+            print("PORT lb counts:", count)
+            ecmp_count = [
+                count[0],
+                count[1],
+                (count[2] + count[3] + count[4]),
+                (count[5] + count[6] + count[7])]
+            print("ECMP count:", ecmp_count)
+            # Traffic should equally be ballanced, should apear on all  port or
+            # LAG
+            for i in range(0, 4):
+                self.assertTrue((ecmp_count[i] >= ((MAX_ITRS / 4) * 0.5)),
+                                "Ecmp paths are not equally balanced")
+
+        finally:
+            pass
+
+    def tearDown(self):
+        super(L3IPv4EcmpHashPortLagTest, self).tearDown()
+
+    def setupECMPIPv4Hash(self, hash_field_list=None):
+        """
+        Setups ECMP IPv4 hash
+        Args:
+            hash_field_list (list): list of hash fields
+        """
+        print("Setting the ECMP IPv4 hash fields..")
+        if hash_field_list is None:
+            hash_field_list = [
+                SAI_NATIVE_HASH_FIELD_SRC_IP,
+                SAI_NATIVE_HASH_FIELD_DST_IP,
+                SAI_NATIVE_HASH_FIELD_IP_PROTOCOL,
+                SAI_NATIVE_HASH_FIELD_L4_DST_PORT,
+                SAI_NATIVE_HASH_FIELD_L4_SRC_PORT
+            ]
+        s32list = sai_thrift_s32_list_t(
+            count=len(hash_field_list), int32list=hash_field_list)
+        if self.ipv4_hash_id == 0:
+            self.ipv4_hash_id = sai_thrift_create_hash(
+                self.client, native_hash_field_list=s32list)
+        else:
+            status = sai_thrift_set_hash_attribute(
+                self.client, self.ipv4_hash_id, native_hash_field_list=s32list)
+            self.assertEqual(status, SAI_STATUS_SUCCESS)
+
+
+@group("draft")
+class EcmpFGTestHelper(PlatformSaiHelper):
+    '''
+    ECMP Fine Grain Test cases
+    '''
+    def setUp(self):
+        super(EcmpFGTestHelper, self).setUp()
+        print('')
+
+        nhop_ip1 = '11.11.11.11'
+        nhop_ip2 = '22.22.22.22'
+        nhop_ip3 = '33.33.33.33'
+        dmac1 = '00:11:22:33:44:55'
+        dmac2 = '00:11:22:33:44:56'
+        dmac3 = '00:11:22:33:44:57'
+
+        # set switch src mac address
+        sai_thrift_set_switch_attribute(
+            self.client,
+            src_mac_address=ROUTER_MAC)
+        self.port14_rif = sai_thrift_create_router_interface(
+            self.client,
+            type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+            virtual_router_id=self.default_vrf,
+            port_id=self.port14,
+            admin_v4_state=True)
+
+        # neighbor creation
+        self.neighbor_entry11 = sai_thrift_neighbor_entry_t(
+            self.switch_id,
+            self.port11_rif,
+            sai_ipaddress(nhop_ip1))
+        sai_thrift_create_neighbor_entry(
+            self.client,
+            self.neighbor_entry11,
+            dst_mac_address=dmac1)
+        self.neighbor_entry12 = sai_thrift_neighbor_entry_t(
+            self.switch_id,
+            self.port12_rif,
+            sai_ipaddress(nhop_ip2))
+        sai_thrift_create_neighbor_entry(
+            self.client,
+            self.neighbor_entry12,
+            dst_mac_address=dmac2)
+        self.neighbor_entry13 = sai_thrift_neighbor_entry_t(
+            self.switch_id,
+            self.port13_rif,
+            sai_ipaddress(nhop_ip3))
+        sai_thrift_create_neighbor_entry(
+            self.client,
+            self.neighbor_entry13,
+            dst_mac_address=dmac3)
+
+        # NH creation
+        self.nhop1 = sai_thrift_create_next_hop(
+            self.client,
+            type=SAI_NEXT_HOP_TYPE_IP,
+            router_interface_id=self.port11_rif,
+            ip=sai_ipaddress(nhop_ip1))
+        self.nhop2 = sai_thrift_create_next_hop(
+            self.client,
+            type=SAI_NEXT_HOP_TYPE_IP,
+            router_interface_id=self.port12_rif,
+            ip=sai_ipaddress(nhop_ip2))
+        self.nhop3 = sai_thrift_create_next_hop(
+            self.client,
+            type=SAI_NEXT_HOP_TYPE_IP,
+            router_interface_id=self.port13_rif,
+            ip=sai_ipaddress(nhop_ip3))
+
+        # Create Fine Grained ECMP group
+        self.nhop_group1 = sai_thrift_create_next_hop_group(
+            self.client,
+            type=SAI_NEXT_HOP_GROUP_TYPE_FINE_GRAIN_ECMP,
+            configured_size=50)
+
+        # Add members with index to FG Ecmp group
+        self.nh_group_member1 = sai_thrift_create_next_hop_group_member(
+            self.client,
+            next_hop_group_id=self.nhop_group1,
+            next_hop_id=self.nhop1,
+            index=0)
+        self.nh_group_member2 = sai_thrift_create_next_hop_group_member(
+            self.client,
+            next_hop_group_id=self.nhop_group1,
+            next_hop_id=self.nhop2,
+            index=1)
+        self.nh_group_member3 = sai_thrift_create_next_hop_group_member(
+            self.client,
+            next_hop_group_id=self.nhop_group1,
+            next_hop_id=self.nhop3,
+            index=2)
+        self.ecmp_members = [self.nh_group_member1, self.nh_group_member2,
+                             self.nh_group_member3]
+
+        # create route entries
+        self.route0 = sai_thrift_route_entry_t(
+            switch_id=self.switch_id,
+            destination=sai_ipprefix('10.10.10.1/16'),
+            vr_id=self.default_vrf)
+        self.assertTrue(self.route0 != 0)
+        status = sai_thrift_create_route_entry(
+            self.client,
+            self.route0,
+            next_hop_id=self.nhop_group1)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+
+    def tearDown(self):
+        sai_thrift_remove_next_hop_group_member(
+            self.client,
+            self.nh_group_member1)
+        sai_thrift_remove_next_hop_group_member(
+            self.client,
+            self.nh_group_member2)
+        sai_thrift_remove_next_hop_group_member(
+            self.client,
+            self.nh_group_member3)
+        sai_thrift_remove_route_entry(self.client, self.route0)
+        sai_thrift_remove_next_hop_group(self.client, self.nhop_group1)
+        sai_thrift_remove_next_hop(self.client, self.nhop1)
+        sai_thrift_remove_next_hop(self.client, self.nhop2)
+        sai_thrift_remove_next_hop(self.client, self.nhop3)
+        sai_thrift_remove_neighbor_entry(
+            self.client,
+            self.neighbor_entry11)
+        sai_thrift_remove_neighbor_entry(
+            self.client,
+            self.neighbor_entry12)
+        sai_thrift_remove_neighbor_entry(
+            self.client,
+            self.neighbor_entry13)
+        sai_thrift_remove_router_interface(self.client, self.port14_rif)
+        super(EcmpFGTestHelper, self).tearDown()
+
+    def packetTest(self):
+        '''
+        For sending traffic
+        Returns:
+            int: pkts count
+        '''
+        print('Sending Traffic')
+        count = [0, 0, 0]
+        try:
+            dst_ip = int(binascii.hexlify(socket.inet_aton('10.10.10.1')), 16)
+            src_mac_start = '00:22:22:22:22:'
+            for i in range(0, MAX_ITRS):
+                dst_ip_addr = socket.inet_ntoa(
+                    binascii.unhexlify(hex(dst_ip)[2:].zfill(8)))
+                src_mac = src_mac_start + str(i % 99).zfill(2)
+                pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                        eth_src=src_mac,
+                                        ip_dst=dst_ip_addr,
+                                        ip_src='192.168.8.1',
+                                        ip_id=106,
+                                        ip_ttl=64)
+
+                exp_pkt1 = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
+                                             eth_src=ROUTER_MAC,
+                                             ip_dst=dst_ip_addr,
+                                             ip_src='192.168.8.1',
+                                             ip_id=106,
+                                             ip_ttl=63)
+                exp_pkt2 = simple_tcp_packet(eth_dst='00:11:22:33:44:56',
+                                             eth_src=ROUTER_MAC,
+                                             ip_dst=dst_ip_addr,
+                                             ip_src='192.168.8.1',
+                                             ip_id=106,
+                                             ip_ttl=63)
+                exp_pkt3 = simple_tcp_packet(eth_dst='00:11:22:33:44:57',
+                                             eth_src=ROUTER_MAC,
+                                             ip_dst=dst_ip_addr,
+                                             ip_src='192.168.8.1',
+                                             ip_id=106,
+                                             ip_ttl=63)
+
+                send_packet(self, self.dev_port14, pkt)
+                rcv_idx = verify_any_packet_any_port(
+                    self, [exp_pkt1, exp_pkt2, exp_pkt3],
+                    [self.dev_port11, self.dev_port12, self.dev_port13])
+                count[rcv_idx] += 1
+                dst_ip += 1
+            return count
+        finally:
+            pass
+
+@group("draft")
+class ecmpFGBasicTest(EcmpFGTestHelper):
+    '''
+    Ecmp FG Basic TCs
+    '''
+    def setUp(self):
+        super(ecmpFGBasicTest, self).setUp()
+
+    @warm_test(is_test_rebooting=True)
+    def runTest(self):
+        print('ecmpFGBasicTest1')
+        attr = sai_thrift_get_next_hop_group_attribute(self.client,
+                                                       self.nhop_group1,
+                                                       configured_size=True)
+        nhop_grp_conf_size = attr["SAI_NEXT_HOP_GROUP_ATTR_CONFIGURED_SIZE"]
+        print('FG ECMP group --> Configured Size: %u' % nhop_grp_conf_size)
+        self.assertTrue((nhop_grp_conf_size == 50),
+                        'Configured size is %u, expected size should be 50'
+                        % nhop_grp_conf_size)
+
+        attr = sai_thrift_get_next_hop_group_attribute(self.client,
+                                                       self.nhop_group1,
+                                                       real_size=True)
+        nhop_grp_real_size = attr["SAI_NEXT_HOP_GROUP_ATTR_REAL_SIZE"]
+        print('FG ECMP group --> Real Size: %u' % nhop_grp_real_size)
+        self.assertTrue((nhop_grp_real_size > 0),
+                        'Real size is %u, expected size should be > 0'
+                        % nhop_grp_real_size)
+
+        try:
+            count = self.packetTest()
+            print('Traffic distribution [port11, port12, port13] --> %s'
+                  % count)
+            for i in range(0, 3):
+                self.assertTrue((count[i] >= ((MAX_ITRS / 3) * 0.8)),
+                                'Not all paths are equally balanced, %s'
+                                % count)
+        finally:
+            pass
+
+    def tearDown(self):
+        super(ecmpFGBasicTest, self).tearDown()
+
+
+@group("draft")
+class ecmpFGAddDelMemTest(EcmpFGTestHelper):
+    '''
+    Ecmp FG Add & Del member TCs
+    '''
+    def setUp(self):
+        super(ecmpFGAddDelMemTest, self).setUp()
+
+    @warm_test(is_test_rebooting=True)
+    def runTest(self):
+        print('ecmpFGAddDelMemTest')
+        try:
+            count = self.packetTest()
+            print('Traffic distribution [port11, port12, port13] --> %s'
+                  % count)
+
+            print('Removing nexthop2 at Member Index 1, port12')
+            sai_thrift_remove_next_hop_group_member(self.client,
+                                                    self.nh_group_member2)
+            count = self.packetTest()
+            print('Traffic dist after change [port11, port12, port13] -> %s'
+                  % count)
+            self.assertTrue((count[1] == 0), 'Pkts are still fwds to port12,%s'
+                            % count)
+
+            print('Re-Inserting member nexthop2 back at Member Index 1')
+            self.nh_group_member2 = sai_thrift_create_next_hop_group_member(
+                self.client,
+                next_hop_group_id=self.nhop_group1,
+                next_hop_id=self.nhop2,
+                index=1)
+            count = self.packetTest()
+            print('Traffic distribution now [port11, port12, port13] --> %s'
+                  % count)
+
+        finally:
+            pass
+
+    def tearDown(self):
+        super(ecmpFGAddDelMemTest, self).tearDown()
+
+
+@group("draft")
+class ecmpFGGrpMemAttrTest(EcmpFGTestHelper):
+    '''
+    Ecmp FG Member Attribure TCs
+    '''
+    def setUp(self):
+        super(ecmpFGGrpMemAttrTest, self).setUp()
+
+    def runTest(self):
+        print('ecmpFGGrpMemAttrTest')
+        try:
+            print('Assigning Nexthop2 to an Ecmp Grp Member')
+            sai_thrift_set_next_hop_group_member_attribute(
+                self.client, self.nhop_group1, next_hop_id=self.nhop2)
+
+            attr_list = sai_thrift_get_next_hop_group_member_attribute(
+                self.client,
+                self.nh_group_member2,
+                next_hop_group_id=True,
+                next_hop_id=True,
+                index=True)
+            self.assertEqual(
+                attr_list["SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_GROUP_ID"],
+                self.nhop_group1)
+            self.assertEqual(
+                attr_list["SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_ID"],
+                self.nhop2)
+            self.assertEqual(
+                attr_list["SAI_NEXT_HOP_GROUP_MEMBER_ATTR_INDEX"],
+                1)
+
+            count = self.packetTest()
+            print('Traffic flow - [port11, port12, port13] --> %s' % count)
+
+            print('Assigning Nexthop1 to an Ecmp Grp Member')
+            sai_thrift_set_next_hop_group_member_attribute(
+                self.client, self.nhop_group1, next_hop_id=self.nhop1)
+
+            attr_list = sai_thrift_get_next_hop_group_member_attribute(
+                self.client,
+                self.nh_group_member1,
+                next_hop_group_id=True,
+                next_hop_id=True,
+                index=True)
+            self.assertEqual(
+                attr_list["SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_GROUP_ID"],
+                self.nhop_group1)
+            self.assertEqual(
+                attr_list["SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_ID"],
+                self.nhop1)
+            self.assertEqual(
+                attr_list["SAI_NEXT_HOP_GROUP_MEMBER_ATTR_INDEX"],
+                0)
+
+            count = self.packetTest()
+            print('Traffic flow - [port11, port12, port13] --> %s' % count)
+
+        finally:
+            pass
+
+    def tearDown(self):
+        super(ecmpFGGrpMemAttrTest, self).tearDown()

@@ -22,11 +22,30 @@ This file contains class for brcm specified functions.
 
 from platform_helper.common_sai_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
+CATCH_EXCEPTIONS=True
+# SAI_STATUS_NOT_IMPLEMENTED
+ACCEPTED_ERROR_CODE = [SAI_STATUS_NOT_IMPLEMENTED]
+#SAI_STATUS_ATTR_NOT_IMPLEMENTED
+ACCEPTED_ERROR_CODE += range(SAI_STATUS_ATTR_NOT_IMPLEMENTED_MAX, SAI_STATUS_ATTR_NOT_IMPLEMENTED_0)
+#SAI_STATUS_ATTR_NOT_IMPLEMENTED
+ACCEPTED_ERROR_CODE += range(SAI_STATUS_UNKNOWN_ATTRIBUTE_MAX, SAI_STATUS_UNKNOWN_ATTRIBUTE_0)
+#SAI_STATUS_ATTR_NOT_SUPPORTED
+ACCEPTED_ERROR_CODE += range(SAI_STATUS_ATTR_NOT_SUPPORTED_MAX, SAI_STATUS_ATTR_NOT_SUPPORTED_0)
+
+
 class BrcmSaiHelper(CommonSaiHelper):
     """
     This class contains broadcom(brcm) specified functions for the platform setup and test context configuration.
     """
     platform = 'brcm'
+
+    def set_accepted_exception(self):
+        """
+        Set accepted exceptions.
+        """
+        adapter.CATCH_EXCEPTIONS=CATCH_EXCEPTIONS
+        adapter.EXPECTED_ERROR_CODE += ACCEPTED_ERROR_CODE
+
 
     def remove_switch(self):
         '''
@@ -263,5 +282,9 @@ class BrcmSaiHelper(CommonSaiHelper):
             self.portX objects for all active ports
         '''
         #In case the bridge port will be initalized by default, clear them
+        # There will be errors if the bridge doesn't exist
+        pre_execption_stat = adapter.CATCH_EXCEPTIONS
+        adapter.CATCH_EXCEPTIONS = True
         default_1q_bridge_port_list = self.load_default_1q_bridge_ports()
         self.remove_1q_bridge_port(default_1q_bridge_port_list)
+        adapter.CATCH_EXCEPTIONS = pre_execption_stat
