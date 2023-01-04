@@ -23,6 +23,7 @@ from sai_utils import *
 from time import sleep
 
 from data_module.device import Device, DeviceType
+from multiprocessing import Process
 
 class RouteRifTest(T0TestBase):
     """
@@ -951,16 +952,15 @@ class SviDirectBroadcastTest(T0TestBase):
     """
     def setUp(self):
         """
-        Test the basic setup process.
+        Create route interface, neighbor, and route for VLAN20 SVI.
         """
         super().setUp()
     
     def runTest(self):
         """
-        1. Make sure route interface, neighbor, and route already exist in the config for VLAN20 SVI.
-        2. Make sure Broadcast neighbor already exists in config within VLAN20 subnet (broadcast IP and DMAC is broadcast address)
-        3. send packet with DMAC: SWITCH_MAC DIP: IP:192.168.2.255 on port5
-        4. Verify packet received on port9-16
+        1. Make sure Broadcast neighbor already exists in config within VLAN20 subnet (broadcast IP and DMAC is broadcast address)
+        2. send packet with DMAC: SWITCH_MAC DIP: IP:192.168.2.255 on port5
+        3. Verify packet received on port9-16
         """
         print("SviDirectBroadcastTest")
         recv_dev_ports = self.get_dev_port_indexes(
@@ -1793,5 +1793,700 @@ class SviMacMoveV6Test(T0TestBase):
         finally:
             pass
     
+    def tearDown(self):
+        super().tearDown()
+
+class SviRouteL3Test(T0TestBase):
+    """
+    Verify route to svi route(through next hop and neighbor).
+    """
+
+    def setUp(self):
+        """
+        Create route interface, neighbor, and route for VLAN20 SVI and its members.
+        """
+        super().setUp()
+
+    def runTest(self):
+        """
+        1.send packets with DMAC: SWITCH_MAC on port10
+        2.Verify the packet received on port1 
+        """
+        
+        try:
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    ip_dst=self.servers[1][1].ipv4,
+                                    ip_id=105,
+                                    ip_ttl=64)
+
+            exp_pkt = simple_tcp_packet(eth_src=ROUTER_MAC,
+                                        eth_dst=self.servers[1][1].mac,
+                                        ip_dst=self.servers[1][1].ipv4,
+                                        ip_id=105,
+                                        ip_ttl=63)
+
+            send_packet(self, self.dut.port_obj_list[10].dev_port_index, pkt)
+            verify_packet(self, exp_pkt, self.dut.port_obj_list[1].dev_port_index)
+        finally:
+            pass
+    
+    def tearDown(self):
+        super().tearDown()
+
+
+class SviRouteL3v6Test(T0TestBase):
+    """
+    Verify route to svi route(through next hop and neighbor).
+    """
+
+    def setUp(self):
+        """
+        Create route interface, neighbor, and route for VLAN20 SVI and its members.
+        """
+        super().setUp()
+
+    def runTest(self):
+        """
+        1.send packets with DMAC: SWITCH_MAC on port10
+        2.Verify the packet received on port1 
+        """
+
+        try:
+            pkt_v6 = simple_udpv6_packet(eth_dst=ROUTER_MAC,
+                                        ipv6_dst=self.servers[1][1].ipv6,
+                                        ipv6_hlim=64)
+            exp_pkt_v6 = simple_udpv6_packet(eth_src=ROUTER_MAC,
+                                            eth_dst=self.servers[1][1].mac,
+                                            ipv6_dst=self.servers[1][1].ipv6,
+                                            ipv6_hlim=63)
+
+            send_packet(self, self.dut.port_obj_list[10].dev_port_index, pkt_v6)
+            verify_packet(self, exp_pkt_v6, self.dut.port_obj_list[1].dev_port_index)
+        finally:
+            pass
+    
+    def tearDown(self):
+        super().tearDown()
+
+class SviMacLarningAfterageV4Test(T0TestBase):
+    """
+    Verify route mac learn after age.
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process.
+        """
+        super().setUp()
+        sw_attr = sai_thrift_get_switch_attribute(
+            self.client, fdb_aging_time=True)
+        self.default_wait_time = sw_attr["fdb_aging_time"]
+        print("Default aging time is {} sec".format(self.default_wait_time))
+        # age time used in tests (in sec)
+        self.age_time = 10
+        status = sai_thrift_set_switch_attribute(self.client,
+                                                 fdb_aging_time=self.age_time)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        sw_attr = sai_thrift_get_switch_attribute(self.client,
+                                                  fdb_aging_time=True)
+        self.assertEqual(sw_attr["fdb_aging_time"], self.age_time)
+        print("Set aging time to {} sec".format(self.age_time))
+        
+    def test_svi_mac_learn_after_age(self):
+        """
+        1.Set FDB aging time=10
+        2.Run step 1-6 in test_svi_mac_learning
+        3.wait for half of the FDB aging time
+        4.Send packet with DMAC: SWITCH_MAC, SMAC:ServerX_MAC and DIP: Port10 Server_IP on port5 (mac ServerX_MAC move to port3)
+        5.Received packet with the DMAC:Port10 Server_MAC, SMAC: SWITCH_MAC and DIP: Port10 Server_IP on lag1
+        6.wait for the FDB aging time
+        7.Check FDB entry counter
+        """
+
+        dmac4 = '00:11:22:33:44:55'
+        available_fdb_entry_cnt_past = sai_thrift_get_switch_attribute(
+                self.client,
+                available_fdb_entry=True)['available_fdb_entry']
+
+        self.recv_dev_port_idxs = self.get_dev_port_indexes(self.servers[12][1].l3_lag_obj.member_port_indexs)
+
+        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                eth_src=dmac4,
+                                ip_dst=self.servers[12][1].ipv4,
+                                ip_id=105,
+                                ip_ttl=64)
+        exp_pkt = simple_tcp_packet(eth_src=ROUTER_MAC,
+                                    eth_dst=self.servers[12][1].l3_lag_obj.neighbor_mac,
+                                    ip_dst=self.servers[12][1].ipv4,
+                                    ip_id=105,
+                                    ip_ttl=63)
+
+        send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt)
+        verify_packet_any_port(self, exp_pkt, self.recv_dev_port_idxs)
+
+        sleep(5)  # wait for add mac entry
+        available_fdb_entry_cnt_now = sai_thrift_get_switch_attribute(
+                self.client,
+                available_fdb_entry=True)['available_fdb_entry']
+        self.assertEqual(available_fdb_entry_cnt_now -
+                             available_fdb_entry_cnt_past, -1)
+
+        unkownmac = "00:01:01:99:99:99"
+        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                eth_src=unkownmac,
+                                ip_dst=self.servers[12][1].ipv4,
+                                ip_id=105,
+                                ip_ttl=64)
+        exp_pkt = simple_tcp_packet(eth_src=ROUTER_MAC,
+                                    eth_dst=self.servers[12][1].l3_lag_obj.neighbor_mac,
+                                    ip_dst=self.servers[12][1].ipv4,
+                                    ip_id=105,
+                                    ip_ttl=63)
+
+        send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt)
+        verify_packet_any_port(self, exp_pkt, self.recv_dev_port_idxs)
+
+        self.saiWaitFdbAge(self.age_time)
+        print("Verify if aged MAC address was removed")
+        available_fdb_entry_cnt_age = sai_thrift_get_switch_attribute(
+                self.client,
+                available_fdb_entry=True)['available_fdb_entry']
+        self.assertEqual(available_fdb_entry_cnt_now -
+                             available_fdb_entry_cnt_age, -1)
+        print("\tVerification complete")
+
+    def runTest(self):
+        try:
+            self.test_svi_mac_learn_after_age()
+        finally:
+            pass
+    
+    def tearDown(self):
+        super().tearDown()
+
+
+class SviMacLarningAfterAgeV6Test(T0TestBase):
+    """
+    Verify route mac learn after age.
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process.
+        """
+        super().setUp()
+        sw_attr = sai_thrift_get_switch_attribute(
+            self.client, fdb_aging_time=True)
+        self.default_wait_time = sw_attr["fdb_aging_time"]
+        print("Default aging time is {} sec".format(self.default_wait_time))
+        # age time used in tests (in sec)
+        self.age_time = 10
+        status = sai_thrift_set_switch_attribute(self.client,
+                                                 fdb_aging_time=self.age_time)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        sw_attr = sai_thrift_get_switch_attribute(self.client,
+                                                  fdb_aging_time=True)
+        self.assertEqual(sw_attr["fdb_aging_time"], self.age_time)
+        print("Set aging time to {} sec".format(self.age_time))
+        
+    def test_svi_mac_learn_after_age(self):
+        """
+        1.Set FDB aging time=10
+        2.Run step 1-6 in test_svi_mac_learning
+        3.wait for half of the FDB aging time
+        4.Send packet with DMAC: SWITCH_MAC, SMAC:ServerX_MAC and DIP: Port10 Server_IP on port5 (mac ServerX_MAC move to port3)
+        5.Received packet with the DMAC:Port10 Server_MAC, SMAC: SWITCH_MAC and DIP: Port10 Server_IP on lag1
+        6.wait for the FDB aging time
+        7.Check FDB entry counter
+        """
+
+        dmac4 = '00:11:22:33:44:55'
+        available_fdb_entry_cnt_past = sai_thrift_get_switch_attribute(
+                self.client,
+                available_fdb_entry=True)['available_fdb_entry']
+
+        self.recv_dev_port_idxs = self.get_dev_port_indexes(self.servers[12][1].l3_lag_obj.member_port_indexs)
+
+        pkt_v6 = simple_udpv6_packet(eth_dst=ROUTER_MAC,
+                                     eth_src=dmac4,
+                                     ipv6_dst=self.servers[12][1].ipv6,
+                                     ipv6_hlim=64)
+        exp_pkt_v6 = simple_udpv6_packet(eth_src=ROUTER_MAC,
+                                         eth_dst=self.servers[12][1].l3_lag_obj.neighbor_mac,
+                                         ipv6_dst=self.servers[12][1].ipv6,
+                                         ipv6_hlim=63)
+        self.dataplane.flush()
+        send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt_v6)
+        verify_packet_any_port(self, exp_pkt_v6, self.recv_dev_port_idxs)
+
+        sleep(5)  # wait for add mac entry
+        available_fdb_entry_cnt_now = sai_thrift_get_switch_attribute(
+                self.client,
+                available_fdb_entry=True)['available_fdb_entry']
+        self.assertEqual(available_fdb_entry_cnt_now -
+                             available_fdb_entry_cnt_past, -1)
+
+        unkownmac = "00:01:01:99:99:99"
+        pkt_v6 = simple_udpv6_packet(eth_dst=ROUTER_MAC,
+                                     eth_src=unkownmac,
+                                     ipv6_dst=self.servers[12][1].ipv6,
+                                     ipv6_hlim=64)
+        exp_pkt_v6 = simple_udpv6_packet(eth_src=ROUTER_MAC,
+                                         eth_dst=self.servers[12][1].l3_lag_obj.neighbor_mac,
+                                         ipv6_dst=self.servers[12][1].ipv6,
+                                         ipv6_hlim=63)
+        self.dataplane.flush()
+        send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt_v6)
+        verify_packet_any_port(self, exp_pkt_v6, self.recv_dev_port_idxs)
+
+        self.saiWaitFdbAge(self.age_time)
+        print("Verify if aged MAC address was removed")
+        available_fdb_entry_cnt_age = sai_thrift_get_switch_attribute(
+                self.client,
+                available_fdb_entry=True)['available_fdb_entry']
+        self.assertEqual(available_fdb_entry_cnt_now -
+                             available_fdb_entry_cnt_age, -1)
+        print("\tVerification complete")
+
+    def runTest(self):
+        try:
+            self.test_svi_mac_learn_after_age()
+        finally:
+            pass
+    
+    def tearDown(self):
+        super().tearDown()
+
+class SviMacAgeAfterMoveV4Test(T0TestBase):
+    """
+    Verify route to svi and mac age after mac move
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process.
+        """
+        super().setUp()
+        sw_attr = sai_thrift_get_switch_attribute(
+        self.client, fdb_aging_time=True)
+        self.default_wait_time = sw_attr["fdb_aging_time"]
+        print("Default aging time is {} sec".format(self.default_wait_time))
+        # age time used in tests (in sec)
+        self.age_time = 10
+        status = sai_thrift_set_switch_attribute(self.client,
+                                                 fdb_aging_time=self.age_time)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        sw_attr = sai_thrift_get_switch_attribute(self.client,
+                                                  fdb_aging_time=True)
+        self.assertEqual(sw_attr["fdb_aging_time"], self.age_time)
+        print("Set aging time to {} sec".format(self.age_time))
+
+    def sviMacMove(self):
+        """
+        1.Run step 1-6 in test_svi_mac_learning
+        2.Send packet with DMAC: SWITCH_MAC, SMAC:ServerX_MAC and DIP: Port10 Server_IP on port5 (mac ServerX_MAC move to port3)
+        3.Received packet with the DMAC:Port10 Server_MAC, SMAC: SWITCH_MAC and DIP: Port10 Server_IP on lag1
+        4.For check mac learning from L2, check if fdb entries increase.
+        """
+
+        dmac4 = '00:11:22:33:44:55'
+        available_fdb_entry_cnt_past = sai_thrift_get_switch_attribute(
+                self.client,
+                available_fdb_entry=True)['available_fdb_entry']
+
+        self.recv_dev_port_idxs = self.get_dev_port_indexes(self.servers[12][1].l3_lag_obj.member_port_indexs)
+
+        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                eth_src=dmac4,
+                                ip_dst=self.servers[12][1].ipv4,
+                                ip_id=105,
+                                ip_ttl=64)
+        exp_pkt = simple_tcp_packet(eth_src=ROUTER_MAC,
+                                    eth_dst=self.servers[12][1].l3_lag_obj.neighbor_mac,
+                                    ip_dst=self.servers[12][1].ipv4,
+                                    ip_id=105,
+                                    ip_ttl=63)
+
+        send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt)
+        verify_packet_any_port(self, exp_pkt, self.recv_dev_port_idxs)
+
+        sleep(5)  # wait for add mac entry
+        available_fdb_entry_cnt_now = sai_thrift_get_switch_attribute(
+                self.client,
+                available_fdb_entry=True)['available_fdb_entry']
+        self.assertEqual(available_fdb_entry_cnt_now -
+                             available_fdb_entry_cnt_past, -1)
+
+        unkownmac = "00:01:01:99:99:99"
+        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                eth_src=unkownmac,
+                                ip_dst=self.servers[12][1].ipv4,
+                                ip_id=105,
+                                ip_ttl=64)
+        exp_pkt = simple_tcp_packet(eth_src=ROUTER_MAC,
+                                    eth_dst=self.servers[12][1].l3_lag_obj.neighbor_mac,
+                                    ip_dst=self.servers[12][1].ipv4,
+                                    ip_id=105,
+                                    ip_ttl=63)
+
+        send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt)
+        verify_packet_any_port(self, exp_pkt, self.recv_dev_port_idxs)
+
+        sleep(5)  # wait for add mac entry
+        available_fdb_entry_cnt_move = sai_thrift_get_switch_attribute(
+                self.client,
+                available_fdb_entry=True)['available_fdb_entry']
+        self.assertEqual(available_fdb_entry_cnt_move -
+                             available_fdb_entry_cnt_now, -1)
+
+    def runTest(self):
+        """
+        1.Set FDB aging time=10
+        2.Run step 1-6 in test_svi_mac_move
+        3.wait for FDB aging time
+        4.repeat test_svi_mac_move to check the mac learn and mac move is funcational after age
+        """
+
+        self.sviMacMove()
+        self.saiWaitFdbAge(self.age_time)
+        # sviMacMove function contains checking mac learn and mac move
+        self.sviMacMove()
+
+    def tearDown(self):
+        super().tearDown()
+
+class SviMacAgeAfterMoveV6Test(T0TestBase):
+    """
+    Verify route to svi and mac age after mac move
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process.
+        """
+        super().setUp()
+        sw_attr = sai_thrift_get_switch_attribute(
+        self.client, fdb_aging_time=True)
+        self.default_wait_time = sw_attr["fdb_aging_time"]
+        print("Default aging time is {} sec".format(self.default_wait_time))
+        # age time used in tests (in sec)
+        self.age_time = 10
+        status = sai_thrift_set_switch_attribute(self.client,
+                                                 fdb_aging_time=self.age_time)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        sw_attr = sai_thrift_get_switch_attribute(self.client,
+                                                  fdb_aging_time=True)
+        self.assertEqual(sw_attr["fdb_aging_time"], self.age_time)
+        print("Set aging time to {} sec".format(self.age_time))
+
+    def sviMacMove(self):
+        """
+        1.Run step 1-6 in test_svi_mac_learning
+        2.Send packet with DMAC: SWITCH_MAC, SMAC:ServerX_MAC and DIP: Port10 Server_IP on port5 (mac ServerX_MAC move to port3)
+        3.Received packet with the DMAC:Port10 Server_MAC, SMAC: SWITCH_MAC and DIP: Port10 Server_IP on lag1
+        4.For check mac learning from L2, check if fdb entries increase.
+        """
+
+        dmac4 = '00:11:22:33:44:55'
+        available_fdb_entry_cnt_past = sai_thrift_get_switch_attribute(
+                self.client,
+                available_fdb_entry=True)['available_fdb_entry']
+
+        self.recv_dev_port_idxs = self.get_dev_port_indexes(self.servers[12][1].l3_lag_obj.member_port_indexs)
+
+        pkt_v6 = simple_udpv6_packet(eth_dst=ROUTER_MAC,
+                                     eth_src=dmac4,
+                                     ipv6_dst=self.servers[12][1].ipv6,
+                                     ipv6_hlim=64)
+        exp_pkt_v6 = simple_udpv6_packet(eth_src=ROUTER_MAC,
+                                         eth_dst=self.servers[12][1].l3_lag_obj.neighbor_mac,
+                                         ipv6_dst=self.servers[12][1].ipv6,
+                                         ipv6_hlim=63)
+        self.dataplane.flush()
+        send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt_v6)
+        verify_packet_any_port(self, exp_pkt_v6, self.recv_dev_port_idxs)
+
+        sleep(5)  # wait for add mac entry
+        available_fdb_entry_cnt_now = sai_thrift_get_switch_attribute(
+                self.client,
+                available_fdb_entry=True)['available_fdb_entry']
+        self.assertEqual(available_fdb_entry_cnt_now -
+                             available_fdb_entry_cnt_past, -1)
+        
+        #verify mac move.
+        unkownmac = "00:01:01:99:99:99"
+        pkt_v6 = simple_udpv6_packet(eth_dst=ROUTER_MAC,
+                                     eth_src=unkownmac,
+                                     ipv6_dst=self.servers[12][1].ipv6,
+                                     ipv6_hlim=64)
+        exp_pkt_v6 = simple_udpv6_packet(eth_src=ROUTER_MAC,
+                                         eth_dst=self.servers[12][1].l3_lag_obj.neighbor_mac,
+                                         ipv6_dst=self.servers[12][1].ipv6,
+                                         ipv6_hlim=63)
+        self.dataplane.flush()
+        send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt_v6)
+        verify_packet_any_port(self, exp_pkt_v6, self.recv_dev_port_idxs)
+
+        sleep(5)  # wait for add mac entry
+        available_fdb_entry_cnt_move = sai_thrift_get_switch_attribute(
+                self.client,
+                available_fdb_entry=True)['available_fdb_entry']
+        self.assertEqual(available_fdb_entry_cnt_move -
+                             available_fdb_entry_cnt_now, -1)
+       
+
+    def runTest(self):
+        """
+        1.Set FDB aging time=10
+        2.Run step 1-6 in test_svi_mac_move
+        3.wait for FDB aging time
+        4.repeat test_svi_mac_move to check the mac learn and mac move is funcational after age
+        """
+
+        self.sviMacMove()
+        self.saiWaitFdbAge(self.age_time)
+        # sviMacMove function contains checking mac learn and mac move
+        self.sviMacMove()
+
+    def tearDown(self):
+        super().tearDown()
+
+class SviMacrMoveStressV4Test(T0TestBase):
+    """
+    Verify route to svi and mac move (change simultaneously with 100 times in differernt threads)
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process.
+        """
+        super().setUp()
+        self.threadcount = 10
+        
+    def sviMacMove(self):
+        """
+        1.Run step 1-6 in test_svi_mac_learning
+        2.Send packet with DMAC: SWITCH_MAC, SMAC:ServerX_MAC and DIP: Port10 Server_IP on port5 (mac ServerX_MAC move to port3)
+        3.Received packet with the DMAC:Port10 Server_MAC, SMAC: SWITCH_MAC and DIP: Port10 Server_IP on lag1
+        4.For check mac learning from L2, check if fdb entries increase.
+        """
+
+        dmac4 = '00:11:22:33:44:55'
+        available_fdb_entry_cnt_past = sai_thrift_get_switch_attribute(
+                self.client,
+                available_fdb_entry=True)['available_fdb_entry']
+
+        self.recv_dev_port_idxs = self.get_dev_port_indexes(self.servers[12][1].l3_lag_obj.member_port_indexs)
+
+        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                eth_src=dmac4,
+                                ip_dst=self.servers[12][1].ipv4,
+                                ip_id=105,
+                                ip_ttl=64)
+        exp_pkt = simple_tcp_packet(eth_src=ROUTER_MAC,
+                                    eth_dst=self.servers[12][1].l3_lag_obj.neighbor_mac,
+                                    ip_dst=self.servers[12][1].ipv4,
+                                    ip_id=105,
+                                    ip_ttl=63)
+
+        send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt)
+        verify_packet_any_port(self, exp_pkt, self.recv_dev_port_idxs)
+
+        sleep(5)  # wait for add mac entry
+        available_fdb_entry_cnt_now = sai_thrift_get_switch_attribute(
+                self.client,
+                available_fdb_entry=True)['available_fdb_entry']
+        self.assertEqual(available_fdb_entry_cnt_now -
+                             available_fdb_entry_cnt_past, -1)
+
+        unkownmac = "00:01:01:99:99:99"
+        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                eth_src=unkownmac,
+                                ip_dst=self.servers[12][1].ipv4,
+                                ip_id=105,
+                                ip_ttl=64)
+        exp_pkt = simple_tcp_packet(eth_src=ROUTER_MAC,
+                                    eth_dst=self.servers[12][1].l3_lag_obj.neighbor_mac,
+                                    ip_dst=self.servers[12][1].ipv4,
+                                    ip_id=105,
+                                    ip_ttl=63)
+
+        send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt)
+        verify_packet_any_port(self, exp_pkt, self.recv_dev_port_idxs)
+
+        sleep(5)  # wait for add mac entry
+        self.available_fdb_entry_cnt_move = sai_thrift_get_switch_attribute(
+                self.client,
+                available_fdb_entry=True)['available_fdb_entry']
+        self.assertEqual(self.available_fdb_entry_cnt_move -
+                             available_fdb_entry_cnt_now, -1)
+    def sendAndVerify(self):
+
+        for i in range(100):
+            dmac4 = '00:11:22:33:44:55'
+            self.recv_dev_port_idxs = self.get_dev_port_indexes(self.servers[12][1].l3_lag_obj.member_port_indexs)
+
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                eth_src=dmac4,
+                                ip_dst=self.servers[12][1].ipv4,
+                                ip_id=105,
+                                ip_ttl=64)
+            exp_pkt = simple_tcp_packet(eth_src=ROUTER_MAC,
+                                    eth_dst=self.servers[12][1].l3_lag_obj.neighbor_mac,
+                                    ip_dst=self.servers[12][1].ipv4,
+                                    ip_id=105,
+                                    ip_ttl=63)
+
+            self.dataplane.flush()
+            send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt)
+            verify_packet_any_port(self, exp_pkt, self.recv_dev_port_idxs)
+
+    def runTest(self):
+        """
+        1.Run step 1-6 in test_svi_mac_learning
+        2.Send packet with DMAC: SWITCH_MAC, SMAC:ServerX_MAC and DIP: Port10 Server_IP on port3 (mac ServerX_MAC move to port3)
+        3.Received packet with the DMAC:Port10 Server_MAC, SMAC: SWITCH_MAC and DIP: Port10 Server_IP on port10
+        4.For check mac learning from L2, send packet with DMAC: ServerX_MAC, SMAC:Port2 Server_MAC on port2
+        5.Received packet with the DMAC: ServerX_MAC, SMAC:Port2 Server_MAC on port3
+        6.repeat step2 and step4 for 1000 times (in 10 threads, 100 for each)
+        7.check the fdb available entries, should be no change from step 2
+        """
+
+        self.sviMacMove()
+        traffics = []
+        for index in range(self.threadcount):
+            traffic = Process(target=self.sendAndVerify)
+            traffics.append(traffic)
+            traffic.start()
+
+        for index in range(self.threadcount):
+            traffic.join()
+        
+        sleep(5)
+        available_fdb_entry_cnt_stress = sai_thrift_get_switch_attribute(
+                self.client,
+                available_fdb_entry=True)['available_fdb_entry']
+        self.assertEqual(self.available_fdb_entry_cnt_move,available_fdb_entry_cnt_stress)
+
+    def tearDown(self):
+        super().tearDown()
+
+
+class SviMacrMoveStressV6Test(T0TestBase):
+    """
+    Verify route to svi and mac move (change simultaneously with 100 times in differernt threads)
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process.
+        """
+        super().setUp()
+        self.threadcount = 10
+        
+    def sviMacMove(self):
+        """
+        1.Run step 1-6 in test_svi_mac_learning
+        2.Send packet with DMAC: SWITCH_MAC, SMAC:ServerX_MAC and DIP: Port10 Server_IP on port5 (mac ServerX_MAC move to port3)
+        3.Received packet with the DMAC:Port10 Server_MAC, SMAC: SWITCH_MAC and DIP: Port10 Server_IP on lag1
+        4.For check mac learning from L2, check if fdb entries increase.
+        """
+        print("SviMacLearningTest")
+
+        dmac4 = '00:11:22:33:44:55'
+        available_fdb_entry_cnt_past = sai_thrift_get_switch_attribute(
+                self.client,
+                available_fdb_entry=True)['available_fdb_entry']
+
+        self.recv_dev_port_idxs = self.get_dev_port_indexes(self.servers[12][1].l3_lag_obj.member_port_indexs)
+
+        pkt_v6 = simple_udpv6_packet(eth_dst=ROUTER_MAC,
+                                     eth_src=dmac4,
+                                     ipv6_dst=self.servers[12][1].ipv6,
+                                     ipv6_hlim=64)
+        exp_pkt_v6 = simple_udpv6_packet(eth_src=ROUTER_MAC,
+                                         eth_dst=self.servers[12][1].l3_lag_obj.neighbor_mac,
+                                         ipv6_dst=self.servers[12][1].ipv6,
+                                         ipv6_hlim=63)
+        self.dataplane.flush()
+        send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt_v6)
+        verify_packet_any_port(self, exp_pkt_v6, self.recv_dev_port_idxs)
+
+        sleep(5)  # wait for add mac entry
+        available_fdb_entry_cnt_now = sai_thrift_get_switch_attribute(
+                self.client,
+                available_fdb_entry=True)['available_fdb_entry']
+        self.assertEqual(available_fdb_entry_cnt_now -
+                             available_fdb_entry_cnt_past, -1)
+        
+        #verify mac move.
+        unkownmac = "00:01:01:99:99:99"
+        pkt_v6 = simple_udpv6_packet(eth_dst=ROUTER_MAC,
+                                     eth_src=unkownmac,
+                                     ipv6_dst=self.servers[12][1].ipv6,
+                                     ipv6_hlim=64)
+        exp_pkt_v6 = simple_udpv6_packet(eth_src=ROUTER_MAC,
+                                         eth_dst=self.servers[12][1].l3_lag_obj.neighbor_mac,
+                                         ipv6_dst=self.servers[12][1].ipv6,
+                                         ipv6_hlim=63)
+        self.dataplane.flush()
+        send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt_v6)
+        verify_packet_any_port(self, exp_pkt_v6, self.recv_dev_port_idxs)
+
+        sleep(5)  # wait for add mac entry
+        self.available_fdb_entry_cnt_move = sai_thrift_get_switch_attribute(
+                self.client,
+                available_fdb_entry=True)['available_fdb_entry']
+        self.assertEqual(self.available_fdb_entry_cnt_move -
+                             available_fdb_entry_cnt_now, -1)
+       
+    def sendAndVerify(self):
+
+        for i in range(100):
+            dmac4 = '00:11:22:33:44:55'
+            self.recv_dev_port_idxs = self.get_dev_port_indexes(self.servers[12][1].l3_lag_obj.member_port_indexs)
+
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                eth_src=dmac4,
+                                ip_dst=self.servers[12][1].ipv4,
+                                ip_id=105,
+                                ip_ttl=64)
+            exp_pkt = simple_tcp_packet(eth_src=ROUTER_MAC,
+                                    eth_dst=self.servers[12][1].l3_lag_obj.neighbor_mac,
+                                    ip_dst=self.servers[12][1].ipv4,
+                                    ip_id=105,
+                                    ip_ttl=63)
+
+            self.dataplane.flush()
+            send_packet(self, self.dut.port_obj_list[5].dev_port_index, pkt)
+            verify_packet_any_port(self, exp_pkt, self.recv_dev_port_idxs)
+
+    def runTest(self):
+        """
+        1.Run step 1-6 in test_svi_mac_learning
+        2.Send packet with DMAC: SWITCH_MAC, SMAC:ServerX_MAC and DIP: Port10 Server_IP on port3 (mac ServerX_MAC move to port3)
+        3.Received packet with the DMAC:Port10 Server_MAC, SMAC: SWITCH_MAC and DIP: Port10 Server_IP on port10
+        4.For check mac learning from L2, send packet with DMAC: ServerX_MAC, SMAC:Port2 Server_MAC on port2
+        5.Received packet with the DMAC: ServerX_MAC, SMAC:Port2 Server_MAC on port3
+        6.repeat step2 and step4 for 1000 times (in 10 threads, 100 for each)
+        7.check the fdb available entries, should be no change from step 2
+        """
+
+        self.sviMacMove()
+        traffics = []
+        for index in range(self.threadcount):
+            traffic = Process(target=self.sendAndVerify)
+            traffics.append(traffic)
+            traffic.start()
+
+        for index in range(self.threadcount):
+            traffic.join()
+        
+        sleep(5)
+        available_fdb_entry_cnt_stress = sai_thrift_get_switch_attribute(
+                self.client,
+                available_fdb_entry=True)['available_fdb_entry']
+        self.assertEqual(self.available_fdb_entry_cnt_move, available_fdb_entry_cnt_stress)
+
     def tearDown(self):
         super().tearDown()
