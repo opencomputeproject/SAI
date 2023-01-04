@@ -1084,10 +1084,12 @@ class DirBcastGleanAndForwardTest(L3DirBcastRouteTestHelper):
                 sai_thrift_remove_next_hop(self.client, nhop1)
             if nhop2:
                 sai_thrift_remove_next_hop(self.client, nhop2)
-
-            sai_thrift_remove_neighbor_entry(self.client, nbr_entry1)
-            sai_thrift_remove_neighbor_entry(self.client, nbr_entry2)
-            sai_thrift_remove_neighbor_entry(self.client, nbr_entry0)
+            if 'nbr_entry1' in locals():
+                sai_thrift_remove_neighbor_entry(self.client, nbr_entry1)
+            if 'nbr_entry2' in locals():
+                sai_thrift_remove_neighbor_entry(self.client, nbr_entry2)
+            if 'nbr_entry0' in locals():
+                sai_thrift_remove_neighbor_entry(self.client, nbr_entry0)
 
     def tearDown(self):
         super(DirBcastGleanAndForwardTest, self).tearDown()
