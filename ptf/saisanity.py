@@ -268,7 +268,6 @@ class L2SanityTest(PlatformSaiHelper):
 
         self.src_port = self.port0
         self.dst_port = self.port1
-
         self.create_bridge_ports()
 
         # create vlan 10 with ports
