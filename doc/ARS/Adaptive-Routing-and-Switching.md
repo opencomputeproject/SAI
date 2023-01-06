@@ -55,7 +55,7 @@ ARS attempts to address these shortcomings by
 | Micro Flow    | A single traffic flow typically identified by 5 tuple    |
 | Macro Flow    | collection of micro flows that hash to same value   |
 | Idle Time | Time when there are no packets observed within a macro flow |
-| Flowlet    | contagious subsequence of packets within a macro flow separated by an idle time interval    |
+| Flowlet    | contiguous subsequence of packets within a macro flow separated by an idle time interval    |
 | Macro Flow Table    | HW table to store per macro flow state    |
 | EWMA | Exponential weighted moving average |
 | ARS    | Adaptive routing and switching: Path selection is influenced by quality metrics    |
@@ -78,7 +78,7 @@ ARS attempts to address these shortcomings by
 *EWMA is used for computing the historical and future load*
 
 5. Quantization
-*Computed value need to be quantized into buckets or bands for easier intepretation*
+*Computed value need to be quantized into buckets or bands for easier interpretation*
 
 6. Non minimal cost path selection
 *ARS can be used to partition a NHG into a primary and alternate set of paths. Alternate paths are typically non minimal cost or side links based on the topology. The alternate paths are chosen when primary paths are relatively worse.*
@@ -95,7 +95,7 @@ ARS attempts to address these shortcomings by
 
 1. Flow-let based 
 *best quality path till the flow-let hits an idle time*
-*random path with out considering path quality*
+*random path for each flow-let*
 
 2. Per packet
 *best quality path assignment for each packet*
