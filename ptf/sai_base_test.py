@@ -40,6 +40,10 @@ import LogConfig
 from sai_utils import *
 import sai_thrift.sai_adapter as adapter
 
+from config.port_configer import PortConfiger
+from config.config_db_loader import ConfigDBLoader
+from config.port_config_ini_loader import PortConfigInILoader
+
 ROUTER_MAC = '00:77:66:55:44:00'
 THRIFT_PORT = 9092
 
@@ -59,11 +63,10 @@ class ThriftInterface(BaseTest):
         test_reboot_mode: reboot mode, which will be read from system env
         test_reboot_stage: reboot stage, which will be read from system env
         test_params: All the values passed via test-params if present
-        interface_to_front_mapping: Config from port_map_file for the interface (local) to front(PTF) mapping
+        interface_to_front_mapping: Config from port_map_file for the interface (local) to front(PTF) mapping 
         protocol: Thrift protocol object
         client: RPC client which used in Thrift
     """
-
 
     def __init__(self, *args, **kwargs):
         """
@@ -75,11 +78,54 @@ class ThriftInterface(BaseTest):
             test_reboot_mode: reboot mode, which will be read from system env
             test_reboot_stage: reboot stage, which will be read from system env
             test_params: All the values passed via test-params if present
-            interface_to_front_mapping: Config from port_map_file for the interface (local) to front(PTF) mapping
+            interface_to_front_mapping: Config from port_map_file for the interface (local) to front(PTF) mapping 
             protocol: Thrift protocol object
             client: RPC client which used in Thrift
         """
         super().__init__(*args, **kwargs)
+        self.port_map_loaded = False
+        """
+        If the Port map loaded when Test init
+        """
+
+        self.transport = None
+        """
+        Thrift socket object
+        """
+
+        self.test_reboot_mode = None
+        """
+        reboot mode, which will be read from system env
+        """
+        self.test_reboot_stage = None
+        """
+        reboot stage, which will be read from system env
+        """
+
+        self.interface_to_front_mapping = {}
+        """
+        Config from port_map_file for the interface (local) to front(PTF) mapping 
+        """
+
+        self.test_params = None
+        """
+        All the values passed via test-params if present
+        """
+
+        self.protocol = None
+        """
+        Thrift protocol object
+        """
+
+        self.client = None
+        """
+        RPC client which used in Thrift
+        """
+
+
+    def setUp(self):
+        super(ThriftInterface, self).setUp()
+        self.interface_to_front_mapping = {}
         self.port_map_loaded = False
         """
         If the Port map loaded when Test init
@@ -213,8 +259,29 @@ class ThriftInterface(BaseTest):
 class ThriftInterfaceDataPlane(ThriftInterface):
     """
     Sets up the thrift interface and dataplane
+
+    class attributes:
+        dataplane: Represent the dataplane used in test, pcap to manipulate the data
     """
-    def setUp(self):
+
+    def __init__(self, *args, **kwargs):
+        """
+        Init ThriftInterfaceDataPlane
+
+        Set the following class attributes:
+            dataplane: Represent the dataplane used in test, pcap to manipulate the data
+        """
+        super().__init__(*args, **kwargs)
+        self.dataplane = None
+        """
+        Represent the dataplane used in test, pcap to manipulate the data
+        """
+
+
+    def setUp(self, skip_reason = None):
+        """
+        Setup the ThriftInterfaceDataPlane.
+        """
         super(ThriftInterfaceDataPlane, self).setUp()
 
         self.dataplane = ptf.dataplane_instance
@@ -223,6 +290,7 @@ class ThriftInterfaceDataPlane(ThriftInterface):
             if config['log_dir'] is not None:
                 filename = os.path.join(config['log_dir'], str(self)) + ".pcap"
                 self.dataplane.start_pcap(filename)
+
 
     def tearDown(self):
         if config['log_dir'] is not None:
@@ -242,10 +310,32 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.active_ports_no - number of active ports
         self.port_list - list of all active port objects
         self.portX objects for all active ports (where X is a port number)
+        self.port_configer for config ports
     """
 
     platform = 'common'
-    
+
+    def __init__(self, *args, **kwargs):
+        """
+        Init the T0 Test Object.
+        Set the following class attributes:
+            dut: Dut object in test.
+            servers: Simulating the server Objects in Test.
+            t1_list: Simulating the T1 objects in test
+
+        """
+        super().__init__(*args, **kwargs)
+        self.default_vlan_id = None
+        self.default_vrf = None
+        self.default_1q_bridge = None
+        self.cpu_port_hdl = None
+        self.active_ports_no: List = []
+        self.port_list: List = []
+        self.port_configer = None
+        self.config_db_loader: ConfigDBLoader = None
+        self.port_conifg_ini_loader: PortConfigInILoader = None
+
+
     def set_logger_name(self):
         """
         Set Logger name as filename:classname
@@ -285,6 +375,17 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         #Gets self.portX objects for all active ports
         for i, _ in enumerate(self.port_list):
             setattr(self, 'port%s' % i, self.port_list[i])
+
+    def config_port(self):
+        '''
+        Method to config the ports.
+        '''
+        self.turn_up_and_check_ports()
+        # get default 1Q bridge OID
+        self.get_default_1q_bridge_id()
+
+        #remove all default 1Q bridge port
+        self.reset_1q_bridge_ports()
 
 
     def turn_up_and_check_ports(self):
@@ -440,6 +541,20 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
 
     def setUp(self):
         super(SaiHelperBase, self).setUp()
+        if 'port_config_ini' in self.test_params:
+            self.port_conifg_ini_loader = PortConfigInILoader(self.test_params['port_config_ini'])
+        else:
+            self.port_conifg_ini_loader = PortConfigInILoader()        
+        self.port_conifg_ini_loader.parse_port_config()
+        self.ports_config = self.port_conifg_ini_loader.ports_config
+
+        if 'config_db_json' in self.test_params:
+            self.config_db_loader = ConfigDBLoader(self.test_params['config_db_json'])
+        else:
+            self.config_db_loader = ConfigDBLoader()
+        self.port_configer = PortConfiger(self)
+        self.def_bridge_port_list = []
+        self.def_vlan_member_list = []
         self.set_logger_name()
         self.set_accepted_exception()
         self.getSwitchPorts()
@@ -465,13 +580,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.default_vrf = attr['default_virtual_router_id']
         self.assertNotEqual(self.default_vrf, 0)
 
-        self.turn_up_and_check_ports()
-
-        # get default 1Q bridge OID
-        self.get_default_1q_bridge_id()
-
-        #remove all default 1Q bridge port
-        self.reset_1q_bridge_ports()
+        self.config_port()
 
         # get cpu port
         attr = sai_thrift_get_switch_attribute(self.client, cpu_port=True)
@@ -533,8 +642,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
                 sai_thrift_remove_port(self.client, port)
 
         # add new ports from port config file
-        self.ports_config = self.parsePortConfig(
-            self.test_params['port_config_ini'])
+        self.ports_config = self.port_conifg_ini_loader.ports_config
         for name, port in self.ports_config.items():
             print("Creating port: %s" % name)
             fec_mode = fec_str_to_int(port.get('fec', None))
@@ -549,60 +657,6 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
                                    speed=port['speed'],
                                    admin_state=True)
 
-    def parsePortConfig(self, port_config_file):
-        """
-        Parse port_config.ini file
-
-        Example of supported format for port_config.ini:
-        # name        lanes       alias       index    speed    autoneg   fec
-        Ethernet0       0         Ethernet0     1      25000      off     none
-        Ethernet1       1         Ethernet1     1      25000      off     none
-        Ethernet2       2         Ethernet2     1      25000      off     none
-        Ethernet3       3         Ethernet3     1      25000      off     none
-        Ethernet4       4         Ethernet4     2      25000      off     none
-        Ethernet5       5         Ethernet5     2      25000      off     none
-        Ethernet6       6         Ethernet6     2      25000      off     none
-        Ethernet7       7         Ethernet7     2      25000      off     none
-        Ethernet8       8         Ethernet8     3      25000      off     none
-        Ethernet9       9         Ethernet9     3      25000      off     none
-        Ethernet10      10        Ethernet10    3      25000      off     none
-        Ethernet11      11        Ethernet11    3      25000      off     none
-        etc
-
-        Args:
-            port_config_file (string): path to port config file
-
-        Returns:
-            dict: port configuation from file
-
-        Raises:
-            e: exit if file not found
-        """
-        ports = OrderedDict()
-        try:
-            with open(port_config_file) as conf:
-                for line in conf:
-                    if line.startswith('#'):
-                        if "name" in line:
-                            titles = line.strip('#').split()
-                        continue
-                    tokens = line.split()
-                    if len(tokens) < 2:
-                        continue
-                    name_index = titles.index('name')
-                    name = tokens[name_index]
-                    data = {}
-                    for i, item in enumerate(tokens):
-                        if i == name_index:
-                            continue
-                        data[titles[i]] = item
-                    data['lanes'] = [int(lane)
-                                     for lane in data['lanes'].split(',')]
-                    data['speed'] = int(data['speed'])
-                    ports[name] = data
-            return ports
-        except Exception as e:
-            raise e
 
     def checkPortsUp(self, timeout=30):
         """

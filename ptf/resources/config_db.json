@@ -1,0 +1,198 @@
+
+{
+    "_comment": "This is a sample config for port configurations",
+    "PORT": {
+        "Ethernet0": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet4": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet8": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet12": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet16": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet20": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet24": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet28": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet32": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet36": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet40": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet44": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet48": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet52": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet56": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet60": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet64": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet68": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet72": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet76": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet80": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet84": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet88": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet92": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet96": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet100": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet104": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet108": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet112": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet116": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet120": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        },
+        "Ethernet124": {
+            "admin_status": "up",
+            "fec": "rs",
+            "mtu": "9100",
+            "speed": "100000"
+        }
+    }
+}
