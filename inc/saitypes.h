@@ -830,6 +830,9 @@ typedef enum _sai_acl_stage_t
     /** Pre-ingress Stage */
     SAI_ACL_STAGE_PRE_INGRESS,
 
+    /** Post Ingress Stage */
+    SAI_ACL_STAGE_POST_INGRESS,
+
 } sai_acl_stage_t;
 
 /**
