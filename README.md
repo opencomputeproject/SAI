@@ -1,4 +1,6 @@
-Metadata: [![Build Status](https://sonic-jenkins.westus2.cloudapp.azure.com/buildStatus/icon?job=sai-meta-build)](https://sonic-jenkins.westus2.cloudapp.azure.com/job/sai-meta-build)
+*SAI Build Status*
+
+[![master build](https://dev.azure.com/mssonic/build/_apis/build/status/opencomputeproject.SAI?branchName=master&label=master)](https://dev.azure.com/mssonic/build/_build/latest?definitionId=131&branchName=master)
 
 SAI (Switch Abstraction Interface)
 ==============================================

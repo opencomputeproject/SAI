@@ -26,13 +26,12 @@ import os
 import time
 import struct
 import socket
-import json
 
 from functools import wraps
 
 from ptf.packet import *
 from ptf.testutils import *
-
+from config.switch_configer import t0_switch_config_helper
 from sai_thrift.sai_adapter import *
 from constant import *
 
@@ -93,28 +92,6 @@ def num_to_dotted_quad(address, ipv4=True):
             result = result + sign
         i += 1
     return result[:-1]
-
-
-class ConfigDBOpertion():
-    '''
-    read config from config_db.json
-    '''
-
-    def __init__(self):
-        path = os.path.join(os.path.dirname(__file__),
-                            "resources/config_db.json")  # REPLACE
-        self.config_json = None
-        with open(path, mode='r') as f:
-            self.config_json = json.load(f)
-
-    def get_port_config(self):
-        '''
-        RETURN:
-            dict: port config
-        '''
-        port_conf = self.config_json.get('PORT')
-        key_0 = list(port_conf.keys())[0]
-        return self.config_json.get('PORT').get(key_0)
 
 
 def sai_ipaddress(addr_str):
@@ -178,3 +155,72 @@ def generate_ip_address_list(role, group, indexes):
     for index in indexes:
         ip_list.append(role.format(group, index))
     return ip_list
+
+
+def sai_thrift_api_uninitialize(client):
+    """
+    sai_thrift_api_uninitialize() RPC client function
+    implementation
+    Args:
+        client (Client): SAI RPC client
+    Returns:
+        uint: object type
+    """
+    obj_type = client.sai_thrift_api_uninitialize()
+
+    return obj_type
+
+
+def warm_test(is_test_rebooting:bool=False, time_out=60, interval=1):
+    """
+    Method decorator for the method on warm testing.
+    
+    Depends on parameters [test_reboot_mode] and [test_reboot_stage].
+    Runs different method, test_starting, setUp_post_start and runTest
+    
+    args:
+        is_test_rebooting: whether running the test case when saiserver container shut down
+        time_out: check saiserver contianer restart is complete within a 
+                  certain time limit.if time limit if exceeded, raise error
+        interval: frequency of check
+    """
+    def _check_run_case(f):
+        def test_director(inst, *args):
+            if inst.test_reboot_mode == 'warm':
+                print("shutdown the swich in warm mode")
+                sai_thrift_set_switch_attribute(inst.client, restart_warm=True)
+                sai_thrift_set_switch_attribute(inst.client, pre_shutdown=True)
+                sai_thrift_remove_switch(inst.client)
+                sai_thrift_api_uninitialize(inst.client)
+                # write content to reboot-requested
+                print("write rebooting to file")
+                warm_file = open('/tmp/warm_reboot','w+')
+                warm_file.write(WARM_TEST_REBOOTING)
+                warm_file.close()
+                times = 0
+                try:
+                    while 1:
+                        print("reading content in the warm_reboot")
+                        warm_file = open('/tmp/warm_reboot','r')
+                        txt = warm_file.readline()
+                        warm_file.close()                
+                        if 'post_reboot_done' in txt:
+                            print("warm reboot is done, next, we will run the case")
+                            break
+                        if is_test_rebooting:
+                            print("running in the rebooting stage, text is ", txt)
+                            f(inst)
+                        times = times + 1
+                        time.sleep(interval)
+                        print("alreay wait for ",times)
+                        if times > time_out:
+                            raise Exception("time out")
+                except Exception as e:
+                    print(e)
+                
+                inst.createRpcClient()
+                inst.test_reboot_stage  = WARM_TEST_POST_REBOOT
+                t0_switch_config_helper(inst)
+            return f(inst)
+        return test_director
+    return _check_run_case

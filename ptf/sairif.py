@@ -8737,6 +8737,7 @@ class RifToSubPortTest(L3SubPortTestHelper):
     def setUp(self):
         super(RifToSubPortTest, self).setUp()
 
+    @warm_test(is_test_rebooting=True)
     def runTest(self):
 
         print("\nrifToSubPortTest()")
@@ -9167,6 +9168,7 @@ class SviHostTest(L3SviTestHelper):
         """
         super(SviHostTest, self).setUp()
 
+    @warm_test(is_test_rebooting=False)
     def runTest(self):
         print("\nSviHostTest()")
 
@@ -9264,6 +9266,7 @@ class SviLagHostTest(L3SviTestHelper):
         """
         super(SviLagHostTest, self).setUp()
 
+    @warm_test(is_test_rebooting=False)
     def runTest(self):
         print("\nSviLagHostTest()")
         print("Test routing after NHOP resolved via static MAC entry")

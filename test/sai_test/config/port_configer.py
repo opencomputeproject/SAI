@@ -38,7 +38,7 @@ def t0_port_config_helper(test_obj: 'T0TestBase', is_recreate_bridge=True, is_cr
     Set the following test_obj attributes:
         int: default_trap_group
         list: port_list
-        int: default_1q_bridge_id        
+        int: default_1q_bridge_id
         int: host_intf_table_id
         list: hostif_list
 
@@ -46,7 +46,7 @@ def t0_port_config_helper(test_obj: 'T0TestBase', is_recreate_bridge=True, is_cr
     configer = PortConfiger(test_obj)
     test_obj.dut.port_id_list = configer.get_port_list()
     configer.get_local_mapped_ports()
-    configer.parse_port_config(test_obj.test_params['port_config_ini'])
+    configer.assign_port_config(test_obj.port_conifg_ini_loader.portConfigs)
 
     attr = sai_thrift_get_switch_attribute(
         configer.client, default_trap_group=True)
@@ -102,9 +102,8 @@ class PortConfiger(object):
             test_obj: the test object
         """
         self.test_obj = test_obj
-        self.client = test_obj.client
-        config_driver = ConfigDBOpertion()
-        self.config = config_driver.get_port_config()
+        self.client = test_obj.client        
+        self.config_db = test_obj.config_db_loader.get_port_config()
 
     def create_bridge_ports(self, bridge_id, port_list: List['Port']):
         """
@@ -128,6 +127,7 @@ class PortConfiger(object):
                 admin_state=True)
             bp_list.append(port_bp)
             item.bridge_port_oid = port_bp
+        #print("create bridge port list : {}".format(bp_list))
         return bp_list
 
     def create_host_intf(self, port_list: List['Port'], trap_group=None):
@@ -318,7 +318,6 @@ class PortConfiger(object):
         port_list = sai_thrift_object_list_t(count=100)
         p_list = sai_thrift_get_switch_attribute(
             self.client, port_list=port_list)
-        import pdb
         for index, item in enumerate(p_list['port_list'].idlist):
             port: Port = Port(oid=item, port_index=index, rif_list=[
             ], nexthopv4_list=[], nexthopv6_list=[])
@@ -331,6 +330,8 @@ class PortConfiger(object):
             self.test_obj.ports_config, port_obj_list)
         for item in self.test_obj.dut.port_obj_list:
             port_id_list.append(item.oid)
+        #print("port_list {}".format(port_id_list))
+
         return port_id_list
 
     def sort_port_list_by_config(self, ports_config, port_list: List[Port]):
@@ -352,66 +353,13 @@ class PortConfiger(object):
                     break
         return sorted_port_list
 
-    def parse_port_config(self, port_config_file):
+    def assign_port_config(self, portConfigs: Dict):
         """
-        Parse port_config.ini file
-
-        Example of supported format for port_config.ini:
-        # name        lanes       alias       index    speed    autoneg   fec
-        Ethernet0       0         Ethernet0     1      25000      off     none
-        Ethernet1       1         Ethernet1     1      25000      off     none
-        Ethernet2       2         Ethernet2     1      25000      off     none
-        Ethernet3       3         Ethernet3     1      25000      off     none
-        Ethernet4       4         Ethernet4     2      25000      off     none
-        Ethernet5       5         Ethernet5     2      25000      off     none
-        Ethernet6       6         Ethernet6     2      25000      off     none
-        Ethernet7       7         Ethernet7     2      25000      off     none
-        Ethernet8       8         Ethernet8     3      25000      off     none
-        Ethernet9       9         Ethernet9     3      25000      off     none
-        Ethernet10      10        Ethernet10    3      25000      off     none
-        Ethernet11      11        Ethernet11    3      25000      off     none
-        etc
-
-        Args:
-            port_config_file (string): path to port config file
-
-        Returns:
-            dict: port configuation from file
-
-        Raises:
-            e: exit if file not found
+        Assign the PortConfig object to the Port Object
         """
-        portConfigs = OrderedDict()
-        try:
-            index = 0
-            with open(port_config_file) as conf:
-                for line in conf:
-                    if line.startswith('#'):
-                        if "name" in line:
-                            titles = line.strip('#').split()
-                        continue
-                    tokens = line.split()
-                    if len(tokens) < 2:
-                        continue
+        for index, portconfig in enumerate(portConfigs):
+            self.test_obj.dut.port_obj_list[index].port_config = portconfig
 
-                    name_index = titles.index('name')
-                    name = tokens[name_index]
-                    data = {}
-                    portConfig = PortConfig()
-                    for i, item in enumerate(tokens):
-                        if i == name_index:
-                            continue
-                        data[titles[i]] = item
-                    portConfig.lanes = [int(lane)
-                                        for lane in data['lanes'].split(',')]
-                    portConfig.speed = int(data['speed'])
-                    portConfig.name = name
-                    portConfigs[index] = portConfig
-                    self.test_obj.dut.port_obj_list[index].port_config = portConfig
-                    index = index + 1
-            return portConfigs
-        except Exception as e:
-            raise e
 
     def remove_bridge_port(self, bridge_id):
         """
@@ -506,7 +454,7 @@ class PortConfiger(object):
         RETURN:
              int: SAI_PORT_FEC_MODE_X
         '''
-        fec_mode = self.config.get('fec')
+        fec_mode = self.config_db.get('fec')
         fec_change = {
             None: SAI_PORT_FEC_MODE_NONE,
             'rs': SAI_PORT_FEC_MODE_RS,
@@ -521,7 +469,7 @@ class PortConfiger(object):
         RETURN:
             int: mtu number
         '''
-        return int(self.config.get('mtu'))
+        return int(self.config_db.get('mtu'))
 
     def get_cpu_port_queue(self):
 
@@ -546,19 +494,3 @@ class PortConfiger(object):
                 index=True,
                 parent_scheduler_node=True)
             self.test_obj.assertEqual(queue, q_attr['index'])
-
-
-class PortConfig(object):
-    """
-    Represent the PortConfig Object
-
-    Attrs:
-        name: interface name
-        lanes: lanes
-        speed: port speed
-    """
-
-    def __init__(self, name=None, lanes=None, speed=None):
-        self.name = name
-        self.lanes = lanes
-        self.speed = speed

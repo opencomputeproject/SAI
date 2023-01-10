@@ -328,6 +328,9 @@ typedef enum _sai_port_interface_type_t
     /** Interface type LR8 */
     SAI_PORT_INTERFACE_TYPE_LR8,
 
+    /** Interface type USXGMII */
+    SAI_PORT_INTERFACE_TYPE_USXGMII,
+
     /** Interface type MAX */
     SAI_PORT_INTERFACE_TYPE_MAX,
 
@@ -1755,7 +1758,8 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Attribute data for #SAI_PORT_ATTR_AUTO_NEG_STATUS
      *
-     * Auto negotiation (AN) done state: 0 for AN in progress, 0 for AN done
+     * Auto negotiation (AN) done state: 0 for AN in progress, 1 for AN done
+     * If auto negotiation is off, the returned value should be 0.
      *
      * @type bool
      * @flags READ_ONLY

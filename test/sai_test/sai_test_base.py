@@ -39,6 +39,8 @@ from sai_thrift.sai_adapter import *
 from thrift.protocol import TBinaryProtocol
 from thrift.transport import TSocket, TTransport
 
+from config.config_db_loader import ConfigDBLoader
+from config.port_config_ini_loader import PortConfigInILoader
 from config.fdb_configer import (FdbConfiger, t0_fdb_config_helper,
                                  t0_fdb_tear_down_helper)
 from config.lag_configer import LagConfiger, t0_lag_config_helper
@@ -48,6 +50,7 @@ from config.route_configer import RouteConfiger, t0_route_config_helper
 from config.switch_configer import SwitchConfiger, t0_switch_config_helper
 from config.vlan_configer import (VlanConfiger, t0_vlan_config_helper,
                                   t0_vlan_tear_down_helper)
+
 from data_module.device import Device, DeviceType
 from data_module.dut import Dut
 from data_module.lag import Lag
@@ -153,16 +156,14 @@ class ThriftInterface(BaseTest):
         self.loadCommonConfigured()
         self.loadTestRebootMode()
         self.loadPortMap()
-        self.needRPCOp = not (self.test_reboot_mode == 'warm' and self.test_reboot_stage == 'rebooting')
-        if self.needRPCOp:
-            self.createRpcClient()
+        self.createRpcClient()
+        print('createRpcClient')
 
     def tearDown(self):
         """
         Clean up all the test env
         """
-        if self.needRPCOp:
-            self.transport.close()
+        self.transport.close()
 
         super(ThriftInterface, self).tearDown()
 
@@ -178,12 +179,10 @@ class ThriftInterface(BaseTest):
             test_reboot_mode - reboot mode
             test_reboot_stage - reboot stage, can be [setup|starting|post]
         """
+        self.test_reboot_stage = None
         if "test_reboot_mode" in self.test_params:
             self.test_reboot_mode = self.test_params['test_reboot_mode']
-            if "test_reboot_stage" in self.test_params:
-                self.test_reboot_stage = self.test_params['test_reboot_stage']
-            else:
-                raise ValueError('test_reboot_stage is Null!')
+
         else:
             self.test_reboot_mode = 'cold'
 
@@ -249,8 +248,6 @@ class ThriftInterface(BaseTest):
         self.transport = TSocket.TSocket(server, THRIFT_PORT)
         self.transport = TTransport.TBufferedTransport(self.transport)
         self.protocol = TBinaryProtocol.TBinaryProtocol(self.transport)
-        if self.test_reboot_stage == 'starting':
-            return
         self.client = sai_rpc.Client(self.protocol)
         self.transport.open()
 
@@ -289,6 +286,7 @@ class ThriftInterfaceDataPlane(ThriftInterface):
                 filename = os.path.join(config['log_dir'], str(self)) + ".pcap"
                 self.dataplane.start_pcap(filename)
 
+        
     def tearDown(self):
         """
         Clean up ThriftInterfaceDataPlane.
@@ -352,6 +350,8 @@ class T0TestBase(ThriftInterfaceDataPlane):
         """
         self.persist_helper = PersistHelper()
         self.ports_config = None
+        self.config_db_loader: ConfigDBLoader = None
+        self.port_conifg_ini_loader: PortConfigInILoader = None
 
     def set_logger_name(self):
         """
@@ -383,7 +383,16 @@ class T0TestBase(ThriftInterfaceDataPlane):
         self.set_logger_name()
         # parse the port_config.ini, will create port, bridge port and host interface base on that file
         if 'port_config_ini' in self.test_params:
-            self.ports_config = self.parsePortConfig(self.test_params['port_config_ini'])        
+            self.port_conifg_ini_loader = PortConfigInILoader(self.test_params['port_config_ini'])
+        else:
+            self.port_conifg_ini_loader = PortConfigInILoader()        
+        self.port_conifg_ini_loader.parse_port_config()
+        self.ports_config = self.port_conifg_ini_loader.ports_config
+
+        if 'config_db_json' in self.test_params:
+            self.config_db_loader = ConfigDBLoader(self.test_params['config_db_json'])
+        else:
+            self.config_db_loader = ConfigDBLoader()
 
         self.port_configer = PortConfiger(self)
         self.switch_configer = SwitchConfiger(self)
@@ -391,7 +400,6 @@ class T0TestBase(ThriftInterfaceDataPlane):
         self.vlan_configer = VlanConfiger(self)
         self.route_configer = RouteConfiger(self)
         self.lag_configer = LagConfiger(self)
-
         if force_config or not self.common_configured:
             self.create_device()
             t0_switch_config_helper(self)
@@ -417,10 +425,8 @@ class T0TestBase(ThriftInterfaceDataPlane):
                 is_create_vlan_interface=is_create_vlan_itf,
                 is_create_route_for_vlan=is_create_route_for_vlan_itf,
                 is_create_route_for_nhopgrp=is_create_route_for_nhopgrp)
-            print("common config done, persist it")
-            self.persist_helper.persist_dut(self.dut)
-            self.persist_helper.persist_server_list(self.servers)
-            self.persist_helper.persist_t1_list(self.t1_list)
+            print("common config done")
+            self.persist_config()
             print("Waiting for switch to get ready before test, {} seconds ...".format(
                 wait_sec))
             time.sleep(wait_sec)
@@ -430,6 +436,14 @@ class T0TestBase(ThriftInterfaceDataPlane):
             self.t1_list = self.persist_helper.read_t1_list()
             self.servers = self.persist_helper.read_server_list()
 
+    def persist_config(self):
+        """
+        persist config
+        """
+        print("persist config")
+        self.persist_helper.persist_dut(self.dut)
+        self.persist_helper.persist_server_list(self.servers)
+        self.persist_helper.persist_t1_list(self.t1_list)
 
     def restore_fdb_config(self):
         """
@@ -437,7 +451,6 @@ class T0TestBase(ThriftInterfaceDataPlane):
         """
         t0_fdb_tear_down_helper(self)
         t0_fdb_config_helper(test_obj=self)
-
 
     def parsePortConfig(self, port_config_file):
         """
@@ -586,3 +599,4 @@ class T0TestBase(ThriftInterfaceDataPlane):
             we need persist dut again 
         '''
         super().tearDown()
+

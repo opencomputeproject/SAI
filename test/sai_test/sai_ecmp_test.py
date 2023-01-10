@@ -2084,3 +2084,328 @@ class EcmpLagTwoLayersWithDiffHashOffsetTestV6(EcmpBaseTestV6):
 
     def tearDown(self):
         super().tearDown()
+
+class EcmpCoExistLagRouteV4(T0TestBase):
+    """
+    Verify the lags route and ecmp (with the same lag) route can work together.
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process
+        """
+        T0TestBase.setUp(self,
+                         skip_reason = "SKIP! Skip test for broadcom, learn_disable, report error code -196608, no error log. Item: 16384090")
+        nhop_groupv4_id = sai_thrift_create_next_hop_group(self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+
+        for lag_idx in range(2):
+            t1_idx = lag_idx + 1
+
+            nbr_entry_v4 = sai_thrift_neighbor_entry_t(
+                rif_id=self.dut.rif_list[lag_idx],
+                ip_address=sai_ipaddress(self.t1_list[t1_idx][99].ipv4))
+            status = sai_thrift_create_neighbor_entry(
+                self.client,
+                nbr_entry_v4,
+                dst_mac_address=self.t1_list[t1_idx][99].mac,
+                no_host_route=False)
+            self.assertEqual(status, SAI_STATUS_SUCCESS)
+            nhopv4_id = sai_thrift_create_next_hop(self.client, 
+                                                   ip=sai_ipaddress(self.t1_list[t1_idx][99].ipv4), 
+                                                   router_interface_id=self.dut.rif_list[lag_idx], 
+                                                   type=SAI_NEXT_HOP_TYPE_IP)
+            self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+
+            nhp_grpv4_member = sai_thrift_create_next_hop_group_member(
+                self.client,
+                next_hop_group_id=nhop_groupv4_id,
+                next_hop_id=nhopv4_id)
+            self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        
+        net_routev4 = sai_thrift_route_entry_t(
+                vr_id=self.dut.default_vrf, destination=sai_ipprefix(self.servers[60][0].ipv4+'/'+ '24'))
+        status = sai_thrift_create_route_entry(
+                self.client, net_routev4, next_hop_id=nhop_groupv4_id)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+
+    def test_ecmp_coexist_lag_routev4(self):
+        """
+        make sure the route for ip subnet 192.168.61.0/24 and other lags routes 192.168.11.0/24 ~ 192.168.14.0/24 route are coexist (not use the same nexthop)
+        send packet within 192.168.61.0/24
+        Verify received packet on LAG1~4 members
+        """
+        
+        recv_dev_port_idxs = self.get_dev_port_indexes(self.servers[11][1].l3_lag_obj.member_port_indexs)
+        recv_dev_port_idxs = recv_dev_port_idxs + self.get_dev_port_indexes(self.servers[12][1].l3_lag_obj.member_port_indexs)
+
+        ip_src = self.servers[0][1].ipv4
+        ip_dst = self.servers[60][1].ipv4
+        src_port = 2000
+        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    eth_src=self.servers[1][1].mac,
+                                    ip_dst=ip_dst,
+                                    ip_src=ip_src,
+                                    tcp_sport= src_port,
+                                    ip_id=105,
+                                    ip_ttl=64)
+
+        exp_pkt1 = simple_tcp_packet(eth_dst=self.t1_list[1][99].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         tcp_sport= src_port,
+                                         ip_id=105,
+                                         ip_ttl=63)
+
+        exp_pkt2 = simple_tcp_packet(eth_dst=self.t1_list[2][99].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         tcp_sport= src_port,
+                                         ip_id=105,
+                                         ip_ttl=63)
+
+        self.dataplane.flush()
+        send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
+        rcv_idx = verify_any_packet_any_port(
+                self, [exp_pkt1, exp_pkt2], recv_dev_port_idxs)
+            
+    def runTest(self):
+        self.test_ecmp_coexist_lag_routev4()
+
+    def tearDown(self):
+        super().tearDown()
+
+class EcmpCoExistLagRouteV6(T0TestBase):
+    """
+    Verify the lags route and ecmp (with the same lag) route can work together.
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process
+        """
+        T0TestBase.setUp(self,
+                         skip_reason = "SKIP! Skip test for broadcom, learn_disable, report error code -196608, no error log. Item: 16384090")
+        nhop_groupv6_id = sai_thrift_create_next_hop_group(self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+
+        for lag_idx in range(2):
+            t1_idx = lag_idx + 1
+
+            nbr_entry_v6 = sai_thrift_neighbor_entry_t(
+                rif_id=self.dut.rif_list[lag_idx],
+                ip_address=sai_ipaddress(self.t1_list[t1_idx][99].ipv6))
+            status = sai_thrift_create_neighbor_entry(
+                self.client,
+                nbr_entry_v6,
+                dst_mac_address=self.t1_list[t1_idx][99].mac,
+                no_host_route=False)
+            self.assertEqual(status, SAI_STATUS_SUCCESS)
+            nhopv6_id = sai_thrift_create_next_hop(self.client, 
+                                                   ip=sai_ipaddress(self.t1_list[t1_idx][99].ipv6), 
+                                                   router_interface_id=self.dut.rif_list[lag_idx], 
+                                                   type=SAI_NEXT_HOP_TYPE_IP)
+            self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+
+            nhp_grpv6_member = sai_thrift_create_next_hop_group_member(
+                self.client,
+                next_hop_group_id=nhop_groupv6_id,
+                next_hop_id=nhopv6_id)
+            self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        
+        net_routev6 = sai_thrift_route_entry_t(
+                vr_id=self.dut.default_vrf, destination=sai_ipprefix(self.servers[60][0].ipv6+'/'+ '112'))
+        status = sai_thrift_create_route_entry(
+                self.client, net_routev6, next_hop_id=nhop_groupv6_id)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+
+    def test_ecmp_coexist_lag_routev6(self):
+        """
+        make sure the route for ip subnet 192.168.61.0/24 and other lags routes 192.168.11.0/24 ~ 192.168.14.0/24 route are coexist (not use the same nexthop)
+        send packet within 192.168.61.0/24
+        Verify received packet on LAG1~4 members
+        """
+        
+        recv_dev_port_idxs = self.get_dev_port_indexes(self.servers[11][1].l3_lag_obj.member_port_indexs)
+        recv_dev_port_idxs = recv_dev_port_idxs + self.get_dev_port_indexes(self.servers[12][1].l3_lag_obj.member_port_indexs)
+
+        ip_src = self.servers[0][1].ipv6
+        ip_dst = self.servers[60][1].ipv6
+        src_port = 2000
+        pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
+                                      eth_src=self.servers[1][1].mac,
+                                      ipv6_dst=ip_dst,
+                                      ipv6_src=ip_src,
+                                      tcp_sport= src_port,
+                                      ipv6_hlim=64)
+
+        exp_pkt1 = simple_tcpv6_packet(eth_dst=self.t1_list[1][99].mac,
+                                          eth_src=ROUTER_MAC,
+                                          ipv6_dst=ip_dst,
+                                          ipv6_src=ip_src,
+                                          tcp_sport= src_port,
+                                          ipv6_hlim=63)
+            
+        exp_pkt2 = simple_tcpv6_packet(eth_dst=self.t1_list[2][99].mac,
+                                           eth_src=ROUTER_MAC,
+                                           ipv6_dst=ip_dst,
+                                           ipv6_src=ip_src,
+                                           tcp_sport= src_port,
+                                           ipv6_hlim=63)
+
+        self.dataplane.flush()
+        send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
+        rcv_idx = verify_any_packet_any_port(
+                self, [exp_pkt1, exp_pkt2], recv_dev_port_idxs)
+            
+    def runTest(self):
+        self.test_ecmp_coexist_lag_routev6()
+
+    def tearDown(self):
+        super().tearDown()
+
+
+class EcmpReuseLagRouteV4(T0TestBase):
+    """
+     Verify the lags route can work when ecmp reuse lags' nexthop.
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process
+        """
+        T0TestBase.setUp(self)
+        nhop_groupv4_id = sai_thrift_create_next_hop_group(self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+
+        for lag_idx in range(2):
+            nhp_grpv4_member = sai_thrift_create_next_hop_group_member(
+                self.client,
+                next_hop_group_id=nhop_groupv4_id,
+                next_hop_id=self.dut.lag_list[lag_idx].nexthopv4_list[0].oid)
+            self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        
+        net_routev4 = sai_thrift_route_entry_t(
+                vr_id=self.dut.default_vrf, destination=sai_ipprefix(self.servers[60][0].ipv4+'/'+ '24'))
+        status = sai_thrift_create_route_entry(
+                self.client, net_routev4, next_hop_id=nhop_groupv4_id)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+
+    def test_ecmp_reuse_lag_routev4(self):
+        """
+        make sure the route for ip subnet 192.168.60.0/24 and other lags routes 192.168.11.0/24 ~ 192.168.14.0/24 route are coexist (use the same nexthop)
+        send packet within 192.168.60.0/24
+        Verify received packet on LAG1~2 members
+        """
+        recv_dev_port_idxs = self.get_dev_port_indexes(self.servers[11][1].l3_lag_obj.member_port_indexs)
+        recv_dev_port_idxs = recv_dev_port_idxs + self.get_dev_port_indexes(self.servers[12][1].l3_lag_obj.member_port_indexs)
+        ip_src = self.servers[0][1].ipv4
+        ip_dst = self.servers[60][1].ipv4
+        src_port = 2000
+        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    eth_src=self.servers[1][1].mac,
+                                    ip_dst=ip_dst,
+                                    ip_src=ip_src,
+                                    tcp_sport= src_port,
+                                    ip_id=105,
+                                    ip_ttl=64)
+
+        exp_pkt1 = simple_tcp_packet(eth_dst=self.t1_list[1][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         tcp_sport= src_port,
+                                         ip_id=105,
+                                         ip_ttl=63)
+
+        exp_pkt2 = simple_tcp_packet(eth_dst=self.t1_list[2][100].mac,
+                                         eth_src=ROUTER_MAC,
+                                         ip_dst=ip_dst,
+                                         ip_src=ip_src,
+                                         tcp_sport= src_port,
+                                         ip_id=105,
+                                         ip_ttl=63)
+
+        self.dataplane.flush()
+        send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
+        rcv_idx = verify_any_packet_any_port(
+                self, [exp_pkt1, exp_pkt2], recv_dev_port_idxs)
+            
+    def runTest(self):
+        self.test_ecmp_reuse_lag_routev4()
+
+    def tearDown(self):
+        super().tearDown()
+
+class EcmpReuseLagRouteV6(T0TestBase):
+    """
+     Verify the lags route can work when ecmp reuse lags' nexthop.
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process
+        """
+        T0TestBase.setUp(self)
+        nhop_groupv6_id = sai_thrift_create_next_hop_group(self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+
+        for lag_idx in range(2):
+            nhp_grpv6_member = sai_thrift_create_next_hop_group_member(
+                self.client,
+                next_hop_group_id=nhop_groupv6_id,
+                next_hop_id=self.dut.lag_list[lag_idx].nexthopv6_list[0].oid)
+            self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        
+        net_routev6 = sai_thrift_route_entry_t(
+                vr_id=self.dut.default_vrf, destination=sai_ipprefix(self.servers[60][0].ipv6+'/'+ '112'))
+        status = sai_thrift_create_route_entry(
+                self.client, net_routev6, next_hop_id=nhop_groupv6_id)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+
+    def test_ecmp_reuse_lag_routev6(self):
+        """
+        make sure the route for ip subnet 192.168.60.0/24 and other lags routes 192.168.11.0/24 ~ 192.168.14.0/24 route are coexist (use the same nexthop)
+        send packet within 192.168.60.0/24
+        Verify received packet on LAG1~2 members
+        """
+        recv_dev_port_idxs = self.get_dev_port_indexes(self.servers[11][1].l3_lag_obj.member_port_indexs)
+        recv_dev_port_idxs = recv_dev_port_idxs + self.get_dev_port_indexes(self.servers[12][1].l3_lag_obj.member_port_indexs)
+        ip_src = self.servers[0][1].ipv6
+        ip_dst = self.servers[60][1].ipv6
+        src_port = 2000
+        pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
+                                      eth_src=self.servers[1][1].mac,
+                                      ipv6_dst=ip_dst,
+                                      ipv6_src=ip_src,
+                                      tcp_sport= src_port,
+                                      ipv6_hlim=64)
+
+        exp_pkt1 = simple_tcpv6_packet(eth_dst=self.t1_list[1][100].mac,
+                                          eth_src=ROUTER_MAC,
+                                          ipv6_dst=ip_dst,
+                                          ipv6_src=ip_src,
+                                          tcp_sport= src_port,
+                                          ipv6_hlim=63)
+            
+        exp_pkt2 = simple_tcpv6_packet(eth_dst=self.t1_list[2][100].mac,
+                                           eth_src=ROUTER_MAC,
+                                           ipv6_dst=ip_dst,
+                                           ipv6_src=ip_src,
+                                           tcp_sport= src_port,
+                                           ipv6_hlim=63)
+
+        self.dataplane.flush()
+        send_packet(self, self.dut.port_obj_list[1].dev_port_index, pkt)
+        rcv_idx = verify_any_packet_any_port(
+                self, [exp_pkt1, exp_pkt2], recv_dev_port_idxs)
+            
+    def runTest(self):
+        self.test_ecmp_reuse_lag_routev6()
+
+    def tearDown(self):
+        super().tearDown()
+
+
