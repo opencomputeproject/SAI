@@ -125,6 +125,8 @@ sub ProcessTagType
 
     return $val if $val =~ /^sai_acl_field_data_t (sai_\w+_t|bool)$/;
 
+    return $val if $val =~ /^sai_acl_field_data_mask_t (sai_\w+_t|bool)$/;
+
     return $val if $val =~ /^sai_acl_action_data_t (sai_\w+_t|bool)$/;
 
     return $val if $val =~ /^(bool|char)$/;
@@ -358,6 +360,8 @@ sub ProcessTagDefault
     return $val if $val eq "disabled";
 
     return $val if $val eq "\"\"";
+
+    return $val if $val =~ /^ffff\:ffff\:ffff\:ffff\:ffff\:ffff\:ffff\:ffff$/;
 
     LogError "invalid default tag value '$val' on $type $value";
     return undef;
@@ -1397,6 +1401,23 @@ sub ProcessType
         return "${prefix}_INT32";
     }
 
+    if ($type =~ /^sai_acl_field_data_mask_t (bool|sai_\w+_t)$/)
+    {
+        my $prefix = "SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA";
+
+        return "${prefix}_BOOL" if $1 eq "bool";
+
+        return "${prefix}_$ACL_FIELD_TYPES_TO_VT{$1}" if defined $ACL_FIELD_TYPES_TO_VT{$1};
+
+        if (not defined $SAI_ENUMS{$1})
+        {
+            LogError "invalid enum specified acl field '$type' on $attr";
+            return "";
+        }
+
+        return "${prefix}_INT32";
+    }
+
     if ($type =~ /^sai_acl_action_data_t (bool|sai_\w+_t)$/)
     {
         my $prefix = "SAI_ATTR_VALUE_TYPE_ACL_ACTION_DATA";
@@ -1569,6 +1590,8 @@ sub ProcessDefaultValueType
 
     return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default eq "\"\"";
 
+    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^ffff\:ffff\:ffff\:ffff\:ffff\:ffff\:ffff\:ffff$/;
+
     LogError "invalid default value type '$default' on $attr";
 
     return "";
@@ -1597,6 +1620,10 @@ sub ProcessDefaultValue
     elsif ($default =~ /^0$/ and $type =~ /^sai_acl_field_data_t (sai_u?int\d+_t)/)
     {
         WriteSource "$val = { 0 };";
+    }
+    elsif ($default =~ /^ffff\:ffff\:ffff\:ffff\:ffff\:ffff\:ffff\:ffff$/ and $type =~ /^sai_acl_field_data_mask_t (sai_ip6_t)/)
+    {
+        WriteSource "$val = { .ip6 = {255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255} };";
     }
     elsif ($default =~ /^0$/ and $type =~ /^sai_acl_action_data_t (sai_u?int\d+_t)/)
     {
@@ -1701,6 +1728,7 @@ sub ProcessIsEnum
 
     return "true" if $type =~ /^sai_\w+_t$/ and not defined $VALUE_TYPES{$type};
     return "true" if $type =~ /^sai_acl_field_data_t (sai_\w+_t)$/ and not defined $ACL_FIELD_TYPES{$1};
+    return "true" if $type =~ /^sai_acl_field_data_mask_t (sai_\w+_t)$/ and not defined $ACL_FIELD_TYPES{$1};
     return "true" if $type =~ /^sai_acl_action_data_t (sai_\w+_t)$/ and not defined $ACL_ACTION_TYPES{$1};
 
     return "false";
@@ -1725,6 +1753,7 @@ sub ProcessEnumMetadata
 
     return "&sai_metadata_enum_$1" if $type =~ /^(sai_\w+_t)$/ and not defined $VALUE_TYPES{$type};
     return "&sai_metadata_enum_$1" if $type =~ /^sai_acl_field_data_t (sai_\w+_t)$/ and not defined $ACL_FIELD_TYPES{$1};
+    return "&sai_metadata_enum_$1" if $type =~ /^sai_acl_field_data_mask_t (sai_\w+_t)$/ and not defined $ACL_FIELD_TYPES{$1};
     return "&sai_metadata_enum_$1" if $type =~ /^sai_acl_action_data_t (sai_\w+_t)$/ and not defined $ACL_ACTION_TYPES{$1};
     return "&sai_metadata_enum_$1" if $type =~ /^sai_s32_list_t (sai_\w+_t)$/;
 
@@ -2035,6 +2064,15 @@ sub ProcessIsAclAction
     my $attr = shift;
 
     return "true" if $attr =~ /^SAI_ACL_ENTRY_ATTR_ACTION_\w+$/;
+
+    return "false";
+}
+
+sub ProcessIsAclMask
+{
+    my $attr = shift;
+
+    return "true" if $attr =~ /^SAI_ACL_TABLE_ATTR_FIELD_DATA_MASK_\w+$/;
 
     return "false";
 }
