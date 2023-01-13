@@ -22,7 +22,6 @@ from ptf.thriftutils import *
 from sai_base_test import *
 
 
-@group("draft")
 class NeighborAttrIpv6TestHelper(PlatformSaiHelper):
     """
     Neighbor entry attributes IPv6 tests class
@@ -62,7 +61,6 @@ class NeighborAttrIpv6TestHelper(PlatformSaiHelper):
         super(NeighborAttrIpv6TestHelper, self).tearDown()
 
 
-@group("draft")
 class noHostRouteIpv6NeighborTest(NeighborAttrIpv6TestHelper):
     '''
     Verifies if IPv6 host route is not created according to
@@ -97,7 +95,6 @@ class noHostRouteIpv6NeighborTest(NeighborAttrIpv6TestHelper):
         super(noHostRouteIpv6NeighborTest, self).tearDown()
 
 
-@group("draft")
 class noHostRouteIpv6LinkLocalNeighborTest(NeighborAttrIpv6TestHelper):
     '''
     Verifies if host route is not created for link local IPv6 address
@@ -152,7 +149,6 @@ class noHostRouteIpv6LinkLocalNeighborTest(NeighborAttrIpv6TestHelper):
         super(noHostRouteIpv6LinkLocalNeighborTest, self).tearDown()
 
 
-@group("draft")
 class addHostRouteIpv6NeighborTest(NeighborAttrIpv6TestHelper):
     '''
     Verifies if IPv6 host route is created according to
@@ -187,7 +183,6 @@ class addHostRouteIpv6NeighborTest(NeighborAttrIpv6TestHelper):
         super(addHostRouteIpv6NeighborTest, self).tearDown()
 
 
-@group("draft")
 class NeighborAttrIpv4TestHelper(PlatformSaiHelper):
     """
     Neighbor entry attributes IPv4 tests class
@@ -226,7 +221,6 @@ class NeighborAttrIpv4TestHelper(PlatformSaiHelper):
         super(NeighborAttrIpv4TestHelper, self).tearDown()
 
 
-@group("draft")
 class noHostRouteIpv4NeighborTest(NeighborAttrIpv4TestHelper):
     '''
     Verifies if IPv4 host route is not created according to
@@ -262,7 +256,6 @@ class noHostRouteIpv4NeighborTest(NeighborAttrIpv4TestHelper):
         super(noHostRouteIpv4NeighborTest, self).tearDown()
 
 
-@group("draft")
 class addHostRouteIpv4NeighborTest(NeighborAttrIpv4TestHelper):
     '''
     Verifies if IPv4 host route is created according to
@@ -298,7 +291,6 @@ class addHostRouteIpv4NeighborTest(NeighborAttrIpv4TestHelper):
         super(addHostRouteIpv4NeighborTest, self).tearDown()
 
 
-@group("draft")
 class updateNeighborEntryAttributeDstMacAddr(NeighborAttrIpv4TestHelper):
     '''
     Verifies if SAI_NEIGHBOR_ENTRY_ATTR_DST_MAC_ADDRESS is updated
@@ -348,7 +340,6 @@ class updateNeighborEntryAttributeDstMacAddr(NeighborAttrIpv4TestHelper):
         super(updateNeighborEntryAttributeDstMacAddr, self).tearDown()
 
 
-@group("draft")
 class addNeighborEntryAttrIPv4addrFamily(NeighborAttrIpv4TestHelper):
     '''
     check NeighborEntryAttrIPaddrFamily is SAI_IP_ADDR_FAMILY_IPV4
@@ -406,7 +397,6 @@ class addNeighborEntryAttrIPv4addrFamily(NeighborAttrIpv4TestHelper):
         super(addNeighborEntryAttrIPv4addrFamily, self).tearDown()
 
 
-@group("draft")
 class addNeighborEntryAttrIPv6addrFamily(NeighborAttrIpv6TestHelper):
     '''
     check NeighborEntryAttrIPaddrFamily is SAI_IP_ADDR_FAMILY_IPV6
