@@ -25,7 +25,6 @@ from ptf.thriftutils import *
 from sai_base_test import *
 
 
-@group("draft")
 class L3NexthopTestHelper(PlatformSaiHelper):
     """
     Basic L3 nexthop tests.
@@ -47,7 +46,6 @@ class L3NexthopTestHelper(PlatformSaiHelper):
         super(L3NexthopTestHelper, self).tearDown()
 
 
-@group("draft")
 class removeNexthopTest(L3NexthopTestHelper):
     """
         Test verifies correct nexthop removal.
@@ -119,7 +117,6 @@ class removeNexthopTest(L3NexthopTestHelper):
         super(removeNexthopTest, self).tearDown()
 
 
-@group("draft")
 class cpuNexthopTest(L3NexthopTestHelper):
     '''
         Test verifies nexthop to CPU.
@@ -233,7 +230,6 @@ class cpuNexthopTest(L3NexthopTestHelper):
         super(cpuNexthopTest, self).tearDown()
 
 
-@group("draft")
 class NhopTunnelEncapDecapTestHelper(PlatformSaiHelper):
     '''
         Nexthop tunnel encapsulation and decapsulation tests.
@@ -340,7 +336,6 @@ class NhopTunnelEncapDecapTestHelper(PlatformSaiHelper):
         super(NhopTunnelEncapDecapTestHelper, self).tearDown()
 
 
-@group("draft")
 class l3InterfaceTunnelTest(NhopTunnelEncapDecapTestHelper):
     '''
         Test verifies l3 interface tunnel nexthop.
@@ -429,7 +424,6 @@ class l3InterfaceTunnelTest(NhopTunnelEncapDecapTestHelper):
         super(l3InterfaceTunnelTest, self).tearDown()
 
 
-@group("draft")
 class subPortTunnelTest(NhopTunnelEncapDecapTestHelper):
     '''
         Test verifies subport tunnel nexthop.
@@ -527,7 +521,6 @@ class subPortTunnelTest(NhopTunnelEncapDecapTestHelper):
         super(subPortTunnelTest, self).tearDown()
 
 
-@group("draft")
 class sviTunnelTest(NhopTunnelEncapDecapTestHelper):
     '''
         Test verifies SVI tunnel nexthop.
@@ -656,7 +649,6 @@ class sviTunnelTest(NhopTunnelEncapDecapTestHelper):
         super(sviTunnelTest, self).tearDown()
 
 
-@group("draft")
 class NhopTunnelVNITestHelper(PlatformSaiHelper):
     '''
         Nexthop tunnel VNI tests.
@@ -750,7 +742,6 @@ class NhopTunnelVNITestHelper(PlatformSaiHelper):
         super(NhopTunnelVNITestHelper, self).tearDown()
 
 
-@group("draft")
 class tunnelVniTest(NhopTunnelVNITestHelper):
     '''
         Test verifies correct tunnel VNI behavior.
@@ -999,7 +990,6 @@ class tunnelVniTest(NhopTunnelVNITestHelper):
         super(tunnelVniTest, self).tearDown()
 
 
-@group("draft")
 class tunnelVrfTest(NhopTunnelVNITestHelper):
     '''
         Test verifies correct tunnel behavior with multiple nexthops

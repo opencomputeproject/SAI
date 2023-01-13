@@ -167,7 +167,6 @@ def save_number_of_available_nhg_resources(self, debug=False):
         print_number_of_available_nhg_resources(self)
 
 
-@group("draft")
 class L3IPv4EcmpHostHelper(PlatformSaiHelper):
     """
     Base ECMP tests for IPv4 and ECMP members as regular L3 port RIFs
@@ -249,7 +248,6 @@ class L3IPv4EcmpHostHelper(PlatformSaiHelper):
             super(L3IPv4EcmpHostHelper, self).tearDown()
 
 
-@group("draft")
 class l3SaiNhgSetGetTest(L3IPv4EcmpHostHelper):
     """
     Checks SAI switch ECMP attributes and validates
@@ -404,7 +402,6 @@ class l3SaiNhgSetGetTest(L3IPv4EcmpHostHelper):
         super(l3SaiNhgSetGetTest, self).tearDown()
 
 
-@group("draft")
 class l3IPv4EcmpHostTest(L3IPv4EcmpHostHelper):
     """
     IPv4 ECMP tests with all members which are port RIFs
@@ -470,7 +467,6 @@ class l3IPv4EcmpHostTest(L3IPv4EcmpHostHelper):
     def tearDown(self):
         super(l3IPv4EcmpHostTest, self).tearDown()
 
-@group("draft")
 class L3ipv6EcmpHostHelper(PlatformSaiHelper):
     """
     Basic ECMP tests for IPv6 and regular L3 port RIFs
@@ -551,7 +547,6 @@ class L3ipv6EcmpHostHelper(PlatformSaiHelper):
         super(L3ipv6EcmpHostHelper, self).tearDown()
 
 
-@group("draft")
 class saiL3ipv6EcmpHostTest(L3ipv6EcmpHostHelper):
     """
     IPv6 ECMP tests with all members as regular L3 port RIFs
@@ -609,7 +604,6 @@ class saiL3ipv6EcmpHostTest(L3ipv6EcmpHostHelper):
         super(saiL3ipv6EcmpHostTest, self).tearDown()
 
 
-@group("draft")
 class L3IPv4EcmpLpmTestHelper(PlatformSaiHelper):
     """
     Base ECMP tests with LPM routes for IPv4
@@ -757,7 +751,6 @@ class L3IPv4EcmpLpmTestHelper(PlatformSaiHelper):
         super(L3IPv4EcmpLpmTestHelper, self).tearDown()
 
 
-@group("draft")
 class l3IPv4EcmpLpmTest(L3IPv4EcmpLpmTestHelper):
     """
     Verifies ECMP load balancing with LPM routes configured
@@ -813,7 +806,6 @@ class l3IPv4EcmpLpmTest(L3IPv4EcmpLpmTestHelper):
         super(l3IPv4EcmpLpmTest, self).tearDown()
 
 
-@group("draft")
 class l3Ipv4EcmpLpmAddRemoveNhopTest(L3IPv4EcmpLpmTestHelper):  # to be removed from here
     """
     IPv4 ECMP rebalance test with removal of a nexthop member
@@ -1129,7 +1121,6 @@ class l3Ipv4EcmpLpmAddRemoveNhopTest(L3IPv4EcmpLpmTestHelper):  # to be removed 
                 ecmp_default_hash_seed=ecmp_default_hash_seed)
 
 
-@group("draft")
 class L3IPv6EcmpLagTestHelper(PlatformSaiHelper):
     """
     Base ECMP tests with ECMP members as LAG RIFs
@@ -1382,7 +1373,6 @@ class L3IPv6EcmpLagTestHelper(PlatformSaiHelper):
             self.assertEqual(status, SAI_STATUS_SUCCESS)
 
 
-@group("draft")
 class l3Ipv6EcmpLpmTest(L3IPv6EcmpLagTestHelper):
     """
     Base ECMP tests with LPM routes for IPv6
@@ -1466,7 +1456,6 @@ class l3Ipv6EcmpLpmTest(L3IPv6EcmpLagTestHelper):
         super(l3Ipv6EcmpLpmTest, self).tearDown()
 
 
-@group("draft")
 class l3IPv6EcmpHostTwoLagsTest(L3IPv6EcmpLagTestHelper):
     """
     IPv6 ECMP tests with all members with RIF as LAG
@@ -1527,7 +1516,6 @@ class l3IPv6EcmpHostTwoLagsTest(L3IPv6EcmpLagTestHelper):
         super(l3IPv6EcmpHostTwoLagsTest, self).tearDown()
 
 
-@group("draft")
 class l3IPv6EcmpHostPortLagTest(L3IPv6EcmpLagTestHelper):
     """
     IPv6 ECMP tests with members combination of port and LAG RIFs
@@ -1610,7 +1598,6 @@ class l3IPv6EcmpHostPortLagTest(L3IPv6EcmpLagTestHelper):
         super(l3IPv6EcmpHostPortLagTest, self).tearDown()
 
 
-@group("draft")
 class l3IPv6EcmpHashPortLagTest(L3IPv6EcmpLagTestHelper):
     """
     IPv6 ECMP loads balance tests to check fair share on all members
@@ -1842,7 +1829,6 @@ class l3IPv6EcmpHashPortLagTest(L3IPv6EcmpLagTestHelper):
         super(l3IPv6EcmpHashPortLagTest, self).tearDown()
 
 
-@group("draft")
 class l3IPv6EcmpHostTwoLagsDisabledLagMembersTest(L3IPv6EcmpLagTestHelper):
     """
     IPv6 ECMP tests with LAG RIF and some LAG member in disable state
@@ -1938,7 +1924,6 @@ class l3IPv6EcmpHostTwoLagsDisabledLagMembersTest(L3IPv6EcmpLagTestHelper):
         super(l3IPv6EcmpHostTwoLagsDisabledLagMembersTest, self).tearDown()
 
 
-@group("draft")
 class l3Ipv6EcmpAddRemoveNhopTest(L3IPv6EcmpLagTestHelper):
     """
     IPv6 ECMP rebalance test with removal of a nexthop member
@@ -2109,7 +2094,6 @@ class l3Ipv6EcmpAddRemoveNhopTest(L3IPv6EcmpLagTestHelper):
         super(l3Ipv6EcmpAddRemoveNhopTest, self).tearDown()
 
 
-@group("draft")
 class l3IPv6EcmpHostPortLagSharedMembersTest(L3IPv6EcmpLagTestHelper):
     """
     IPv6 Multiple ECMP with shared nexthop members
@@ -2242,7 +2226,6 @@ class l3IPv6EcmpHostPortLagSharedMembersTest(L3IPv6EcmpLagTestHelper):
         super(l3IPv6EcmpHostPortLagSharedMembersTest, self).tearDown()
 
 
-@group("draft")
 class L3IPv4SVIEcmpTestHelper(PlatformSaiHelper):
     """
     Base ECMP tests for IPv4 and ECMP members as SVI RIFs
@@ -2536,7 +2519,6 @@ class L3IPv4SVIEcmpTestHelper(PlatformSaiHelper):
         super(L3IPv4SVIEcmpTestHelper, self).tearDown()
 
 
-@group("draft")
 class l3IPv4EcmpSVIHostTest(L3IPv4SVIEcmpTestHelper):
     """
     IPv4 ECMP tests with SVI RIF as member
@@ -2634,7 +2616,6 @@ class l3IPv4EcmpSVIHostTest(L3IPv4SVIEcmpTestHelper):
         super(l3IPv4EcmpSVIHostTest, self).tearDown()
 
 
-@group("draft")
 class l3IPv4EcmpSVILagHostTest(L3IPv4SVIEcmpTestHelper):
     """
     IPv4 ECMP tests with Port, LAG and SVI RIFs as nexthop members
@@ -2743,7 +2724,6 @@ class l3IPv4EcmpSVILagHostTest(L3IPv4SVIEcmpTestHelper):
         super(l3IPv4EcmpSVILagHostTest, self).tearDown()
 
 
-@group("draft")
 class L3IPv6SVIEcmpTestHelper(PlatformSaiHelper):
     """
     Base ECMP tests for IPv6 and ECMP members as SVI RIFs
@@ -3077,7 +3057,6 @@ class L3IPv6SVIEcmpTestHelper(PlatformSaiHelper):
         super(L3IPv6SVIEcmpTestHelper, self).tearDown()
 
 
-@group("draft")
 class l3IPv6EcmpSVIHostTest(L3IPv6SVIEcmpTestHelper):
     """
     IPv6 ECMP tests with SVI RIF members
@@ -3176,7 +3155,6 @@ class l3IPv6EcmpSVIHostTest(L3IPv6SVIEcmpTestHelper):
         super(l3IPv6EcmpSVIHostTest, self).tearDown()
 
 
-@group("draft")
 class l3IPv6EcmpSVIPortLagHostTest(L3IPv6SVIEcmpTestHelper):
     """
     IPv6 ECMP tests with Port, LAG and SVI RIFs as ECMP members
@@ -3273,7 +3251,6 @@ class l3IPv6EcmpSVIPortLagHostTest(L3IPv6SVIEcmpTestHelper):
         super(l3IPv6EcmpSVIPortLagHostTest, self).tearDown()
 
 
-@group("draft")
 class L3IPv4EcmpLagTestHelper(PlatformSaiHelper):
     """
     Base ECMP tests common setup and teardown with lag for IPv4
@@ -3458,7 +3435,6 @@ class L3IPv4EcmpLagTestHelper(PlatformSaiHelper):
         super(L3IPv4EcmpLagTestHelper, self).tearDown()
 
 
-@group("draft")
 class L3IPv4EcmpHostTwoLagsTest(L3IPv4EcmpLagTestHelper):
     """
     IPv4 ECMP tests with all LAG RIFs members
@@ -3530,7 +3506,6 @@ class L3IPv4EcmpHostTwoLagsTest(L3IPv4EcmpLagTestHelper):
         super(L3IPv4EcmpHostTwoLagsTest, self).tearDown()
 
 
-@group("draft")
 class L3IPv4EcmpHostPortLagSharedMembersTest(L3IPv4EcmpLagTestHelper):
     """
     IPv4 multiples ECMP with shared nexthop members
@@ -3623,7 +3598,6 @@ class L3IPv4EcmpHostPortLagSharedMembersTest(L3IPv4EcmpLagTestHelper):
         super(L3IPv4EcmpHostPortLagSharedMembersTest, self).tearDown()
 
 
-@group("draft")
 class L3IPv4EcmpHostTwoLagsDisabledLagMembersTest(L3IPv4EcmpLagTestHelper):
     """
     IPv4 ECMP tests with LAG RIF and some LAG member in disable state
@@ -3721,7 +3695,6 @@ class L3IPv4EcmpHostTwoLagsDisabledLagMembersTest(L3IPv4EcmpLagTestHelper):
         super(L3IPv4EcmpHostTwoLagsDisabledLagMembersTest, self).tearDown()
 
 
-@group("draft")
 class L3IPv4EcmpHostPortLagTest(L3IPv4EcmpLagTestHelper):
     """
     IPv4 ECMP load balance tests to check fair share on all members
@@ -3821,7 +3794,6 @@ class L3IPv4EcmpHostPortLagTest(L3IPv4EcmpLagTestHelper):
         super(L3IPv4EcmpHostPortLagTest, self).tearDown()
 
 
-@group("draft")
 class L3IPv4EcmpHashPortLagTest(L3IPv4EcmpLagTestHelper):
     """
     Creates hash object and sends multiple packets
@@ -4052,7 +4024,6 @@ class L3IPv4EcmpHashPortLagTest(L3IPv4EcmpLagTestHelper):
             self.assertEqual(status, SAI_STATUS_SUCCESS)
 
 
-@group("draft")
 class EcmpFGTestHelper(PlatformSaiHelper):
     '''
     ECMP Fine Grain Test cases
@@ -4237,7 +4208,6 @@ class EcmpFGTestHelper(PlatformSaiHelper):
         finally:
             pass
 
-@group("draft")
 class ecmpFGBasicTest(EcmpFGTestHelper):
     '''
     Ecmp FG Basic TCs
@@ -4281,7 +4251,6 @@ class ecmpFGBasicTest(EcmpFGTestHelper):
         super(ecmpFGBasicTest, self).tearDown()
 
 
-@group("draft")
 class ecmpFGAddDelMemTest(EcmpFGTestHelper):
     '''
     Ecmp FG Add & Del member TCs
@@ -4323,7 +4292,6 @@ class ecmpFGAddDelMemTest(EcmpFGTestHelper):
         super(ecmpFGAddDelMemTest, self).tearDown()
 
 
-@group("draft")
 class ecmpFGGrpMemAttrTest(EcmpFGTestHelper):
     '''
     Ecmp FG Member Attribure TCs
