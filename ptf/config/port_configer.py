@@ -44,20 +44,25 @@ class PortConfiger(object):
         # egress_filtering=True,
         # isolation_group=True
         sai_thrift_get_bridge_port_attribute(
-            self.client,  bridge_port_oid=bridge_port_id, ingress_filtering=True,  egress_filtering=True)
+            self.client,  
+            bridge_port_oid=bridge_port_id, 
+            # ingress_filtering=True,  # 11
+            # egress_filtering=True    # 12
+        )
+        # Todo check the attribute before use
         attr = sai_thrift_get_bridge_port_attribute(
             self.client,
             bridge_port_oid=bridge_port_id,
             type=True,
             port_id=True,
-            tagging_mode=True,
-            vlan_id=True,
-            rif_id=True,
-            tunnel_id=True,
+            tagging_mode=True,  # 2
+            vlan_id=True,  # 3
+            rif_id=True,  # 4
+            tunnel_id=True,  # 5
             bridge_id=True,
             fdb_learning_mode=True,
-            max_learned_addresses=True,
-            fdb_learning_limit_violation_packet_action=True,
+            max_learned_addresses=True,  # 8
+            fdb_learning_limit_violation_packet_action=True,  # 9
             admin_state=True
             # Cannot get those three
             # ingress_filtering=True,
@@ -68,7 +73,7 @@ class PortConfiger(object):
         return attr
 
 
-    def load_default_1q_bridge_ports(self):
+    def load_default_active_1q_bridge_ports(self):
         """
         Loads default 1q bridge ports and set as class attribute.
 
@@ -94,14 +99,20 @@ class PortConfiger(object):
         self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
 
         #try to binding the bridge port with the port index here
+        port_list = sai_thrift_object_list_t(count=100)
+        p_list = sai_thrift_get_switch_attribute(
+            self.client, port_list=port_list)
+        port_list = p_list['port_list'].idlist
+        active_1q_bridge_ports = []
         for bp in default_1q_bridge_port_list:
             attr = self.get_bridge_port_all_attribute(bp)
-            for index in range(0, len(self.test_obj.port_list)):
-                port_id = getattr(self.test_obj, 'port%s' % index)
+            for index in range(0, len(port_list)):
+                port_id = port_list[index]
                 if port_id == attr['port_id']:
                     setattr(self.test_obj, 'port%s_bp' % index, bp)
+                    active_1q_bridge_ports.append(bp)
                     break
-        return default_1q_bridge_port_list
+        return active_1q_bridge_ports
 
 
     def reset_1q_bridge_ports(self):
@@ -115,8 +126,8 @@ class PortConfiger(object):
             self.portX objects for all active ports
         '''
         #In case the bridge port will be initalized by default, clear them
-        default_1q_bridge_port_list = self.load_default_1q_bridge_ports()
-        self.remove_1q_bridge_port(default_1q_bridge_port_list)
+        default_active_bridge_port_list = self.load_default_active_1q_bridge_ports()
+        self.remove_1q_bridge_port(default_active_bridge_port_list)
 
 
     def remove_1q_bridge_port(self, default_1q_bridge_port_list):
@@ -244,32 +255,6 @@ class PortConfiger(object):
         return host_intf_table_id, hostif_list
 
 
-    def get_bridge_port_list(self, bridge_id):
-        """
-        Get bridge ports.
-
-        Args:
-            bridge_id: bridge id.
-
-        Returns:
-            list: bridge_port_list
-
-        """
-        print("Get bridge ports...")
-        bridge_port_list = sai_thrift_object_list_t(count=100)
-        bp_list = sai_thrift_get_bridge_attribute(
-            self.client, bridge_id, port_list=bridge_port_list)
-        for index, item in enumerate(bp_list['port_list'].idlist):
-            self.test_obj.port_obj_list[index].bridge_port_oid = item
-            pid = sai_thrift_get_bridge_port_attribute(
-                self.client, bridge_port_oid=item, port_id=True)
-            print("Get bridge port {} wiht port id".format(item, pid))
-            # debug msg
-            # print("create bridge for port {} portidx {} dev_index {} eth {} bridge {}".format(
-            #             index, port.port_index, port.dev_port_index, port.dev_port_eth, port.bridge_port_oid))
-        return bp_list['port_list'].idlist
-
-
     def get_default_1q_bridge(self):
         """
         Get defaule 1Q bridge.
@@ -283,7 +268,7 @@ class PortConfiger(object):
         return def_attr['default_1q_bridge_id']
 
 
-    def get_local_mapped_ports(self):
+    def generate_port_obj_list_by_interface_config(self):
         """
         Get device port numbers from ptf config.
         Those port number should map to the remote DUT port base on the configuration file.
@@ -297,15 +282,20 @@ class PortConfiger(object):
         dev_port_list = []
         for index, item in enumerate(config['interfaces']):
             device, port, eth = item
+            # device, the device index, will be used in multi devices
+            # Port, local port index
+            # eth, eth name
             self.test_obj.port_obj_list[index].dev_port_index = port
             self.test_obj.port_obj_list[index].dev_port_eth = eth
             dev_port_list.append(port)
         return dev_port_list
 
 
-    def get_port_list(self):
+    def get_lane_sorted_port_list(self):
         """
-        Set the class variable port_list.
+        Get the port list sorted by lanes name(defined in port_config.ini).
+        This method will cut the ports list base on the lanes.
+        i.e. If device has 64 ports but just define 32 in lanes, then just generate 32 ports
 
         Returns:
             port_list
@@ -321,10 +311,18 @@ class PortConfiger(object):
             attr = sai_thrift_get_port_attribute(self.client, port_oid=port.oid, hw_lane_list=temp_list)
             port.default_lane_list = attr['hw_lane_list'].uint32list
             port_obj_list.append(port)
+        # cut the ports list base on the lanes config
         self.test_obj.port_obj_list = self.sort_port_list_by_config(
             self.test_obj.ports_config, port_obj_list)
         for item in self.test_obj.port_obj_list:
             port_id_list.append(item.oid)
+        self.test_obj.port_list = port_id_list
+        print("Base on lanes config file[{}], init {} ports from {} device posts"
+        .format("port_config.ini",
+                len(self.test_obj.port_obj_list),
+                len(port_obj_list)
+             ))
+        #print("port_list {}".format(port_id_list))
         return port_id_list
 
 

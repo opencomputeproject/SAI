@@ -22,6 +22,7 @@ import os
 from os.path import exists
 
 from typing import TYPE_CHECKING
+from typing import List, Dict
 
 DEFAULT_CONFIG_DB = "../resources/port_config.ini"
 
@@ -41,13 +42,13 @@ class PortConfigInILoader():
 
 
         self.file_path = self.__validate_file_path__(file_path)
-        self.ports_config = None
+        self.ports_config: Dict = None
         """
         ports_config dict, use to compatiable with old data module
         """
-        self.portConfigs = None
+        self.portConfigs: List[PortConfig] = None
         """
-        PortConfig object
+        PortConfig object list
         """
 
 
