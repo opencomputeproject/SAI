@@ -42,7 +42,7 @@ import sai_thrift.sai_adapter as adapter
 
 from config.port_configer import PortConfiger
 from config.config_db_loader import ConfigDBLoader
-from config.port_config_ini_loader import PortConfigInILoader
+from config.port_config_ini_loader import PortConfig, PortConfigInILoader
 
 ROUTER_MAC = '00:77:66:55:44:00'
 THRIFT_PORT = 9092
@@ -331,9 +331,18 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.cpu_port_hdl = None
         self.active_ports_no: List = []
         self.port_list: List = []
-        self.port_configer = None
+        self.port_configer: PortConfiger = None
         self.config_db_loader: ConfigDBLoader = None
         self.port_conifg_ini_loader: PortConfigInILoader = None
+        # TODO: Below two attributes should be move to port_configer
+        self.ports_config: Dict = None
+        """
+        ports_config dict, use to compatiable with old data module
+        """
+        self.portConfigs: List[PortConfig] = None
+        """
+        PortConfig object List
+        """
 
 
     def set_logger_name(self):

@@ -63,7 +63,7 @@ class BrcmSaiHelper(CommonSaiHelper):
             test_obj: the test object
         """
         super().__init__(*args, **kwargs)
-        self.port_configer = None
+        self.port_configer: PortConfiger = None
 
         # port
         self.default_trap_group = None
@@ -196,8 +196,8 @@ class BrcmSaiHelper(CommonSaiHelper):
 
     def config_port(self):
 
-        self.port_list = self.port_configer.get_port_list()
-        self.port_configer.get_local_mapped_ports()
+        self.port_list = self.port_configer.get_lane_sorted_port_list()
+        self.port_configer.generate_port_obj_list_by_interface_config()
         self.port_configer.assign_port_config(self.port_conifg_ini_loader.portConfigs)
         #compatiable with portx variables
         self.port_configer.set_port_attr(self.port_list)

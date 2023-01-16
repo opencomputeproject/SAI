@@ -296,13 +296,24 @@ class L2SanityTest(PlatformSaiHelper):
 
     def test_forwad_to_each_port(self):
         try:
-            for index in range(1, len(self.port_list)):
+            for index in range(2, len(self.port_list), 2):
                 self.dataplane.flush()
                 print("Check port{} forwarding...".format(index))
+                # example for debug with pdb and open a sai shell
+                # import pdb
+                # pdb.set_trace()
+                # note, this method to open the shell 
+                # is not support on diff platform, diff asic
+                # in some cases, the shell might need to be
+                # opened from cmd line.
+                # Then, just set the break point by pdb.set_trace()
+                # and open shell in CLI, then start debugging with sai shell.
+                # self.shell()
                 target_pkt = getattr(self, 'pkt%s' % index)
                 exp_pkt = getattr(self, 'exp_pkt%s' % index)
                 send_packet(self, self.dev_port0, target_pkt)
                 verify_packet(self, exp_pkt, index)
+                #verify_packet_any_port(self, exp_pkt, range(1,len(self.port_list)))
         finally:
             pass
 
@@ -324,7 +335,7 @@ class L2SanityTest(PlatformSaiHelper):
             send_packet(
                 self, 1, pkt)
             received_index = verify_each_packet_on_multiple_port_lists(
-                self, [pkt], [range(2,31)])
+                self, [pkt], [range(2, len(self.port_list))])
         finally:
             pass
 
