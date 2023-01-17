@@ -138,9 +138,9 @@ class Dut(object):
         """
         Host interface list
         """
-        self.default_bridge_port_list = []
+        self.bridge_port_list = []
         """
-        Default bridge port list
+        Bridge port list
         """
         self.host_if_port_idx_map = []
         """
@@ -167,4 +167,9 @@ class Dut(object):
         self.nhp_grpv6_list: List[NexthopGroup] = []
         """
         Nexthop group list, contains nexthop ipv6 objects
+        """
+
+        self.active_ports_no = 0
+        """
+        Device active ports.
         """

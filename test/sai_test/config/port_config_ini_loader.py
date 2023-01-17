@@ -24,6 +24,8 @@ from os.path import exists
 from typing import TYPE_CHECKING
 from typing import List, Dict
 
+from data_module.data_obj import auto_str
+
 DEFAULT_CONFIG_DB = "../resources/port_config.ini"
 
 class PortConfigInILoader():
@@ -138,7 +140,7 @@ class PortConfigInILoader():
         except Exception as e:
             raise e
 
-
+@auto_str
 class PortConfig(object):
     """
     Represent the PortConfig Object

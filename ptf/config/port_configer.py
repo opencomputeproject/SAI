@@ -104,9 +104,9 @@ class PortConfiger(object):
             self.client, port_list=port_list)
         port_list = p_list['port_list'].idlist
         active_1q_bridge_ports = []
-        for bp in default_1q_bridge_port_list:
-            attr = self.get_bridge_port_all_attribute(bp)
-            for index in range(0, len(port_list)):
+        for index in range(0, len(port_list)):
+            for bp in default_1q_bridge_port_list:
+                attr = self.get_bridge_port_all_attribute(bp)            
                 port_id = port_list[index]
                 if port_id == attr['port_id']:
                     setattr(self.test_obj, 'port%s_bp' % index, bp)

@@ -82,6 +82,7 @@ class Port(route_item):
         bridge port object id
         """
         self.port_config:Dict = {}
+        self.conifg_db:Dict = {}
         self.host_itf_idx = None
         """
         Port binded host interface index, the object saved in dut.hostif_list
