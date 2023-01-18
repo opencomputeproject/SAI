@@ -36,6 +36,7 @@ from thrift.protocol import TBinaryProtocol
 
 from sai_thrift import sai_rpc
 import LogConfig
+from data_module.port import Port
 
 from sai_utils import *
 import sai_thrift.sai_adapter as adapter
@@ -329,11 +330,21 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.default_vrf = None
         self.default_1q_bridge = None
         self.cpu_port_hdl = None
-        self.active_ports_no: List = []
+        self.active_ports_no: int = 0
+        """
+        Device active ports.
+        """
+
+        self.active_port_obj_list: List['Port'] = []
+        """
+        Device active port obj list.
+        Those ports might more than actual port in testing.
+        For ports in testing, please use port_obj_list.
+        """        
         self.port_list: List = []
         self.port_configer: PortConfiger = None
         self.config_db_loader: ConfigDBLoader = None
-        self.port_conifg_ini_loader: PortConfigInILoader = None
+        self.port_config_ini_loader: PortConfigInILoader = None
         # TODO: Below two attributes should be move to port_configer
         self.ports_config: Dict = None
         """
@@ -343,6 +354,12 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         """
         PortConfig object List
         """
+        self.bridge_port_list = []
+        """
+        Bridge port list
+        """
+        self.def_bridge_port_list = []
+        self.def_vlan_member_list = []
 
 
     def set_logger_name(self):
@@ -551,17 +568,18 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
     def setUp(self):
         super(SaiHelperBase, self).setUp()
         if 'port_config_ini' in self.test_params:
-            self.port_conifg_ini_loader = PortConfigInILoader(self.test_params['port_config_ini'])
+            self.port_config_ini_loader = PortConfigInILoader(self.test_params['port_config_ini'])
         else:
-            self.port_conifg_ini_loader = PortConfigInILoader()        
-        self.port_conifg_ini_loader.parse_port_config()
-        self.ports_config = self.port_conifg_ini_loader.ports_config
+            self.port_config_ini_loader = PortConfigInILoader()        
+        self.port_config_ini_loader.parse_port_config()
+        self.ports_config = self.port_config_ini_loader.ports_config
 
         if 'config_db_json' in self.test_params:
             self.config_db_loader = ConfigDBLoader(self.test_params['config_db_json'])
         else:
             self.config_db_loader = ConfigDBLoader()
         self.port_configer = PortConfiger(self)
+        self.def_bridge_port_list = []
         self.def_bridge_port_list = []
         self.def_vlan_member_list = []
         self.set_logger_name()
@@ -651,7 +669,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
                 sai_thrift_remove_port(self.client, port)
 
         # add new ports from port config file
-        self.ports_config = self.port_conifg_ini_loader.ports_config
+        self.ports_config = self.port_config_ini_loader.ports_config
         for name, port in self.ports_config.items():
             print("Creating port: %s" % name)
             fec_mode = fec_str_to_int(port.get('fec', None))
