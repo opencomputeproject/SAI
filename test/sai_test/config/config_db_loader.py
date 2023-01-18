@@ -43,6 +43,7 @@ class ConfigDBLoader():
 
         self.file_path = self.__validate_file_path__(file_path)
         self.config_json = None
+        self.port_config = None
         with open(self.file_path, mode='r') as f:
             self.config_json = json.load(f)
     
@@ -64,8 +65,8 @@ class ConfigDBLoader():
         file_exists = exists(config_path)
         if not file_exists:
             raise FileNotFoundError("File not found:{}. Please refer to {} for how to set it.".format(
-                "https://github.com/opencomputeproject/SAI/blob/master/ptf/docs/SAI-PTFv2Overview.md#run-test",
-                 config_path))
+                config_path,
+                "https://github.com/opencomputeproject/SAI/blob/master/ptf/docs/SAI-PTFv2Overview.md#run-test"))
         return config_path
 
 
@@ -77,5 +78,5 @@ class ConfigDBLoader():
         '''
         
         port_conf = self.config_json.get('PORT')
-        key_0 = list(port_conf.keys())[0]
-        return self.config_json.get('PORT').get(key_0)
+        self.port_config = port_conf
+        return port_conf

@@ -23,6 +23,7 @@ from os.path import exists
 
 from typing import TYPE_CHECKING
 from typing import List, Dict
+from data_module.data_obj import auto_str
 
 DEFAULT_CONFIG_DB = "../resources/port_config.ini"
 
@@ -69,8 +70,8 @@ class PortConfigInILoader():
         file_exists = exists(config_path)
         if not file_exists:
             raise FileNotFoundError("File not found:{}. Please refer to {} for how to set it.".format(
-                "https://github.com/opencomputeproject/SAI/blob/master/ptf/docs/SAI-PTFv2Overview.md#run-test",
-                 config_path))
+                config_path,
+                "https://github.com/opencomputeproject/SAI/blob/master/ptf/docs/SAI-PTFv2Overview.md#run-test"))
         return config_path
 
 
@@ -138,7 +139,7 @@ class PortConfigInILoader():
         except Exception as e:
             raise e
 
-
+@auto_str
 class PortConfig(object):
     """
     Represent the PortConfig Object
