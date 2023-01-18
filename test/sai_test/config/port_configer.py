@@ -46,10 +46,10 @@ def t0_port_config_helper(test_obj: 'T0TestBase', is_recreate_bridge=True, is_cr
     configer = PortConfiger(test_obj)
     test_obj.dut.port_id_list = configer.get_lane_sorted_port_list()
     configer.generate_port_obj_list_by_interface_config()
-    configer.assign_port_config(test_obj.port_conifg_ini_loader.portConfigs)
+    configer.assign_port_config(test_obj.port_config_ini_loader.portConfigs)
     configer.assign_config_db(
         test_obj.config_db_loader.port_config,
-        test_obj.port_conifg_ini_loader.portConfigs)
+        test_obj.port_config_ini_loader.portConfigs)
 
     attr = sai_thrift_get_switch_attribute(
         configer.client, default_trap_group=True)
@@ -199,7 +199,7 @@ class PortConfiger(object):
                 hostif_list[index] = hostif
                 port.host_itf_id = hostif
                 # print("Create hostitf: name:{} port hardIdx: {} port lane: {}".format(
-                #     port.port_config.name, port.port_index, port.conifg_db['lanes'])
+                #     port.port_config.name, port.port_index, port.config_db['lanes'])
                 # )
             except BaseException as e:
                 print("Cannot create hostif, error : {}".format(e))
@@ -415,7 +415,7 @@ class PortConfiger(object):
         """
         for index, key in enumerate(portConfigs):
         # index: sequence number, key: port config order, should be equals to index
-            self.test_obj.dut.active_port_obj_list[index].conifg_db \
+            self.test_obj.dut.active_port_obj_list[index].config_db \
                 = port_config_db[portConfigs[key].name]
 
     def remove_bridge_with_port(self):
@@ -528,8 +528,8 @@ class PortConfiger(object):
         RETURN:
              int: SAI_PORT_FEC_MODE_X
         '''
-        if 'fec' in port.conifg_db:
-            fec_mode = port.conifg_db['fec']
+        if 'fec' in port.config_db:
+            fec_mode = port.config_db['fec']
         else:
             fec_mode = None
         fec_change = {
@@ -546,7 +546,7 @@ class PortConfiger(object):
         RETURN:
             int: mtu number
         '''
-        return int(port.conifg_db['mtu'])
+        return int(port.config_db['mtu'])
 
     def get_speed(self, port: Port):
         '''
@@ -555,7 +555,7 @@ class PortConfiger(object):
         RETURN:
             int: speed
         '''
-        return int(port.conifg_db['speed'])
+        return int(port.config_db['speed'])
 
     def get_cpu_port_queue(self):
 
@@ -588,7 +588,7 @@ class PortConfiger(object):
             port.dev_port_index,
             port.port_config.name,
             port.port_config.lanes,
-            port.conifg_db['lanes'],
+            port.config_db['lanes'],
             self.get_mtu(port),
             self.get_fec_mode(port),
             self.get_speed(port)))
