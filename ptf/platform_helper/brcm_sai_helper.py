@@ -198,23 +198,29 @@ class BrcmSaiHelper(CommonSaiHelper):
 
         self.port_list = self.port_configer.get_lane_sorted_port_list()
         self.port_configer.generate_port_obj_list_by_interface_config()
-        self.port_configer.assign_port_config(self.port_conifg_ini_loader.portConfigs)
-        #compatiable with portx variables
-        self.port_configer.set_port_attr(self.port_list)
+        self.port_configer.assign_port_config(self.port_config_ini_loader.portConfigs)
+        self.port_configer.assign_config_db(
+            self.config_db_loader.port_config,
+            self.port_config_ini_loader.portConfigs)
+        
+        
 
         attr = sai_thrift_get_switch_attribute(
             self.client, default_trap_group=True)
         default_trap_group = attr['default_trap_group']
-        self.port_configer.turn_on_port_admin_state_by_port_list(self.port_obj_list)
-        self.port_configer.turn_up_and_check_ports_by_port_list(self.port_obj_list)
-
+        self.port_configer.set_port_attribute(self.active_port_obj_list)
+        self.port_obj_list = self.port_configer.turn_up_and_get_checked_ports(
+            self.active_port_obj_list)
+        #compatiable with portx variables
+        self.get_port_id_list = self.port_configer.get_port_id_list(self.port_obj_list)
+        self.port_configer.set_test_port_attr(self.port_list)
 
         if 'port_config_ini' in self.test_params:
             host_intf_table_id, hostif_list = self.port_configer.create_port_hostif_by_port_config_ini(
-                port_list=self.port_obj_list, trap_group=default_trap_group)
+                port_list=self.active_port_obj_list, trap_group=default_trap_group)
         else:
             host_intf_table_id, hostif_list = self.port_configer.create_host_intf(
-                port_list=self.port_obj_list, trap_group=default_trap_group)
+                port_list=self.active_port_obj_list, trap_group=default_trap_group)
         self.host_intf_table_id = host_intf_table_id
         self.hostif_list = hostif_list
 
@@ -233,4 +239,4 @@ class BrcmSaiHelper(CommonSaiHelper):
         #Port needs to be init and setup at same time.
         #Make the process happened in turn_up_and_check_ports
         print("BrcmSaiHelperBase::recreate_ports does not support. Just Parse Port Config")
-        self.ports_config = self.port_conifg_ini_loader.ports_config
+        self.ports_config = self.port_config_ini_loader.ports_config

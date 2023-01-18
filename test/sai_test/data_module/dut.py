@@ -140,7 +140,7 @@ class Dut(object):
         """
         Host interface list
         """
-        self.bridge_port_list = []
+        self.def_bridge_port_list = []
         """
         Bridge port list
         """

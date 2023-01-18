@@ -67,22 +67,16 @@ def t0_port_config_helper(test_obj: 'T0TestBase', is_recreate_bridge=True, is_cr
         test_obj.dut.host_intf_table_id = host_intf_table_id
         test_obj.dut.hostif_list = hostif_list
 
-    default_1q_bridge_id = configer.get_default_1q_bridge()
+    test_obj.dut.default_1q_bridge_id  = configer.get_default_1q_bridge()
 
     if is_recreate_bridge:
-        test_obj.dut.bridge_port_list \
-            = configer.get_all_bridge_ports(default_1q_bridge_id)
-        configer.remove_all_bridge_ports()
-        test_obj.dut.bridge_port_list \
-            = configer.create_bridge_ports(
-                default_1q_bridge_id, test_obj.dut.active_port_obj_list)
+        configer.reset_1q_bridge_ports()
     else:
-        test_obj.dut.bridge_port_list \
-            = configer.load_default_active_1q_bridge_ports(default_1q_bridge_id)
+        test_obj.dut.def_bridge_port_list \
+            = configer.load_default_active_1q_bridge_ports()
 
     configer.get_cpu_port_queue()
     test_obj.dut.default_trap_group = default_trap_group
-    test_obj.dut.default_1q_bridge_id = default_1q_bridge_id
 
 
 def t0_port_tear_down_helper(test_obj: 'T0TestBase'):
@@ -91,7 +85,7 @@ def t0_port_tear_down_helper(test_obj: 'T0TestBase'):
         test_obj: test object
     '''
     configer = PortConfiger(test_obj)
-    configer.remove_bridge_with_port()
+    configer.remove_bridge_port()
     configer.remove_host_inf(
         test_obj.dut.host_intf_table_id, test_obj.dut.hostif_list)
 
@@ -250,16 +244,14 @@ class PortConfiger(object):
         self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
         return attr
 
-    def load_default_active_1q_bridge_ports(self, bridge_id):
+    def load_default_active_1q_bridge_ports(self):
         """
         Loads default 1q bridge ports, bind to port object and set as class attribute.
-        Args:
-            bridge_id: bridge id.
 
         Returns:
             list: bridge_port_list
         """
-
+        bridge_id = self.test_obj.dut.default_1q_bridge_id
         default_1q_bridge_port_list = self.get_all_bridge_ports(bridge_id)
 
         #try to binding the bridge port with the port index here
@@ -275,6 +267,29 @@ class PortConfiger(object):
                     active_1q_bridge_ports.append(bp)
                     break
         return active_1q_bridge_ports
+
+    def reset_1q_bridge_ports(self):
+        '''
+        Reset all the 1Q bridge ports.
+        Args:
+            bridge_id: bridge id
+        Needs the following class attributes:
+            self.default_1q_bridge - default_1q_bridge oid
+            self.active_ports_no - number of active ports
+
+            self.portX objects for all active ports
+
+        Set the test object attribute
+            test_obj.def_bridge_port_list
+        '''
+        #In case the bridge port will be initalized by default, clear them
+        bridge_id = self.test_obj.dut.default_1q_bridge_id
+        self.test_obj.dut.def_bridge_port_list \
+            = self.get_all_bridge_ports(bridge_id)
+        self.remove_all_bridge_ports()
+        self.test_obj.dut.def_bridge_port_list \
+            = self.create_bridge_ports(
+                bridge_id, self.test_obj.dut.active_port_obj_list)
 
     def get_all_bridge_ports(self, bridge_id):
         """
@@ -296,11 +311,11 @@ class PortConfiger(object):
 
         """
         print("Remove all bridge ports...")
-        bp_ports = self.test_obj.dut.bridge_port_list
+        bp_ports = self.test_obj.dut.def_bridge_port_list
         for index, port in enumerate(bp_ports):
             sai_thrift_remove_bridge_port(self.client, port)
             #print("Removed bridge port {}".format(port))
-            self.test_obj.dut.bridge_port_list.remove(port)
+            self.test_obj.dut.def_bridge_port_list.remove(port)
         self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
 
     def get_default_1q_bridge(self):
@@ -418,21 +433,21 @@ class PortConfiger(object):
             self.test_obj.dut.active_port_obj_list[index].config_db \
                 = port_config_db[portConfigs[key].name]
 
-    def remove_bridge_with_port(self):
+    def remove_bridge_port(self):
         """
         Remove bridge ports base on the active port list.(bridge will not be removed).
         Bridge relation will be removed from port as well.
 
         """
         print("Remove bridge ports...")
-        bp_ports = self.test_obj.dut.bridge_port_list
+        bp_ports = self.test_obj.dut.def_bridge_port_list
         for index, port in enumerate(bp_ports):
             sai_thrift_remove_bridge_port(self.client, port)
             #print("Removed bridge port {}".format(port))
             if self.test_obj.dut.active_port_obj_list[index].bridge_port_oid != port:
                 print("WARN! BUG! Bridge not as expected, not equals to port record.")
             self.test_obj.dut.active_port_obj_list[index].bridge_port_oid = None
-            self.test_obj.dut.bridge_port_list.remove(port)
+            self.test_obj.dut.def_bridge_port_list.remove(port)
         self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
 
     def remove_host_inf(self, host_intf_table_id, hostif_list):
