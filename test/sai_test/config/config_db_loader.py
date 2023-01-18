@@ -65,8 +65,8 @@ class ConfigDBLoader():
         file_exists = exists(config_path)
         if not file_exists:
             raise FileNotFoundError("File not found:{}. Please refer to {} for how to set it.".format(
-                "https://github.com/opencomputeproject/SAI/blob/master/ptf/docs/SAI-PTFv2Overview.md#run-test",
-                 config_path))
+                config_path,
+                "https://github.com/opencomputeproject/SAI/blob/master/ptf/docs/SAI-PTFv2Overview.md#run-test"))
         return config_path
 
 
