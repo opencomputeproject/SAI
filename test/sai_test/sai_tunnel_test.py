@@ -5,86 +5,26 @@ class IpInIpTnnnelBase(T0TestBase):
     '''
     This class contains base setup for IP in IP tunnel tests
     '''
-
-
     def setUp(self):
-        T0TestBase.setUp(self)
+        T0TestBase.setUp(self, is_create_tunnel=True)
 
-        self.oport = self.dut.port_id_list[1]
+        tunnel_config = self.dut.tunnel_list[-1]
         self.oport_dev = self.dut.port_obj_list[1].dev_port_index
         self.uport_dev = self.dut.port_obj_list[18].dev_port_index
-
-        self.tun_ip = self.servers[11][1].ipv4
-        self.lpb_ip = LOOPBACK_IPV4
-        self.tun_lpb_mask = "/32"
+        self.tun_ip = tunnel_config.tun_ip
+        self.lpb_ip = tunnel_config.lpb_ip
 
         self.recv_dev_port_idxs = self.get_dev_port_indexes(self.servers[11][1].l3_lag_obj.member_port_indexs)
         self.vm_ip = "100.100.1.1"
         self.vm_ipv6 = "2001:0db8::100:1"
         self.customer_ip = self.servers[1][1].ipv4
         self.customer_ipv6 = self.servers[1][1].ipv6
-        self.inner_dmac = "00:41:11:14:11:14"
+        self.inner_dmac = tunnel_config.inner_dmac
         self.customer_mac = self.servers[1][1].mac
         self.unbor_mac = self.servers[11][1].l3_lag_obj.neighbor_mac
- 
-        # underlay configuration
-        self.uvrf = self.dut.default_vrf
-
-        # overlay configuration
-        self.ovrf = self.dut.default_vrf
-        tunnel_type = SAI_TUNNEL_TYPE_IPINIP
-        term_type = SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P
-
-        # loopback RIFs for tunnel
-        self.urif_lpb = sai_thrift_create_router_interface(
-            self.client,
-            type=SAI_ROUTER_INTERFACE_TYPE_LOOPBACK,
-            virtual_router_id=self.uvrf)
-
-        self.orif_lpb = sai_thrift_create_router_interface(
-            self.client,
-            type=SAI_ROUTER_INTERFACE_TYPE_LOOPBACK,
-            virtual_router_id=self.ovrf)
-
-        # tunnel
-        self.tunnel = sai_thrift_create_tunnel(
-            self.client,
-            type=tunnel_type,
-            encap_src_ip=sai_ipaddress(self.lpb_ip),
-            underlay_interface=self.urif_lpb,
-            overlay_interface=self.orif_lpb)
-
-        # tunnel termination entry
-        self.tunnel_term = sai_thrift_create_tunnel_term_table_entry(
-            self.client,
-            tunnel_type=tunnel_type,
-            vr_id=self.uvrf,
-            action_tunnel_id=self.tunnel,
-            type=term_type,
-            dst_ip=sai_ipaddress(self.lpb_ip),
-            src_ip=sai_ipaddress(self.tun_ip))
-
-        # tunnel nexthop for VM
-        self.tunnel_nhop = sai_thrift_create_next_hop(
-            self.client,
-            type=SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP,
-            tunnel_id=self.tunnel,
-            ip=sai_ipaddress(self.tun_ip),
-            tunnel_mac=self.inner_dmac)
-
-        # routes to VM via tunnel nexthop
-        self.vm_route = sai_thrift_route_entry_t(
-            vr_id=self.ovrf, destination=sai_ipprefix(self.vm_ip + '/32'))
-        sai_thrift_create_route_entry(self.client,
-                                      self.vm_route,
-                                      next_hop_id=self.tunnel_nhop)
-
-        self.vm_v6_route = sai_thrift_route_entry_t(
-            vr_id=self.ovrf, destination=sai_ipprefix(self.vm_ipv6 + '/128'))
-        sai_thrift_create_route_entry(self.client,
-                                      self.vm_v6_route,
-                                      next_hop_id=self.tunnel_nhop)
-
+        
+        tunnel_config.create_tunnel_route(self, vm_ip=self.vm_ip, vm_ipv6=self.vm_ipv6)
+        
     def tearDown(self):
         T0TestBase.tearDown(self)
 
@@ -98,7 +38,6 @@ class BasicIPInIPTunnelEncapv4Inv4Test(IpInIpTnnnelBase):
         Test the basic setup process.
         """
         IpInIpTnnnelBase.setUp(self)
-        self.oport = self.dut.port_id_list[0]
         self.oport_dev = self.dut.port_obj_list[0].dev_port_index
 
 
@@ -162,7 +101,6 @@ class BasicIPInIPTunnelEncapv6Inv4Test(IpInIpTnnnelBase):
         Test the basic setup process.
         """
         IpInIpTnnnelBase.setUp(self)
-        self.oport = self.dut.port_id_list[0]
         self.oport_dev = self.dut.port_obj_list[0].dev_port_index
 
     def ipv6inipv4encap(self):
@@ -222,14 +160,10 @@ class BasicIPInIPTunnelDecapv4Inv4Test(IpInIpTnnnelBase):
         """
         IpInIpTnnnelBase.setUp(self)
         
-        self.oport = self.dut.port_id_list[0]
         self.oport_dev = self.dut.port_obj_list[0].dev_port_index
         self.orif = self.dut.port_obj_list[0].rif_list[-1]
         self.customer_ip = "100.100.2.1"
         self.customer_mac = "00:22:24:22:22:11"
-        
-        import pdb
-        pdb.set_trace()
 
         self.onbor = sai_thrift_neighbor_entry_t(
             rif_id=self.orif, ip_address=sai_ipaddress(self.customer_ip))

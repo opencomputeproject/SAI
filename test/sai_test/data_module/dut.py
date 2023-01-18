@@ -25,6 +25,7 @@ if TYPE_CHECKING:
     from data_module.nexthop import Nexthop
     from data_module.nexthop_group import NexthopGroup
     from data_module.port import Port
+    from data_module.tunnel import Tunnel
 
 
 class Dut(object):
@@ -158,6 +159,9 @@ class Dut(object):
 
         # lag
         self.lag_list: List[Lag] = []
+        
+        # tunnel
+        self.tunnel_list: List[Tunnel] = []
 
         # nexthop group
         self.nhp_grpv4_list: List[NexthopGroup] = []
