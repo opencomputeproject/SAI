@@ -128,7 +128,9 @@ class Dut(object):
         self.host_intf_table_id = None
         self.port_obj_list: List['Port'] = []
         """
-        Port object list
+        Port object list.
+        Actual Port list for testing.
+        Depends on the local device(PTF) interfaces number.
         """
         self.port_id_list = []
         """
@@ -141,14 +143,6 @@ class Dut(object):
         self.bridge_port_list = []
         """
         Bridge port list
-        """
-        self.host_if_port_idx_map = []
-        """
-        list in order of the host interface create sequence, and with the value for port index
-        """
-        self.host_if_name_list = []
-        """
-        List of the interface name
         """
 
         self.rif_list: List = []
@@ -172,4 +166,11 @@ class Dut(object):
         self.active_ports_no = 0
         """
         Device active ports.
+        """
+
+        self.active_port_obj_list: List['Port'] = []
+        """
+        Device active port obj list.
+        Those ports might more than actual port in testing.
+        For ports in testing, please use port_obj_list.
         """

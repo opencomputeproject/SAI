@@ -133,7 +133,6 @@ class PortConfigInILoader():
                     portConfig.name = name
                     portConfigs[index] = portConfig
                     index = index + 1
-                    index = index + 1
             self.ports_config = ports
             self.portConfigs = portConfigs
             return ports, portConfigs

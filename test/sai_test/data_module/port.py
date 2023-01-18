@@ -83,9 +83,9 @@ class Port(route_item):
         """
         self.port_config:Dict = {}
         self.conifg_db:Dict = {}
-        self.host_itf_idx = None
+        self.host_itf_id = None
         """
-        Port binded host interface index, the object saved in dut.hostif_list
+        Port binded host interface id, the object saved in dut.hostif_list
         """
         self.default_lane_list = []
         """

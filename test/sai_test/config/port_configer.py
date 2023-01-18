@@ -54,16 +54,16 @@ def t0_port_config_helper(test_obj: 'T0TestBase', is_recreate_bridge=True, is_cr
     attr = sai_thrift_get_switch_attribute(
         configer.client, default_trap_group=True)
     default_trap_group = attr['default_trap_group']
-    configer.turn_on_port_admin_state(test_obj.dut.port_obj_list)
-    configer.turn_up_and_check_ports(test_obj.dut.port_obj_list)
+    configer.set_port_attribute(test_obj.dut.active_port_obj_list)
+    test_obj.dut.port_obj_list = configer.turn_up_and_get_checked_ports(test_obj.dut.active_port_obj_list)
 
     if is_create_hostIf:
         if 'port_config_ini' in test_obj.test_params:
             host_intf_table_id, hostif_list = configer.create_port_hostif_by_port_config_ini(
-                port_list=test_obj.dut.port_obj_list, trap_group=default_trap_group)
+                port_list=test_obj.dut.active_port_obj_list, trap_group=default_trap_group)
         else:
             host_intf_table_id, hostif_list = configer.create_host_intf(
-                port_list=test_obj.dut.port_obj_list, trap_group=default_trap_group)
+                port_list=test_obj.dut.active_port_obj_list, trap_group=default_trap_group)
         test_obj.dut.host_intf_table_id = host_intf_table_id
         test_obj.dut.hostif_list = hostif_list
 
@@ -75,7 +75,7 @@ def t0_port_config_helper(test_obj: 'T0TestBase', is_recreate_bridge=True, is_cr
         configer.remove_all_bridge_ports()
         test_obj.dut.bridge_port_list \
             = configer.create_bridge_ports(
-                default_1q_bridge_id, test_obj.dut.port_obj_list)
+                default_1q_bridge_id, test_obj.dut.active_port_obj_list)
     else:
         test_obj.dut.bridge_port_list \
             = configer.load_default_active_1q_bridge_ports(default_1q_bridge_id)
@@ -173,23 +173,12 @@ class PortConfiger(object):
                 sai_thrift_set_hostif_attribute(
                     self.client, hostif_oid=hostif, oper_status=False)
                 hostif_list[index] = hostif
-                item.host_itf_idx = hostif
+                item.host_itf_id = hostif
             except BaseException as e:
                 print("Cannot create hostif, error : {}".format(e))
         return host_intf_table_id, hostif_list
 
     def create_port_hostif_by_port_config_ini(self, port_list: List['Port'], trap_group=None):
-        lane_orderd_dict = sorted(
-            self.test_obj.ports_config.items(), key=lambda kv: kv[1]['lanes'])
-        index_orderd_dict = sorted(
-            self.test_obj.ports_config.items(), key=lambda kv: kv[1]['index'])
-
-        min = int(index_orderd_dict[0][1]['index'])
-        for item in lane_orderd_dict:
-            self.test_obj.dut.host_if_port_idx_map.append(
-                int(item[1]['index'])-min)
-        for index, key in enumerate(self.test_obj.ports_config):
-            self.test_obj.dut.host_if_name_list.append(key)
         print("Create Host intfs...")
         host_intf_table_id = sai_thrift_create_hostif_table_entry(
             self.client, type=SAI_HOSTIF_TABLE_ENTRY_TYPE_WILDCARD,
@@ -198,21 +187,20 @@ class PortConfiger(object):
             self.client, trap_type=SAI_HOSTIF_TRAP_TYPE_TTL_ERROR, packet_action=SAI_PACKET_ACTION_TRAP,
             trap_group=trap_group, trap_priority=0)
         hostif_list = [None]*len(port_list)
-        min = int(index_orderd_dict[0][1]['index'])
-        for index, item in enumerate(lane_orderd_dict):
-            port_index = self.test_obj.dut.host_if_port_idx_map[index]
-            port = self.test_obj.dut.port_obj_list[port_index]
-            name = item[0]
+        for index, port in enumerate(port_list):
             try:
                 hostif = sai_thrift_create_hostif(
                     self.client,
                     type=SAI_HOSTIF_TYPE_NETDEV,
                     obj_id=port.oid,
-                    name=name)
+                    name=port.port_config.name)
                 sai_thrift_set_hostif_attribute(
                     self.client, hostif_oid=hostif, oper_status=False)
                 hostif_list[index] = hostif
-                port.host_itf_idx = index
+                port.host_itf_id = hostif
+                print("Create hostitf: name:{} port hardIdx: {} port lane: {}".format(
+                    port.port_config.name, port.port_index, port.conifg_db['lanes'])
+                )
             except BaseException as e:
                 print("Cannot create hostif, error : {}".format(e))
         return host_intf_table_id, hostif_list
@@ -276,7 +264,7 @@ class PortConfiger(object):
 
         #try to binding the bridge port with the port index here
         print("Assign bridge to port objects...")
-        port_list = self.test_obj.dut.port_obj_list
+        port_list = self.test_obj.dut.active_port_obj_list
         active_1q_bridge_ports = []
         for index in range(0, len(port_list)):
             for bp in default_1q_bridge_port_list:
@@ -345,8 +333,8 @@ class PortConfiger(object):
             # device, the device index, will be used in multi devices
             # Port, local port index
             # eth, eth name
-            self.test_obj.dut.port_obj_list[index].dev_port_index = port
-            self.test_obj.dut.port_obj_list[index].dev_port_eth = eth
+            self.test_obj.dut.active_port_obj_list[index].dev_port_index = port
+            self.test_obj.dut.active_port_obj_list[index].dev_port_eth = eth
             dev_port_list.append(port)
         return dev_port_list
 
@@ -377,13 +365,13 @@ class PortConfiger(object):
                 self.client, port_oid=port.oid, hw_lane_list=temp_list)
             port.default_lane_list = attr['hw_lane_list'].uint32list
             port_obj_list.append(port)
-        self.test_obj.dut.port_obj_list = self.sort_port_list_by_config(
+        self.test_obj.dut.active_port_obj_list = self.sort_port_list_by_config(
             self.test_obj.ports_config, port_obj_list)
-        for item in self.test_obj.dut.port_obj_list:
+        for item in self.test_obj.dut.active_port_obj_list:
             port_id_list.append(item.oid)
         print("Base on lanes config file[{}], init {} ports from {} device posts"
         .format("port_config.ini",
-                len(self.test_obj.dut.port_obj_list),
+                len(self.test_obj.dut.active_port_obj_list),
                 len(port_obj_list)
              ))
         #print("port_list {}".format(port_id_list))
@@ -403,10 +391,8 @@ class PortConfiger(object):
             port_list: port list
         """
         sorted_port_list: List[Port] = []
-        port_lens = min(len(config['interfaces']), len(ports_config))
-        for index in range(port_lens):
-        #for index, key in enumerate(ports_config):
-            key = ports_config.keys()[index]
+        for index, key in enumerate(ports_config):
+        # index: sequence number, key: port config order, should be equals to index
             lane_list = ports_config[key]['lanes']
             for port in port_list:
                 if lane_list == port.default_lane_list:
@@ -419,20 +405,17 @@ class PortConfiger(object):
         Assign the PortConfig object to the Port Object
         """
         for index, key in enumerate(portConfigs):
-            print ("index: {}, key: {}".format(index, key))
-            self.test_obj.dut.port_obj_list[index].port_config = portConfigs[key]
+        # index: sequence number, key: port config order, should be equals to index
+            #print ("index: {}, key: {}".format(index, key))
+            self.test_obj.dut.active_port_obj_list[index].port_config = portConfigs[key]
 
     def assign_config_db(self, port_config_db: Dict, portConfigs: Dict):
         """
         Assign the PortConfig object to the Port Object
         """
         for index, key in enumerate(portConfigs):
-            print("port index:{} name:{} config lane:{} db lane:{}".format(
-                index,
-                portConfigs[key].name,
-                self.test_obj.dut.port_obj_list[index].port_config.lanes,
-                port_config_db[portConfigs[key].name]['lanes']))
-            self.test_obj.dut.port_obj_list[index].conifg_db \
+        # index: sequence number, key: port config order, should be equals to index
+            self.test_obj.dut.active_port_obj_list[index].conifg_db \
                 = port_config_db[portConfigs[key].name]
 
     def remove_bridge_with_port(self):
@@ -446,9 +429,9 @@ class PortConfiger(object):
         for index, port in enumerate(bp_ports):
             sai_thrift_remove_bridge_port(self.client, port)
             #print("Removed bridge port {}".format(port))
-            if self.test_obj.dut.port_obj_list[index].bridge_port_oid != port:
+            if self.test_obj.dut.active_port_obj_list[index].bridge_port_oid != port:
                 print("WARN! BUG! Bridge not as expected, not equals to port record.")
-            self.test_obj.dut.port_obj_list[index].bridge_port_oid = None
+            self.test_obj.dut.active_port_obj_list[index].bridge_port_oid = None
             self.test_obj.dut.bridge_port_list.remove(port)
         self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
 
@@ -467,7 +450,7 @@ class PortConfiger(object):
             sai_thrift_remove_hostif(self.client, hostif)
         sai_thrift_remove_hostif_table_entry(self.client, host_intf_table_id)
 
-    def turn_on_port_admin_state(self, port_list: List['Port']):
+    def set_port_attribute(self, port_list: List['Port']):
         """
         Turn on port admin state
 
@@ -475,25 +458,43 @@ class PortConfiger(object):
             post_list: post list
         """
         print("Set port...")
-        for _, port in enumerate(port_list):
+        for index, port in enumerate(port_list):
+            self.log_port_state(port, index)
             sai_thrift_set_port_attribute(
-                self.client, port_oid=port.oid, mtu=self.get_mtu(port), admin_state=True,
+                self.client, port_oid=port.oid, mtu=self.get_mtu(port),
                 fec_mode=self.get_fec_mode(port),
                 speed=self.get_speed(port))
 
-    def turn_up_and_check_ports(self, port_list: List['Port']):
+    def turn_up_and_get_checked_ports(self, port_list: List['Port']):
         '''
         Method to turn up the ports.
         In case some device not init the port after start the switch.
 
         Args:
             port_list - list of all active port objects
+        
+        Return:
+            Port list for testing.
         '''
 
         # For brcm devices, need to init and setup the ports at once after start the switch.
         retries = 10
         down_port_list = []
+        test_port_list:List[Port] = []
+
+        print("Turn up ports...")
         for index, port in enumerate(port_list):
+            if not port.dev_port_index:
+                print("Skip turn up port {} , local index {} id {} name{}.".format(
+                        index, port.port_index, port.oid, port.port_config.name))
+                continue
+            test_port_list.append(port)
+            sai_thrift_set_port_attribute(
+                        self.client,
+                        port_oid=port.oid,
+                        admin_state=True)
+
+        for index, port in enumerate(test_port_list):
             port_attr = sai_thrift_get_port_attribute(
                 self.client, port.oid, oper_status=True)
             print("Turn up port {}".format(index))
@@ -507,19 +508,18 @@ class PortConfiger(object):
                         port_up = True
                         break
                     time.sleep(3)
+                    self.log_port_state(port, index)
                     print("port {} , local index {} id {} is not up, status: {}. Retry. Reset Admin State.".format(
                         index, port.port_index, port.oid, port_attr['oper_status']))
                     sai_thrift_set_port_attribute(
                         self.client,
                         port_oid=port.oid,
-                        mtu=self.get_mtu(port),
-                        admin_state=True,
-                        fec_mode=self.get_fec_mode(port),
-                        speed=self.get_speed(port))
+                        admin_state=True)
             if not port_up:
                 down_port_list.append(index)
         if down_port_list:
             print("Ports {} are  down after retries.".format(down_port_list))
+        return test_port_list
 
     def get_fec_mode(self, port: Port):
         '''
@@ -580,3 +580,15 @@ class PortConfiger(object):
                 index=True,
                 parent_scheduler_node=True)
             self.test_obj.assertEqual(queue, q_attr['index'])
+
+    def log_port_state(self, port:Port, index):
+        print("port index:{} hardIdx: {} ptf_dev_idx: {} name:{} config lane:{} db lane:{} mtu:{} fec:{} speed:{}".format(
+            index,
+            port.port_index,
+            port.dev_port_index,
+            port.port_config.name,
+            port.port_config.lanes,
+            port.conifg_db['lanes'],
+            self.get_mtu(port),
+            self.get_fec_mode(port),
+            self.get_speed(port)))
