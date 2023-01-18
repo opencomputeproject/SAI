@@ -198,9 +198,9 @@ class PortConfiger(object):
                     self.client, hostif_oid=hostif, oper_status=False)
                 hostif_list[index] = hostif
                 port.host_itf_id = hostif
-                print("Create hostitf: name:{} port hardIdx: {} port lane: {}".format(
-                    port.port_config.name, port.port_index, port.conifg_db['lanes'])
-                )
+                # print("Create hostitf: name:{} port hardIdx: {} port lane: {}".format(
+                #     port.port_config.name, port.port_index, port.conifg_db['lanes'])
+                # )
             except BaseException as e:
                 print("Cannot create hostif, error : {}".format(e))
         return host_intf_table_id, hostif_list
@@ -459,7 +459,7 @@ class PortConfiger(object):
         """
         print("Set port...")
         for index, port in enumerate(port_list):
-            self.log_port_state(port, index)
+            #self.log_port_state(port, index)
             sai_thrift_set_port_attribute(
                 self.client, port_oid=port.oid, mtu=self.get_mtu(port),
                 fec_mode=self.get_fec_mode(port),
@@ -484,7 +484,7 @@ class PortConfiger(object):
 
         print("Turn up ports...")
         for index, port in enumerate(port_list):
-            if not port.dev_port_index:
+            if not port.dev_port_index and index != 0:
                 print("Skip turn up port {} , local index {} id {} name{}.".format(
                         index, port.port_index, port.oid, port.port_config.name))
                 continue
