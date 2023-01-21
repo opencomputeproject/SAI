@@ -1,0 +1,177 @@
+// SAI SRv6 Encap model Graphviz file
+// To generate the diagram use below command:
+//      dot -Tpng  sai_srv6_encap_model.gv -o sai_srv6_encap_model.png
+
+digraph g {
+    fontname="Helvetica,Arial,sans-serif"
+    node [fontname="Helvetica,Arial,sans-serif"]
+    edge [fontname="Helvetica,Arial,sans-serif"]
+    graph [
+        rankdir = "LR"
+    ];
+    node [
+        fontsize = "16"
+        shape = "ellipse"
+    ];
+    edge [
+    ];
+
+    subgraph cluster_vrf {
+        "VRF_a_route_table_label" [ label = <VRF-A Route table>
+            style = "filled,setlinewidth(5)"
+            fillcolor = "#91b5c9"
+            shape = box
+            width = 2.2
+        ]
+
+        "Route_10_0_0_0" [
+            label = <
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+              <TR><TD colspan="2" BGCOLOR="palegreen" PORT="title">SAI Route</TD></TR>
+              <tr><td>Prefix</td><td>10.0.0.0/8</td></tr>
+              <tr><td>VRF</td><td>VRF-A</td></tr>
+              <tr><td>Prefix Agg ID</td><td>10</td></tr>
+              <tr><td>Prefix</td><td port="nexthop">Overlay NHG1</td></tr>
+              <tr><td colspan="2" BGCOLOR="black"></td></tr>
+            </TABLE>
+            >
+            shape = plaintext
+        ]
+        "Route_12_0_0_0" [
+            label = <
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+              <TR><TD colspan="2" BGCOLOR="palegreen" PORT="title">SAI Route</TD></TR>
+              <tr><td>Prefix</td><td>12.0.0.0/8</td></tr>
+              <tr><td>VRF</td><td>VRF-A</td></tr>
+              <tr><td>Prefix Agg ID</td><td>20</td></tr>
+              <tr><td>Prefix</td><td port="nexthop">SRv6 NH1</td></tr>
+              <tr><td colspan="2" BGCOLOR="black"></td></tr>
+            </TABLE>
+            >
+            shape = plaintext
+        ]
+    }
+
+    "Route_10_0_0_0":nexthop -> "l1_nhg1":ecmp_group
+    "Route_12_0_0_0":nexthop -> "srv6_nh1":nexthop
+
+    subgraph cluster_l1_ecmp {
+        // rank = same
+        label = <Overlay Next hop group>
+        "l1_nhg1" [
+            label = <
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+              <TR><TD PORT="ecmp_group" BGCOLOR="palegreen">L1 ECMP Group</TD></TR>
+              <tr><td BGCOLOR="black"></td></tr>
+              <TR><TD BGCOLOR="skyblue" PORT="nh_mbr_id">NHG member list</TD></TR>
+              <tr><td port="nh2">SRv6 NH2</td></tr>
+              <tr><td port="nh1">SRv6 NH1</td></tr>
+            </TABLE>
+            >
+            shape = plaintext
+        ]
+    }
+
+    subgraph cluster_srv6_nh {
+        rank = same
+        "srv6_nh1" [
+            label = <
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+              <TR><TD PORT="nexthop" BGCOLOR="palegreen">SRv6 NH1</TD></TR>
+              <TR><TD>Nexthop OID</TD></TR>
+              <TR><TD PORT="tunnel">NODE_21 Tunnel OID</TD></TR>
+              <TR><TD PORT="sidlist">SIDList OID1</TD></TR>
+            </TABLE>
+            >
+            shape = plaintext
+        ]
+
+        "srv6_nh2" [
+            label = <
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+              <TR><TD PORT="nexthop" BGCOLOR="palegreen">SRv6 NH2</TD></TR>
+              <TR><TD>Nexthop OID</TD></TR>
+              <TR><TD PORT="tunnel">NODE_22 Tunnel OID</TD></TR>
+              <TR><TD PORT="sidlist">SIDList OID2</TD></TR>
+            </TABLE>
+            >
+            shape = plaintext
+        ]
+    }
+
+    "l1_nhg1":nh1 -> "srv6_nh1":nexthop
+    "l1_nhg1":nh2 -> "srv6_nh2":nexthop
+    "srv6_nh1":tunnel -> "node21-tunnel":tunnel
+    "srv6_nh2":tunnel -> "node22-tunnel":tunnel
+
+    "srv6_nh1":sidlist -> "sidlist_table":sidlist1 [ shape = box ]
+    "srv6_nh2":sidlist -> "sidlist_table":sidlist2
+
+    subgraph cluster_tunnel {
+        rank = same
+        "node21-tunnel" [
+            label = <
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+              <TR><TD PORT="tunnel" BGCOLOR="palegreen">SAI Tunnel<br/>NODE_21 Endpoint</TD></TR>
+              <TR><TD>Tunnel OID</TD></TR>
+              <TR><TD PORT="mapper">Encap mapper</TD></TR>
+              <TR><TD>Encap SRC IP</TD></TR>
+              <TR><TD>Type = P2P</TD></TR>
+              <TR><TD>Encap DST IP</TD></TR>
+            </TABLE>
+            >
+            shape = plaintext
+        ]
+        "node21-encap_mapper" [
+            label = <
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+              <TR><TD colspan="2" PORT="mapper" BGCOLOR="palegreen">Encap Mapper</TD></TR>
+              <TR><TD colspan="2">Encap Mapper OID 1</TD></TR>
+              <tr><td colspan="2" BGCOLOR="black"></td></tr>
+              <TR><TD BGCOLOR="skyblue" colspan="3">PrefixID to VPNSID</TD></TR>
+              <TR><TD>10</TD><TD PORT="sidlist1">VPN SID1</TD></TR>
+              <TR><TD>20</TD><TD PORT="sidlist2">VPN SID2</TD></TR>
+            </TABLE>
+            >
+            shape = plaintext
+        ]
+        "node21-tunnel":mapper -> "node21-encap_mapper":mapper 
+
+        "node22-tunnel" [
+            label = <
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+              <TR><TD PORT="tunnel" BGCOLOR="palegreen">SAI Tunnel<br/>NODE_22 Endpoint</TD></TR>
+              <TR><TD>Tunnel OID</TD></TR>
+              <TR><TD PORT="mapper">Encap mapper</TD></TR>
+              <TR><TD>Encap SRC IP</TD></TR>
+              <TR><TD>Encap DST IP</TD></TR>
+            </TABLE>
+            >
+            shape = plaintext
+        ]
+        "node22-encap_mapper" [
+            label = <
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+              <TR><TD colspan="2" PORT="mapper" BGCOLOR="palegreen">Encap Mapper</TD></TR>
+              <TR><TD colspan="2">Encap Mapper OID 2</TD></TR>
+              <tr><td colspan="2" BGCOLOR="black"></td></tr>
+              <TR><TD BGCOLOR="skyblue" colspan="3">PrefixID to VPNSID</TD></TR>
+              <TR><TD>10</TD><TD PORT="sidlist1">VPN SID3</TD></TR>
+            </TABLE>
+            >
+            shape = plaintext
+        ]
+        "node22-tunnel":mapper -> "node22-encap_mapper":mapper 
+    }
+
+    "sidlist_table" [ label = <
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+          <TR><TD PORT="heading" colspan="2" BGCOLOR="palegreen">SIDList</TD></TR>
+          <TR><TD PORT="sidlist1">SIDList ID1</TD><TD BGCOLOR="lightblue">IPv6 address list1</TD></TR>
+          <TR><TD PORT="sidlist2">SIDList ID2</TD><TD BGCOLOR="lightblue">IPv6 address list2</TD></TR>
+          <TR><TD PORT="sidlist3">SIDList ID3</TD><TD BGCOLOR="lightblue">IPv6 address list3</TD></TR>
+        </TABLE>
+        >
+        shape = box
+    ]
+}

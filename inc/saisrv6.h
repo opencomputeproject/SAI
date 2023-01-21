@@ -190,6 +190,18 @@ typedef enum _sai_srv6_sidlist_attr_t
 } sai_srv6_sidlist_attr_t;
 
 /**
+ * @brief SRV6 SID List counter IDs
+ */
+typedef enum _sai_srv6_sidlist_stat_t
+{
+    /** Egress packet stat count */
+    SAI_SRV6_SIDLIST_STAT_OUT_PACKETS,
+
+    /** Egress byte stat count */
+    SAI_SRV6_SIDLIST_STAT_OUT_OCTETS,
+} sai_srv6_sidlist_stat_t;
+
+/**
  * @brief Create Segment ID List
  *
  * @param[out] srv6_sidlist_id Segment ID List ID
@@ -240,6 +252,54 @@ typedef sai_status_t (*sai_get_srv6_sidlist_attribute_fn)(
         _In_ sai_object_id_t srv6_sidlist_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
+
+/**
+ * @brief Get SRV6 SID List statistics counters. Deprecated for backward compatibility.
+ *
+ * @param[in] srv6_sidlist_id SRV6 SID List id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_srv6_sidlist_stats_fn)(
+        _In_ sai_object_id_t srv6_sidlist_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Get SRV6 SID List statistics counters extended.
+ *
+ * @param[in] srv6_sidlist_id SRV6 SID List id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] mode Statistics mode
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_srv6_sidlist_stats_ext_fn)(
+        _In_ sai_object_id_t srv6_sidlist_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _In_ sai_stats_mode_t mode,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Clear SRV6 SID List statistics counters.
+ *
+ * @param[in] srv6_sidlist_id SRV6 SID List id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_clear_srv6_sidlist_stats_fn)(
+        _In_ sai_object_id_t srv6_sidlist_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids);
 
 /**
  * @brief Attribute list for My SID
@@ -548,6 +608,10 @@ typedef struct _sai_srv6_api_t
     sai_get_srv6_sidlist_attribute_fn      get_srv6_sidlist_attribute;
     sai_bulk_object_create_fn              create_srv6_sidlists;
     sai_bulk_object_remove_fn              remove_srv6_sidlists;
+
+    sai_get_srv6_sidlist_stats_fn          get_srv6_sidlist_stats;
+    sai_get_srv6_sidlist_stats_ext_fn      get_srv6_sidlist_stats_ext;
+    sai_clear_srv6_sidlist_stats_fn        clear_srv6_sidlist_stats;
 
     sai_create_my_sid_entry_fn             create_my_sid_entry;
     sai_remove_my_sid_entry_fn             remove_my_sid_entry;

@@ -151,6 +151,7 @@ USXGMII - Universal Serial 10 Gigabit Media Independent Interface
 VNI - Virtual Network Interface
 VNID - Virtual Network Identifier
 VOQ - Virtual Output Queue
+VPN - Virtual Private Network
 VR - Virtual Router
 VRF - Virtual Route Forwarding
 VRRP - Virtual Router Redundancy Protocol
