@@ -19,6 +19,7 @@ Thrift SAI interface basic utils.
 import time
 import struct
 import socket
+import json
 
 from functools import wraps
 
@@ -26,6 +27,9 @@ from ptf.packet import *
 from ptf.testutils import *
 
 from sai_thrift.sai_adapter import *
+
+from typing import List, Dict
+from typing import TYPE_CHECKING
 
 
 def sai_thrift_query_attribute_enum_values_capability(client,

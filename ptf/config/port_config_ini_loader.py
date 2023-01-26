@@ -23,7 +23,6 @@ from os.path import exists
 
 from typing import TYPE_CHECKING
 from typing import List, Dict
-
 from data_module.data_obj import auto_str
 
 DEFAULT_CONFIG_DB = "../resources/port_config.ini"
@@ -132,6 +131,7 @@ class PortConfigInILoader():
                     portConfig.speed = data['speed']
                     portConfig.name = name
                     portConfigs[index] = portConfig
+                    index = index + 1
                     index = index + 1
             self.ports_config = ports
             self.portConfigs = portConfigs

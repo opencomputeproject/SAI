@@ -23,7 +23,6 @@ from ptf.thriftutils import *
 
 from sai_base_test import *
 
-@group("draft")
 class multipleRoutesTest(PlatformSaiHelper):
     '''
     Verify forwarding with multiple route to the same nhop.
@@ -101,7 +100,6 @@ class multipleRoutesTest(PlatformSaiHelper):
         super(multipleRoutesTest, self).tearDown()
 
 
-@group("draft")
 class dropRouteTest(PlatformSaiHelper):
     '''
     Verify drop route.
@@ -156,7 +154,6 @@ class dropRouteTest(PlatformSaiHelper):
         super(dropRouteTest, self).tearDown()
 
 
-@group("draft")
 class routeUpdateTest(PlatformSaiHelper):
     '''
     Verify correct forwarding after route update.
@@ -277,7 +274,6 @@ class routeUpdateTest(PlatformSaiHelper):
         super(routeUpdateTest, self).tearDown()
 
 
-@group("draft")
 class routeIngressRifTest(PlatformSaiHelper):
     '''
     Verify forwarding to ingress rif.
@@ -331,7 +327,6 @@ class routeIngressRifTest(PlatformSaiHelper):
         super(routeIngressRifTest, self).tearDown()
 
 
-@group("draft")
 class emptyECMPGroupTest(PlatformSaiHelper):
     '''
     Verify drop on empty ECMP group.
@@ -370,7 +365,6 @@ class emptyECMPGroupTest(PlatformSaiHelper):
         super(emptyECMPGroupTest, self).tearDown()
 
 
-@group("draft")
 class sviNeighborTest(PlatformSaiHelper):
     '''
     Function verifying correct SVI neighbor forwarding.
@@ -534,7 +528,6 @@ class sviNeighborTest(PlatformSaiHelper):
         super(sviNeighborTest, self).tearDown()
 
 
-@group("draft")
 class cpuForwardTest(PlatformSaiHelper):
     '''
     Function verifying forwading to CPU.
@@ -595,7 +588,6 @@ class cpuForwardTest(PlatformSaiHelper):
         super(cpuForwardTest, self).tearDown()
 
 
-@group("draft")
 class routeNbrColisionTest(PlatformSaiHelper):
     '''
     Verfies if packet is gleaned to CPU when nexthop id is RIF
@@ -756,7 +748,6 @@ class routeNbrColisionTest(PlatformSaiHelper):
         super(routeNbrColisionTest, self).tearDown()
 
 
-@group("draft")
 class L3DirBcastRouteTestHelper(PlatformSaiHelper):
     '''
     Verifies direct broadcast routing
@@ -995,7 +986,6 @@ class L3DirBcastRouteTestHelper(PlatformSaiHelper):
         finally:
             pass
 
-@group("draft")
 class DirBcastGleanAndForwardTest(L3DirBcastRouteTestHelper):
     """
     Verifies if frame is frowarded to cpu when there is only route without
@@ -1095,7 +1085,6 @@ class DirBcastGleanAndForwardTest(L3DirBcastRouteTestHelper):
         super(DirBcastGleanAndForwardTest, self).tearDown()
 
 
-@group("draft")
 class DirBcastForwardTest(L3DirBcastRouteTestHelper):
     """
     Verifies if frame is forwarded properly when configuration is correct

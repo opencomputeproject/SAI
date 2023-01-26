@@ -351,7 +351,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
         self.persist_helper = PersistHelper()
         self.ports_config = None
         self.config_db_loader: ConfigDBLoader = None
-        self.port_conifg_ini_loader: PortConfigInILoader = None
+        self.port_config_ini_loader: PortConfigInILoader = None
 
     def set_logger_name(self):
         """
@@ -383,11 +383,11 @@ class T0TestBase(ThriftInterfaceDataPlane):
         self.set_logger_name()
         # parse the port_config.ini, will create port, bridge port and host interface base on that file
         if 'port_config_ini' in self.test_params:
-            self.port_conifg_ini_loader = PortConfigInILoader(self.test_params['port_config_ini'])
+            self.port_config_ini_loader = PortConfigInILoader(self.test_params['port_config_ini'])
         else:
-            self.port_conifg_ini_loader = PortConfigInILoader()        
-        self.port_conifg_ini_loader.parse_port_config()
-        self.ports_config = self.port_conifg_ini_loader.ports_config
+            self.port_config_ini_loader = PortConfigInILoader()        
+        self.port_config_ini_loader.parse_port_config()
+        self.ports_config = self.port_config_ini_loader.ports_config
 
         if 'config_db_json' in self.test_params:
             self.config_db_loader = ConfigDBLoader(self.test_params['config_db_json'])
