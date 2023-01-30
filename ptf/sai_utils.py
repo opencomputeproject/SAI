@@ -19,6 +19,7 @@ Thrift SAI interface basic utils.
 import time
 import struct
 import socket
+import json
 
 from functools import wraps
 
@@ -26,6 +27,9 @@ from ptf.packet import *
 from ptf.testutils import *
 
 from sai_thrift.sai_adapter import *
+
+from typing import List, Dict
+from typing import TYPE_CHECKING
 
 
 def sai_thrift_query_attribute_enum_values_capability(client,
@@ -363,6 +367,7 @@ def warm_test(is_test_rebooting:bool=False, time_out=60, interval=1):
                 sai_thrift_set_switch_attribute(inst.client, restart_warm=True)
                 sai_thrift_set_switch_attribute(inst.client, pre_shutdown=True)
                 sai_thrift_remove_switch(inst.client)
+                sai_thrift_api_uninitialize(inst.client)
                 # write content to reboot-requested
                 print("write rebooting to file")
                 warm_file = open('/tmp/warm_reboot','w+')

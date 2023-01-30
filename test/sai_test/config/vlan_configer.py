@@ -171,7 +171,8 @@ class VlanConfiger(object):
         Returns:
             list: vlan member oid list
         """
-        vlan_member_list = sai_thrift_object_list_t(count=100)
+        vlan_member_list = sai_thrift_object_list_t(
+            count=self.test_obj.dut.active_ports_no)
         mbr_list = sai_thrift_get_vlan_attribute(
             self.client, vlan_id, member_list=vlan_member_list)
         return mbr_list['SAI_VLAN_ATTR_MEMBER_LIST'].idlist

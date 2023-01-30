@@ -17,7 +17,7 @@ Thrift SAI interface RIF tests
 """
 from sai_thrift.sai_headers import *
 
-import ptf.mask as mask
+from ptf.mask import *
 from ptf.packet import *
 from ptf.testutils import *
 from ptf.thriftutils import *
@@ -25,8 +25,7 @@ from ptf.thriftutils import *
 from sai_base_test import *
 
 
-@group("draft")
-class L3NexthopTest(SaiHelperSimplified):
+class L3NexthopTestHelper(PlatformSaiHelper):
     """
     Basic L3 nexthop tests.
     Configuration
@@ -37,32 +36,33 @@ class L3NexthopTest(SaiHelperSimplified):
     +----------+-----------+
     """
     def setUp(self):
-        super(L3NexthopTest, self).setUp()
+        super(L3NexthopTestHelper, self).setUp()
 
         self.create_routing_interfaces(ports=[0, 1])
-
-    def runTest(self):
-        self.removeNexthopTest()
-        self.cpuNexthopTest()
 
     def tearDown(self):
         self.destroy_routing_interfaces()
 
-        super(L3NexthopTest, self).tearDown()
+        super(L3NexthopTestHelper, self).tearDown()
 
-    def removeNexthopTest(self):
-        """
-            Test verifies correct nexthop removal.
-        """
+
+class removeNexthopTest(L3NexthopTestHelper):
+    """
+        Test verifies correct nexthop removal.
+    """
+    def setUp(self):
+        super(removeNexthopTest, self).setUp()
+
+    def runTest(self):
         print("RemoveNexthopTest")
-        nhop = sai_thrift_create_next_hop(self.client,
-                                          ip=sai_ipaddress('10.10.10.10'),
-                                          router_interface_id=self.port0_rif,
-                                          type=SAI_NEXT_HOP_TYPE_IP)
         neighbor_entry = sai_thrift_neighbor_entry_t(
             rif_id=self.port0_rif, ip_address=sai_ipaddress('10.10.10.10'))
         sai_thrift_create_neighbor_entry(self.client, neighbor_entry,
                                          dst_mac_address='00:99:99:99:99:99')
+        nhop = sai_thrift_create_next_hop(self.client,
+                                          ip=sai_ipaddress('10.10.10.10'),
+                                          router_interface_id=self.port0_rif,
+                                          type=SAI_NEXT_HOP_TYPE_IP)
 
         route1 = sai_thrift_route_entry_t(
             vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.2/32'))
@@ -110,13 +110,21 @@ class L3NexthopTest(SaiHelperSimplified):
             sai_thrift_remove_route_entry(self.client, route3)
             sai_thrift_remove_route_entry(self.client, route2)
             sai_thrift_remove_route_entry(self.client, route1)
-            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry)
             sai_thrift_remove_next_hop(self.client, nhop)
+            sai_thrift_remove_neighbor_entry(self.client, neighbor_entry)
 
-    def cpuNexthopTest(self):
-        '''
-            Test verifies nexthop to CPU.
-        '''
+    def tearDown(self):
+        super(removeNexthopTest, self).tearDown()
+
+
+class cpuNexthopTest(L3NexthopTestHelper):
+    '''
+        Test verifies nexthop to CPU.
+    '''
+    def setUp(self):
+        super(cpuNexthopTest, self).setUp()
+
+    def runTest(self):
         print("cpuNexthopTest")
 
         print("Creating hostif trap for IP2ME")
@@ -218,15 +226,16 @@ class L3NexthopTest(SaiHelperSimplified):
             sai_thrift_remove_hostif_trap(self.client, trap)
             sai_thrift_remove_hostif_trap_group(self.client, trap_group)
 
+    def tearDown(self):
+        super(cpuNexthopTest, self).tearDown()
 
-@group("draft")
-@group("tunnel")
-class NhopTunnelEncapDecapTest(SaiHelper):
+
+class NhopTunnelEncapDecapTestHelper(PlatformSaiHelper):
     '''
         Nexthop tunnel encapsulation and decapsulation tests.
     '''
     def setUp(self):
-        super(NhopTunnelEncapDecapTest, self).setUp()
+        super(NhopTunnelEncapDecapTestHelper, self).setUp()
         # underlay config
         self.uvrf = sai_thrift_create_virtual_router(self.client)
 
@@ -304,11 +313,6 @@ class NhopTunnelEncapDecapTest(SaiHelper):
         sai_thrift_create_route_entry(self.client, self.customer_route2,
                                       next_hop_id=self.tunnel_nexthop)
 
-    def runTest(self):
-        self.l3InterfaceTunnelTest()
-        self.subPortTunnelTest()
-        self.sviTunnelTest()
-
     def tearDown(self):
         sai_thrift_remove_route_entry(self.client, self.customer_route2)
         sai_thrift_remove_route_entry(self.client, self.customer_route1)
@@ -329,24 +333,29 @@ class NhopTunnelEncapDecapTest(SaiHelper):
         sai_thrift_remove_virtual_router(self.client, self.ovrf)
         sai_thrift_remove_virtual_router(self.client, self.uvrf)
 
-        super(NhopTunnelEncapDecapTest, self).tearDown()
+        super(NhopTunnelEncapDecapTestHelper, self).tearDown()
 
-    def l3InterfaceTunnelTest(self):
-        '''
-            Test verifies l3 interface tunnel nexthop.
-        '''
+
+class l3InterfaceTunnelTest(NhopTunnelEncapDecapTestHelper):
+    '''
+        Test verifies l3 interface tunnel nexthop.
+    '''
+    def setUp(self):
+        super(l3InterfaceTunnelTest, self).setUp()
+
+    def runTest(self):
         print("l3InterfaceTunnelTest")
         try:
             orif = sai_thrift_create_router_interface(
                 self.client, type=SAI_ROUTER_INTERFACE_TYPE_PORT,
                 port_id=self.port24, virtual_router_id=self.ovrf)
-            onhop4 = sai_thrift_create_next_hop(
-                self.client, ip=sai_ipaddress(self.customer_ip4),
-                router_interface_id=orif, type=SAI_NEXT_HOP_TYPE_IP)
             oneighbor4 = sai_thrift_neighbor_entry_t(
                 rif_id=orif, ip_address=sai_ipaddress(self.customer_ip4))
             sai_thrift_create_neighbor_entry(
                 self.client, oneighbor4, dst_mac_address='00:22:22:22:22:33')
+            onhop4 = sai_thrift_create_next_hop(
+                self.client, ip=sai_ipaddress(self.customer_ip4),
+                router_interface_id=orif, type=SAI_NEXT_HOP_TYPE_IP)
             customer_route3 = sai_thrift_route_entry_t(
                 vr_id=self.ovrf,
                 destination=sai_ipprefix(self.customer_ip4+'/32'))
@@ -407,27 +416,35 @@ class NhopTunnelEncapDecapTest(SaiHelper):
 
         finally:
             sai_thrift_remove_route_entry(self.client, customer_route3)
-            sai_thrift_remove_neighbor_entry(self.client, oneighbor4)
             sai_thrift_remove_next_hop(self.client, onhop4)
+            sai_thrift_remove_neighbor_entry(self.client, oneighbor4)
             sai_thrift_remove_router_interface(self.client, orif)
 
-    def subPortTunnelTest(self):
-        '''
-            Test verifies subport tunnel nexthop.
-        '''
+    def tearDown(self):
+        super(l3InterfaceTunnelTest, self).tearDown()
+
+
+class subPortTunnelTest(NhopTunnelEncapDecapTestHelper):
+    '''
+        Test verifies subport tunnel nexthop.
+    '''
+    def setUp(self):
+        super(subPortTunnelTest, self).setUp()
+
+    def runTest(self):
         print("subPortTunnelTest")
         try:
             osubport = sai_thrift_create_router_interface(
                 self.client, type=SAI_ROUTER_INTERFACE_TYPE_SUB_PORT,
                 virtual_router_id=self.ovrf, port_id=self.port24,
                 admin_v4_state=True, outer_vlan_id=500)
-            onhop = sai_thrift_create_next_hop(
-                self.client, ip=sai_ipaddress(self.customer_ip4),
-                router_interface_id=osubport, type=SAI_NEXT_HOP_TYPE_IP)
             oneighbor = sai_thrift_neighbor_entry_t(
                 rif_id=osubport, ip_address=sai_ipaddress(self.customer_ip4))
             sai_thrift_create_neighbor_entry(
                 self.client, oneighbor, dst_mac_address="00:22:22:22:22:33")
+            onhop = sai_thrift_create_next_hop(
+                self.client, ip=sai_ipaddress(self.customer_ip4),
+                router_interface_id=osubport, type=SAI_NEXT_HOP_TYPE_IP)
             customer_route3 = sai_thrift_route_entry_t(
                 vr_id=self.ovrf,
                 destination=sai_ipprefix(self.customer_ip4+'/32'))
@@ -496,14 +513,22 @@ class NhopTunnelEncapDecapTest(SaiHelper):
 
         finally:
             sai_thrift_remove_route_entry(self.client, customer_route3)
-            sai_thrift_remove_neighbor_entry(self.client, oneighbor)
             sai_thrift_remove_next_hop(self.client, onhop)
+            sai_thrift_remove_neighbor_entry(self.client, oneighbor)
             sai_thrift_remove_router_interface(self.client, osubport)
 
-    def sviTunnelTest(self):
-        '''
-            Test verifies SVI tunnel nexthop.
-        '''
+    def tearDown(self):
+        super(subPortTunnelTest, self).tearDown()
+
+
+class sviTunnelTest(NhopTunnelEncapDecapTestHelper):
+    '''
+        Test verifies SVI tunnel nexthop.
+    '''
+    def setUp(self):
+        super(sviTunnelTest, self).setUp()
+
+    def runTest(self):
         print("sviTunnelTest")
         try:
             port24_bp = sai_thrift_create_bridge_port(
@@ -531,18 +556,26 @@ class NhopTunnelEncapDecapTest(SaiHelper):
                 self.client, type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
                 virtual_router_id=self.ovrf, vlan_id=vlan100)
 
-            onhop = sai_thrift_create_next_hop(
-                self.client, ip=sai_ipaddress(self.customer_ip4),
-                router_interface_id=osvi, type=SAI_NEXT_HOP_TYPE_IP)
             oneighbor = sai_thrift_neighbor_entry_t(
                 rif_id=osvi, ip_address=sai_ipaddress(self.customer_ip4))
             sai_thrift_create_neighbor_entry(
                 self.client, oneighbor, dst_mac_address="00:22:22:22:22:33")
+            onhop = sai_thrift_create_next_hop(
+                self.client, ip=sai_ipaddress(self.customer_ip4),
+                router_interface_id=osvi, type=SAI_NEXT_HOP_TYPE_IP)
             customer_route3 = sai_thrift_route_entry_t(
                 vr_id=self.ovrf,
                 destination=sai_ipprefix(self.customer_ip4+'/32'))
             sai_thrift_create_route_entry(self.client, customer_route3,
                                           next_hop_id=onhop)
+            test_fdb = sai_thrift_fdb_entry_t(
+                switch_id=self.switch_id,
+                mac_address="00:22:22:22:22:33",
+                bv_id=vlan100)
+            sai_thrift_create_fdb_entry(self.client,
+                                        test_fdb,
+                                        type=SAI_FDB_ENTRY_TYPE_STATIC,
+                                        bridge_port_id=port24_bp)
 
             print("Verifying IP 4in4 (encap)")
             pkt = simple_tcp_packet(
@@ -597,9 +630,10 @@ class NhopTunnelEncapDecapTest(SaiHelper):
             verify_packet(self, pkt2, self.dev_port24)
 
         finally:
+            sai_thrift_remove_fdb_entry(self.client, test_fdb)
             sai_thrift_remove_route_entry(self.client, customer_route3)
-            sai_thrift_remove_neighbor_entry(self.client, oneighbor)
             sai_thrift_remove_next_hop(self.client, onhop)
+            sai_thrift_remove_neighbor_entry(self.client, oneighbor)
             sai_thrift_remove_router_interface(self.client, osvi)
             sai_thrift_set_port_attribute(self.client, self.port24,
                                           port_vlan_id=0)
@@ -611,15 +645,16 @@ class NhopTunnelEncapDecapTest(SaiHelper):
             sai_thrift_remove_bridge_port(self.client, port24_bp)
             sai_thrift_remove_bridge_port(self.client, port26_bp)
 
+    def tearDown(self):
+        super(sviTunnelTest, self).tearDown()
 
-@group("draft")
-@group("tunnel")
-class NhopTunnelVNITest(SaiHelper):
+
+class NhopTunnelVNITestHelper(PlatformSaiHelper):
     '''
         Nexthop tunnel VNI tests.
     '''
     def setUp(self):
-        super(NhopTunnelVNITest, self).setUp()
+        super(NhopTunnelVNITestHelper, self).setUp()
         # underlay config
         self.uvrf = sai_thrift_create_virtual_router(self.client)
 
@@ -634,6 +669,7 @@ class NhopTunnelVNITest(SaiHelper):
         self.inner_dmac = '00:33:33:33:33:33'
         self.inner_dmac2 = '00:33:33:33:33:44'
         self.inner_dmac3 = '00:33:33:33:33:55'
+        self.inner_dmac4 = '00:33:33:33:33:66'
         self.underlay_neighbor_mac = '00:11:11:11:11:11'
         self.underlay_neighbor_mac2 = '00:11:11:11:11:22'
         self.underlay_neighbor_mac3 = '00:11:11:11:11:33'
@@ -677,21 +713,18 @@ class NhopTunnelVNITest(SaiHelper):
             vni_id_value=self.vni)
         encap_mappers_list = [self.encap_tunnel_map]
         decap_mappers_list = [self.decap_tunnel_map]
-        encap_mappers_objlist = sai_thrift_object_list_t(
+        self.encap_mappers_objlist = sai_thrift_object_list_t(
             count=1, idlist=encap_mappers_list)
-        decap_mappers_objlist = sai_thrift_object_list_t(
+        self.decap_mappers_objlist = sai_thrift_object_list_t(
             count=1, idlist=decap_mappers_list)
         self.tunnel = sai_thrift_create_tunnel(
             self.client, type=self.tunnel_type,
             encap_src_ip=sai_ipaddress(self.my_lb_ip),
-            decap_mappers=decap_mappers_objlist,
-            encap_mappers=encap_mappers_objlist,
+            decap_mappers=self.decap_mappers_objlist,
+            encap_mappers=self.encap_mappers_objlist,
             encap_ttl_mode=self.ttl_mode,
             decap_ttl_mode=self.ttl_mode,
             underlay_interface=self.urif_lb)
-
-    def runTest(self):
-        self.tunnelVniTest()
 
     def tearDown(self):
         sai_thrift_remove_tunnel(self.client, self.tunnel)
@@ -706,13 +739,19 @@ class NhopTunnelVNITest(SaiHelper):
         sai_thrift_remove_virtual_router(self.client, self.ovrf)
         sai_thrift_remove_virtual_router(self.client, self.uvrf)
 
-        super(NhopTunnelVNITest, self).tearDown()
+        super(NhopTunnelVNITestHelper, self).tearDown()
 
-    def tunnelVniTest(self):
-        '''
-            Test verifies corrent tunnel VNI behaviour.
-        '''
+
+class tunnelVniTest(NhopTunnelVNITestHelper):
+    '''
+        Test verifies correct tunnel VNI behavior.
+    '''
+    def setUp(self):
+        super(tunnelVniTest, self).setUp()
+
+    def runTest(self):
         print("tunnelVniTest")
+        vni2 = 5000
         service_vm_ip = "200.200.200.2"
         service_vtep_ip = "30.30.30.3"
         service_vni = 3000
@@ -754,12 +793,20 @@ class NhopTunnelVNITest(SaiHelper):
             tunnel_nexthop1 = sai_thrift_create_next_hop(
                 self.client, type=SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP,
                 tunnel_id=self.tunnel, ip=sai_ipaddress(self.tunnel_ip),
-                tunnel_vni=2000, tunnel_mac=self.inner_dmac)
+                tunnel_vni=self.vni, tunnel_mac=self.inner_dmac)
 
             tunnel_nexthop2 = sai_thrift_create_next_hop(
                 self.client, type=SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP,
+                tunnel_id=self.tunnel, ip=sai_ipaddress(self.tunnel_ip),
+                tunnel_vni=vni2, tunnel_mac=self.inner_dmac)
+            self.assertNotEqual(
+                tunnel_nexthop2, 0,
+                "Failed to create nexthop to same dest ip with different vni")
+
+            tunnel_nexthop3 = sai_thrift_create_next_hop(
+                self.client, type=SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP,
                 tunnel_id=self.tunnel, ip=sai_ipaddress(service_vtep_ip),
-                tunnel_vni=service_vni, tunnel_mac=self.inner_dmac2)
+                tunnel_vni=service_vni, tunnel_mac=self.inner_dmac3)
 
             customer_route1 = sai_thrift_route_entry_t(
                 vr_id=self.ovrf, destination=sai_ipprefix(self.vm_ip+'/32'))
@@ -767,7 +814,271 @@ class NhopTunnelVNITest(SaiHelper):
                                           next_hop_id=tunnel_nexthop1)
 
             customer_route2 = sai_thrift_route_entry_t(
+                vr_id=self.ovrf, destination=sai_ipprefix(self.vm_ip2+'/32'))
+            sai_thrift_create_route_entry(self.client, customer_route2,
+                                          next_hop_id=tunnel_nexthop2)
+
+            customer_route3 = sai_thrift_route_entry_t(
                 vr_id=self.ovrf, destination=sai_ipprefix(service_vm_ip+'/32'))
+            sai_thrift_create_route_entry(self.client, customer_route3,
+                                          next_hop_id=tunnel_nexthop3)
+
+            pkt = simple_tcp_packet(
+                eth_dst=ROUTER_MAC,
+                eth_src='00:22:22:22:22:22',
+                ip_dst=self.vm_ip,
+                ip_src=self.customer_ip,
+                ip_id=108,
+                ip_ttl=64)
+            inner_pkt = simple_tcp_packet(
+                eth_dst=self.inner_dmac,
+                eth_src=ROUTER_MAC,
+                ip_dst=self.vm_ip,
+                ip_src=self.customer_ip,
+                ip_id=108,
+                ip_ttl=63)
+            vxlan_pkt = Mask(simple_vxlan_packet(
+                eth_src=ROUTER_MAC,
+                eth_dst=self.underlay_neighbor_mac,
+                ip_id=0,
+                ip_src=self.my_lb_ip,
+                ip_dst=self.tunnel_ip,
+                ip_ttl=64,
+                ip_flags=0x2,
+                with_udp_chksum=False,
+                vxlan_vni=self.vni,
+                inner_frame=inner_pkt))
+            vxlan_pkt.set_do_not_care_scapy(UDP, 'sport')
+            print("Sending packet on port %d to vni %d" %
+                  (self.dev_port24, self.vni))
+            send_packet(self, self.dev_port24, pkt)
+            verify_packet(self, vxlan_pkt, self.dev_port25)
+
+            pkt = simple_tcp_packet(
+                eth_dst=ROUTER_MAC,
+                eth_src='00:22:22:22:22:22',
+                ip_dst=self.vm_ip2,
+                ip_src=self.customer_ip,
+                ip_id=108,
+                ip_ttl=64)
+            inner_pkt = simple_tcp_packet(
+                eth_dst=self.inner_dmac,
+                eth_src=ROUTER_MAC,
+                ip_dst=self.vm_ip2,
+                ip_src=self.customer_ip,
+                ip_id=108,
+                ip_ttl=63)
+            vxlan_pkt = Mask(simple_vxlan_packet(
+                eth_src=ROUTER_MAC,
+                eth_dst=self.underlay_neighbor_mac,
+                ip_id=0,
+                ip_src=self.my_lb_ip,
+                ip_dst=self.tunnel_ip,
+                ip_ttl=64,
+                ip_flags=0x2,
+                with_udp_chksum=False,
+                vxlan_vni=vni2,
+                inner_frame=inner_pkt))
+            vxlan_pkt.set_do_not_care_scapy(UDP, 'sport')
+            print("Sending packet on port %d to vni %d" %
+                  (self.dev_port24, vni2))
+            send_packet(self, self.dev_port24, pkt)
+            verify_packet(self, vxlan_pkt, self.dev_port25)
+
+            print("Updating nexthop tunnel mac {} -> {}".format(
+                self.inner_dmac3,
+                self.inner_dmac4))
+            sai_thrift_set_next_hop_attribute(
+                self.client, tunnel_nexthop3, tunnel_mac=self.inner_dmac4)
+            print(sai_thrift_get_next_hop_attribute(
+                self.client, tunnel_nexthop3, tunnel_mac=True))
+
+            pkt = simple_tcp_packet(
+                eth_dst=ROUTER_MAC,
+                eth_src='00:22:22:22:22:22',
+                ip_dst=service_vm_ip,
+                ip_src=self.customer_ip,
+                ip_id=108,
+                ip_ttl=64)
+            inner_pkt = simple_tcp_packet(
+                eth_dst=self.inner_dmac4,
+                eth_src=ROUTER_MAC,
+                ip_dst=service_vm_ip,
+                ip_src=self.customer_ip,
+                ip_id=108,
+                ip_ttl=63)
+            vxlan_pkt = Mask(simple_vxlan_packet(
+                eth_src=ROUTER_MAC,
+                eth_dst=self.underlay_neighbor_mac2,
+                ip_id=0,
+                ip_src=self.my_lb_ip,
+                ip_dst=service_vtep_ip,
+                ip_ttl=64,
+                ip_flags=0x2,
+                with_udp_chksum=False,
+                vxlan_vni=service_vni,
+                inner_frame=inner_pkt))
+            vxlan_pkt.set_do_not_care_scapy(UDP, 'sport')
+            print("Sending packet on port %d to vni %d" %
+                  (self.dev_port24, service_vni))
+            send_packet(self, self.dev_port24, pkt)
+            verify_packet(self, vxlan_pkt, self.dev_port26)
+
+            pkt = simple_tcp_packet(
+                eth_dst=ROUTER_MAC,
+                eth_src='00:22:22:22:22:22',
+                ip_dst=service_vm_ip,
+                ip_src=self.customer_ip,
+                ip_id=108,
+                ip_ttl=64)
+            inner_pkt = simple_tcp_packet(
+                eth_dst=self.inner_dmac4,
+                eth_src=ROUTER_MAC,
+                ip_dst=service_vm_ip,
+                ip_src=self.customer_ip,
+                ip_id=108,
+                ip_ttl=63)
+            vxlan_pkt = Mask(simple_vxlan_packet(
+                eth_src=ROUTER_MAC,
+                eth_dst=self.underlay_neighbor_mac2,
+                ip_id=0,
+                ip_src=self.my_lb_ip,
+                ip_dst=service_vtep_ip,
+                ip_ttl=64,
+                ip_flags=0x2,
+                with_udp_chksum=False,
+                vxlan_vni=service_vni2,
+                inner_frame=inner_pkt))
+            print("Updating nexthop tunnel vni {} -> {}".format(service_vni,
+                                                                service_vni2))
+
+            sai_thrift_set_next_hop_attribute(self.client, tunnel_nexthop3,
+                                              tunnel_vni=4000)
+            print(sai_thrift_get_next_hop_attribute(self.client,
+                                                    tunnel_nexthop3,
+                                                    tunnel_vni=True))
+
+            vxlan_pkt.set_do_not_care_scapy(UDP, 'sport')
+            print("Sending packet on port %d to vni %d" %
+                  (self.dev_port24, service_vni2))
+            send_packet(self, self.dev_port24, pkt)
+            verify_packet(self, vxlan_pkt, self.dev_port26)
+
+        finally:
+            if 'customer_route3' in locals() and customer_route3:
+                sai_thrift_remove_route_entry(self.client, customer_route3)
+            if 'customer_route2' in locals() and customer_route2:
+                sai_thrift_remove_route_entry(self.client, customer_route2)
+            if 'customer_route1' in locals() and customer_route1:
+                sai_thrift_remove_route_entry(self.client, customer_route1)
+            if 'tunnel_nexthop3' in locals() and tunnel_nexthop3:
+                sai_thrift_remove_next_hop(self.client, tunnel_nexthop3)
+            if 'tunnel_nexthop2' in locals() and tunnel_nexthop2:
+                sai_thrift_remove_next_hop(self.client, tunnel_nexthop2)
+            if 'tunnel_nexthop1' in locals() and tunnel_nexthop1:
+                sai_thrift_remove_next_hop(self.client, tunnel_nexthop1)
+            sai_thrift_remove_route_entry(self.client, tunnel_route2)
+            sai_thrift_remove_route_entry(self.client, tunnel_route1)
+            sai_thrift_remove_next_hop(self.client, unhop2)
+            sai_thrift_remove_next_hop(self.client, unhop1)
+            sai_thrift_remove_neighbor_entry(self.client, uneighbor2)
+            sai_thrift_remove_neighbor_entry(self.client, uneighbor1)
+            sai_thrift_remove_router_interface(self.client, urif2)
+            sai_thrift_remove_router_interface(self.client, urif1)
+
+    def tearDown(self):
+        super(tunnelVniTest, self).tearDown()
+
+
+class tunnelVrfTest(NhopTunnelVNITestHelper):
+    '''
+        Test verifies correct tunnel behavior with multiple nexthops
+        in different VRFs.
+    '''
+    def setUp(self):
+        super(tunnelVrfTest, self).setUp()
+
+    def runTest(self):
+        print("tunnelVniTest")
+
+        uvrf2 = sai_thrift_create_virtual_router(self.client)
+
+        # overlay config
+        ovrf2 = sai_thrift_create_virtual_router(self.client)
+
+        # create underlay loopback rif for tunnel
+        urif_lb2 = sai_thrift_create_router_interface(
+            self.client, type=SAI_ROUTER_INTERFACE_TYPE_LOOPBACK,
+            virtual_router_id=uvrf2)
+
+        orif2 = sai_thrift_create_router_interface(
+            self.client, type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+            virtual_router_id=ovrf2,
+            port_id=self.port27)
+
+        # Encap configuration follows
+        tunnel2 = sai_thrift_create_tunnel(
+            self.client, type=self.tunnel_type,
+            encap_src_ip=sai_ipaddress(self.my_lb_ip),
+            decap_mappers=self.decap_mappers_objlist,
+            encap_mappers=self.encap_mappers_objlist,
+            encap_ttl_mode=self.ttl_mode,
+            decap_ttl_mode=self.ttl_mode,
+            underlay_interface=urif_lb2)
+
+        try:
+            urif1 = sai_thrift_create_router_interface(
+                self.client, type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                port_id=self.port25, virtual_router_id=self.uvrf)
+            uneighbor1 = sai_thrift_neighbor_entry_t(
+                rif_id=urif1, ip_address=sai_ipaddress(self.tunnel_ip))
+            sai_thrift_create_neighbor_entry(
+                self.client, uneighbor1,
+                dst_mac_address=self.underlay_neighbor_mac)
+            unhop1 = sai_thrift_create_next_hop(
+                self.client, ip=sai_ipaddress('10.10.10.1'),
+                router_interface_id=urif1, type=SAI_NEXT_HOP_TYPE_IP)
+            tunnel_route1 = sai_thrift_route_entry_t(
+                vr_id=self.uvrf, destination=sai_ipprefix('10.10.10.1/32'))
+            sai_thrift_create_route_entry(self.client, tunnel_route1,
+                                          next_hop_id=unhop1)
+
+            urif2 = sai_thrift_create_router_interface(
+                self.client, type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                port_id=self.port26, virtual_router_id=uvrf2)
+            uneighbor2 = sai_thrift_neighbor_entry_t(
+                rif_id=urif2, ip_address=sai_ipaddress(self.tunnel_ip))
+            sai_thrift_create_neighbor_entry(
+                self.client, uneighbor2,
+                dst_mac_address=self.underlay_neighbor_mac)
+            unhop2 = sai_thrift_create_next_hop(
+                self.client, ip=sai_ipaddress('10.10.10.1'),
+                router_interface_id=urif2, type=SAI_NEXT_HOP_TYPE_IP)
+            tunnel_route2 = sai_thrift_route_entry_t(
+                vr_id=uvrf2, destination=sai_ipprefix('10.10.10.1/32'))
+            sai_thrift_create_route_entry(self.client, tunnel_route2,
+                                          next_hop_id=unhop2)
+
+            tunnel_nexthop1 = sai_thrift_create_next_hop(
+                self.client, type=SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP,
+                tunnel_id=self.tunnel, ip=sai_ipaddress(self.tunnel_ip),
+                tunnel_vni=self.vni, tunnel_mac=self.inner_dmac)
+
+            tunnel_nexthop2 = sai_thrift_create_next_hop(
+                self.client, type=SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP,
+                tunnel_id=tunnel2, ip=sai_ipaddress(self.tunnel_ip),
+                tunnel_vni=self.vni, tunnel_mac=self.inner_dmac)
+            self.assertNotEqual(
+                tunnel_nexthop2, 0,
+                "Failed to create nexthop to same dest ip in different vrf")
+
+            customer_route1 = sai_thrift_route_entry_t(
+                vr_id=self.ovrf, destination=sai_ipprefix(self.vm_ip+'/32'))
+            sai_thrift_create_route_entry(self.client, customer_route1,
+                                          next_hop_id=tunnel_nexthop1)
+
+            customer_route2 = sai_thrift_route_entry_t(
+                vr_id=ovrf2, destination=sai_ipprefix(self.vm_ip+'/32'))
             sai_thrift_create_route_entry(self.client, customer_route2,
                                           next_hop_id=tunnel_nexthop2)
 
@@ -785,7 +1096,7 @@ class NhopTunnelVNITest(SaiHelper):
                 ip_src=self.customer_ip,
                 ip_id=108,
                 ip_ttl=63)
-            vxlan_pkt = mask.Mask(simple_vxlan_packet(
+            vxlan_pkt = Mask(simple_vxlan_packet(
                 eth_src=ROUTER_MAC,
                 eth_dst=self.underlay_neighbor_mac,
                 ip_id=0,
@@ -797,86 +1108,38 @@ class NhopTunnelVNITest(SaiHelper):
                 vxlan_vni=self.vni,
                 inner_frame=inner_pkt))
             vxlan_pkt.set_do_not_care_scapy(UDP, 'sport')
+            print("Sending packet on port %d to vni %d" %
+                  (self.dev_port24, self.vni))
             send_packet(self, self.dev_port24, pkt)
             verify_packet(self, vxlan_pkt, self.dev_port25)
 
-            pkt = simple_tcp_packet(
-                eth_dst=ROUTER_MAC,
-                eth_src='00:22:22:22:22:22',
-                ip_dst=service_vm_ip,
-                ip_src=self.customer_ip,
-                ip_id=108,
-                ip_ttl=64)
-            inner_pkt = simple_tcp_packet(
-                eth_dst=self.inner_dmac2,
-                eth_src=ROUTER_MAC,
-                ip_dst=service_vm_ip,
-                ip_src=self.customer_ip,
-                ip_id=108,
-                ip_ttl=63)
-            vxlan_pkt = mask.Mask(simple_vxlan_packet(
-                eth_src=ROUTER_MAC,
-                eth_dst=self.underlay_neighbor_mac2,
-                ip_id=0,
-                ip_src=self.my_lb_ip,
-                ip_dst=service_vtep_ip,
-                ip_ttl=64,
-                ip_flags=0x2,
-                with_udp_chksum=False,
-                vxlan_vni=service_vni,
-                inner_frame=inner_pkt))
-            vxlan_pkt.set_do_not_care_scapy(UDP, 'sport')
-            send_packet(self, self.dev_port24, pkt)
-            verify_packet(self, vxlan_pkt, self.dev_port26)
-
-            pkt = simple_tcp_packet(
-                eth_dst=ROUTER_MAC,
-                eth_src='00:22:22:22:22:22',
-                ip_dst=service_vm_ip,
-                ip_src=self.customer_ip,
-                ip_id=108,
-                ip_ttl=64)
-            inner_pkt = simple_tcp_packet(
-                eth_dst=self.inner_dmac2,
-                eth_src=ROUTER_MAC,
-                ip_dst=service_vm_ip,
-                ip_src=self.customer_ip,
-                ip_id=108,
-                ip_ttl=63)
-            vxlan_pkt = mask.Mask(simple_vxlan_packet(
-                eth_src=ROUTER_MAC,
-                eth_dst=self.underlay_neighbor_mac2,
-                ip_id=0,
-                ip_src=self.my_lb_ip,
-                ip_dst=service_vtep_ip,
-                ip_ttl=64,
-                ip_flags=0x2,
-                with_udp_chksum=False,
-                vxlan_vni=service_vni2,
-                inner_frame=inner_pkt))
-            print("Updating nexthop tunnel {} -> {}".format(service_vni,
-                                                            service_vni2))
-
-            sai_thrift_set_next_hop_attribute(self.client, tunnel_nexthop2,
-                                              tunnel_vni=4000)
-            print(sai_thrift_get_next_hop_attribute(self.client,
-                                                    tunnel_nexthop2,
-                                                    tunnel_vni=True))
-
-            vxlan_pkt.set_do_not_care_scapy(UDP, 'sport')
-            send_packet(self, self.dev_port24, pkt)
+            print("Sending packet on port %d to vni %d" %
+                  (self.dev_port27, self.vni))
+            send_packet(self, self.dev_port27, pkt)
             verify_packet(self, vxlan_pkt, self.dev_port26)
 
         finally:
-            sai_thrift_remove_route_entry(self.client, customer_route2)
-            sai_thrift_remove_route_entry(self.client, customer_route1)
+            if 'customer_route2' in locals() and customer_route2:
+                sai_thrift_remove_route_entry(self.client, customer_route2)
+            if 'customer_route1' in locals() and customer_route1:
+                sai_thrift_remove_route_entry(self.client, customer_route1)
+            if 'tunnel_nexthop2' in locals() and tunnel_nexthop2:
+                sai_thrift_remove_next_hop(self.client, tunnel_nexthop2)
+            if 'tunnel_nexthop1' in locals() and tunnel_nexthop1:
+                sai_thrift_remove_next_hop(self.client, tunnel_nexthop1)
             sai_thrift_remove_route_entry(self.client, tunnel_route2)
             sai_thrift_remove_route_entry(self.client, tunnel_route1)
-            sai_thrift_remove_next_hop(self.client, tunnel_nexthop2)
-            sai_thrift_remove_next_hop(self.client, tunnel_nexthop1)
             sai_thrift_remove_next_hop(self.client, unhop2)
             sai_thrift_remove_next_hop(self.client, unhop1)
             sai_thrift_remove_neighbor_entry(self.client, uneighbor2)
             sai_thrift_remove_neighbor_entry(self.client, uneighbor1)
             sai_thrift_remove_router_interface(self.client, urif2)
             sai_thrift_remove_router_interface(self.client, urif1)
+            sai_thrift_remove_tunnel(self.client, tunnel2)
+            sai_thrift_remove_router_interface(self.client, orif2)
+            sai_thrift_remove_router_interface(self.client, urif_lb2)
+            sai_thrift_remove_virtual_router(self.client, ovrf2)
+            sai_thrift_remove_virtual_router(self.client, uvrf2)
+
+    def tearDown(self):
+        super(tunnelVrfTest, self).tearDown()

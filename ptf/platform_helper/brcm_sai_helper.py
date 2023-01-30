@@ -19,8 +19,27 @@
 """
 This file contains class for brcm specified functions.
 """
+from collections import OrderedDict
+
+from typing import List, Dict
+from typing import TYPE_CHECKING
 
 from platform_helper.common_sai_helper import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
+from config.port_configer import PortConfiger
+from config.config_db_loader import ConfigDBLoader
+from config.port_config_ini_loader import PortConfigInILoader
+
+
+CATCH_EXCEPTIONS=True
+# SAI_STATUS_NOT_IMPLEMENTED
+ACCEPTED_ERROR_CODE = [SAI_STATUS_NOT_IMPLEMENTED]
+#SAI_STATUS_ATTR_NOT_IMPLEMENTED
+ACCEPTED_ERROR_CODE += range(SAI_STATUS_ATTR_NOT_IMPLEMENTED_MAX, SAI_STATUS_ATTR_NOT_IMPLEMENTED_0)
+#SAI_STATUS_ATTR_NOT_IMPLEMENTED
+ACCEPTED_ERROR_CODE += range(SAI_STATUS_UNKNOWN_ATTRIBUTE_MAX, SAI_STATUS_UNKNOWN_ATTRIBUTE_0)
+#SAI_STATUS_ATTR_NOT_SUPPORTED
+ACCEPTED_ERROR_CODE += range(SAI_STATUS_ATTR_NOT_SUPPORTED_MAX, SAI_STATUS_ATTR_NOT_SUPPORTED_0)
+
 
 class BrcmSaiHelper(CommonSaiHelper):
     """
@@ -28,22 +47,61 @@ class BrcmSaiHelper(CommonSaiHelper):
     """
     platform = 'brcm'
 
+    def set_accepted_exception(self):
+        """
+        Set accepted exceptions.
+        """
+        adapter.CATCH_EXCEPTIONS=CATCH_EXCEPTIONS
+        adapter.EXPECTED_ERROR_CODE += ACCEPTED_ERROR_CODE
+
+
+    def __init__(self, *args, **kwargs) -> None:
+        """
+        Init the Port configer.
+
+        Args:
+            test_obj: the test object
+        """
+        super().__init__(*args, **kwargs)
+        self.port_configer: PortConfiger = None
+
+        # port
+        self.default_trap_group = None
+        """
+        Local device port index list, 0, 1, ...
+        """
+        self.host_intf_table_id = None
+        self.port_obj_list: List['Port'] = []
+        """
+        Port object list
+        """
+        self.port_id_list = []
+        """
+        port id list, use to present all the port ids
+        """
+        self.hostif_list = None
+        """
+        Host interface list
+        """
+        self.default_bridge_port_list = []
+        """
+        Default bridge port list
+        """
+        self.host_if_port_idx_map = []
+        """
+        list in order of the host interface create sequence, and with the value for port index
+        """
+        self.host_if_name_list = []
+        """
+        List of the interface name
+        """
+
+
     def remove_switch(self):
         '''
         Method to remove the switch.
         '''
-        print("BrcmSaiHelperBase::remove_switch does not support. Cannot recreate after remove.")
-
-
-    def recreate_ports(self):
-        """
-        Method to recreate the port.
-        """
-
-        #port recreate not support, error happened.
-        #Port needs to be init and setup at same time.
-        #Make the process happened in turn_up_and_check_ports
-        print("BrcmSaiHelperBase::recreate_ports does not support.")
+        print("BrcmSaiHelperBase::remove_switch does not support. Cannot recreate after remove.")   
 
 
     def sai_thrift_create_fdb_entry_allow_mac_move(self,
@@ -80,77 +138,6 @@ class BrcmSaiHelper(CommonSaiHelper):
             endpoint_ip=endpoint_ip,
             counter_id=counter_id,
             allow_mac_move=True)
-
-
-    def get_bridge_port_all_attribute(self, bridge_port_id):
-        '''
-        Gets all the attrbute from bridge port.
-        '''
-        print("BrcmSaiHelperBase::get_bridge_port_all_attribute")
-
-        #Cannot get those three attributes from sai_thrift_get_bridge_port_attribute
-        #ingress_filtering=True,
-        #egress_filtering=True,
-        #isolation_group=True
-        sai_thrift_get_bridge_port_attribute(self.client,  bridge_port_oid=bridge_port_id, ingress_filtering=True,  egress_filtering=True)
-        attr = sai_thrift_get_bridge_port_attribute(
-            self.client, 
-            bridge_port_oid=bridge_port_id,
-            type=True,
-            port_id=True,
-            tagging_mode=True,
-            vlan_id=True,
-            rif_id=True,
-            tunnel_id=True,
-            bridge_id=True,
-            fdb_learning_mode=True,
-            max_learned_addresses=True,
-            fdb_learning_limit_violation_packet_action=True,
-            admin_state=True
-            #Cannot get those three
-            #ingress_filtering=True,
-            #egress_filtering=True,
-            #isolation_group=True
-            )
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        return attr
-
-
-    def turn_up_and_check_ports(self):
-        '''
-        Method to turn up the ports.
-
-        In case some device not init the port after start the switch.
-
-        Needs the following class attributes:
-
-            self.port_list - list of all active port objects
-        '''
-
-        #For brcm devices, need to init and setup the ports at once after start the switch.
-        #Skip the function :func:`BrcmSaiHelper.recreate_ports`
-        retries = 10
-        for port_id in self.port_list:
-            try:
-                sai_thrift_set_port_attribute(
-                    self.client, port_oid=port_id, admin_state=True)
-            except BaseException as e:
-                print("Cannot setup port admin state, error {}".format(e))
-
-        for num_of_tries in range(retries):
-            all_ports_are_up = True
-            time.sleep(2)
-            for port_id in self.port_list:
-                port_attr = sai_thrift_get_port_attribute(
-                    self.client, port_id, oper_status=True)
-                if port_attr['oper_status'] != SAI_PORT_OPER_STATUS_UP:
-                    all_ports_are_up = False
-                    time.sleep(1)
-                    print("port is down: {}".format(port_attr['oper_status']))
-            if all_ports_are_up:
-                break
-        if not all_ports_are_up:
-            print("Not all the ports are up after {} rounds of retries.".format(retries))
 
 
     def start_switch(self):
@@ -204,64 +191,52 @@ class BrcmSaiHelper(CommonSaiHelper):
             self.cpu_port = q_attr["port"]
 
 
-    def load_default_1q_bridge_ports(self):
+
+    # Port setup method below
+
+    def config_port(self):
+
+        self.port_list = self.port_configer.get_lane_sorted_port_list()
+        self.port_configer.generate_port_obj_list_by_interface_config()
+        self.port_configer.assign_port_config(self.port_config_ini_loader.portConfigs)
+        self.port_configer.assign_config_db(
+            self.config_db_loader.port_config,
+            self.port_config_ini_loader.portConfigs)
+        
+        
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, default_trap_group=True)
+        default_trap_group = attr['default_trap_group']
+        self.port_configer.set_port_attribute(self.active_port_obj_list)
+        self.port_obj_list = self.port_configer.turn_up_and_get_checked_ports(
+            self.active_port_obj_list)
+        #compatiable with portx variables
+        self.get_port_id_list = self.port_configer.get_port_id_list(self.port_obj_list)
+        self.port_configer.set_test_port_attr(self.port_list)
+
+        if 'port_config_ini' in self.test_params:
+            host_intf_table_id, hostif_list = self.port_configer.create_port_hostif_by_port_config_ini(
+                port_list=self.active_port_obj_list, trap_group=default_trap_group)
+        else:
+            host_intf_table_id, hostif_list = self.port_configer.create_host_intf(
+                port_list=self.active_port_obj_list, trap_group=default_trap_group)
+        self.host_intf_table_id = host_intf_table_id
+        self.hostif_list = hostif_list
+
+        self.default_1q_bridge = self.port_configer.get_default_1q_bridge()
+        self.port_configer.reset_1q_bridge_ports()
+
+
+   #Override methods
+
+    def recreate_ports(self):
         """
-        Loads default 1q bridge ports and set as class attribute.
-
-        Needs the following class attributes:
-            self.default_1q_bridge - default_1q_bridge oid
-
-            self.active_ports_no - number of active ports
-
-            self.portX objects for all active ports
-
-        Sets the following class attributes:
-
-            self.default_1q_bridge_port_list - list of all 1q bridge port objects
-
-            self.portX_bp - objects for all 1q bridge ports
+        Method to recreate the port.
         """
-        print("BrcmSaiHelperBase::load_default_1q_bridge_ports")
-        attr = sai_thrift_get_bridge_attribute(
-                    self.client, 
-                    bridge_oid=self.default_1q_bridge,
-                    port_list=sai_thrift_object_list_t(
-                        idlist=[], count=self.active_ports_no))
-        default_1q_bridge_port_list = attr['port_list'].idlist
-        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
-        #try to binding the bridge port with the port index here
-        for bp in default_1q_bridge_port_list:
-            attr = self.get_bridge_port_all_attribute(bp)
-            for index in range(0, len(self.port_list)):
-                port_id = getattr(self, 'port%s' % index)
-                if port_id == attr['port_id']:
-                    setattr(self, 'port%s_bp' % index, bp)
-                    break
-        return default_1q_bridge_port_list
-
-
-    def remove_1q_bridge_port(self, default_1q_bridge_port_list):
-        '''
-        Removes all the bridge ports.
-        '''
-
-        for index in range(0, len(default_1q_bridge_port_list)):
-            port_bp = getattr(self, 'port%s_bp' % index)
-            sai_thrift_remove_bridge_port(self.client, port_bp)
-            delattr(self, 'port%s_bp' % index)
-
-
-    def reset_1q_bridge_ports(self):
-        '''
-        Reset all the 1Q bridge ports.
-        Needs the following class attributes:
-            self.default_1q_bridge - default_1q_bridge oid
-
-            self.active_ports_no - number of active ports
-
-            self.portX objects for all active ports
-        '''
-        #In case the bridge port will be initalized by default, clear them
-        default_1q_bridge_port_list = self.load_default_1q_bridge_ports()
-        self.remove_1q_bridge_port(default_1q_bridge_port_list)
+        #port recreate not support, error happened.
+        #Port needs to be init and setup at same time.
+        #Make the process happened in turn_up_and_check_ports
+        print("BrcmSaiHelperBase::recreate_ports does not support. Just Parse Port Config")
+        self.ports_config = self.port_config_ini_loader.ports_config

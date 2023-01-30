@@ -21,13 +21,11 @@
 from typing import List, Dict
 from typing import TYPE_CHECKING
 from data_module.data_obj import auto_str
-if TYPE_CHECKING:
-    from sai_test_base import T0TestBase
-    from data_module.nexthop import Nexthop
-from data_module.routable_item import route_item
+from data_module.data_obj import data_item
+
 
 @auto_str
-class Port(route_item):
+class Port(data_item):
     """
     Represent the port object.
     Attrs:
@@ -47,24 +45,17 @@ class Port(route_item):
             port_index=None,
             dev_port_index=None,
             dev_port_eth=None,
-            bridge_port_oid=None,
-            rif_list: List = [],
-            nexthopv4_list: List['Nexthop'] = [],
-            nexthopv6_list: List['Nexthop'] = []):
+            bridge_port_oid=None):
         """
         Init Port Object
         Init following attrs:
-            oid: port object id        
+            oid: port object id
             port_index: port index
             dev_port_index: device port, local device port index
             dev_port_eth: local device port eth name
             bridge_port_oid: bridge port object id
-            rif
-            nexthopv4
-            nexthopv6
         """
-        super().__init__(oid=oid, rif_list=rif_list, nexthopv4_list=nexthopv4_list,
-                         nexthopv6_list=nexthopv6_list)
+        super().__init__(oid=oid)
         self.port_index = port_index
         """
         port index
