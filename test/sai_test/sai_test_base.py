@@ -50,12 +50,14 @@ from config.route_configer import RouteConfiger, t0_route_config_helper
 from config.switch_configer import SwitchConfiger, t0_switch_config_helper
 from config.vlan_configer import (VlanConfiger, t0_vlan_config_helper,
                                   t0_vlan_tear_down_helper)
+from config.tunnel_configer import TunnelConfiger, t0_tunnel_config_helper
 
 from data_module.device import Device, DeviceType
 from data_module.dut import Dut
 from data_module.lag import Lag
 from data_module.persist import PersistHelper
 from data_module.vlan import Vlan
+from data_module.tunnel import Tunnel
 from sai_utils import *
 
 import inspect
@@ -376,6 +378,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
               is_create_route_for_vlan_itf=True,
               is_create_route_for_lag=True,
               is_create_route_for_nhopgrp=False,
+              is_create_tunnel=False,
               wait_sec=5,
               skip_reason = None):
 
@@ -400,6 +403,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
         self.vlan_configer = VlanConfiger(self)
         self.route_configer = RouteConfiger(self)
         self.lag_configer = LagConfiger(self)
+        self.tunnel_configer = TunnelConfiger(self)
         if force_config or not self.common_configured:
             self.create_device()
             t0_switch_config_helper(self)
@@ -425,6 +429,8 @@ class T0TestBase(ThriftInterfaceDataPlane):
                 is_create_vlan_interface=is_create_vlan_itf,
                 is_create_route_for_vlan=is_create_route_for_vlan_itf,
                 is_create_route_for_nhopgrp=is_create_route_for_nhopgrp)
+            t0_tunnel_config_helper(test_obj=self,
+                                    is_create_tunnel=is_create_tunnel)              
             print("common config done")
             self.persist_config()
             print("Waiting for switch to get ready before test, {} seconds ...".format(
@@ -590,6 +596,17 @@ class T0TestBase(ThriftInterfaceDataPlane):
         for port_index in port_indexes:
             dev_port_indexes.append(self.dut.port_obj_list[port_index].dev_port_index)
         return dev_port_indexes
+
+    def create_tunnel_route(self, tunnel: Tunnel, vm_ip, vm_ipv6):
+        """
+        Create tunnel special route.
+
+        Attrs:
+            Tunnel: tunnel obeject
+            vm_ip: dst ipv4
+            vm_ipv6: dst ipv6
+        """
+        self.tunnel_configer.create_tunnel_route_v4_v6(tunnel, vm_ip, vm_ipv6)
 
     def tearDown(self):
         '''

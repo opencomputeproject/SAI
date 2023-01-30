@@ -36,6 +36,8 @@ BROADCAST_MAC = "ff:ff:ff:ff:ff:ff"
 """broadcast mac address"""
 MULTICAST_MAC = "01:00:5e:11:22:33"
 """multicast mac address"""
+INNER_DMAC = "00:41:11:14:11:14"
+"""innder_dmac mac address"""
 
 # Others
 PORT_MTU = 9122
