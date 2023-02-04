@@ -178,6 +178,17 @@ typedef enum _sai_udf_match_attr_t
     SAI_UDF_MATCH_ATTR_PRIORITY,
 
     /**
+     * @brief UDF L4 Dst port rule
+     *
+     * Default to None
+     *
+     * @type sai_acl_field_data_t sai_uint16_t
+     * @flags CREATE_ONLY
+     * @default 0
+     */
+    SAI_UDF_MATCH_ATTR_L4_DST_PORT_TYPE,
+
+    /**
      * @brief End of attributes
      */
     SAI_UDF_MATCH_ATTR_END,
