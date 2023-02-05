@@ -40,7 +40,6 @@ from thrift.protocol import TBinaryProtocol
 from thrift.transport import TSocket, TTransport
 
 from config.config_db_loader import ConfigDBLoader
-from config.port_config_ini_loader import PortConfigInILoader
 from config.fdb_configer import (FdbConfiger, t0_fdb_config_helper,
                                  t0_fdb_tear_down_helper)
 from config.lag_configer import LagConfiger, t0_lag_config_helper
@@ -48,7 +47,7 @@ from config.port_configer import (PortConfiger, t0_port_config_helper,
                                   t0_port_tear_down_helper)
 from config.route_configer import RouteConfiger, t0_route_config_helper
 from config.switch_configer import SwitchConfiger, t0_switch_config_helper
-from config.vlan_configer import (VlanConfiger, t0_vlan_config_helper,
+from config.vlan_configer import (VlanConfiger, remove_default_vlan, t0_vlan_config_helper,
                                   t0_vlan_tear_down_helper)
 from config.tunnel_configer import TunnelConfiger, t0_tunnel_config_helper
 
@@ -351,9 +350,6 @@ class T0TestBase(ThriftInterfaceDataPlane):
         Value: List, servers
         """
         self.persist_helper = PersistHelper()
-        self.ports_config = None
-        self.config_db_loader: ConfigDBLoader = None
-        self.port_config_ini_loader: PortConfigInILoader = None
 
     def set_logger_name(self):
         """
@@ -384,18 +380,12 @@ class T0TestBase(ThriftInterfaceDataPlane):
 
         super(T0TestBase, self).setUp(skip_reason = skip_reason)
         self.set_logger_name()
-        # parse the port_config.ini, will create port, bridge port and host interface base on that file
-        if 'port_config_ini' in self.test_params:
-            self.port_config_ini_loader = PortConfigInILoader(self.test_params['port_config_ini'])
-        else:
-            self.port_config_ini_loader = PortConfigInILoader()        
-        self.port_config_ini_loader.parse_port_config()
-        self.ports_config = self.port_config_ini_loader.ports_config
-
+        config_db_loader: ConfigDBLoader = None
         if 'config_db_json' in self.test_params:
-            self.config_db_loader = ConfigDBLoader(self.test_params['config_db_json'])
+            config_db_loader = ConfigDBLoader(self.test_params['config_db_json'])
         else:
-            self.config_db_loader = ConfigDBLoader()
+            config_db_loader = ConfigDBLoader()
+        self.port_configs = config_db_loader.get_port_configs()
 
         self.port_configer = PortConfiger(self)
         self.switch_configer = SwitchConfiger(self)
@@ -407,6 +397,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
         if force_config or not self.common_configured:
             self.create_device()
             t0_switch_config_helper(self)
+            remove_default_vlan(self)
             t0_port_config_helper(
                 test_obj=self,
                 is_create_hostIf=is_create_hostIf,

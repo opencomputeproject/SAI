@@ -36,7 +36,13 @@ class L2PortForwardingTest(T0TestBase):
         """
         Set up test
         """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        # in mlnx, cannot add lag on bridge port
+        # str-msn2700-04 ERR saiserverv2#SDK: 
+        # [SAI_LAG.ERR] mlnx_sai_lag.c[617]- validate_port: Can't add port which is under bridge
+        T0TestBase.setUp(self,
+                        is_reset_default_vlan=False,
+                        is_create_lag=False,
+                        is_create_route_for_lag=False)
         
 
     @warm_test(is_test_rebooting=True)
