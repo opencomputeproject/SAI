@@ -21,6 +21,7 @@
 from typing import List, Dict
 from typing import TYPE_CHECKING
 from data_module.data_obj import auto_str
+from data_module.port_config import PortConfig
 if TYPE_CHECKING:
     from sai_test_base import T0TestBase
     from data_module.nexthop import Nexthop
@@ -81,8 +82,10 @@ class Port(route_item):
         """
         bridge port object id
         """
-        self.port_config:Dict = {}
-        self.config_db:Dict = {}
+        self.config:PortConfig = None
+        """
+        Port Config
+        """
         self.host_itf_id = None
         """
         Port binded host interface id, the object saved in dut.hostif_list
