@@ -62,6 +62,16 @@ def t0_vlan_config_helper(test_obj: 'T0TestBase', is_reset_default_vlan=True, is
     test_obj.dut.default_vlan_id = default_vlan_id
 
 
+def remove_default_vlan(test_obj: 'T0TestBase'):
+    """
+    Remove default Vlan
+    test_obj: test object from a test class
+    """
+    configer = VlanConfiger(test_obj)
+    default_vlan_id = configer.get_default_vlan()
+    members = configer.get_vlan_member(default_vlan_id)
+    configer.remove_vlan_members(members)
+
 def t0_vlan_tear_down_helper(test_obj: 'T0TestBase'):
     '''
     Args:
@@ -157,8 +167,7 @@ class VlanConfiger(object):
             default_vlan_id
         """
         print("Get default vlan...")
-        def_attr = sai_thrift_get_switch_attribute(
-            self.client, default_vlan_id=True)
+        def_attr = sai_thrift_get_switch_attribute(self.client, default_vlan_id=True)
         return def_attr['default_vlan_id']
 
     def get_vlan_member(self, vlan_id):
@@ -171,10 +180,10 @@ class VlanConfiger(object):
         Returns:
             list: vlan member oid list
         """
-        vlan_member_list = sai_thrift_object_list_t(
-            count=self.test_obj.dut.active_ports_no)
-        mbr_list = sai_thrift_get_vlan_attribute(
-            self.client, vlan_id, member_list=vlan_member_list)
+        vlan_member_size = self.test_obj.dut.active_ports_no + self.test_obj.dut.system_port_no
+        vlan_member_list = sai_thrift_object_list_t(count=vlan_member_size)
+        mbr_list = sai_thrift_get_vlan_attribute(self.client, vlan_id, member_list=vlan_member_list)
+        self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
         return mbr_list['SAI_VLAN_ATTR_MEMBER_LIST'].idlist
 
     def remove_vlan(self, vlan_oid):
@@ -200,5 +209,4 @@ class VlanConfiger(object):
 
         for vlan_member in vlan_members:
             sai_thrift_remove_vlan_member(self.client, vlan_member)
-            self.test_obj.assertEqual(
-                self.test_obj.status(), SAI_STATUS_SUCCESS)
+            self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)

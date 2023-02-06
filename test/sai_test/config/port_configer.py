@@ -26,6 +26,8 @@ from typing import TYPE_CHECKING
 from data_module.port import Port
 
 from typing import Dict, List
+
+from data_module.port_config import PortConfig
 if TYPE_CHECKING:
     from sai_test_base import T0TestBase
 
@@ -44,12 +46,9 @@ def t0_port_config_helper(test_obj: 'T0TestBase', is_recreate_bridge=True, is_cr
 
     """
     configer = PortConfiger(test_obj)
-    test_obj.dut.port_id_list = configer.get_lane_sorted_port_list()
+    port_obj_list_with_lane = configer.get_port_default_lane()
+    test_obj.dut.port_id_list = configer.get_lane_sorted_port_list(port_obj_list_with_lane)
     configer.generate_port_obj_list_by_interface_config()
-    configer.assign_port_config(test_obj.port_config_ini_loader.portConfigs)
-    configer.assign_config_db(
-        test_obj.config_db_loader.port_config,
-        test_obj.port_config_ini_loader.portConfigs)
 
     attr = sai_thrift_get_switch_attribute(
         configer.client, default_trap_group=True)
@@ -103,8 +102,7 @@ class PortConfiger(object):
             test_obj: the test object
         """
         self.test_obj = test_obj
-        self.client = test_obj.client        
-        self.config_db_port = test_obj.config_db_loader.get_port_config()
+        self.client = test_obj.client
 
     def create_bridge_ports(self, bridge_id, port_list: List['Port']):
         """
@@ -163,7 +161,7 @@ class PortConfiger(object):
                     self.client,
                     type=SAI_HOSTIF_TYPE_NETDEV,
                     obj_id=item.oid,
-                    name=item.port_config.name)
+                    name=item.config.name)
                 sai_thrift_set_hostif_attribute(
                     self.client, hostif_oid=hostif, oper_status=False)
                 hostif_list[index] = hostif
@@ -187,13 +185,13 @@ class PortConfiger(object):
                     self.client,
                     type=SAI_HOSTIF_TYPE_NETDEV,
                     obj_id=port.oid,
-                    name=port.port_config.name)
+                    name=port.config.name)
                 sai_thrift_set_hostif_attribute(
                     self.client, hostif_oid=hostif, oper_status=False)
                 hostif_list[index] = hostif
                 port.host_itf_id = hostif
                 # print("Create hostitf: name:{} port hardIdx: {} port lane: {}".format(
-                #     port.port_config.name, port.port_index, port.config_db['lanes'])
+                #     port.config.name, port.port_index, port.config.lanes)
                 # )
             except BaseException as e:
                 print("Cannot create hostif, error : {}".format(e))
@@ -260,7 +258,7 @@ class PortConfiger(object):
         active_1q_bridge_ports = []
         for index in range(0, len(port_list)):
             for bp in default_1q_bridge_port_list:
-                attr = self.get_bridge_port_all_attribute(bp)            
+                attr = self.get_bridge_port_all_attribute(bp)
                 port_id = port_list[index].oid
                 if port_id == attr['port_id']:
                     port_list[index].bridge_port_oid = bp
@@ -294,13 +292,21 @@ class PortConfiger(object):
     def get_all_bridge_ports(self, bridge_id):
         """
         Loads default 1q bridge ports.
+
+        /* Get bridge ports in default 1Q bridge
+            * By default, there will be (m_portCount + m_systemPortCount) number of SAI_BRIDGE_PORT_TYPE_PORT
+            * ports and one SAI_BRIDGE_PORT_TYPE_1Q_ROUTER port. The former type of
+            * ports will be removed. */
+        vector<sai_object_id_t> bridge_port_list(m_portCount + m_systemPortCount + 1);
         """
         print("Get bridge ports...")
+              
+        bridge_size = self.test_obj.dut.system_port_no + self.test_obj.dut.active_ports_no + 1
         attr = sai_thrift_get_bridge_attribute(
                     self.client, 
                     bridge_oid=bridge_id,
                     port_list=sai_thrift_object_list_t(
-                        idlist=[], count=self.test_obj.dut.active_ports_no))
+                        idlist=[], count=bridge_size))
         default_1q_bridge_port_list = attr['port_list'].idlist
         self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
         return default_1q_bridge_port_list
@@ -312,10 +318,14 @@ class PortConfiger(object):
         """
         print("Remove all bridge ports...")
         bp_ports = self.test_obj.dut.def_bridge_port_list
+        removed_list = []
         for index, port in enumerate(bp_ports):
             sai_thrift_remove_bridge_port(self.client, port)
             #print("Removed bridge port {}".format(port))
-            self.test_obj.dut.def_bridge_port_list.remove(port)
+            removed_list.append(port)
+        for bridge_id in removed_list:
+            self.test_obj.dut.def_bridge_port_list.remove(bridge_id)
+        print("Removed bridge {}, left {}".format(len(removed_list), len(bp_ports)))
         self.test_obj.assertEqual(self.test_obj.status(), SAI_STATUS_SUCCESS)
 
     def get_default_1q_bridge(self):
@@ -353,20 +363,14 @@ class PortConfiger(object):
             dev_port_list.append(port)
         return dev_port_list
 
-    def get_lane_sorted_port_list(self):
+    def get_port_default_lane(self) -> List[Port]:
         """
-        Get the port list sorted by lanes name(defined in port_config.ini).
-        This method will shrime the ports base on the lanes.
-        i.e. If device has 64 ports but just define 32 in lanes, then just generate 32 ports
+        Get Port default lane.
 
         Returns:
             port_list
         """
-        port_obj_list: List[Port] = []
-        port_id_list = []
-        attr = sai_thrift_get_switch_attribute(
-            self.client, number_of_active_ports=True)
-        self.test_obj.dut.active_ports_no = attr['number_of_active_ports']
+        port_obj_list_with_lane: List[Port] = []
         # the active number must match the actual account, or might return null
         port_list = sai_thrift_object_list_t(
             idlist=[], count=self.test_obj.dut.active_ports_no)
@@ -379,24 +383,41 @@ class PortConfiger(object):
             attr = sai_thrift_get_port_attribute(
                 self.client, port_oid=port.oid, hw_lane_list=temp_list)
             port.default_lane_list = attr['hw_lane_list'].uint32list
-            port_obj_list.append(port)
+            port_obj_list_with_lane.append(port)
+        return port_obj_list_with_lane
+
+
+    def get_lane_sorted_port_list(self, port_obj_list_with_lane: List[Port]):
+        """
+        Get the port list sorted by lanes name(defined in port_config.ini).
+        This method will shrime the ports base on the lanes.
+        i.e. If device has 64 ports but just define 32 in lanes, then just generate 32 ports
+
+        Args:
+            port_obj_list_with_lane: port obj with default lane info
+
+        Returns:
+            port_list
+        """
+        port_id_list = []
         self.test_obj.dut.active_port_obj_list = self.sort_port_list_by_config(
-            self.test_obj.ports_config, port_obj_list)
+            self.test_obj.port_configs, port_obj_list_with_lane)
         for item in self.test_obj.dut.active_port_obj_list:
             port_id_list.append(item.oid)
         print("Base on lanes config file[{}], init {} ports from {} device posts"
         .format("port_config.ini",
                 len(self.test_obj.dut.active_port_obj_list),
-                len(port_obj_list)
+                len(port_obj_list_with_lane)
              ))
         #print("port_list {}".format(port_id_list))
 
         return port_id_list
 
-    def sort_port_list_by_config(self, ports_config: Dict, port_list: List[Port]):
+    def sort_port_list_by_config(self, port_configs: List[PortConfig], port_list: List[Port]):
         """
         Sort the port list base on the port_config.ini.
-        This method will match the default_lane_list in the port object with the lane defined in 
+        This method will match the default_lane_list in the port object
+        with the lane defined in 
         port config for a ordered port list.
         This method will create the port list base on the mini number of interfaces from
         command parameters or port_config.ini
@@ -406,32 +427,16 @@ class PortConfiger(object):
             port_list: port list
         """
         sorted_port_list: List[Port] = []
-        for index, key in enumerate(ports_config):
+        for index, item in enumerate(port_configs):
         # index: sequence number, key: port config order, should be equals to index
-            lane_list = ports_config[key]['lanes']
+            lane_list = item.lanes
             for port in port_list:
                 if lane_list == port.default_lane_list:
                     sorted_port_list.append(port)
+                    port.config = port_configs[index]
                     break
         return sorted_port_list
 
-    def assign_port_config(self, portConfigs: Dict):
-        """
-        Assign the PortConfig object to the Port Object
-        """
-        for index, key in enumerate(portConfigs):
-        # index: sequence number, key: port config order, should be equals to index
-            #print ("index: {}, key: {}".format(index, key))
-            self.test_obj.dut.active_port_obj_list[index].port_config = portConfigs[key]
-
-    def assign_config_db(self, port_config_db: Dict, portConfigs: Dict):
-        """
-        Assign the PortConfig object to the Port Object
-        """
-        for index, key in enumerate(portConfigs):
-        # index: sequence number, key: port config order, should be equals to index
-            self.test_obj.dut.active_port_obj_list[index].config_db \
-                = port_config_db[portConfigs[key].name]
 
     def remove_bridge_port(self):
         """
@@ -476,9 +481,9 @@ class PortConfiger(object):
         for index, port in enumerate(port_list):
             #self.log_port_state(port, index)
             sai_thrift_set_port_attribute(
-                self.client, port_oid=port.oid, mtu=self.get_mtu(port),
+                self.client, port_oid=port.oid, mtu=port.config.mtu,
                 fec_mode=self.get_fec_mode(port),
-                speed=self.get_speed(port))
+                speed=port.config.speed)
 
     def turn_up_and_get_checked_ports(self, port_list: List['Port']):
         '''
@@ -501,7 +506,7 @@ class PortConfiger(object):
         for index, port in enumerate(port_list):
             if not port.dev_port_index and index != 0:
                 print("Skip turn up port {} , local index {} id {} name{}.".format(
-                        index, port.port_index, port.oid, port.port_config.name))
+                        index, port.port_index, port.oid, port.config.name))
                 continue
             test_port_list.append(port)
             sai_thrift_set_port_attribute(
@@ -543,34 +548,13 @@ class PortConfiger(object):
         RETURN:
              int: SAI_PORT_FEC_MODE_X
         '''
-        if 'fec' in port.config_db:
-            fec_mode = port.config_db['fec']
-        else:
-            fec_mode = None
         fec_change = {
             None: SAI_PORT_FEC_MODE_NONE,
             'rs': SAI_PORT_FEC_MODE_RS,
             'fc': SAI_PORT_FEC_MODE_FC,
         }
-        return fec_change[fec_mode]
+        return fec_change[port.config.fec]
 
-    def get_mtu(self, port: Port):
-        '''
-        get mtu from config_db.json
-
-        RETURN:
-            int: mtu number
-        '''
-        return int(port.config_db['mtu'])
-
-    def get_speed(self, port: Port):
-        '''
-        get speed from config_db.json
-
-        RETURN:
-            int: speed
-        '''
-        return int(port.config_db['speed'])
 
     def get_cpu_port_queue(self):
 
@@ -597,13 +581,12 @@ class PortConfiger(object):
             self.test_obj.assertEqual(queue, q_attr['index'])
 
     def log_port_state(self, port:Port, index):
-        print("port index:{} hardIdx: {} ptf_dev_idx: {} name:{} config lane:{} db lane:{} mtu:{} fec:{} speed:{}".format(
+        print("port index:{} hardIdx: {} ptf_dev_idx: {} name:{} config lane:{} mtu:{} fec:{} speed:{}".format(
             index,
             port.port_index,
             port.dev_port_index,
-            port.port_config.name,
-            port.port_config.lanes,
-            port.config_db['lanes'],
-            self.get_mtu(port),
+            port.config.name,
+            port.config.lanes,
+            port.config.mtu,
             self.get_fec_mode(port),
-            self.get_speed(port)))
+            port.config.speed))

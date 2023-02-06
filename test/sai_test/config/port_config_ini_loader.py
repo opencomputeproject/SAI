@@ -25,9 +25,11 @@ from typing import TYPE_CHECKING
 from typing import List, Dict
 
 from data_module.data_obj import auto_str
+from data_module.port_config import PortConfig
 
 DEFAULT_CONFIG_DB = "../resources/port_config.ini"
 
+@DeprecationWarning
 class PortConfigInILoader():
     '''
     Read config from port_config.ini.
@@ -138,19 +140,3 @@ class PortConfigInILoader():
             return ports, portConfigs
         except Exception as e:
             raise e
-
-@auto_str
-class PortConfig(object):
-    """
-    Represent the PortConfig Object
-
-    Attrs:
-        name: interface name
-        lanes: lanes
-        speed: port speed
-    """
-
-    def __init__(self, name=None, lanes=None, speed=None):
-        self.name = name
-        self.lanes = lanes
-        self.speed = speed
