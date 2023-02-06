@@ -13,7 +13,7 @@ SAI_HEADERS = $(SAI_HEADER_DIR)/sai*.h
 
 LIBS = -lthrift -lpthread
 LDFLAGS = -L$(SAI_LIBRARY_DIR) -Wl,-rpath=$(SAI_LIBRARY_DIR)
-CPPFLAGS = -I$(SAI_HEADER_DIR) -I. -std=c++11
+CPPFLAGS = -I../../experimental -I../../inc -I$(SAI_HEADER_DIR) -I. -std=c++11
 
 CPPFLAGS += -O0 -ggdb
 
@@ -82,16 +82,16 @@ $(PY_SOURCES):  $(METADIR)sai.thrift
 	$(THRIFT) -o ./ --gen py -r $^
 
 $(SAI_PY_HEADERS): $(SAI_HEADERS)
-	$(CTYPESGEN) --output-language=py32 -I/usr/include -I$(SAI_HEADER_DIR) -I../../experimental --include /usr/include/linux/limits.h $^ -o $@
+	$(CTYPESGEN) --output-language=py32 -I/usr/include -I$(SAI_HEADER_DIR) --include /usr/include/linux/limits.h $^ -o $@
 
 $(ODIR)/%.o: gen-cpp/%.cpp meta
-	$(CXX) $(CPPFLAGS) -c $< -o $@  -I../../meta
+	$(CXX) -c $< -o $@ $(CPPFLAGS) -I../../meta
 
 $(ODIR)/sai_rpc_server.o: ../../meta/sai_rpc_frontend.cpp
-	$(CXX) $(CPPFLAGS) -c $^ -o $@ $(CPPFLAGS) -I./gen-cpp -I../../meta -I../../inc -I../../experimental
+	$(CXX) -c $^ -o $@ $(CPPFLAGS) -I./gen-cpp -I../../meta  
 
 $(ODIR)/saiserver.o: src/saiserver.cpp $(CPP_SOURCES) directories
-	$(CXX) $(CPPFLAGS) -c src/saiserver.cpp  -o $@ $(CPPFLAGS) $(CDEFS) -I./gen-cpp -I../../inc -I../../experimental
+	$(CXX) -c src/saiserver.cpp  -o $@ $(CPPFLAGS) $(CDEFS) -I./gen-cpp  
 
 $(ODIR)/librpcserver.a: $(ODIR)/sai_rpc.o $(ODIR)/sai_types.o $(ODIR)/sai_rpc_server.o
 	ar rcs $(ODIR)/librpcserver.a $^
