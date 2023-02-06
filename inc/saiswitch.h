@@ -2777,6 +2777,28 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_ECMP_MEMBER_COUNT,
 
     /**
+     * @brief Enable or disable credit watchdog
+     *
+     * Credit Watchdog can be enabled or disabled using this attribute for VOQ based system
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_VOQ
+     */
+    SAI_SWITCH_ATTR_CREDIT_WD,
+
+    /**
+     * @brief Credit watchdog threshold timer in milliseconds
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_VOQ
+     */
+    SAI_SWITCH_ATTR_CREDIT_WD_TIMER,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
