@@ -2165,6 +2165,27 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_MAX_FEC_SYMBOL_ERRORS_DETECTABLE,
 
     /**
+     * @brief SAI ECMP hash algorithm which can override hash
+     * algorithm set by SAI_SWITCH_ATTR_ECMP_HASH_ALGORITHM
+     * for this port
+     *
+     * @type sai_hash_algorithm_t
+     * @flags CREATE_AND_SET
+     * @default SAI_HASH_ALGORITHM_CRC
+     */
+    SAI_PORT_ATTR_ECMP_HASH_ALGORITHM,
+
+    /**
+     * @brief SAI ECMP hash offset which can override hash
+     * offset set by SAI_SWITCH_ATTR_ECMP_HASH_OFFSET for this port
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_ATTR_ECMP_HASH_OFFSET,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
