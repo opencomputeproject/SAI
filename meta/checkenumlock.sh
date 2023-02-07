@@ -30,6 +30,7 @@ rm -rf temp
 mkdir temp
 
 git --work-tree=temp/ checkout origin/master inc
+git --work-tree=temp/ checkout origin/master experimental
 
 echo "Checking for possible enum values shift (current branch vs origin/master) ..."
 
