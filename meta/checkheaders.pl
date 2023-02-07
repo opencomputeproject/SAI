@@ -149,7 +149,7 @@ sub GetValues
 
     my ($fhb, $bin) = tempfile( SUFFIX => '.bin', UNLINK => 1  );
 
-    system("gcc $src -I. -I ../experimental -I '$dir' -o $bin") == 0 or die "gcc failed! $!";
+    system("gcc $src -I. -I '$dir'/../experimental -I '$dir' -o $bin") == 0 or die "gcc failed! $!";
 
     close $fhs;
     close $fhb;
