@@ -37,3 +37,7 @@ echo "Checking for possible enum values shift (current branch vs origin/master) 
 ./checkheaders.pl -s ../inc/ temp/inc/
 
 rm -rf temp
+# clean up the git changes as well
+# workaround fix for git --work-tree=temp/ checkout ...
+# after checkout from other branch, data will be left in git
+git stash
