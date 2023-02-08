@@ -27,17 +27,12 @@ set -e
 
 rm -rf temp
 
-mkdir temp
+sairepo=`git remote get-url origin`
 
-git --work-tree=temp/ checkout origin/master inc
-git --work-tree=temp/ checkout origin/master experimental
+git clone $sairepo temp
 
 echo "Checking for possible enum values shift (current branch vs origin/master) ..."
 
 ./checkheaders.pl -s ../inc/ temp/inc/
 
 rm -rf temp
-# clean up the git changes as well
-# workaround fix for git --work-tree=temp/ checkout ...
-# after checkout from other branch, data will be left in git
-git stash
