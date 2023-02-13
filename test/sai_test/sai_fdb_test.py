@@ -1169,6 +1169,16 @@ class FdbFlushVlanDynamicTest(T0TestBase):
         Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
+        # disable fdb aging
+        # age time used in tests (in sec)
+        self.age_time = 0
+        status = sai_thrift_set_switch_attribute(self.client,
+                                                 fdb_aging_time=self.age_time)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        sw_attr = sai_thrift_get_switch_attribute(self.client,
+                                                  fdb_aging_time=True)
+        self.assertEqual(sw_attr["fdb_aging_time"], self.age_time)
+        print("Set aging time to {} sec to disable fdb aging".format(self.age_time))
 
     @warm_test(is_test_rebooting=False)
     def runTest(self):
@@ -1218,11 +1228,12 @@ class FdbFlushVlanDynamicTest(T0TestBase):
         status = sai_thrift_flush_fdb_entries(
             self.client, bv_id=self.dut.vlans[20].oid, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
+        time.sleep(1)
         attr = sai_thrift_get_switch_attribute(
             self.client, available_fdb_entry=True)
-        # DX010, Counter not flush on vlan
+        # DX010, Counter not flush on vlan, fixed by disable fdb aging and sleep appropriate time
         #Item: 15012831
-        #self.assertEqual(attr["available_fdb_entry"] - saved_fdb_entry, 0)
+        self.assertEqual(attr["available_fdb_entry"] - saved_fdb_entry, 0)
         #Item: 15002648
         # Unstable, flood cannot be recovered
         # After 300 more seconds, flooding happened
