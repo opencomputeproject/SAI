@@ -2790,10 +2790,11 @@ typedef enum _sai_switch_attr_t
 
     /**
      * @brief Credit watchdog threshold timer in milliseconds
+     * Value must be within 10ms - 1000ms range
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @default 0
+     * @default 500
      * @validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_VOQ
      */
     SAI_SWITCH_ATTR_CREDIT_WD_TIMER,
