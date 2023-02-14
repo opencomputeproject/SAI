@@ -1,6 +1,17 @@
+import logging
+try:
+    from meta.sai_adapter import *
+except ImportError:
+    from sai_thrift.sai_adapter import *
+
 class MockSuccessClient():
     
     def sai_thrift_remove_acl_table(self, var):
+        logging.info("sai_thrift_remove_acl_table invoked")
+        # e = sai_thrift_exception()
+        # e.status = -2
+        # raise e
+
         return 0
     
     def sai_thrift_create_switch(client,
@@ -88,4 +99,21 @@ class MockSuccessClient():
                              qos_tc_and_color_to_mpls_exp_map=None,
                              failover_config_mode=None,
                              tunnel_objects_list=None):
+        logging.info("sai_thrift_create_switch invoked")
         return 0
+
+
+    def sai_thrift_get_acl_table_attribute(client, 
+                                            oid,
+                                            attr_list):
+        logging.info("sai_thrift_get_acl_table_attribute invoked")
+        attr_list = []
+        attribute1 = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_ACL_STAGE)
+        attribute1.value = sai_thrift_attribute_value_t()
+        attribute = sai_thrift_attribute_t(id=SAI_ACL_TABLE_ATTR_ACL_STAGE, value=attribute1.value)
+        attr_list.append(attribute)
+
+
+        attr_lists = sai_thrift_attribute_list_t(attr_list=attr_list)
+        attr_lists.attr_list = attr_list
+        return attr_lists

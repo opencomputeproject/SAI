@@ -27,9 +27,9 @@ set -e
 
 rm -rf temp
 
-mkdir temp
+sairepo=`git remote get-url origin`
 
-git --work-tree=temp/ checkout origin/master inc
+git clone $sairepo temp
 
 echo "Checking for possible enum values shift (current branch vs origin/master) ..."
 
