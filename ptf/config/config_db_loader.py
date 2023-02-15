@@ -23,6 +23,9 @@ from os.path import exists
 import json
 
 from typing import TYPE_CHECKING
+from typing import Dict
+
+from data_module.port_config import PortConfig
 
 DEFAULT_CONFIG_DB = "../resources/config_db.json"
 
@@ -71,13 +74,30 @@ class ConfigDBLoader():
         return config_path
 
 
-    def get_port_config(self):
+    def get_port_config(self) -> List['PortConfig']:
         '''
         Method for get the configuration for port config.
         RETURN:
-            dict: port config
+            dict: port config, key is the interface name
         '''
         
         port_conf = self.config_json.get('PORT')
-        self.port_config = port_conf
-        return port_conf
+        port_Configs = []
+        for index, key in enumerate(port_conf):
+            PortConfig = PortConfig()
+            portConfig.name = key
+            portConfig.alias = port_conf[key]['alias']
+            portConfig.index = int(port_conf[key]['index'])
+            portConfig.lanes = [int(i) for i in port_conf[key]['lanes'].split(',')]
+            portConfig.mtu = 0 if not 'mtu' in  port_conf[key] else int(port_conf[key]['mtu'])
+            portConfig.pfc_asym = None \
+                if not 'pfc_asym' in  port_conf[key] else port_conf[key]['pfc_asym']
+            portConfig.speed = 0 \
+                if not 'speed' in  port_conf[key] else int(port_conf[key]['speed'])
+            portConfig.fec = None \
+                if not 'fec' in  port_conf[key] else port_conf[key]['fec']
+            portConfig.tpid = None if not 'tpid' in  port_conf[key] else port_conf[key]['tpid']
+            port_Configs.append(portConfig)
+
+        self.port_config = port_Configs
+        return port_Configs

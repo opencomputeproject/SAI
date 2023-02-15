@@ -346,7 +346,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.config_db_loader: ConfigDBLoader = None
         self.port_config_ini_loader: PortConfigInILoader = None
         # TODO: Below two attributes should be move to port_configer
-        self.ports_config: Dict = None
+        self.ports_config = None
         """
         ports_config dict, use to compatiable with old data module
         """
@@ -390,6 +390,14 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         attr = sai_thrift_get_switch_attribute(
             self.client, number_of_active_ports=True)
         self.active_ports_no = attr['number_of_active_ports']
+
+        # get number of system ports
+        attr = sai_thrift_get_switch_attribute(
+            self.client, number_of_system_ports=True)
+        number_of_active_ports = 0
+        if attr and 'number_of_system_ports' in attr:
+            number_of_active_ports = attr['number_of_system_ports']
+        self.system_port_no = number_of_active_ports
 
         # get port_list and portX objects
         attr = sai_thrift_get_switch_attribute(
@@ -567,17 +575,13 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
 
     def setUp(self):
         super(SaiHelperBase, self).setUp()
-        if 'port_config_ini' in self.test_params:
-            self.port_config_ini_loader = PortConfigInILoader(self.test_params['port_config_ini'])
-        else:
-            self.port_config_ini_loader = PortConfigInILoader()        
-        self.port_config_ini_loader.parse_port_config()
-        self.ports_config = self.port_config_ini_loader.ports_config
 
         if 'config_db_json' in self.test_params:
             self.config_db_loader = ConfigDBLoader(self.test_params['config_db_json'])
         else:
             self.config_db_loader = ConfigDBLoader()
+        self.ports_config = self.config_db_loader.get_port_config()
+        
         self.port_configer = PortConfiger(self)
         self.def_bridge_port_list = []
         self.def_bridge_port_list = []
