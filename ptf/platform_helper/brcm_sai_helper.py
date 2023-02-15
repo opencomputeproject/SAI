@@ -234,4 +234,4 @@ class BrcmSaiHelper(CommonSaiHelper):
         #Port needs to be init and setup at same time.
         #Make the process happened in turn_up_and_check_ports
         print("BrcmSaiHelperBase::recreate_ports does not support. Just Parse Port Config")
-        self.ports_config = self.port_config_ini_loader.ports_config
+        # self.ports_config = self.port_config_ini_loader.ports_config

@@ -43,7 +43,7 @@ import sai_thrift.sai_adapter as adapter
 
 from config.port_configer import PortConfiger
 from config.config_db_loader import ConfigDBLoader
-from config.port_config_ini_loader import PortConfig, PortConfigInILoader
+from config.port_config_ini_loader import PortConfigInILoader
 
 ROUTER_MAC = '00:77:66:55:44:00'
 THRIFT_PORT = 9092
@@ -392,11 +392,11 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.active_ports_no = attr['number_of_active_ports']
 
         # get number of system ports
-        attr = sai_thrift_get_switch_attribute(
-            self.client, number_of_system_ports=True)
+        # attr = sai_thrift_get_switch_attribute(
+        #     self.client, number_of_system_ports=True)
         number_of_active_ports = 0
-        if attr and 'number_of_system_ports' in attr:
-            number_of_active_ports = attr['number_of_system_ports']
+        # if attr and 'number_of_system_ports' in attr:
+        #     number_of_active_ports = attr['number_of_system_ports']
         self.system_port_no = number_of_active_ports
 
         # get port_list and portX objects

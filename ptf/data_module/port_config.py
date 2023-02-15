@@ -33,5 +33,5 @@ class PortConfig(object):
         self.mtu = mtu
         self.pfc_asym = pfc_asym
         self.speed = speed
-        self.fec=fec
+        self.fec = fec
         self.tpid = tpid

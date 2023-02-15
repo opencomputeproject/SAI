@@ -144,7 +144,7 @@ class PortConfiger(object):
         """
         print("Get bridge ports...")
 
-        bridge_size = self.test_obj.dut.system_port_no + self.test_obj.dut.active_ports_no + 1
+        bridge_size = self.test_obj.system_port_no + self.test_obj.active_ports_no + 1
         attr = sai_thrift_get_bridge_attribute(
                     self.client, 
                     bridge_oid=bridge_id,
@@ -349,13 +349,12 @@ class PortConfiger(object):
         port_obj_list_with_lane: List[Port] = []
         # the active number must match the actual account, or might return null
         port_list = sai_thrift_object_list_t(
-            idlist=[], count=self.test_obj.dut.active_ports_no)
+            idlist=[], count=self.test_obj.active_ports_no)
         p_list = sai_thrift_get_switch_attribute(self.client, port_list=port_list)
         for index, item in enumerate(p_list['port_list'].idlist):
-            port: Port = Port(oid=item, port_index=index, rif_list=[
-            ], nexthopv4_list=[], nexthopv6_list=[])
+            port: Port = Port(oid=item, port_index=index)
             temp_list = sai_thrift_object_list_t(
-                count=self.test_obj.dut.active_ports_no)
+                count=self.test_obj.active_ports_no)
             attr = sai_thrift_get_port_attribute(
                 self.client, port_oid=port.oid, hw_lane_list=temp_list)
             port.default_lane_list = attr['hw_lane_list'].uint32list
@@ -499,7 +498,7 @@ class PortConfiger(object):
                         port_up = True
                         break
                     time.sleep(3)
-                    self.log_port_state(port, index)
+                    # self.log_port_state(port, index)
                     print("port {} , local index {} id {} is not up, status: {}. Retry. Reset Admin State.".format(
                         index, port.port_index, port.oid, port_attr['oper_status']))
                     sai_thrift_set_port_attribute(

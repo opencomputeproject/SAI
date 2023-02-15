@@ -23,7 +23,7 @@ from os.path import exists
 import json
 
 from typing import TYPE_CHECKING
-from typing import Dict
+from typing import Dict, List
 
 from data_module.port_config import PortConfig
 
@@ -84,7 +84,7 @@ class ConfigDBLoader():
         port_conf = self.config_json.get('PORT')
         port_Configs = []
         for index, key in enumerate(port_conf):
-            PortConfig = PortConfig()
+            portConfig = PortConfig()
             portConfig.name = key
             portConfig.alias = port_conf[key]['alias']
             portConfig.index = int(port_conf[key]['index'])
