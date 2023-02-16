@@ -2783,7 +2783,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type bool
      * @flags CREATE_AND_SET
-     * @default false
+     * @default true
      * @validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_VOQ
      */
     SAI_SWITCH_ATTR_CREDIT_WD,
@@ -2791,6 +2791,7 @@ typedef enum _sai_switch_attr_t
     /**
      * @brief Credit watchdog threshold timer in milliseconds
      * Value must be within 10ms - 1000ms range
+     * Queue is set to delete state and all packets in queue are deleted after the timer expiry
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
