@@ -37,6 +37,7 @@ class Tunnel(route_item):
                  oport_indexs: List = [],
                  tunnel_type = None,
                  term_type = None,
+                 ttl_mode = None,
                  rif_list:List= [],
                  nexthopv4_list:List['Nexthop'] = [],
                  nexthopv6_list:List['Nexthop'] = [],
@@ -82,7 +83,9 @@ class Tunnel(route_item):
         self.tunnel_type = tunnel_type
 
         self.term_type = term_type
-
+        
+        self.ttl_mode = ttl_mode
+        
         self.tunnel_terms = []
 
     def create_tunnel_route(self, test_object: 'T0TestBase', vm_ip, vm_ipv6):
