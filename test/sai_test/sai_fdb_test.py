@@ -392,9 +392,31 @@ class NewVlanmemberLearnTest(T0TestBase):
                                                                vlan_id=self.dut.vlans[10].oid,
                                                                bridge_port_id=self.dut.port_obj_list[24].bridge_port_oid)
 
-        sai_thrift_set_port_attribute(
+        status = sai_thrift_set_port_attribute(
             self.client, self.dut.port_obj_list[24].oid, port_vlan_id=10)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
+
+        # enable port24 learning
+        status = sai_thrift_set_bridge_port_attribute(
+            self.client,
+            self.dut.port_obj_list[24].bridge_port_oid,
+            fdb_learning_mode=SAI_BRIDGE_PORT_FDB_LEARNING_MODE_HW)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+
+        attr = sai_thrift_get_bridge_port_attribute(
+            self.client, self.dut.port_obj_list[24].bridge_port_oid, fdb_learning_mode=True)
+        self.assertEqual(attr['fdb_learning_mode'],
+                         SAI_BRIDGE_PORT_FDB_LEARNING_MODE_HW)
+
+        # disable aging
+        self.age_time = 0
+        status = sai_thrift_set_switch_attribute(self.client,
+                                                 fdb_aging_time=self.age_time)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                                  fdb_aging_time=True)
+        self.assertEqual(attr["fdb_aging_time"], self.age_time)
+        print("Set aging time to {} sec to disable aging".format(self.age_time))
 
     @warm_test(is_test_rebooting=False)
     def runTest(self):
@@ -427,15 +449,15 @@ class NewVlanmemberLearnTest(T0TestBase):
         verify_no_other_packets(self)
 
         send_packet(self, send_port2.dev_port_index, self.pkt2)
-        verify_packet(self, self.pkt2,
-                      self.dut.port_obj_list[24].dev_port_index)
-        verify_no_other_packets(self)
+        verify_packets(self, self.pkt2,
+                      [self.dut.port_obj_list[24].dev_port_index])
 
+        time.sleep(1)
         attr = sai_thrift_get_switch_attribute(
             self.client, available_fdb_entry=True)
         # Dx010 counter is not right
         #Item: 15012803
-        #self.assertEqual(attr["available_fdb_entry"] - saved_fdb_entry, -1)
+        self.assertEqual(attr["available_fdb_entry"] - saved_fdb_entry, -1)
         print("Verification complete")
 
     def tearDown(self):
@@ -1169,6 +1191,16 @@ class FdbFlushVlanDynamicTest(T0TestBase):
         Set up test
         """
         T0TestBase.setUp(self, is_reset_default_vlan=False)
+        # disable fdb aging
+        # age time used in tests (in sec)
+        self.age_time = 0
+        status = sai_thrift_set_switch_attribute(self.client,
+                                                 fdb_aging_time=self.age_time)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        sw_attr = sai_thrift_get_switch_attribute(self.client,
+                                                  fdb_aging_time=True)
+        self.assertEqual(sw_attr["fdb_aging_time"], self.age_time)
+        print("Set aging time to {} sec to disable fdb aging".format(self.age_time))
 
     @warm_test(is_test_rebooting=False)
     def runTest(self):
@@ -1218,11 +1250,12 @@ class FdbFlushVlanDynamicTest(T0TestBase):
         status = sai_thrift_flush_fdb_entries(
             self.client, bv_id=self.dut.vlans[20].oid, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
+        time.sleep(1)
         attr = sai_thrift_get_switch_attribute(
             self.client, available_fdb_entry=True)
-        # DX010, Counter not flush on vlan
+        # DX010, Counter not flush on vlan, fixed by disable fdb aging and sleep appropriate time
         #Item: 15012831
-        #self.assertEqual(attr["available_fdb_entry"] - saved_fdb_entry, 0)
+        self.assertEqual(attr["available_fdb_entry"] - saved_fdb_entry, 0)
         #Item: 15002648
         # Unstable, flood cannot be recovered
         # After 300 more seconds, flooding happened
