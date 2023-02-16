@@ -28,7 +28,9 @@ if TYPE_CHECKING:
     from sai_test_base import T0TestBase
 
 
-def t0_tunnel_config_helper(test_obj: 'T0TestBase', is_create_tunnel=True):
+def t0_tunnel_config_helper(test_obj: 'T0TestBase', 
+                            is_create_tunnel=True,  
+                            ttl_mode=SAI_TUNNEL_TTL_MODE_PIPE_MODEL):
     """
     Make tunnel configurations base on the configuration in the test plan.
     set the configuration in test directly.
@@ -40,7 +42,7 @@ def t0_tunnel_config_helper(test_obj: 'T0TestBase', is_create_tunnel=True):
     tunnel_configer = TunnelConfiger(test_obj)
 
     if is_create_tunnel:
-        tunnel = tunnel_configer.create_tunnel([1], [17,18])
+        tunnel = tunnel_configer.create_tunnel([1], [17,18], ttl_mode)
         tunnel.tun_ip = test_obj.servers[11][1].ipv4
         tunnel_configer.create_tunnel_term(tunnel)
         test_obj.dut.tunnel_list.append(tunnel)
@@ -66,7 +68,7 @@ class TunnelConfiger(object):
         self.test_obj = test_obj
         self.client = test_obj.client
 
-    def create_tunnel(self, oports, uports):
+    def create_tunnel(self, oports, uports, ttl_mode):
         """
         Create tunnel.
 
@@ -80,7 +82,8 @@ class TunnelConfiger(object):
         tunnel: Tunnel = Tunnel(uport_indexs=uports, 
                                 oport_indexs=oports, 
                                 tunnel_type = SAI_TUNNEL_TYPE_IPINIP,
-                                term_type = SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P)
+                                term_type = SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P,
+                                ttl_mode= ttl_mode)
         
         # underlay configuration
         self.uvrf = self.test_obj.dut.default_vrf
@@ -103,6 +106,9 @@ class TunnelConfiger(object):
             self.client,
             type=tunnel.tunnel_type,
             encap_src_ip=sai_ipaddress(tunnel.lpb_ip),
+            encap_ttl_val = TTL_VAL,
+            encap_ttl_mode = ttl_mode,
+            decap_ttl_mode = ttl_mode,
             underlay_interface=tunnel.urif_lpb,
             overlay_interface=tunnel.orif_lpb)
         

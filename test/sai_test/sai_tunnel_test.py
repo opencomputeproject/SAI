@@ -446,3 +446,221 @@ class SviIPInIPTunnelEncapv6Inv4Test(IpInIpTnnnelBase):
             self.ipv6inipv4encap()
         finally:
             pass
+
+
+
+class IPInIPTunnelEncapPipeTtlv4Inv4Test(IpInIpTnnnelBase):
+    """
+    This verifies the TTL field is preserved end-to-end by copying into the outer header on encapsulation and copying from the outer header on decapsulation when using TTL unifrom mode.     
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process.
+        """
+        IpInIpTnnnelBase.setUp(self)
+        
+    def encap_ttl_set_pipe_mode_v4(self):
+        """
+        1.Generate input packet with ip_ttl field as 64.
+        2.Send input packet from port1.
+        3.Create Expected ipinip packet with 50 field in outer ip header as ttl_val,inner ip_ttl as 63.
+        4.Recieve ipinip packet from lag2, compare it with expected ipinip packet.
+        """
+       
+        pkt = simple_udp_packet(eth_dst=ROUTER_MAC,
+                                eth_src=self.customer_mac,
+                                ip_dst=self.vm_ip,
+                                ip_src=self.customer_ip,
+                                ip_id=108,
+                                ip_ttl=64,
+                                )
+        inner_pkt = simple_udp_packet(eth_dst=self.inner_dmac,
+                                      eth_src=ROUTER_MAC,
+                                      ip_dst=self.vm_ip,
+                                      ip_src=self.customer_ip,
+                                      ip_id=108,
+                                      ip_ttl=63)
+
+
+        ipip_pkt = simple_ipv4ip_packet(eth_dst=self.unbor_mac,
+                                            eth_src=ROUTER_MAC,
+                                            ip_id=0,
+                                            ip_src=self.lpb_ip,
+                                            ip_dst=self.tun_ip,
+                                            ip_ttl= TTL_VAL,
+                                            inner_frame=inner_pkt['IP'])
+   
+        m = Mask(ipip_pkt)
+        m.set_do_not_care_scapy(ptf.packet.IP, "len")
+        m.set_do_not_care_scapy(ptf.packet.IP, "chksum")
+        m.set_do_not_care_scapy(ptf.packet.IP, "flags")
+        
+        self.dataplane.flush()
+        send_packet(self, self.oport_dev, pkt)
+        verify_packet_any_port(self, m, self.recv_dev_port_idxs)
+        
+        print("\tOK")
+
+        
+    def runTest(self):
+        self.encap_ttl_set_pipe_mode_v4()
+
+
+class IPInIPTunnelDecapPipeTtlv4Inv4Test(IpInIpTnnnelBase):
+    """
+    This verifies if TTL field is user-defined for outer header on encapsulation 
+    and TTL field of inner header remains the same on decapsulation when using TTL pipe mode.
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process.
+        """
+        IpInIpTnnnelBase.setUp(self)
+        self.ttl_val = TTL_VAL
+    def decap_ttl_set_pipe_mode_v4(self):
+        """
+        1.Generate input ipinip packet with ip_ttl field in outer ip header as 64 , one in inner ip header as 51, expected recieved packet with ip_ttl field as 50.
+        2.Send packet from lag1.
+        3.Recieve ipinip packet from port1, compare it with expected packet.
+        """
+        pkt = simple_udp_packet(eth_dst=self.customer_mac,
+                                eth_src=ROUTER_MAC,
+                                ip_dst=self.customer_ip,
+                                ip_src=self.vm_ip,
+                                ip_id=108,
+                                ip_ttl=self.ttl_val-1)
+        inner_pkt = simple_udp_packet(eth_dst=self.inner_dmac,
+                                      eth_src=ROUTER_MAC,
+                                      ip_dst=self.customer_ip,
+                                      ip_src=self.vm_ip,
+                                      ip_id=108,
+                                      ip_ttl=self.ttl_val)
+
+        ipip_pkt = simple_ipv4ip_packet(eth_dst=ROUTER_MAC,
+                                            eth_src=self.unbor_mac,
+                                            ip_id=0,
+                                            ip_src=self.tun_ip,
+                                            ip_dst=self.lpb_ip,
+                                            ip_ttl=64,
+                                            inner_frame=inner_pkt['IP'])
+
+
+        send_packet(self, self.uport_dev, ipip_pkt)
+        verify_packet(self, pkt, self.oport_dev)
+        print("\tOK")
+        
+    def runTest(self):
+        try:
+            self.decap_ttl_set_pipe_mode_v4()
+        finally:
+            pass
+
+
+class SviIPInIPTunnelDecapFloodv4Inv4Test(IpInIpTnnnelBase):
+    """
+    Verify removing fdb entry and expecting flood or drop on all ports of vlan 10.
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process.
+        """
+        IpInIpTnnnelBase.setUp(self)
+        for item in self.dut.fdb_entry_list:
+            sai_thrift_remove_fdb_entry(self.client, item)
+            self.dut.fdb_entry_list.remove(item)
+            
+    def ipip_tunnel_decap_svi_flood_test(self):
+        """
+        1.Remove vlan10 fdb entry (dstmac=00:01:01:99:01:a0, port=port1);.
+        2.Generate ingress ipinip packet as decribed by Testing Data Packet
+        3.Send encap packet from lag1.
+        4.Check packet drops or flood on port1.
+        """
+        pkt = simple_udp_packet(eth_dst=self.customer_mac,
+                                eth_src=ROUTER_MAC,
+                                ip_dst=self.customer_ip,
+                                ip_src=self.vm_ip,
+                                ip_id=108,
+                                ip_ttl=63)
+        inner_pkt = simple_udp_packet(eth_dst=self.inner_dmac,
+                                      eth_src=ROUTER_MAC,
+                                      ip_dst=self.customer_ip,
+                                      ip_src=self.vm_ip,
+                                      ip_id=108,
+                                      ip_ttl=64)
+
+        ipip_pkt = simple_ipv4ip_packet(eth_dst=ROUTER_MAC,
+                                            eth_src=self.unbor_mac,
+                                            ip_id=0,
+                                            ip_src=self.tun_ip,
+                                            ip_dst=self.lpb_ip,
+                                            inner_frame=inner_pkt['IP'])
+
+        send_packet(self, self.uport_dev, ipip_pkt)
+        vlan10_ports = self.get_dev_port_indexes(self.dut.vlans[10].port_idx_list)
+        verify_each_packet_on_multiple_port_lists(self, [pkt], [self.get_dev_port_indexes(
+                list(filter(lambda item: item != 1, self.dut.vlans[10].port_idx_list)))])
+        
+        print("\tOK")
+        
+    def runTest(self):
+        try:
+            self.ipip_tunnel_decap_svi_flood_test()
+        finally:
+            pass
+
+
+class SviIPInIPTunnelDecapFloodV6InV4Test(IpInIpTnnnelBase):
+    """
+    Verify removing fdb entry and expecting flood or drop on all ports of vlan 10.
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process.
+        """
+        IpInIpTnnnelBase.setUp(self)
+        for item in self.dut.fdb_entry_list:
+            sai_thrift_remove_fdb_entry(self.client, item)
+            self.dut.fdb_entry_list.remove(item)
+            
+    def ipip_tunnel_decap_svi_flood_test_v6(self):
+        """
+        1.Remove vlan10 fdb entry (dstmac=00:01:01:99:01:a0, port=port1);.
+        2.Generate ingress ipinip packet as decribed by Testing Data Packet
+        3.Send encap packet from lag1.
+        4.Check packet drops or flood on port1.
+        """
+        pkt = simple_udpv6_packet(eth_dst=self.customer_mac,
+                                  eth_src=ROUTER_MAC,
+                                  ipv6_dst=self.customer_ipv6,
+                                  ipv6_src=self.vm_ipv6,
+                                  ipv6_hlim=63)
+
+        inner_pkt = simple_udpv6_packet(eth_dst=self.inner_dmac,
+                                        eth_src=ROUTER_MAC,
+                                        ipv6_dst=self.customer_ipv6,
+                                        ipv6_src=self.vm_ipv6,
+                                        ipv6_hlim=64)
+
+        ipip_pkt = simple_ipv4ip_packet(eth_dst=ROUTER_MAC,
+                                            eth_src=self.unbor_mac,
+                                            ip_id=0,
+                                            ip_src=self.tun_ip,
+                                            ip_dst=self.lpb_ip,
+                                            inner_frame=inner_pkt['IPv6'])
+
+        send_packet(self, self.uport_dev, ipip_pkt)
+        vlan10_ports = self.get_dev_port_indexes(self.dut.vlans[10].port_idx_list)
+        verify_each_packet_on_multiple_port_lists(self, [pkt], [self.get_dev_port_indexes(
+                list(filter(lambda item: item != 1, self.dut.vlans[10].port_idx_list)))])
+        print("\tOK")
+
+    def runTest(self):
+        try:
+            self.ipip_tunnel_decap_svi_flood_test_v6()
+        finally:
+            pass
