@@ -273,6 +273,29 @@ typedef enum _sai_tunnel_map_entry_attr_t
 ```
 ### SAI SRv6 (saisrv6.h)
 
+#### SID List Underlay Next Hop
+
+```c
+typedef enum _sai_srv6_sidlist_attr_t
+{
+    // <...>
+
+    /**
+     * @brief Underlay Next hop to forward packets to this SID List
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_NEXT_HOP 
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SRV6_SIDLIST_ATTR_NEXT_HOP_ID,
+
+    // <...>
+
+} sai_srv6_sidlist_attr_t;
+```
+
 
 #### SID List Statistics IDs
 

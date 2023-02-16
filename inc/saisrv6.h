@@ -178,6 +178,17 @@ typedef enum _sai_srv6_sidlist_attr_t
     SAI_SRV6_SIDLIST_ATTR_SEGMENT_LIST,
 
     /**
+     * @brief Underlay Next hop to forward packets to this SID List
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_NEXT_HOP 
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SRV6_SIDLIST_ATTR_NEXT_HOP_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_SRV6_SIDLIST_ATTR_END,
