@@ -498,7 +498,7 @@ class PortConfiger(object):
                         port_up = True
                         break
                     time.sleep(3)
-                    # self.log_port_state(port, index)
+                    self.log_port_state(port, index)
                     print("port {} , local index {} id {} is not up, status: {}. Retry. Reset Admin State.".format(
                         index, port.port_index, port.oid, port_attr['oper_status']))
                     sai_thrift_set_port_attribute(
@@ -525,9 +525,7 @@ class PortConfiger(object):
         return fec_change[port.config.fec]
 
     def log_port_state(self, port:Port, index):
-        print("port index:{} hardIdx: {} "
-        .join("ptf_dev_idx: {} name:{}")
-        .join("config lane:{} mtu:{} fec:{} speed:{}").format(
+        print("port index:{} hardIdx: {} ptf_dev_idx: {} name:{} config lane:{} mtu:{} fec:{} speed:{}".format(
             index,
             port.port_index,
             port.dev_port_index,
