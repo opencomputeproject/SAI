@@ -309,6 +309,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.default_1q_bridge
         self.cpu_port_hdl
         self.active_ports_no - number of active ports
+        self.system_port_no - number of system ports
         self.port_list - list of all active port objects
         self.portX objects for all active ports (where X is a port number)
         self.port_configer for config ports
@@ -334,6 +335,10 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         """
         Device active ports.
         """
+        self.system_port_no: int = 0
+        """
+        Device system ports.
+        """
 
         self.active_port_obj_list: List['Port'] = []
         """
@@ -358,6 +363,37 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.def_vlan_member_list = []
 
 
+    def get_default_switch_attr(self):
+        """
+        Get default switch attr.
+        includes:
+            system_port_no: number_of_system_ports
+            active_ports_no: number_of_active_ports
+
+        """
+        print("Ignore all the expect error code and exception captures.")
+        capture_status = adapter.CATCH_EXCEPTIONS
+        expected_code = adapter.EXPECTED_ERROR_CODE
+
+        adapter.CATCH_EXCEPTIONS = True
+        adapter.EXPECTED_ERROR_CODE = []
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, number_of_system_ports=True)
+        number_of_system_ports = 0
+        if attr and 'number_of_system_ports' in attr:
+            number_of_system_ports = attr['number_of_system_ports']
+        self.system_port_no = number_of_system_ports
+        print("Get number_of_system_ports {}".format(self.system_port_no))
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, number_of_active_ports=True)
+        self.active_ports_no = attr['number_of_active_ports']
+        print("Get number_of_active_ports {}".format(self.active_ports_no))
+
+        print("Restore all the expect error code and exception captures.")
+
+
     def set_logger_name(self):
         """
         Set Logger name as filename:classname
@@ -374,26 +410,9 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         Method to get the active port list base on number_of_active_ports
 
         Sets the following class attributes:
-
-            self.active_ports_no - number of active ports
-
             self.port_list - list of all active port objects
-
             self.portX objects for all active ports
         '''
-
-        # get number of active ports
-        attr = sai_thrift_get_switch_attribute(
-            self.client, number_of_active_ports=True)
-        self.active_ports_no = attr['number_of_active_ports']
-
-        # get number of system ports
-        # attr = sai_thrift_get_switch_attribute(
-        #     self.client, number_of_system_ports=True)
-        number_of_active_ports = 0
-        # if attr and 'number_of_system_ports' in attr:
-        #     number_of_active_ports = attr['number_of_system_ports']
-        self.system_port_no = number_of_active_ports
 
         # get port_list and portX objects
         attr = sai_thrift_get_switch_attribute(
@@ -637,6 +656,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.getSwitchPorts()
         # initialize switch
         self.start_switch()
+        self.get_default_switch_attr()
 
         self.switch_resources = self.saveNumberOfAvaiableResources(debug=True)
 

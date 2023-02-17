@@ -146,7 +146,7 @@ class PortConfiger(object):
 
         bridge_size = self.test_obj.system_port_no + self.test_obj.active_ports_no + 1
         attr = sai_thrift_get_bridge_attribute(
-                    self.client, 
+                    self.client,
                     bridge_oid=bridge_id,
                     port_list=sai_thrift_object_list_t(
                         idlist=[], count=bridge_size))
