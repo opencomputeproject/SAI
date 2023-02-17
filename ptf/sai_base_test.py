@@ -350,10 +350,6 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         """
         ports_config dict, use to compatiable with old data module
         """
-        self.portConfigs: List[PortConfig] = None
-        """
-        PortConfig object List
-        """
         self.bridge_port_list = []
         """
         Bridge port list
@@ -573,6 +569,56 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         adapter.CATCH_EXCEPTIONS=True
 
 
+    def get_default_vlan(self):
+        """
+        Get default vlan.
+
+        Returns:
+            default_vlan_id
+        """
+        print("Get default vlan...")
+        def_attr = sai_thrift_get_switch_attribute(self.client, default_vlan_id=True)
+        self.assertNotEqual(def_attr['default_vlan_id'], 0)
+        return def_attr['default_vlan_id']
+
+
+    def get_vlan_member(self, vlan_id):
+        """
+        Get vlan member by vlan id.
+
+        Args:
+            vlan_id: vlan id
+        
+        Returns:
+            list: vlan member oid list
+        """
+        vlan_member_size = self.system_port_no + self.active_ports_no
+        vlan_member_list = sai_thrift_object_list_t(count=vlan_member_size)
+        mbr_list = sai_thrift_get_vlan_attribute(self.client, vlan_id, member_list=vlan_member_list)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        return mbr_list['SAI_VLAN_ATTR_MEMBER_LIST'].idlist
+
+
+    def remove_vlan_members(self, vlan_members):
+        """
+        Remove vlan members.
+
+        Args:
+            vlan_members: vlan member oids
+        """
+        for vlan_member in vlan_members:
+            status = sai_thrift_remove_vlan_member(self.client, vlan_member)
+            self.assertEqual(status, SAI_STATUS_SUCCESS)
+
+
+    def remove_default_vlan(self):
+        """
+        Remove default vlan
+        """
+        members = self.get_vlan_member(self.default_vlan_id)
+        self.remove_vlan_members(members)
+
+
     def setUp(self):
         super(SaiHelperBase, self).setUp()
 
@@ -595,10 +641,10 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.switch_resources = self.saveNumberOfAvaiableResources(debug=True)
 
         # get default vlan
-        attr = sai_thrift_get_switch_attribute(
-            self.client, default_vlan_id=True)
-        self.default_vlan_id = attr['default_vlan_id']
-        self.assertNotEqual(self.default_vlan_id, 0)
+        self.default_vlan_id = self.get_default_vlan()
+        
+        # remove default vlan
+        self.remove_default_vlan()
 
         self.recreate_ports()
 

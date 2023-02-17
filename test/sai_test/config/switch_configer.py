@@ -68,7 +68,7 @@ class SwitchConfiger(object):
         Returns:
             Vlan: vlan object
         """
-        if self.test_obj.test_reboot_stage  == WARM_TEST_POST_REBOOT:
+        if self.test_obj.test_reboot_stage == WARM_TEST_POST_REBOOT:
             switch_id = sai_thrift_create_switch(
                 self.test_obj.client, init_switch=True, warm_recover=True)
         else:
