@@ -518,7 +518,7 @@ class EcmpHashFieldProtoTestV4(T0TestBase):
         T0TestBase.setUp(self,
                          is_create_route_for_nhopgrp=True,
                          is_create_route_for_lag=False,
-                         skip_reason ="SKIP! Skip test for broadcom, can't load balance on protocol such as tcp and udp. Item: 15023123",
+                         #skip_reason ="SKIP! Skip test for broadcom, can't load balance on protocol such as tcp and udp. Item: 15023123",
                         )
         
     def test_load_balance_on_protocolv4(self):
@@ -639,7 +639,7 @@ class EcmpHashFieldProtoTestV6(T0TestBase):
         T0TestBase.setUp(self,
                          is_create_route_for_nhopgrp=True,
                          is_create_route_for_lag=False,
-                         skip_reason ="SKIP! Skip test for broadcom, can't load balance on protocol such as tcp and udp. Item: 15023123",
+                         #skip_reason ="SKIP! Skip test for broadcom, can't load balance on protocol such as tcp and udp. Item: 15023123",
                         )
         
     def test_load_balance_on_protocolv6(self):
@@ -2095,7 +2095,8 @@ class EcmpCoExistLagRouteV4(T0TestBase):
         Test the basic setup process
         """
         T0TestBase.setUp(self,
-                         skip_reason = "SKIP! Skip test for broadcom, learn_disable, report error code -196608, no error log. Item: 16384090")
+                         #skip_reason = "SKIP! Skip test for broadcom, learn_disable, report error code -196608, no error log. Item: 16384090"
+                         )
         nhop_groupv4_id = sai_thrift_create_next_hop_group(self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
@@ -2187,7 +2188,8 @@ class EcmpCoExistLagRouteV6(T0TestBase):
         Test the basic setup process
         """
         T0TestBase.setUp(self,
-                         skip_reason = "SKIP! Skip test for broadcom, learn_disable, report error code -196608, no error log. Item: 16384090")
+                         #skip_reason = "SKIP! Skip test for broadcom, learn_disable, report error code -196608, no error log. Item: 16384090"
+                         )
         nhop_groupv6_id = sai_thrift_create_next_hop_group(self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 

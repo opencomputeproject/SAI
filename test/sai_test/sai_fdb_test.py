@@ -100,7 +100,8 @@ class VlanLearnDisableTest(T0TestBase):
         T0TestBase.setUp(
             self, 
             is_reset_default_vlan=False, 
-            skip_reason = "SKIP! Skip test for broadcom, learn_disable, report error code -196608, no error log. Item: 15000933")
+            #skip_reason = "SKIP! Skip test for broadcom, learn_disable, report error code -196608, no error log. Item: 15000933"
+            )
         status = sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
@@ -285,7 +286,8 @@ class NonBridgePortNoLearnTest(T0TestBase):
         T0TestBase.setUp(
             self, 
             is_reset_default_vlan=False,
-            skip_reason ="SKIP! Skip test for broadcom, non bridge port still can learn. Item: 15000950")
+            #skip_reason ="SKIP! Skip test for broadcom, non bridge port still can learn. Item: 15000950"
+            )
         status = sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
 
@@ -1038,7 +1040,8 @@ class FdbFlushVlanStaticTest(T0TestBase):
         T0TestBase.setUp(
             self, 
             is_reset_default_vlan=False,
-            skip_reason ="SKIP! Static flush Not support by broadcom. Item:15419274")
+            #skip_reason ="SKIP! Static flush Not support by broadcom. Item:15419274"
+            )
         status = sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_STATIC)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
@@ -1092,7 +1095,8 @@ class FdbFlushPortStaticTest(T0TestBase):
         T0TestBase.setUp(
             self, 
             is_reset_default_vlan=False,
-            skip_reason ="SKIP! Static flush Not support by broadcom. Item:15419274")
+            #skip_reason ="SKIP! Static flush Not support by broadcom. Item:15419274"
+            )
         sai_thrift_flush_fdb_entries(
             self.client, bridge_port_id=self.dut.port_obj_list[1].bridge_port_oid, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_STATIC)
 
@@ -1145,7 +1149,8 @@ class FdbFlushAllStaticTest(T0TestBase):
         T0TestBase.setUp(
             self, 
             is_reset_default_vlan=False,
-            skip_reason = "SKIP! Static flush Not support by broadcom. Item:15419274")
+            #skip_reason = "SKIP! Static flush Not support by broadcom. Item:15419274"
+            )
         sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_STATIC)
 
@@ -1455,7 +1460,8 @@ class FdbFlushAllTest(T0TestBase):
         T0TestBase.setUp(
             self, 
             is_reset_default_vlan=False,
-            skip_reason = "SKIP! Unstable, flood cannot be recovered. Item:15002648")
+            #skip_reason = "SKIP! Unstable, flood cannot be recovered. Item:15002648
+            )
 
     @warm_test(is_test_rebooting=False)
     def runTest(self):
