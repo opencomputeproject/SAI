@@ -365,7 +365,6 @@ class T0TestBase(ThriftInterfaceDataPlane):
               is_remove_default_vlan=True,
               is_create_hostIf=True,
               is_recreate_bridge=True,
-              is_reset_default_vlan=False,
               is_create_vlan=True,
               is_create_fdb=True,
               is_create_default_route=True,
@@ -406,7 +405,6 @@ class T0TestBase(ThriftInterfaceDataPlane):
                 is_recreate_bridge=is_recreate_bridge)
             t0_vlan_config_helper(
                 test_obj=self,
-                is_reset_default_vlan=is_reset_default_vlan,
                 is_create_vlan=is_create_vlan)
             t0_fdb_config_helper(
                 test_obj=self,
