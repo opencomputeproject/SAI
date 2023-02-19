@@ -28,11 +28,15 @@ import struct
 import socket
 
 from functools import wraps
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import FunctionType 
 
 from ptf.packet import *
 from ptf.testutils import *
 from config.switch_configer import t0_switch_config_helper
 from sai_thrift.sai_adapter import *
+import sai_thrift.sai_adapter as adapter
 from constant import *
 
 
@@ -224,3 +228,112 @@ def warm_test(is_test_rebooting:bool=False, time_out=60, interval=1):
             return f(inst)
         return test_director
     return _check_run_case
+
+def query_counter(test, cnt_func, *args, **kwargs):
+    """
+    Get counter by each counter id for the counter function.
+    This method depends on sai_adapater generation pattern.
+    The cnt_func name must be with pattern sai_thrift_get_<counter_query_func>
+    Then, expect there will be a counter dict with pattern 
+        sai_<counter_query_func>_ids_dict
+    and a counter list with name pattern
+        sai_<counter_query_func>_ids
+    inspect.getargspec(cnt_func)[1]
+    """
+    
+    fun_name = cnt_func.__name__
+    result = {}
+    supported_counters = []
+    unsupported_counters = []
+    if not fun_name.startswith("sai_thrift_get"):
+        # cannot get the func name directly
+        # it should be a wrapper
+        fun_name = inspect.getclosurevars(cnt_func).nonlocals['func'].__name__ 
+    if not fun_name.startswith("sai_thrift_get"):
+        raise ArgumentError("Cannot get the expected counter query method name")  
+
+    cnt_query_fun_name = fun_name.lstrip("sai_thrift_")
+    id_dict_name = "sai_{}_counter_ids_dict".format(cnt_query_fun_name)
+    id_list_name = "sai_{}_counter_ids".format(cnt_query_fun_name)
+    id_dict = getattr(adapter, id_dict_name)
+    id_list = getattr(adapter, id_list_name)
+
+    ignore_api_errors()
+    for id in id_list:
+        kwargs["counter_ids"] = [id]
+        counter = id_dict[id]
+        stats = cnt_func(test.client, *args, **kwargs)
+        if test.status() == SAI_STATUS_SUCCESS:
+            supported_counters.append(counter)
+        else:
+            unsupported_counters.append(counter)
+        result[counter] = stats[counter]
+    restore_api_error_code()
+    return result, supported_counters, unsupported_counters
+
+
+def clear_counter(test, cnt_func, *args, **kwargs):
+    """
+    Clear counter by each counter id for the counter function.
+    This method depends on sai_adapater generation pattern.
+    The cnt_func name must be with pattern sai_thrift_clear_<counter_query_func>
+    Then, expect there will be a counter dict with pattern 
+        sai_<counter_query_func>_ids_dict
+    and a counter list with name pattern
+        sai_<counter_query_func>_ids
+    inspect.getargspec(cnt_func)[1]
+    """
+    
+    fun_name = cnt_func.__name__
+    supported_counters = []
+    unsupported_counters = []
+    if not fun_name.startswith("sai_thrift_clear"):
+        # cannot get the func name directly
+        # it should be a wrapper
+        fun_name = inspect.getclosurevars(cnt_func).nonlocals['func'].__name__ 
+    if not fun_name.startswith("sai_thrift_clear"):
+        raise ArgumentError("Cannot get the expected counter clear method name")  
+
+    cnt_clear_fun_name = fun_name.lstrip("sai_thrift_")
+    id_dict_name = "sai_{}_counter_ids_dict".format(cnt_clear_fun_name)
+    id_list_name = "sai_{}_counter_ids".format(cnt_clear_fun_name)
+    id_dict = getattr(adapter, id_dict_name)
+    id_list = getattr(adapter, id_list_name)
+
+    ignore_api_errors()
+    for id in id_list:
+        kwargs["counter_ids"] = [id]
+        counter = id_dict[id]
+        stats = cnt_func(test.client, *args, **kwargs)
+        if test.status() == SAI_STATUS_SUCCESS:
+            supported_counters.append(counter)
+        else:
+            unsupported_counters.append(counter)
+    restore_api_error_code()
+    return supported_counters, unsupported_counters
+
+
+capture_status = True
+expected_code = []
+def ignore_api_errors():
+    """
+    Ignore API errors.
+    After run this function, all the API error will be caught
+    and will not be raised.
+
+    """
+    print("Ignore all the expect error code and exception captures.")
+    capture_status = adapter.CATCH_EXCEPTIONS
+    expected_code = adapter.EXPECTED_ERROR_CODE
+    adapter.CATCH_EXCEPTIONS = True
+    adapter.EXPECTED_ERROR_CODE = []
+    return capture_status, expected_code
+
+
+def restore_api_error_code(capture_status=capture_status, expected_code=expected_code):
+    """
+    Restore API error code and catch status.
+    """
+    print("Restore all the expect error code and exception captures.")
+    adapter.CATCH_EXCEPTIONS = capture_status
+    adapter.EXPECTED_ERROR_CODE = expected_code
