@@ -238,7 +238,15 @@ def query_counter(test, cnt_func, *args, **kwargs):
         sai_<counter_query_func>_ids_dict
     and a counter list with name pattern
         sai_<counter_query_func>_ids
-    inspect.getargspec(cnt_func)[1]
+    Args:
+        test: object extends from base test
+        cnt_func: counter function
+        args: counter function parameters
+        kwargs: counter function parameters with name
+    return:
+        result: dict, counter name and  value
+        supported_counters: supported counter name list
+        unsupported_counters: unsupported counter name list
     """
     
     fun_name = cnt_func.__name__
@@ -281,7 +289,14 @@ def clear_counter(test, cnt_func, *args, **kwargs):
         sai_<counter_query_func>_ids_dict
     and a counter list with name pattern
         sai_<counter_query_func>_ids
-    inspect.getargspec(cnt_func)[1]
+    Args:
+        test: object extends from base test
+        cnt_func: counter function
+        args: counter function parameters
+        kwargs: counter function parameters with name
+    return:
+        supported_counters: supported counter name list
+        unsupported_counters: unsupported counter name list
     """
     
     fun_name = cnt_func.__name__
@@ -323,6 +338,7 @@ def ignore_api_errors():
 
     """
     print("Ignore all the expect error code and exception captures.")
+    global capture_status, expected_code
     capture_status = adapter.CATCH_EXCEPTIONS
     expected_code = adapter.EXPECTED_ERROR_CODE
     adapter.CATCH_EXCEPTIONS = True
@@ -330,10 +346,11 @@ def ignore_api_errors():
     return capture_status, expected_code
 
 
-def restore_api_error_code(capture_status=capture_status, expected_code=expected_code):
+def restore_api_error_code():
     """
     Restore API error code and catch status.
     """
     print("Restore all the expect error code and exception captures.")
+    global capture_status, expected_code
     adapter.CATCH_EXCEPTIONS = capture_status
     adapter.EXPECTED_ERROR_CODE = expected_code
