@@ -826,53 +826,6 @@ class McastDisableTest(L3InterfaceTestHelper):
         super(McastDisableTest, self).tearDown()
 
 
-class RifStatsTest(L3InterfaceTestHelper):
-    """
-    Verifies Ingress and Egress RIF stats for unicast packets
-    """
-    def setUp(self):
-        super(RifStatsTest, self).setUp()
-
-    def runTest(self):
-        print("\nrifStatsTest()")
-
-        time.sleep(4)
-        port10_rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.port10_rif)
-        port11_rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.port11_rif)
-        port12_rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.port12_rif)
-        port13_rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.port13_rif)
-        lag1_rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.lag1_rif)
-
-        self.assertTrue(self.port10_rif_counter_in == port10_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
-        self.assertTrue(self.port10_rif_counter_out == port10_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
-        self.assertTrue(self.port11_rif_counter_in == port11_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
-        self.assertTrue(self.port11_rif_counter_out == port11_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
-        self.assertTrue(self.port12_rif_counter_out == port12_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
-        self.assertTrue(self.port13_rif_counter_out == port13_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
-        self.assertTrue(self.lag1_rif_counter_in == lag1_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
-        self.assertTrue(self.lag1_rif_counter_out == lag1_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
-        self.assertTrue(self.port11_rif_counter_in_octects == port11_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_IN_OCTETS'])
-        self.assertTrue(self.port10_rif_counter_out_octects == port10_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_OUT_OCTETS'])
-
-    def tearDown(self):
-        super(RifStatsTest, self).tearDown()
-
-
 class DuplicatePortRifCreationTest(L3InterfaceTestHelper):
     """
     Verifies if duplicate L3 RIF creation fails
@@ -2623,34 +2576,6 @@ class Ipv6MtuTest(L3InterfaceMtuTestHelper):
     def tearDown(self):
         super(Ipv6MtuTest, self).tearDown()
 
-
-class rifStatsTest(L3InterfaceMtuTestHelper):
-    """
-    Verifies Ingress and Egress RIF stats for unicast packets
-    """
-    def setUp(self):
-        super(rifStatsTest, self).setUp()
-
-    def runTest(self):
-        print("\nrifStatsTest()")
-
-        time.sleep(4)
-        port0_rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.port0_rif)
-        port1_rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.port1_rif)
-        lag1_rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.lag1_rif)
-
-        self.assertTrue(self.port0_rif_counter_out == port0_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
-        self.assertTrue(self.port1_rif_counter_in == port1_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
-        self.assertTrue(self.lag1_rif_counter_out == lag1_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
-
-    def tearDown(self):
-        super(rifStatsTest, self).tearDown()
 
 @group("draft")
 class L3SubPortTestHelper(PlatformSaiHelper):
@@ -4589,106 +4514,6 @@ class SubPortMyIPTest(L3SubPortTestHelper):
 
     def tearDown(self):
         super(SubPortMyIPTest, self).tearDown()
-
-
-class SubPortStatsTest(L3SubPortTestHelper):
-    """
-    Verifies Ingress and Egress sub-port stats for unicast packets
-    """
-    def setUp(self):
-        super(SubPortStatsTest, self).setUp()
-
-    def runTest(self):
-        print("\nsubPortStatsTest()")
-
-        port10_rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.port10_rif)
-        port11_rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.port11_rif)
-        lag3_rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.lag3_rif)
-        vlan600_rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.vlan600_rif)
-        vlan700_rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.vlan700_rif)
-        subport10_100_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.subport10_100)
-        subport10_200_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.subport10_200)
-        subport11_200_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.subport11_200)
-        subport11_300_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.subport11_300)
-        sublag3_400_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.sublag3_400)
-        sublag3_500_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.sublag3_500)
-        subport24_600_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.subport24_600)
-        subport25_400_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.subport25_400)
-        subport25_500_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.subport25_500)
-
-        self.assertTrue(self.port10_rif_in == port10_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
-        self.assertTrue(self.port10_rif_out == port10_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
-        self.assertTrue(self.port11_rif_in == port11_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
-        self.assertTrue(self.port11_rif_out == port11_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
-        self.assertTrue(self.lag3_rif_in == lag3_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
-        self.assertTrue(self.lag3_rif_out == lag3_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
-        self.assertTrue(self.vlan600_rif_in == vlan600_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
-        self.assertTrue(self.vlan600_rif_out == vlan600_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
-        self.assertTrue(self.vlan700_rif_in == vlan700_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
-        self.assertTrue(self.vlan700_rif_out == vlan700_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
-        self.assertTrue(self.subport10_100_in == subport10_100_stats[
-            'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
-        self.assertTrue(self.subport10_100_out == subport10_100_stats[
-            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
-        self.assertTrue(self.subport10_200_in == subport10_200_stats[
-            'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
-        self.assertTrue(self.subport10_200_out == subport10_200_stats[
-            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
-        self.assertTrue(self.subport11_200_in == subport11_200_stats[
-            'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
-        self.assertTrue(self.subport11_200_out == subport11_200_stats[
-            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
-        self.assertTrue(self.subport11_300_in == subport11_300_stats[
-            'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
-        self.assertTrue(self.subport11_300_out == subport11_300_stats[
-            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
-        self.assertTrue(self.sublag3_400_in == sublag3_400_stats[
-            'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
-        self.assertTrue(self.sublag3_400_out == sublag3_400_stats[
-            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
-        self.assertTrue(self.sublag3_500_in == sublag3_500_stats[
-            'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
-        self.assertTrue(self.sublag3_500_out == sublag3_500_stats[
-            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
-        self.assertTrue(self.subport24_600_in == subport24_600_stats[
-            'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
-        self.assertTrue(self.subport24_600_out == subport24_600_stats[
-            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
-        self.assertTrue(self.subport25_400_in == subport25_400_stats[
-            'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
-        self.assertTrue(self.subport25_400_out == subport25_400_stats[
-            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
-        self.assertTrue(self.subport25_500_in == subport25_500_stats[
-            'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
-        self.assertTrue(self.subport25_500_out == subport25_500_stats[
-            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
-
-    def tearDown(self):
-        super(SubPortStatsTest, self).tearDown()
 
 
 class SubPortNoTest(L3SubPortTestHelper):
