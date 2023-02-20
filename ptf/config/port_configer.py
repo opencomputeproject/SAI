@@ -363,7 +363,7 @@ class PortConfiger(object):
 
     def get_lane_sorted_port_list(self, port_obj_list_with_lane: List[Port]):
         """
-        Get the port list sorted by lanes name(defined in port_config.ini).
+        Get the port list sorted by lanes name(defined in config_db.json).
         This method will cut the ports list base on the lanes.
         i.e. If device has 64 ports but just define 32 in lanes, then just generate 32 ports
 
@@ -385,14 +385,14 @@ class PortConfiger(object):
 
     def sort_port_list_by_config(self, ports_config: List[PortConfig], port_list: List[Port]):
         """
-        Sort the port list base on the port_config.ini.
+        Sort the port list base on the config_db.json.
         This method will match the default_lane_list in the port object with the lane defined in 
         port config for a ordered port list.
         This method will create the port list base on the mini number of interfaces from
-        command parameters or port_config.ini
+        command parameters or config_db.json
 
         Attrs:
-            ports_config: port config, which gets from the port_config.ini
+            ports_config: port config, which gets from the config_db.json
             port_list: port list
         """
         sorted_port_list: List[Port] = []
