@@ -28,13 +28,13 @@ from ptf.thriftutils import *
 from sai_base_test import *
 
 @group("draft")
-class L3InterfaceTest(SaiHelper):
+class L3InterfaceTestHelper(PlatformSaiHelper):
     """
     This class contains base router interface tests for regular L3 port RIFs
     """
 
     def setUp(self):
-        super(L3InterfaceTest, self).setUp()
+        super(L3InterfaceTestHelper, self).setUp()
 
         self.port10_rif_counter_in = 0
         self.port10_rif_counter_out = 0
@@ -44,6 +44,8 @@ class L3InterfaceTest(SaiHelper):
         self.port13_rif_counter_out = 0
         self.lag1_rif_counter_in = 0
         self.lag1_rif_counter_out = 0
+        self.port10_rif_counter_out_octects = 0
+        self.port11_rif_counter_in_octects = 0
 
         dmac1 = '00:11:22:33:44:55'
         dmac3 = '00:33:22:33:44:55'
@@ -98,14 +100,6 @@ class L3InterfaceTest(SaiHelper):
         sai_thrift_create_route_entry(
             self.client, self.route_lag1, next_hop_id=self.nhop3)
 
-    def runTest(self):
-        self.ipv4FibLagTest()
-        self.ipv6FibLagTest()
-        self.rifSharedMtuTest()
-        self.mcastDisableTest()
-        self.rifStatsTest()
-        self.duplicatePortRifCreationTest()
-
     def tearDown(self):
         sai_thrift_remove_route_entry(self.client, self.route_entry0)
         sai_thrift_remove_route_entry(self.client, self.route_entry1)
@@ -119,13 +113,17 @@ class L3InterfaceTest(SaiHelper):
         sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry3)
         sai_thrift_remove_router_interface(self.client, self.lag1_rif)
 
-        super(L3InterfaceTest, self).tearDown()
+        super(L3InterfaceTestHelper, self).tearDown()
 
-    def ipv4FibLagTest(self):
-        """
-        Verifies basic  forwarding on RIF using LAG and with new lag member
-        and if packet is dropped on ingress port after being removed from LAG
-        """
+class Ipv4FibLagTest(L3InterfaceTestHelper):
+    """
+    Verifies basic  forwarding on RIF using LAG and with new lag member
+    and if packet is dropped on ingress port after being removed from LAG
+    """
+    def setUp(self):
+        super(Ipv4FibLagTest, self).setUp()
+
+    def runTest(self):
         print("\nipv4FibLagTest()")
 
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
@@ -161,6 +159,7 @@ class L3InterfaceTest(SaiHelper):
                             self.dev_port6])
         self.port11_rif_counter_in += 1
         self.lag1_rif_counter_out += 1
+        self.port11_rif_counter_in_octects += len(pkt) + 4
 
         print("Sending packet port %d -> port %d (12.10.10.1 -> "
               "10.10.10.1)" % (self.dev_port4, self.dev_port10))
@@ -168,6 +167,7 @@ class L3InterfaceTest(SaiHelper):
         verify_packet(self, exp_pkt_lag, self.dev_port10)
         self.lag1_rif_counter_in += 1
         self.port10_rif_counter_out += 1
+        self.port10_rif_counter_out_octects += len(exp_pkt_lag) + 4
 
         print("Sending packet port %d -> port %d (12.10.10.1 -> "
               "10.10.10.1)" % (self.dev_port5, self.dev_port10))
@@ -175,6 +175,7 @@ class L3InterfaceTest(SaiHelper):
         verify_packet(self, exp_pkt_lag, self.dev_port10)
         self.lag1_rif_counter_in += 1
         self.port10_rif_counter_out += 1
+        self.port10_rif_counter_out_octects += len(exp_pkt_lag) + 4
 
         print("Sending packet port %d -> port %d (12.10.10.1 -> "
               "10.10.10.1)" % (self.dev_port6, self.dev_port10))
@@ -182,6 +183,7 @@ class L3InterfaceTest(SaiHelper):
         verify_packet(self, exp_pkt_lag, self.dev_port10)
         self.lag1_rif_counter_in += 1
         self.port10_rif_counter_out += 1
+        self.port10_rif_counter_out_octects += len(exp_pkt_lag) + 4
 
         print("Sending packet port %d dropped" % self.dev_port24)
         send_packet(self, self.dev_port24, pkt_lag)
@@ -198,6 +200,7 @@ class L3InterfaceTest(SaiHelper):
                             self.dev_port6, self.dev_port24])
         self.port11_rif_counter_in += 1
         self.lag1_rif_counter_out += 1
+        self.port11_rif_counter_in_octects += len(pkt) + 4
 
         print("Sending packet port %d -> port %d (12.10.10.1 -> "
               "10.10.10.1)" % (self.dev_port4, self.dev_port10))
@@ -205,6 +208,7 @@ class L3InterfaceTest(SaiHelper):
         verify_packet(self, exp_pkt_lag, self.dev_port10)
         self.lag1_rif_counter_in += 1
         self.port10_rif_counter_out += 1
+        self.port10_rif_counter_out_octects += len(exp_pkt_lag) + 4
 
         print("Sending packet port %d -> port %d (12.10.10.1 -> "
               "10.10.10.1)" % (self.dev_port5, self.dev_port10))
@@ -212,6 +216,7 @@ class L3InterfaceTest(SaiHelper):
         verify_packet(self, exp_pkt_lag, self.dev_port10)
         self.lag1_rif_counter_in += 1
         self.port10_rif_counter_out += 1
+        self.port10_rif_counter_out_octects += len(exp_pkt_lag) + 4
 
         print("Sending packet port %d -> port %d (12.10.10.1 -> "
               "10.10.10.1)" % (self.dev_port6, self.dev_port10))
@@ -219,6 +224,7 @@ class L3InterfaceTest(SaiHelper):
         verify_packet(self, exp_pkt_lag, self.dev_port10)
         self.lag1_rif_counter_in += 1
         self.port10_rif_counter_out += 1
+        self.port10_rif_counter_out_octects += len(exp_pkt_lag) + 4
 
         print("Sending packet port %d -> port %d (12.10.10.1 -> "
               "10.10.10.1)" % (self.dev_port24, self.dev_port10))
@@ -226,6 +232,7 @@ class L3InterfaceTest(SaiHelper):
         verify_packet(self, exp_pkt_lag, self.dev_port10)
         self.lag1_rif_counter_in += 1
         self.port10_rif_counter_out += 1
+        self.port10_rif_counter_out_octects += len(exp_pkt_lag) + 4
 
         sai_thrift_remove_lag_member(self.client, lag_member)
 
@@ -237,6 +244,7 @@ class L3InterfaceTest(SaiHelper):
                             self.dev_port6])
         self.port11_rif_counter_in += 1
         self.lag1_rif_counter_out += 1
+        self.port11_rif_counter_in_octects += len(pkt) + 4
 
         print("Sending packet port %d -> port %d (12.10.10.1 -> "
               "10.10.10.1)" % (self.dev_port4, self.dev_port10))
@@ -244,6 +252,7 @@ class L3InterfaceTest(SaiHelper):
         verify_packet(self, exp_pkt_lag, self.dev_port10)
         self.lag1_rif_counter_in += 1
         self.port10_rif_counter_out += 1
+        self.port10_rif_counter_out_octects += len(exp_pkt_lag) + 4
 
         print("Sending packet port %d -> port %d (12.10.10.1 -> "
               "10.10.10.1)" % (self.dev_port5, self.dev_port10))
@@ -251,6 +260,7 @@ class L3InterfaceTest(SaiHelper):
         verify_packet(self, exp_pkt_lag, self.dev_port10)
         self.lag1_rif_counter_in += 1
         self.port10_rif_counter_out += 1
+        self.port10_rif_counter_out_octects += len(exp_pkt_lag) + 4
 
         print("Sending packet port %d -> port %d (12.10.10.1 -> "
               "10.10.10.1)" % (self.dev_port6, self.dev_port10))
@@ -258,16 +268,25 @@ class L3InterfaceTest(SaiHelper):
         verify_packet(self, exp_pkt_lag, self.dev_port10)
         self.lag1_rif_counter_in += 1
         self.port10_rif_counter_out += 1
+        self.port10_rif_counter_out_octects += len(exp_pkt_lag) + 4
 
         print("Sending packet port %d dropped" % self.dev_port24)
         send_packet(self, self.dev_port24, pkt_lag)
         verify_no_other_packets(self, timeout=1)
 
-    def ipv6FibLagTest(self):
-        """
-        Verifies basic IPv6 forwarding on RIF using LAG, with new lag member
-        and if packet is dropped on ingress port after being removed from LAG
-        """
+    def tearDown(self):
+        super(Ipv4FibLagTest, self).tearDown()
+
+
+class Ipv6FibLagTest(L3InterfaceTestHelper):
+    """
+    Verifies basic IPv6 forwarding on RIF using LAG, with new lag member
+    and if packet is dropped on ingress port after being removed from LAG
+    """
+    def setUp(self):
+        super(Ipv6FibLagTest, self).setUp()
+
+    def runTest(self):
         print("\nipv6FibLagTest()")
 
         pkt = simple_tcpv6_packet(
@@ -304,6 +323,7 @@ class L3InterfaceTest(SaiHelper):
                             self.dev_port6])
         self.port11_rif_counter_in += 1
         self.lag1_rif_counter_out += 1
+        self.port11_rif_counter_in_octects += len(pkt) + 4
 
         print("Sending packet port %d -> port %d "
               "(1234:5678:9abc:def0:1122:3344:5566:7788 -> "
@@ -313,6 +333,7 @@ class L3InterfaceTest(SaiHelper):
         verify_packet(self, exp_pkt_lag, self.dev_port10)
         self.lag1_rif_counter_in += 1
         self.port10_rif_counter_out += 1
+        self.port10_rif_counter_out_octects += len(exp_pkt_lag) + 4
 
         print("Sending packet port %d -> port %d "
               "(1234:5678:9abc:def0:1122:3344:5566:7788 -> "
@@ -322,6 +343,7 @@ class L3InterfaceTest(SaiHelper):
         verify_packet(self, exp_pkt_lag, self.dev_port10)
         self.lag1_rif_counter_in += 1
         self.port10_rif_counter_out += 1
+        self.port10_rif_counter_out_octects += len(exp_pkt_lag) + 4
 
         print("Sending packet port %d -> port %d "
               "(1234:5678:9abc:def0:1122:3344:5566:7788 -> "
@@ -331,6 +353,7 @@ class L3InterfaceTest(SaiHelper):
         verify_packet(self, exp_pkt_lag, self.dev_port10)
         self.lag1_rif_counter_in += 1
         self.port10_rif_counter_out += 1
+        self.port10_rif_counter_out_octects += len(exp_pkt_lag) + 4
 
         print("Sending packet port %d" % self.dev_port24, " dropped")
         send_packet(self, self.dev_port24, pkt_lag)
@@ -348,6 +371,7 @@ class L3InterfaceTest(SaiHelper):
                             self.dev_port6, self.dev_port24])
         self.port11_rif_counter_in += 1
         self.lag1_rif_counter_out += 1
+        self.port11_rif_counter_in_octects += len(pkt) + 4
 
         print("Sending packet port %d -> port %d "
               "(1234:5678:9abc:def0:1122:3344:5566:7788 -> "
@@ -357,6 +381,7 @@ class L3InterfaceTest(SaiHelper):
         verify_packet(self, exp_pkt_lag, self.dev_port10)
         self.lag1_rif_counter_in += 1
         self.port10_rif_counter_out += 1
+        self.port10_rif_counter_out_octects += len(exp_pkt_lag) + 4
 
         print("Sending packet port %d -> port %d "
               "(1234:5678:9abc:def0:1122:3344:5566:7788 -> "
@@ -366,6 +391,7 @@ class L3InterfaceTest(SaiHelper):
         verify_packet(self, exp_pkt_lag, self.dev_port10)
         self.lag1_rif_counter_in += 1
         self.port10_rif_counter_out += 1
+        self.port10_rif_counter_out_octects += len(exp_pkt_lag) + 4
 
         print("Sending packet port %d -> port %d "
               "(1234:5678:9abc:def0:1122:3344:5566:7788 -> "
@@ -375,6 +401,7 @@ class L3InterfaceTest(SaiHelper):
         verify_packet(self, exp_pkt_lag, self.dev_port10)
         self.lag1_rif_counter_in += 1
         self.port10_rif_counter_out += 1
+        self.port10_rif_counter_out_octects += len(exp_pkt_lag) + 4
 
         print("Sending packet port %d -> port %d "
               "(1234:5678:9abc:def0:1122:3344:5566:7788 -> "
@@ -384,6 +411,7 @@ class L3InterfaceTest(SaiHelper):
         verify_packet(self, exp_pkt_lag, self.dev_port10)
         self.lag1_rif_counter_in += 1
         self.port10_rif_counter_out += 1
+        self.port10_rif_counter_out_octects += len(exp_pkt_lag) + 4
 
         sai_thrift_remove_lag_member(self.client, lag_member)
 
@@ -396,6 +424,7 @@ class L3InterfaceTest(SaiHelper):
                             self.dev_port6])
         self.port11_rif_counter_in += 1
         self.lag1_rif_counter_out += 1
+        self.port11_rif_counter_in_octects += len(pkt) + 4
 
         print("Sending packet port %d -> port %d "
               "(1234:5678:9abc:def0:1122:3344:5566:7788 -> "
@@ -405,6 +434,7 @@ class L3InterfaceTest(SaiHelper):
         verify_packet(self, exp_pkt_lag, self.dev_port10)
         self.lag1_rif_counter_in += 1
         self.port10_rif_counter_out += 1
+        self.port10_rif_counter_out_octects += len(exp_pkt_lag) + 4
 
         print("Sending packet port %d -> port %d "
               "(1234:5678:9abc:def0:1122:3344:5566:7788 -> "
@@ -414,6 +444,7 @@ class L3InterfaceTest(SaiHelper):
         verify_packet(self, exp_pkt_lag, self.dev_port10)
         self.lag1_rif_counter_in += 1
         self.port10_rif_counter_out += 1
+        self.port10_rif_counter_out_octects += len(exp_pkt_lag) + 4
 
         print("Sending packet port %d -> port %d "
               "(1234:5678:9abc:def0:1122:3344:5566:7788 -> "
@@ -423,16 +454,25 @@ class L3InterfaceTest(SaiHelper):
         verify_packet(self, exp_pkt_lag, self.dev_port10)
         self.lag1_rif_counter_in += 1
         self.port10_rif_counter_out += 1
+        self.port10_rif_counter_out_octects += len(exp_pkt_lag) + 4
 
         print("Sending packet port %d" % self.dev_port24, " dropped")
         send_packet(self, self.dev_port24, pkt_lag)
         verify_no_other_packets(self, timeout=1)
 
-    def rifSharedMtuTest(self):
-        """
-        Verifies same MTU value shared between RIF and if MTU check works
-        after deleting and adding another RIF with same MTU value
-        """
+    def tearDown(self):
+        super(Ipv6FibLagTest, self).tearDown()
+
+
+class RifSharedMtuTest(L3InterfaceTestHelper):
+    """
+    Verifies same MTU value shared between RIF and if MTU check works
+    after deleting and adding another RIF with same MTU value
+    """
+    def setUp(self):
+        super(RifSharedMtuTest, self).setUp()
+
+    def runTest(self):
         print("\nrifSharedMtuTest()")
 
         port24_rif = sai_thrift_create_router_interface(
@@ -524,6 +564,7 @@ class L3InterfaceTest(SaiHelper):
             send_packet(self, self.dev_port11, pkt)
             verify_packet(self, exp_pkt, self.dev_port24)
             self.port11_rif_counter_in += 1
+            self.port11_rif_counter_in_octects += len(pkt) + 4
 
             print("Sending vlan packet port %d -> vlan 30 (port %d) "
                   "(192.168.0.1 -> 30.10.10.1)"
@@ -531,6 +572,7 @@ class L3InterfaceTest(SaiHelper):
             send_packet(self, self.dev_port11, vlan_pkt)
             verify_packet(self, vlan_exp_pkt, self.dev_port20)
             self.port11_rif_counter_in += 1
+            self.port11_rif_counter_in_octects += len(vlan_pkt) + 4
 
             # update mtu on port10_rif
             print("Setting port24_rif MTU to 190")
@@ -540,6 +582,7 @@ class L3InterfaceTest(SaiHelper):
             send_packet(self, self.dev_port11, pkt)
             verify_no_other_packets(self, timeout=1)
             self.port11_rif_counter_in += 1
+            self.port11_rif_counter_in_octects += len(pkt) + 4
 
             print("Sending vlan packet port %d -> vlan 30 (port %d) "
                   "(192.168.0.1 -> 30.10.10.1)"
@@ -547,6 +590,7 @@ class L3InterfaceTest(SaiHelper):
             send_packet(self, self.dev_port11, vlan_pkt)
             verify_packet(self, vlan_exp_pkt, self.dev_port20)
             self.port11_rif_counter_in += 1
+            self.port11_rif_counter_in_octects += len(vlan_pkt) + 4
 
             # update mtu on vlan30_rif
             print("Setting vlan30_rif MTU to 190")
@@ -556,11 +600,13 @@ class L3InterfaceTest(SaiHelper):
             send_packet(self, self.dev_port11, pkt)
             verify_no_other_packets(self, timeout=1)
             self.port11_rif_counter_in += 1
+            self.port11_rif_counter_in_octects += len(pkt) + 4
 
             print("Sending vlan packet port %d, droppped" % self.dev_port11)
             send_packet(self, self.dev_port11, vlan_pkt)
             verify_no_other_packets(self, timeout=1)
             self.port11_rif_counter_in += 1
+            self.port11_rif_counter_in_octects += len(vlan_pkt) + 4
 
             # remove port24_rif, vlan30_rif should not be affected
             print("Removing port24_rif")
@@ -573,6 +619,7 @@ class L3InterfaceTest(SaiHelper):
             send_packet(self, self.dev_port11, vlan_pkt)
             verify_no_other_packets(self, timeout=1)
             self.port11_rif_counter_in += 1
+            self.port11_rif_counter_in_octects += len(vlan_pkt) + 4
 
             print("Adding port24_rif")
             port24_rif = sai_thrift_create_router_interface(
@@ -603,11 +650,13 @@ class L3InterfaceTest(SaiHelper):
             send_packet(self, self.dev_port11, pkt)
             verify_packet(self, exp_pkt, self.dev_port24)
             self.port11_rif_counter_in += 1
+            self.port11_rif_counter_in_octects += len(pkt) + 4
 
             print("Sending vlan packet port %d, droppped" % self.dev_port11)
             send_packet(self, self.dev_port11, vlan_pkt)
             verify_no_other_packets(self, timeout=1)
             self.port11_rif_counter_in += 1
+            self.port11_rif_counter_in_octects += len(vlan_pkt) + 4
 
         finally:
             sai_thrift_remove_route_entry(self.client, route_entry1)
@@ -615,17 +664,25 @@ class L3InterfaceTest(SaiHelper):
             sai_thrift_remove_neighbor_entry(self.client, neighbor_entry1)
             sai_thrift_remove_router_interface(self.client, port24_rif)
             sai_thrift_set_port_attribute(
-                self.client, self.port20, port_vlan_id=1)
+                self.client, self.port20, port_vlan_id=0)
             sai_thrift_remove_fdb_entry(self.client, fdb_entry)
             sai_thrift_remove_route_entry(self.client, route_entry2)
             sai_thrift_remove_next_hop(self.client, nhop2)
             sai_thrift_remove_neighbor_entry(self.client, neighbor_entry2)
 
-    def mcastDisableTest(self):
-        """
-        Verify IPv4 multicast packets are dropped when V4_MCAST_ENABLE
-        or V6_MCAST_ENABLE is set to False
-        """
+    def tearDown(self):
+        super(RifSharedMtuTest, self).tearDown()
+
+
+class McastDisableTest(L3InterfaceTestHelper):
+    """
+    Verify IPv4 multicast packets are dropped when V4_MCAST_ENABLE
+    or V6_MCAST_ENABLE is set to False
+    """
+    def setUp(self):
+        super(McastDisableTest, self).setUp()
+
+    def runTest(self):
         print("\nmcastDisableTest()")
 
         dst_mcast_ip = "225.0.0.1"
@@ -701,6 +758,8 @@ class L3InterfaceTest(SaiHelper):
             self.port10_rif_counter_out += 1
             self.port12_rif_counter_out += 1
             self.port13_rif_counter_out += 1
+            self.port11_rif_counter_in_octects += len(mcast_pkt) + 4
+            self.port10_rif_counter_out_octects += len(mcast_pkt) + 4
 
             print("Disabling IPv4 multicast on port %d" % self.dev_port11)
             sai_thrift_set_router_interface_attribute(
@@ -712,6 +771,7 @@ class L3InterfaceTest(SaiHelper):
             verify_no_other_packets(self)
             print("\tDropped")
             self.port11_rif_counter_in += 1
+            self.port11_rif_counter_in_octects += len(mcast_pkt) + 4
 
             mcast_pkt_v6 = simple_tcpv6_packet(eth_dst='33:33:00:11:22:33',
                                                eth_src='00:22:22:22:22:22',
@@ -735,6 +795,8 @@ class L3InterfaceTest(SaiHelper):
             self.port10_rif_counter_out += 1
             self.port12_rif_counter_out += 1
             self.port13_rif_counter_out += 1
+            self.port11_rif_counter_in_octects += len(mcast_pkt_v6) + 4
+            self.port10_rif_counter_out_octects += len(mcast_pkt_v6) + 4
 
             print("Disabling IPv6 multicast on port %d" % self.dev_port11)
             sai_thrift_set_router_interface_attribute(
@@ -746,6 +808,7 @@ class L3InterfaceTest(SaiHelper):
             verify_no_other_packets(self)
             print("\tDropped")
             self.port11_rif_counter_in += 1
+            self.port11_rif_counter_in_octects += len(mcast_pkt_v6) + 4
 
         finally:
             sai_thrift_remove_ipmc_entry(self.client, ipmc_entry_v6)
@@ -759,10 +822,18 @@ class L3InterfaceTest(SaiHelper):
             sai_thrift_remove_rpf_group(self.client, rpf_group)
             sai_thrift_remove_ipmc_group(self.client, ipmc_group)
 
-    def rifStatsTest(self):
-        """
-        Verifies Ingress and Egress RIF stats for unicast packets
-        """
+    def tearDown(self):
+        super(McastDisableTest, self).tearDown()
+
+
+class RifStatsTest(L3InterfaceTestHelper):
+    """
+    Verifies Ingress and Egress RIF stats for unicast packets
+    """
+    def setUp(self):
+        super(RifStatsTest, self).setUp()
+
+    def runTest(self):
         print("\nrifStatsTest()")
 
         time.sleep(4)
@@ -793,11 +864,23 @@ class L3InterfaceTest(SaiHelper):
             'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
         self.assertTrue(self.lag1_rif_counter_out == lag1_rif_stats[
             'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
+        self.assertTrue(self.port11_rif_counter_in_octects == port11_rif_stats[
+            'SAI_ROUTER_INTERFACE_STAT_IN_OCTETS'])
+        self.assertTrue(self.port10_rif_counter_out_octects == port10_rif_stats[
+            'SAI_ROUTER_INTERFACE_STAT_OUT_OCTETS'])
 
-    def duplicatePortRifCreationTest(self):
-        """
-        Verifies if duplicate L3 RIF creation fails
-        """
+    def tearDown(self):
+        super(RifStatsTest, self).tearDown()
+
+
+class DuplicatePortRifCreationTest(L3InterfaceTestHelper):
+    """
+    Verifies if duplicate L3 RIF creation fails
+    """
+    def setUp(self):
+        super(DuplicatePortRifCreationTest, self).setUp()
+
+    def runTest(self):
         print("\nduplicatePortRifCreationTest()")
 
         existing_rif_port = self.port10
@@ -828,9 +911,12 @@ class L3InterfaceTest(SaiHelper):
             if dupl_lag_rif:
                 sai_thrift_remove_router_interface(self.client, dupl_lag_rif)
 
+    def tearDown(self):
+        super(DuplicatePortRifCreationTest, self).tearDown()
+
 
 @group("draft")
-class L3InterfaceSimplifiedTest(SaiHelperSimplified):
+class L3InterfaceSimplifiedTestHelper(PlatformSaiHelper):
     """
     Configuration
     +----------+-----------+
@@ -840,13 +926,15 @@ class L3InterfaceSimplifiedTest(SaiHelperSimplified):
     +----------+-----------+
     """
     def setUp(self):
-        super(L3InterfaceSimplifiedTest, self).setUp()
+        super(L3InterfaceSimplifiedTestHelper, self).setUp()
 
         dmac1 = '00:11:22:33:44:55'
 
         self.create_routing_interfaces(ports=[0, 1])
         self.port1_rif_counter_in = 0
         self.port0_rif_counter_out = 0
+        self.port0_rif_counter_out_octects = 0
+        self.port1_rif_counter_in_octects = 0
 
         self.nhop1 = sai_thrift_create_next_hop(
             self.client,
@@ -880,22 +968,30 @@ class L3InterfaceSimplifiedTest(SaiHelperSimplified):
         sai_thrift_create_route_entry(
             self.client, self.route_entry1_lpm, next_hop_id=self.nhop1)
 
-    def runTest(self):
-        self.macUpdateTest()
-        self.ipv4FibLPMTest()
-        self.ipv4FibTest()
-        self.ipv4DisableTest()
-        self.ipv6FibLpmTest()
-        self.ipv6FibTest()
-        self.ipv6DisableTest()
-        self.rifStatsTest()
-        self.rifMyIPTest()
+    def tearDown(self):
+        sai_thrift_remove_route_entry(self.client, self.route_entry0)
+        sai_thrift_remove_route_entry(self.client, self.route_entry0_lpm)
 
-    def macUpdateTest(self):
-        """
-        Verifies if packet is forwarded correctly after MAC address updated
-        and if packet is dropped for old MAC address after update
-        """
+        sai_thrift_remove_route_entry(self.client, self.route_entry1)
+        sai_thrift_remove_route_entry(self.client, self.route_entry1_lpm)
+
+        sai_thrift_remove_next_hop(self.client, self.nhop1)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry1)
+
+        self.destroy_routing_interfaces()
+
+        super(L3InterfaceSimplifiedTestHelper, self).tearDown()
+
+
+class MacUpdateTest(L3InterfaceSimplifiedTestHelper):
+    """
+    Verifies if packet is forwarded correctly after MAC address updated
+    and if packet is dropped for old MAC address after update
+    """
+    def setUp(self):
+        super(MacUpdateTest, self).setUp()
+
+    def runTest(self):
         print("\nMacUpdateTest()")
 
         new_router_mac = "00:77:66:55:44:44"
@@ -930,6 +1026,8 @@ class L3InterfaceSimplifiedTest(SaiHelperSimplified):
         verify_packet(self, exp_pkt, self.dev_port0)
         self.port1_rif_counter_in += 1
         self.port0_rif_counter_out += 1
+        self.port1_rif_counter_in_octects += len(pkt) + 4
+        self.port0_rif_counter_out_octects += len(exp_pkt) + 4
 
         print("Updating src_mac_address to %s" % (new_router_mac))
         sai_thrift_set_router_interface_attribute(
@@ -944,6 +1042,8 @@ class L3InterfaceSimplifiedTest(SaiHelperSimplified):
         verify_packet(self, exp_pkt, self.dev_port0)
         self.port1_rif_counter_in += 1
         self.port0_rif_counter_out += 1
+        self.port1_rif_counter_in_octects += len(pkt) + 4
+        self.port0_rif_counter_out_octects += len(exp_pkt) + 4
 
         print("Sending packet on port %d with mac %s, forward"
               % (self.dev_port1, new_router_mac))
@@ -951,6 +1051,8 @@ class L3InterfaceSimplifiedTest(SaiHelperSimplified):
         verify_packet(self, exp_pkt1, self.dev_port0)
         self.port1_rif_counter_in += 1
         self.port0_rif_counter_out += 1
+        self.port1_rif_counter_in_octects += len(pkt1) + 4
+        self.port0_rif_counter_out_octects += len(exp_pkt1) + 4
 
         print("Reverting src_mac_address to %s" % (ROUTER_MAC))
         sai_thrift_set_router_interface_attribute(
@@ -963,6 +1065,7 @@ class L3InterfaceSimplifiedTest(SaiHelperSimplified):
         send_packet(self, self.dev_port1, pkt1)
         verify_no_other_packets(self, timeout=1)
         self.port1_rif_counter_in += 1
+        self.port1_rif_counter_in_octects += len(pkt1) + 4
 
         print("Sending packet on port %d with mac %s, forward"
               % (self.dev_port1, ROUTER_MAC))
@@ -970,11 +1073,21 @@ class L3InterfaceSimplifiedTest(SaiHelperSimplified):
         verify_packet(self, exp_pkt, self.dev_port0)
         self.port1_rif_counter_in += 1
         self.port0_rif_counter_out += 1
+        self.port1_rif_counter_in_octects += len(pkt) + 4
+        self.port0_rif_counter_out_octects += len(exp_pkt) + 4
 
-    def ipv4FibLPMTest(self):
-        """
-        Verifies basic forwarding for IPv4 LPM routes
-        """
+    def tearDown(self):
+        super(MacUpdateTest, self).tearDown()
+
+
+class Ipv4FibLPMTest(L3InterfaceSimplifiedTestHelper):
+    """
+    Verifies basic forwarding for IPv4 LPM routes
+    """
+    def setUp(self):
+        super(Ipv4FibLPMTest, self).setUp()
+
+    def runTest(self):
         print("\nipv4FibLPMTest()")
 
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
@@ -996,11 +1109,21 @@ class L3InterfaceSimplifiedTest(SaiHelperSimplified):
         verify_packet(self, exp_pkt, self.dev_port0)
         self.port1_rif_counter_in += 1
         self.port0_rif_counter_out += 1
+        self.port1_rif_counter_in_octects += len(pkt) + 4
+        self.port0_rif_counter_out_octects += len(exp_pkt) + 4
 
-    def ipv4FibTest(self):
-        """
-        Verifies basic forwarding for IPv4 host
-        """
+    def tearDown(self):
+        super(Ipv4FibLPMTest, self).tearDown()
+
+
+class Ipv4FibTest(L3InterfaceSimplifiedTestHelper):
+    """
+    Verifies basic forwarding for IPv4 host
+    """
+    def setUp(self):
+        super(Ipv4FibTest, self).setUp()
+
+    def runTest(self):
         print("\nipv4FibTest()")
 
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
@@ -1044,6 +1167,8 @@ class L3InterfaceSimplifiedTest(SaiHelperSimplified):
         verify_packet(self, exp_pkt, self.dev_port0)
         self.port1_rif_counter_in += 1
         self.port0_rif_counter_out += 1
+        self.port1_rif_counter_in_octects += len(pkt) + 4
+        self.port0_rif_counter_out_octects += len(exp_pkt) + 4
 
         print("Sending gre encapsulated packet port %d -> port %d "
               "(192.168.0.1 -> 11.11.11.1)"
@@ -1052,11 +1177,21 @@ class L3InterfaceSimplifiedTest(SaiHelperSimplified):
         verify_packet(self, exp_gre_pkt, self.dev_port0)
         self.port1_rif_counter_in += 1
         self.port0_rif_counter_out += 1
+        self.port1_rif_counter_in_octects += len(gre_pkt) + 4
+        self.port0_rif_counter_out_octects += len(exp_gre_pkt) + 4
 
-    def ipv4DisableTest(self):
-        """
-        Verifies if IPv4 packets are dropped when admin_v4_state is false
-        """
+    def tearDown(self):
+        super(Ipv4FibTest, self).tearDown()
+
+
+class Ipv4DisableTest(L3InterfaceSimplifiedTestHelper):
+    """
+    Verifies if IPv4 packets are dropped when admin_v4_state is false
+    """
+    def setUp(self):
+        super(Ipv4DisableTest, self).setUp()
+
+    def runTest(self):
         print("\nipv4DisableTest()")
 
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
@@ -1077,6 +1212,8 @@ class L3InterfaceSimplifiedTest(SaiHelperSimplified):
         verify_packet(self, exp_pkt, self.dev_port0)
         self.port1_rif_counter_in += 1
         self.port0_rif_counter_out += 1
+        self.port1_rif_counter_in_octects += len(pkt) + 4
+        self.port0_rif_counter_out_octects += len(exp_pkt) + 4
 
         print("Disable IPv4 on ingress RIF")
         sai_thrift_set_router_interface_attribute(
@@ -1093,6 +1230,7 @@ class L3InterfaceSimplifiedTest(SaiHelperSimplified):
         if_in_discards = stats['SAI_PORT_STAT_IF_IN_DISCARDS']
         self.assertTrue(if_in_discards_pre + 1 == if_in_discards)
         self.port1_rif_counter_in += 1
+        self.port1_rif_counter_in_octects += len(pkt) + 4
 
         print("Enable IPv4 on ingress RIF")
         sai_thrift_set_router_interface_attribute(
@@ -1103,28 +1241,21 @@ class L3InterfaceSimplifiedTest(SaiHelperSimplified):
         verify_packet(self, exp_pkt, self.dev_port0)
         self.port1_rif_counter_in += 1
         self.port0_rif_counter_out += 1
+        self.port1_rif_counter_in_octects += len(pkt) + 4
+        self.port0_rif_counter_out_octects += len(exp_pkt) + 4
 
-    def rifStatsTest(self):
-        """
-        Verifies Ingress and Egress RIF stats for unicast packets
-        """
-        print("\nrifStatsTest()")
+    def tearDown(self):
+        super(Ipv4DisableTest, self).tearDown()
 
-        time.sleep(4)
-        port0_rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.port0_rif)
-        port1_rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.port1_rif)
 
-        self.assertTrue(self.port0_rif_counter_out == port0_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
-        self.assertTrue(self.port1_rif_counter_in == port1_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
+class RifMyIPTest(L3InterfaceSimplifiedTestHelper):
+    """
+    Verifies if MYIP works for subnet routes
+    """
+    def setUp(self):
+        super(RifMyIPTest, self).setUp()
 
-    def rifMyIPTest(self):
-        """
-        Verifies if MYIP works for subnet routes
-        """
+    def runTest(self):
         print("\nrifMyIPTest()")
 
         try:
@@ -1172,10 +1303,17 @@ class L3InterfaceSimplifiedTest(SaiHelperSimplified):
             sai_thrift_remove_hostif_trap_group(self.client, myip_trap_group)
             sai_thrift_remove_route_entry(self.client, ip2me_route)
 
-    def ipv6DisableTest(self):
-        """
-        Verifies if IPv6 packets are dropped when admin_v6_state is False
-        """
+    def tearDown(self):
+        super(RifMyIPTest, self).tearDown()
+
+class Ipv6DisableTest(L3InterfaceSimplifiedTestHelper):
+    """
+    Verifies if IPv6 packets are dropped when admin_v6_state is False
+    """
+    def setUp(self):
+        super(Ipv6DisableTest, self).setUp()
+
+    def runTest(self):
         print("\nipv6DisableTest()")
 
         pkt = simple_tcpv6_packet(
@@ -1196,6 +1334,8 @@ class L3InterfaceSimplifiedTest(SaiHelperSimplified):
         verify_packet(self, exp_pkt, self.dev_port0)
         self.port1_rif_counter_in += 1
         self.port0_rif_counter_out += 1
+        self.port1_rif_counter_in_octects += len(pkt) + 4
+        self.port0_rif_counter_out_octects += len(exp_pkt) + 4
 
         print("Disable IPv6 on ingress RIF")
         sai_thrift_set_router_interface_attribute(
@@ -1210,6 +1350,7 @@ class L3InterfaceSimplifiedTest(SaiHelperSimplified):
         if_in_discards = stats['SAI_PORT_STAT_IF_IN_DISCARDS']
         self.assertTrue(if_in_discards_pre + 1 == if_in_discards)
         self.port1_rif_counter_in += 1
+        self.port1_rif_counter_in_octects += len(pkt) + 4
 
         print("Enable IPv6 on ingress RIF")
         sai_thrift_set_router_interface_attribute(
@@ -1220,11 +1361,21 @@ class L3InterfaceSimplifiedTest(SaiHelperSimplified):
         verify_packet(self, exp_pkt, self.dev_port0)
         self.port1_rif_counter_in += 1
         self.port0_rif_counter_out += 1
+        self.port1_rif_counter_in_octects += len(pkt) + 4
+        self.port0_rif_counter_out_octects += len(exp_pkt) + 4
 
-    def ipv6FibTest(self):
-        """
-        Verifies basic forwarding for IPv6 host
-        """
+    def tearDown(self):
+        super(Ipv6DisableTest, self).tearDown()
+
+
+class Ipv6FibTest(L3InterfaceSimplifiedTestHelper):
+    """
+    Verifies basic forwarding for IPv6 host
+    """
+    def setUp(self):
+        super(Ipv6FibTest, self).setUp()
+
+    def runTest(self):
         print("\nipv6FibTest()")
 
         pkt = simple_tcpv6_packet(
@@ -1247,11 +1398,21 @@ class L3InterfaceSimplifiedTest(SaiHelperSimplified):
         verify_packet(self, exp_pkt, self.dev_port0)
         self.port1_rif_counter_in += 1
         self.port0_rif_counter_out += 1
+        self.port1_rif_counter_in_octects += len(pkt) + 4
+        self.port0_rif_counter_out_octects += len(exp_pkt) + 4
 
-    def ipv6FibLpmTest(self):
-        """
-        Verifies basic forwarding for IPv6 LPM route
-        """
+    def tearDown(self):
+        super(Ipv6FibTest, self).tearDown()
+
+
+class Ipv6FibLpmTest(L3InterfaceSimplifiedTestHelper):
+    """
+    Verifies basic forwarding for IPv6 LPM route
+    """
+    def setUp(self):
+        super(Ipv6FibLpmTest, self).setUp()
+
+    def runTest(self):
         print("\nipv6FibLpmTest()")
 
         pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
@@ -1271,24 +1432,15 @@ class L3InterfaceSimplifiedTest(SaiHelperSimplified):
         verify_packet(self, exp_pkt, self.dev_port0)
         self.port1_rif_counter_in += 1
         self.port0_rif_counter_out += 1
+        self.port1_rif_counter_in_octects += len(pkt) + 4
+        self.port0_rif_counter_out_octects += len(exp_pkt) + 4
 
     def tearDown(self):
-        sai_thrift_remove_route_entry(self.client, self.route_entry0)
-        sai_thrift_remove_route_entry(self.client, self.route_entry0_lpm)
-
-        sai_thrift_remove_route_entry(self.client, self.route_entry1)
-        sai_thrift_remove_route_entry(self.client, self.route_entry1_lpm)
-
-        sai_thrift_remove_next_hop(self.client, self.nhop1)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry1)
-
-        self.destroy_routing_interfaces()
-
-        super(L3InterfaceSimplifiedTest, self).tearDown()
+        super(Ipv6FibLpmTest, self).tearDown()
 
 
 @group("draft")
-class L3InterfaceAclTest(SaiHelperSimplified):
+class L3InterfaceAclTestHelper(PlatformSaiHelper):
     """
     Configuration
     +----------+-----------+
@@ -1298,7 +1450,7 @@ class L3InterfaceAclTest(SaiHelperSimplified):
     +----------+-----------+
     """
     def setUp(self):
-        super(L3InterfaceAclTest, self).setUp()
+        super(L3InterfaceAclTestHelper, self).setUp()
 
         dmac1 = '00:11:22:33:44:55'
 
@@ -1321,11 +1473,6 @@ class L3InterfaceAclTest(SaiHelperSimplified):
         sai_thrift_create_route_entry(
             self.client, self.route_entry0, next_hop_id=self.nhop1)
 
-    def runTest(self):
-        self.ipv4IngressAclTest()
-        self.ipv4EgressAclTest()
-        self.rifStatsTest()
-
     def tearDown(self):
         sai_thrift_remove_route_entry(self.client, self.route_entry0)
 
@@ -1334,12 +1481,17 @@ class L3InterfaceAclTest(SaiHelperSimplified):
 
         self.destroy_routing_interfaces()
 
-        super(L3InterfaceAclTest, self).tearDown()
+        super(L3InterfaceAclTestHelper, self).tearDown()
 
-    def ipv4IngressAclTest(self):
-        """
-        Verifies Ingress ACL table and group bind to RIF
-        """
+
+class Ipv4IngressAclTest(L3InterfaceAclTestHelper):
+    """
+    Verifies Ingress ACL table and group bind to RIF
+    """
+    def setUp(self):
+        super(Ipv4IngressAclTest, self).setUp()
+
+    def runTest(self):
         print("\nipv4IngressAclTest()")
 
         stage = SAI_ACL_STAGE_INGRESS
@@ -1444,11 +1596,19 @@ class L3InterfaceAclTest(SaiHelperSimplified):
             sai_thrift_remove_acl_entry(self.client, acl_entry)
             sai_thrift_remove_acl_table(self.client, acl_table)
 
-    def ipv4EgressAclTest(self):
-        # TODO: test requires additional verification
-        """
-        Verifies Egress ACL table and group bind to RIF
-        """
+    def tearDown(self):
+        super(Ipv4IngressAclTest, self).tearDown()
+
+
+class Ipv4EgressAclTest(L3InterfaceAclTestHelper):
+    # TODO: test requires additional verification
+    """
+    Verifies Egress ACL table and group bind to RIF
+    """
+    def setUp(self):
+        super(Ipv4EgressAclTest, self).setUp()
+
+    def runTest(self):
         print("\nipv4EgressAclTest()")
 
         stage = SAI_ACL_STAGE_EGRESS
@@ -1556,41 +1716,21 @@ class L3InterfaceAclTest(SaiHelperSimplified):
             sai_thrift_remove_acl_entry(self.client, acl_entry)
             sai_thrift_remove_acl_table(self.client, acl_table)
 
-    def rifStatsTest(self):
-        """
-        Verifies Ingress and Egress RIF stats for unicast packets
-        """
-        print("\nrifStatsTest()")
-
-        time.sleep(4)
-        port0_rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.port0_rif)
-        port1_rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.port1_rif)
-
-        self.assertTrue(self.port0_rif_counter_out == port0_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
-        self.assertTrue(self.port1_rif_counter_in == port1_rif_stats[
-            'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
+    def tearDown(self):
+        super(Ipv4EgressAclTest, self).tearDown()
 
 
 @group("draft")
-class L3InterfaceCreateTest(SaiHelperSimplified):
+class NegativeRifTest(PlatformSaiHelper):
     """
-    Empty configuration
-    No additional setup needed
+    Verifies if creating fails when RIF type is port and port_id is 0,
+    if getting, removal and setting of non existent RIF fails
+    and if creating fails with invalid vrf_id
     """
-    def runTest(self):
-        self.negativeRifTest()
-        self.loopbackRifTest()
-        self.rifCreateOrUpdateRmacTest()
+    def setUp(self):
+        super(NegativeRifTest, self).setUp()
 
-    def negativeRifTest(self):
-        """
-        Verifies if creating fails when RIF type is port and port_id is 0,
-        if getting, removal and setting of non existent RIF fails
-        and if creating fails with invalid vrf_id
-        """
+    def runTest(self):
         print("\nNegativeRifTest()")
 
         port0_rif = sai_thrift_create_router_interface(
@@ -1636,10 +1776,18 @@ class L3InterfaceCreateTest(SaiHelperSimplified):
             port_id=self.port1)
         self.assertTrue(invalid_vrf == 0)
 
-    def loopbackRifTest(self):
-        """
-        Verifies multiple loopback RIF on same VRF is allowed
-        """
+    def tearDown(self):
+        super(NegativeRifTest, self).tearDown()
+
+
+class LoopbackRifTest(PlatformSaiHelper):
+    """
+    Verifies multiple loopback RIF on same VRF is allowed
+    """
+    def setUp(self):
+        super(LoopbackRifTest, self).setUp()
+
+    def runTest(self):
         print("\nLoopbackRifTest()")
 
         lbk_rif1 = sai_thrift_create_router_interface(
@@ -1659,10 +1807,18 @@ class L3InterfaceCreateTest(SaiHelperSimplified):
         sai_thrift_remove_router_interface(self.client, lbk_rif1)
         sai_thrift_remove_router_interface(self.client, lbk_rif2)
 
-    def rifCreateOrUpdateRmacTest(self):
-        """
-        Verifies RIF can be created or updated with custom rmac
-        """
+    def tearDown(self):
+        super(LoopbackRifTest, self).tearDown()
+
+
+class RifCreateOrUpdateRmacTest(PlatformSaiHelper):
+    """
+    Verifies RIF can be created or updated with custom rmac
+    """
+    def setUp(self):
+        super(RifCreateOrUpdateRmacTest, self).setUp()
+
+    def runTest(self):
         print("rifCreateOrUpdateRmacTest()")
         irif = e1_rif = e2_rif = None
         iport_route = e1_port_route = e2_port_route = None
@@ -1901,9 +2057,12 @@ class L3InterfaceCreateTest(SaiHelperSimplified):
                 if rif is not None:
                     sai_thrift_remove_router_interface(self.client, rif)
 
+    def tearDown(self):
+        super(RifCreateOrUpdateRmacTest, self).tearDown()
+
 
 @group("draft")
-class L3InterfaceMtuTest(SaiHelperSimplified):
+class L3InterfaceMtuTestHelper(PlatformSaiHelper):
     """
     Configuration
     +----------+-----------+
@@ -1917,13 +2076,15 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
     +----------+-----------+
     """
     def setUp(self):
-        super(L3InterfaceMtuTest, self).setUp()
+        super(L3InterfaceMtuTestHelper, self).setUp()
         dmac1 = '00:11:22:33:44:55'
         dmac3 = '00:33:22:33:44:55'
 
         self.port1_rif_counter_in = 0
         self.port0_rif_counter_out = 0
         self.lag1_rif_counter_out = 0
+        self.port0_rif_counter_out_octects = 0
+        self.port1_rif_counter_in_octects = 0
 
         self.create_routing_interfaces(ports=[0, 1])
         self.create_lag_with_members(lag_index=1, ports=[2, 3, 4])
@@ -1973,16 +2134,36 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
         sai_thrift_create_route_entry(
             self.client, self.route_lag1, next_hop_id=self.nhop3)
 
-    def runTest(self):
-        self.ipv4MtuTest()
-        self.ipv6MtuTest()
-        self.rifStatsTest()
+    def tearDown(self):
 
-    def ipv4MtuTest(self):
-        """
-        Verifies if IPv4 packet is forwarded, dropped and punted to CPU
-        depending on the MTU with and without a trap for regular L3 port
-        """
+        sai_thrift_remove_route_entry(self.client, self.route_entry0)
+        sai_thrift_remove_route_entry(self.client, self.route_lag0)
+
+        sai_thrift_remove_route_entry(self.client, self.route_entry1)
+        sai_thrift_remove_route_entry(self.client, self.route_lag1)
+
+        sai_thrift_remove_next_hop(self.client, self.nhop1)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry1)
+
+        sai_thrift_remove_next_hop(self.client, self.nhop3)
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry3)
+
+        self.destroy_routing_interfaces()
+        self.destroy_bridge_ports()
+        self.destroy_lags_with_members()
+
+        super(L3InterfaceMtuTestHelper, self).tearDown()
+
+
+class Ipv4MtuTest(L3InterfaceMtuTestHelper):
+    """
+    Verifies if IPv4 packet is forwarded, dropped and punted to CPU
+    depending on the MTU with and without a trap for regular L3 port
+    """
+    def setUp(self):
+        super(Ipv4MtuTest, self).setUp()
+
+    def runTest(self):
         print("\nipv4MtuTest()")
 
         # set MTU to 200 for port 0 and lag 1
@@ -2019,6 +2200,8 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
             verify_packet(self, exp_pkt, self.dev_port0)
             self.port1_rif_counter_in += 1
             self.port0_rif_counter_out += 1
+            self.port1_rif_counter_in_octects += len(pkt) + 4
+            self.port0_rif_counter_out_octects += len(exp_pkt) + 4
 
             pkt['IP'].dst = '12.10.10.1'
             exp_pkt['IP'].dst = '12.10.10.1'
@@ -2032,6 +2215,7 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
                                 self.dev_port4])
             self.port1_rif_counter_in += 1
             self.lag1_rif_counter_out += 1
+            self.port1_rif_counter_in_octects += len(pkt) + 4
 
             print("Max MTU is 200, send pkt size 200, send to port/lag")
             pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
@@ -2055,6 +2239,8 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
             verify_packet(self, exp_pkt, self.dev_port0)
             self.port1_rif_counter_in += 1
             self.port0_rif_counter_out += 1
+            self.port1_rif_counter_in_octects += len(pkt) + 4
+            self.port0_rif_counter_out_octects += len(exp_pkt) + 4
 
             pkt['IP'].dst = '12.10.10.1'
             exp_pkt['IP'].dst = '12.10.10.1'
@@ -2068,6 +2254,7 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
                                 self.dev_port4])
             self.port1_rif_counter_in += 1
             self.lag1_rif_counter_out += 1
+            self.port1_rif_counter_in_octects += len(pkt) + 4
 
             print("Max MTU is 200, send pkt size 201, dropped")
             pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
@@ -2090,6 +2277,8 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
             verify_no_other_packets(self, timeout=1)
             self.port1_rif_counter_in += 1
             self.port0_rif_counter_out += 1
+            self.port1_rif_counter_in_octects += len(pkt) + 4
+            self.port0_rif_counter_out_octects += len(exp_pkt) + 4
 
             pkt['IP'].dst = '12.10.10.1'
             exp_pkt['IP'].dst = '12.10.10.1'
@@ -2100,6 +2289,7 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
             verify_no_other_packets(self, timeout=1)
             self.port1_rif_counter_in += 1
             self.lag1_rif_counter_out += 1
+            self.port1_rif_counter_in_octects += len(pkt) + 4
 
             print("Changing MTU to 201, send pkt size 201, send to port/lag")
             sai_thrift_set_router_interface_attribute(
@@ -2125,6 +2315,8 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
             verify_packet(self, exp_pkt, self.dev_port0)
             self.port1_rif_counter_in += 1
             self.port0_rif_counter_out += 1
+            self.port1_rif_counter_in_octects += len(pkt) + 4
+            self.port0_rif_counter_out_octects += len(exp_pkt) + 4
 
             pkt['IP'].dst = '12.10.10.1'
             exp_pkt['IP'].dst = '12.10.10.1'
@@ -2135,6 +2327,7 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
             verify_no_other_packets(self, timeout=1)
             self.port1_rif_counter_in += 1
             self.lag1_rif_counter_out += 1
+            self.port1_rif_counter_in_octects += len(pkt) + 4
 
             sai_thrift_set_router_interface_attribute(
                 self.client, self.lag1_rif, mtu=201)
@@ -2147,6 +2340,7 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
                                 self.dev_port4])
             self.port1_rif_counter_in += 1
             self.lag1_rif_counter_out += 1
+            self.port1_rif_counter_in_octects += len(pkt) + 4
 
             print("Max MTU is 201, send pkt size 202, dropped")
             pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
@@ -2169,6 +2363,8 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
             verify_no_other_packets(self, timeout=1)
             self.port1_rif_counter_in += 1
             self.port0_rif_counter_out += 1
+            self.port1_rif_counter_in_octects += len(pkt) + 4
+            self.port0_rif_counter_out_octects += len(exp_pkt) + 4
 
             pkt['IP'].dst = '12.10.10.1'
             exp_pkt['IP'].dst = '12.10.10.1'
@@ -2179,6 +2375,7 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
             verify_no_other_packets(self, timeout=1)
             self.port1_rif_counter_in += 1
             self.lag1_rif_counter_out += 1
+            self.port1_rif_counter_in_octects += len(pkt) + 4
 
         finally:
             sai_thrift_set_router_interface_attribute(
@@ -2186,11 +2383,19 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
             sai_thrift_set_router_interface_attribute(
                 self.client, self.lag1_rif, mtu=mtu_lag1_rif['mtu'])
 
-    def ipv6MtuTest(self):
-        """
-        Verifies if IPv6 packet is forwarded, dropped and punted to CPU
-        depending on the MTU with and without a trap for regular L3 port
-        """
+    def tearDown(self):
+        super(Ipv4MtuTest, self).tearDown()
+
+
+class Ipv6MtuTest(L3InterfaceMtuTestHelper):
+    """
+    Verifies if IPv6 packet is forwarded, dropped and punted to CPU
+    depending on the MTU with and without a trap for regular L3 port
+    """
+    def setUp(self):
+        super(Ipv6MtuTest, self).setUp()
+
+    def runTest(self):
         print("\nipv6MtuTest()")
 
         mtu_port0_rif = sai_thrift_get_router_interface_attribute(
@@ -2228,6 +2433,8 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
             verify_packet(self, exp_pkt, self.dev_port0)
             self.port1_rif_counter_in += 1
             self.port0_rif_counter_out += 1
+            self.port1_rif_counter_in_octects += len(pkt) + 4
+            self.port0_rif_counter_out_octects += len(exp_pkt) + 4
 
             pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
             exp_pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
@@ -2242,6 +2449,7 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
                                 self.dev_port4])
             self.port1_rif_counter_in += 1
             self.lag1_rif_counter_out += 1
+            self.port1_rif_counter_in_octects += len(pkt) + 4
 
             print("Max MTU is 200, send pkt size 200, send to port/lag")
             pkt = simple_tcpv6_packet(
@@ -2266,6 +2474,8 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
             verify_packet(self, exp_pkt, self.dev_port0)
             self.port1_rif_counter_in += 1
             self.port0_rif_counter_out += 1
+            self.port1_rif_counter_in_octects += len(pkt) + 4
+            self.port0_rif_counter_out_octects += len(exp_pkt) + 4
 
             pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
             exp_pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
@@ -2280,6 +2490,7 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
                                 self.dev_port4])
             self.port1_rif_counter_in += 1
             self.lag1_rif_counter_out += 1
+            self.port1_rif_counter_in_octects += len(pkt) + 4
 
             print("Max MTU is 200, send pkt size 201, dropped")
             pkt = simple_tcpv6_packet(
@@ -2302,6 +2513,8 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
             verify_no_other_packets(self, timeout=1)
             self.port1_rif_counter_in += 1
             self.port0_rif_counter_out += 1
+            self.port1_rif_counter_in_octects += len(pkt) + 4
+            self.port0_rif_counter_out_octects += len(exp_pkt) + 4
 
             pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
             exp_pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
@@ -2312,6 +2525,7 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
             verify_no_other_packets(self, timeout=1)
             self.port1_rif_counter_in += 1
             self.lag1_rif_counter_out += 1
+            self.port1_rif_counter_in_octects += len(pkt) + 4
 
             print("Changing MTU to 201, send pkt size 201, send to port/lag")
             sai_thrift_set_router_interface_attribute(
@@ -2337,6 +2551,8 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
             verify_packet(self, exp_pkt, self.dev_port0)
             self.port1_rif_counter_in += 1
             self.port0_rif_counter_out += 1
+            self.port1_rif_counter_in_octects += len(pkt) + 4
+            self.port0_rif_counter_out_octects += len(exp_pkt) + 4
 
             pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
             exp_pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
@@ -2347,6 +2563,7 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
             verify_no_other_packets(self, timeout=1)
             self.port1_rif_counter_in += 1
             self.lag1_rif_counter_out += 1
+            self.port1_rif_counter_in_octects += len(pkt) + 4
 
             sai_thrift_set_router_interface_attribute(
                 self.client, self.lag1_rif, mtu=201)
@@ -2360,6 +2577,7 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
                                 self.dev_port4])
             self.port1_rif_counter_in += 1
             self.lag1_rif_counter_out += 1
+            self.port1_rif_counter_in_octects += len(pkt) + 4
 
             print("Max MTU is 201, send pkt size 202, dropped")
             pkt = simple_tcpv6_packet(
@@ -2382,6 +2600,8 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
             verify_no_other_packets(self, timeout=1)
             self.port1_rif_counter_in += 1
             self.port0_rif_counter_out += 1
+            self.port1_rif_counter_in_octects += len(pkt) + 4
+            self.port0_rif_counter_out_octects += len(exp_pkt) + 4
 
             pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
             exp_pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
@@ -2392,6 +2612,7 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
             verify_no_other_packets(self, timeout=1)
             self.port1_rif_counter_in += 1
             self.lag1_rif_counter_out += 1
+            self.port1_rif_counter_in_octects += len(pkt) + 4
 
         finally:
             sai_thrift_set_router_interface_attribute(
@@ -2399,10 +2620,18 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
             sai_thrift_set_router_interface_attribute(
                 self.client, self.lag1_rif, mtu=mtu_lag1_rif['mtu'])
 
-    def rifStatsTest(self):
-        """
-        Verifies Ingress and Egress RIF stats for unicast packets
-        """
+    def tearDown(self):
+        super(Ipv6MtuTest, self).tearDown()
+
+
+class rifStatsTest(L3InterfaceMtuTestHelper):
+    """
+    Verifies Ingress and Egress RIF stats for unicast packets
+    """
+    def setUp(self):
+        super(rifStatsTest, self).setUp()
+
+    def runTest(self):
         print("\nrifStatsTest()")
 
         time.sleep(4)
@@ -2421,33 +2650,16 @@ class L3InterfaceMtuTest(SaiHelperSimplified):
             'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
 
     def tearDown(self):
-
-        sai_thrift_remove_route_entry(self.client, self.route_entry0)
-        sai_thrift_remove_route_entry(self.client, self.route_lag0)
-
-        sai_thrift_remove_route_entry(self.client, self.route_entry1)
-        sai_thrift_remove_route_entry(self.client, self.route_lag1)
-
-        sai_thrift_remove_next_hop(self.client, self.nhop1)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry1)
-
-        sai_thrift_remove_next_hop(self.client, self.nhop3)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry3)
-
-        self.destroy_routing_interfaces()
-        self.destroy_bridge_ports()
-        self.destroy_lags_with_members()
-
-        super(L3InterfaceMtuTest, self).tearDown()
+        super(rifStatsTest, self).tearDown()
 
 @group("draft")
-class L3SubPortTest(SaiHelper):
+class L3SubPortTestHelper(PlatformSaiHelper):
     """
     This class contains base router interface tests for L3 subport RIFs
     """
 
     def setUp(self):
-        super(L3SubPortTest, self).setUp()
+        super(L3SubPortTestHelper, self).setUp()
 
         self.port10_rif_in = 0
         self.port10_rif_out = 0
@@ -2875,25 +3087,6 @@ class L3SubPortTest(SaiHelper):
         sai_thrift_create_route_entry(
             self.client, self.route_entry_ecmp, next_hop_id=self.nhop_group)
 
-    def runTest(self):
-        self.pvMissTest()
-        self.subPortToSubPortTest()
-        self.subPortToRifTest()
-        self.rifToSubPortTest()
-        self.noFloodTest()
-        self.vlanConflictTest()
-        self.subPortAdminV4StatusTest()
-        self.subPortAdminV6StatusTest()
-        self.subPortV4MtuTest()
-        self.subPortV6MtuTest()
-        self.subPortIngressAclTest()
-        self.subPortEgressAclTest()
-        self.subPortECMPTest()
-        self.subPortMyIPTest()
-        self.subPortStatsTest()
-        self.subPortNoTest()
-        self.subPortQosGroupTest()
-
     def tearDown(self):
         sai_thrift_remove_route_entry(self.client, self.route_entry_ecmp)
         sai_thrift_remove_next_hop_group_member(
@@ -2993,12 +3186,17 @@ class L3SubPortTest(SaiHelper):
         sai_thrift_remove_bridge_port(self.client, self.port25_bp)
         sai_thrift_remove_bridge_port(self.client, self.port24_bp)
 
-        super(L3SubPortTest, self).tearDown()
+        super(L3SubPortTestHelper, self).tearDown()
 
-    def pvMissTest(self):
-        """
-        Verifies packet dropped when invalid vlan tag on port
-        """
+
+class PvMissTest(L3SubPortTestHelper):
+    """
+    Verifies packet dropped when invalid vlan tag on port
+    """
+    def setUp(self):
+        super(PvMissTest, self).setUp()
+
+    def runTest(self):
         print("\npvMissTest()")
 
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
@@ -3044,11 +3242,19 @@ class L3SubPortTest(SaiHelper):
         send_packet(self, self.dev_port25, pkt)
         verify_no_other_packets(self, timeout=1)
 
-    def subPortToSubPortTest(self):
-        """
-        Verifies routing between sub-ports and between sub-ports
-        on the same physical port or LAG
-        """
+    def tearDown(self):
+        super(PvMissTest, self).tearDown()
+
+
+class SubPortToSubPortTest(L3SubPortTestHelper):
+    """
+    Verifies routing between sub-ports and between sub-ports
+    on the same physical port or LAG
+    """
+    def setUp(self):
+        super(SubPortToSubPortTest, self).setUp()
+
+    def runTest(self):
         print("\nsubPortToSubPortTest()")
 
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
@@ -3122,10 +3328,18 @@ class L3SubPortTest(SaiHelper):
         self.subport25_400_out += 8
         self.subport25_500_out += 8
 
-    def subPortToRifTest(self):
-        """
-        Verifies routing between SVI and sub-port
-        """
+    def tearDown(self):
+        super(SubPortToSubPortTest, self).tearDown()
+
+
+class SubPortToRifTest(L3SubPortTestHelper):
+    """
+    Verifies routing between SVI and sub-port
+    """
+    def setUp(self):
+        super(SubPortToRifTest, self).setUp()
+
+    def runTest(self):
         print("\nsubPortToRifTest()")
 
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
@@ -3198,11 +3412,19 @@ class L3SubPortTest(SaiHelper):
         self.vlan600_rif_out += 9
         self.vlan700_rif_out += 9
 
-    def rifToSubPortTest(self):
-        """
-        Verifies packet routed with valid vlan on sub-port
-        and routing between L3 RIF and sub-port
-        """
+    def tearDown(self):
+        super(SubPortToRifTest, self).tearDown()
+
+
+class RifToSubPortTest(L3SubPortTestHelper):
+    """
+    Verifies packet routed with valid vlan on sub-port
+    and routing between L3 RIF and sub-port
+    """
+    def setUp(self):
+        super(RifToSubPortTest, self).setUp()
+
+    def runTest(self):
         print("\nrifToSubPortTest()")
 
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
@@ -3287,10 +3509,18 @@ class L3SubPortTest(SaiHelper):
         self.vlan600_rif_in += 9
         self.vlan700_rif_in += 9
 
-    def noFloodTest(self):
-        """
-        Verifies if packet is not flooded on the tagged VLAN when no route hit
-        """
+    def tearDown(self):
+        super(RifToSubPortTest, self).tearDown()
+
+
+class NoFloodTest(L3SubPortTestHelper):
+    """
+    Verifies if packet is not flooded on the tagged VLAN when no route hit
+    """
+    def setUp(self):
+        super(NoFloodTest, self).setUp()
+
+    def runTest(self):
         print("\nnoFloodTest()")
 
         pkt = simple_tcp_packet(eth_dst='00:66:66:55:44:33',
@@ -3353,11 +3583,19 @@ class L3SubPortTest(SaiHelper):
             sai_thrift_remove_bridge_port(self.client, self.port30_bp)
             sai_thrift_remove_bridge_port(self.client, port31_bp)
 
-    def vlanConflictTest(self):
-        """
-        Verifies if deleting VLAN RIF affects sub-port RIF with same
-        vlan number
-        """
+    def tearDown(self):
+        super(NoFloodTest, self).tearDown()
+
+
+class VlanConflictTest(L3SubPortTestHelper):
+    """
+    Verifies if deleting VLAN RIF affects sub-port RIF with same
+    vlan number
+    """
+    def setUp(self):
+        super(VlanConflictTest, self).setUp()
+
+    def runTest(self):
         print("\nvlanConflictTest()")
 
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
@@ -3434,7 +3672,7 @@ class L3SubPortTest(SaiHelper):
             self.port10_rif_out += 1
 
             sai_thrift_set_port_attribute(
-                self.client, self.port29, port_vlan_id=1)
+                self.client, self.port29, port_vlan_id=0)
             sai_thrift_remove_router_interface(self.client, vlan800_rif)
             sai_thrift_remove_vlan_member(self.client, vlan_member801)
 
@@ -3479,7 +3717,7 @@ class L3SubPortTest(SaiHelper):
             self.port10_rif_out += 1
 
             sai_thrift_set_port_attribute(
-                self.client, self.port29, port_vlan_id=1)
+                self.client, self.port29, port_vlan_id=0)
             sai_thrift_remove_router_interface(self.client, vlan800_rif)
             sai_thrift_remove_vlan_member(self.client, vlan_member801)
 
@@ -3494,11 +3732,19 @@ class L3SubPortTest(SaiHelper):
             sai_thrift_remove_vlan(self.client, vlan800)
             sai_thrift_remove_router_interface(self.client, subport8_800)
 
-    def subPortAdminV4StatusTest(self):
-        """
-        Verifies if admin status DOWN disables packet forwarding on ingress
-        and if IPv4 packets are dropped when admin_v4_state is False
-        """
+    def tearDown(self):
+        super(VlanConflictTest, self).tearDown()
+
+
+class SubPortAdminV4StatusTest(L3SubPortTestHelper):
+    """
+    Verifies if admin status DOWN disables packet forwarding on ingress
+    and if IPv4 packets are dropped when admin_v4_state is False
+    """
+    def setUp(self):
+        super(SubPortAdminV4StatusTest, self).setUp()
+
+    def runTest(self):
         print("\nsubPortAdminV4StatusTest()")
 
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
@@ -3540,11 +3786,19 @@ class L3SubPortTest(SaiHelper):
         self.subport11_200_in += 1
         self.port10_rif_out += 1
 
-    def subPortAdminV6StatusTest(self):
-        """
-        Verifies if admin status DOWN disables packet forwarding on ingress
-        and if IPv6 packets are dropped when admin_v6_state is False
-        """
+    def tearDown(self):
+        super(SubPortAdminV4StatusTest, self).tearDown()
+
+
+class SubPortAdminV6StatusTest(L3SubPortTestHelper):
+    """
+    Verifies if admin status DOWN disables packet forwarding on ingress
+    and if IPv6 packets are dropped when admin_v6_state is False
+    """
+    def setUp(self):
+        super(SubPortAdminV6StatusTest, self).setUp()
+
+    def runTest(self):
         print("\nsubPortAdminV6StatusTest()")
 
         pkt = simple_tcpv6_packet(
@@ -3590,11 +3844,19 @@ class L3SubPortTest(SaiHelper):
         self.subport11_200_in += 1
         self.port10_rif_out += 1
 
-    def subPortV4MtuTest(self):
-        """
-        Verifies if IPv4 packet is forwarded, dropped and punted to CPU
-        depending on the MTU with and without a trap for L3 subport
-        """
+    def tearDown(self):
+        super(SubPortAdminV6StatusTest, self).tearDown()
+
+
+class SubPortV4MtuTest(L3SubPortTestHelper):
+    """
+    Verifies if IPv4 packet is forwarded, dropped and punted to CPU
+    depending on the MTU with and without a trap for L3 subport
+    """
+    def setUp(self):
+        super(SubPortV4MtuTest, self).setUp()
+
+    def runTest(self):
         print("\nsubPortV4MtuTest()")
 
         # set MTU to 200 for subport 10_100
@@ -3709,11 +3971,19 @@ class L3SubPortTest(SaiHelper):
         self.subport11_200_in += 1
         self.subport10_100_out += 1
 
-    def subPortV6MtuTest(self):
-        """
-        Verifies if IPv6 packet is forwarded, dropped and punted to CPU
-        depending on the MTU with and without a trap for L3 subport
-        """
+    def tearDown(self):
+        super(SubPortV4MtuTest, self).tearDown()
+
+
+class SubPortV6MtuTest(L3SubPortTestHelper):
+    """
+    Verifies if IPv6 packet is forwarded, dropped and punted to CPU
+    depending on the MTU with and without a trap for L3 subport
+    """
+    def setUp(self):
+        super(SubPortV6MtuTest, self).setUp()
+
+    def runTest(self):
         print("\nsubPortV6MtuTest()")
 
         # set MTU to 200 for subport 10_100
@@ -3839,10 +4109,18 @@ class L3SubPortTest(SaiHelper):
         self.subport11_200_in += 1
         self.subport10_100_out += 1
 
-    def subPortIngressAclTest(self):
-        """
-        Verifies ingress ACL table and group is bound correctly to sub-port
-        """
+    def tearDown(self):
+        super(SubPortV6MtuTest, self).tearDown()
+
+
+class SubPortIngressAclTest(L3SubPortTestHelper):
+    """
+    Verifies ingress ACL table and group is bound correctly to sub-port
+    """
+    def setUp(self):
+        super(SubPortIngressAclTest, self).setUp()
+
+    def runTest(self):
         print("\nsubPortIngressAclTest()")
 
         stage = SAI_ACL_STAGE_INGRESS
@@ -3946,10 +4224,18 @@ class L3SubPortTest(SaiHelper):
             sai_thrift_remove_acl_entry(self.client, acl_entry)
             sai_thrift_remove_acl_table(self.client, acl_table)
 
-    def subPortEgressAclTest(self):
-        """
-        Verifies egress ACL table and group is bound correctly to sub-port
-        """
+    def tearDown(self):
+        super(SubPortIngressAclTest, self).tearDown()
+
+
+class SubPortEgressAclTest(L3SubPortTestHelper):
+    """
+    Verifies egress ACL table and group is bound correctly to sub-port
+    """
+    def setUp(self):
+        super(SubPortEgressAclTest, self).setUp()
+
+    def runTest(self):
         print("\nsubPortEgressAclTest()")
 
         stage = SAI_ACL_STAGE_EGRESS
@@ -4055,10 +4341,18 @@ class L3SubPortTest(SaiHelper):
             sai_thrift_remove_acl_entry(self.client, acl_entry)
             sai_thrift_remove_acl_table(self.client, acl_table)
 
-    def subPortECMPTest(self):
-        """
-        Verifies load-balancing when sub-port is part of ECMP
-        """
+    def tearDown(self):
+        super(SubPortEgressAclTest, self).tearDown()
+
+
+class SubPortECMPTest(L3SubPortTestHelper):
+    """
+    Verifies load-balancing when sub-port is part of ECMP
+    """
+    def setUp(self):
+        super(SubPortECMPTest, self).setUp()
+
+    def runTest(self):
         print("\nsubPortECMPTest()")
 
         count = [0, 0, 0, 0, 0, 0, 0]
@@ -4147,10 +4441,18 @@ class L3SubPortTest(SaiHelper):
         self.subport25_500_out += ecmp_count[3]
         self.sublag3_400_out += ecmp_count[4]
 
-    def subPortMyIPTest(self):
-        """
-        Verifies if MYIP works for subnet routes
-        """
+    def tearDown(self):
+        super(SubPortECMPTest, self).tearDown()
+
+
+class SubPortMyIPTest(L3SubPortTestHelper):
+    """
+    Verifies if MYIP works for subnet routes
+    """
+    def setUp(self):
+        super(SubPortMyIPTest, self).setUp()
+
+    def runTest(self):
         print("\nsubPortMyIPTest()")
 
         try:
@@ -4285,10 +4587,18 @@ class L3SubPortTest(SaiHelper):
             sai_thrift_remove_route_entry(self.client, ip2me_route7)
             sai_thrift_remove_route_entry(self.client, ip2me_route8)
 
-    def subPortStatsTest(self):
-        """
-        Verifies Ingress and Egress sub-port stats for unicast packets
-        """
+    def tearDown(self):
+        super(SubPortMyIPTest, self).tearDown()
+
+
+class SubPortStatsTest(L3SubPortTestHelper):
+    """
+    Verifies Ingress and Egress sub-port stats for unicast packets
+    """
+    def setUp(self):
+        super(SubPortStatsTest, self).setUp()
+
+    def runTest(self):
         print("\nsubPortStatsTest()")
 
         port10_rif_stats = sai_thrift_get_router_interface_stats(
@@ -4377,13 +4687,21 @@ class L3SubPortTest(SaiHelper):
         self.assertTrue(self.subport25_500_out == subport25_500_stats[
             'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
 
-    def subPortNoTest(self):
-        '''
-        SONiC enforces a minimum scalability requirement on the number
-        of sub port interfaces that shall be supported on a SONiC switch.
-        Scaling value for number of sub port interfaces per physical port
-        or port channel is 250.
-        '''
+    def tearDown(self):
+        super(SubPortStatsTest, self).tearDown()
+
+
+class SubPortNoTest(L3SubPortTestHelper):
+    '''
+    SONiC enforces a minimum scalability requirement on the number
+    of sub port interfaces that shall be supported on a SONiC switch.
+    Scaling value for number of sub port interfaces per physical port
+    or port channel is 250.
+    '''
+    def setUp(self):
+        super(SubPortNoTest, self).setUp()
+
+    def runTest(self):
         print("\nsubPortNoTest()")
 
         req_sub_port_no = 256
@@ -4425,10 +4743,18 @@ class L3SubPortTest(SaiHelper):
             for sub_port_rif in rif_port_sub_port_list:
                 sai_thrift_remove_router_interface(self.client, sub_port_rif)
 
-    def subPortQosGroupTest(self):
-        """
-        Verifies QoS group setting inherited from parent port or LAG
-        """
+    def tearDown(self):
+        super(SubPortNoTest, self).tearDown()
+
+
+class SubPortQosGroupTest(L3SubPortTestHelper):
+    """
+    Verifies QoS group setting inherited from parent port or LAG
+    """
+    def setUp(self):
+        super(SubPortQosGroupTest, self).setUp()
+
+    def runTest(self):
         print("\nsubPortQosGroupTest()")
 
         try:
@@ -4514,22 +4840,20 @@ class L3SubPortTest(SaiHelper):
                 self.client, self.port10, qos_dscp_to_tc_map=0)
             sai_thrift_remove_qos_map(self.client, ingr_qos_map)
 
+    def tearDown(self):
+        super(SubPortQosGroupTest, self).tearDown()
+
 
 @group("draft")
 @group("tunnel")
-class TunnelL3SubPortTest(L3SubPortTest):
+class SubPortTunnelTest(L3SubPortTestHelper):
     """
-    This class contains base router interface tests for L3 subport RIFs with
-    tunnel feature enabled
+    Verifies tunnel encap-decap over sub-port
     """
+    def setUp(self):
+        super(SubPortTunnelTest, self).setUp()
 
     def runTest(self):
-        self.subPortTunnelTest()
-
-    def subPortTunnelTest(self):
-        """
-        Verifies tunnel encap-decap over sub-port
-        """
         print("\nsubPortTunnelTest()")
 
         iport = self.port26
@@ -4763,9 +5087,12 @@ class TunnelL3SubPortTest(L3SubPortTest):
             sai_thrift_remove_virtual_router(self.client, ovrf)
             sai_thrift_remove_virtual_router(self.client, uvrf)
 
+    def tearDown(self):
+        super(SubPortTunnelTest, self).tearDown()
+
 
 @group("draft")
-class L3SviTest(SaiHelper):
+class L3SviTestHelper(PlatformSaiHelper):
     """
     This class contains base router interface tests for SVI RIFs
 
@@ -4777,7 +5104,7 @@ class L3SviTest(SaiHelper):
     """
 
     def setUp(self):
-        super(L3SviTest, self).setUp()
+        super(L3SviTestHelper, self).setUp()
 
         self.vlan100_rif_counter_in = 0
         self.vlan100_rif_counter_out = 0
@@ -5028,37 +5355,10 @@ class L3SviTest(SaiHelper):
         sai_thrift_create_route_entry(
             self.client, self.route_entry7_v6, next_hop_id=self.nhop7)
 
-    def runTest(self):
-        self.sviRifIPv4DisableTest()
-        self.sviRifIPv6DisableTest()
-        self.sviBridgingTest()
-        self.sviHostTest()
-        self.sviHostVlanTaggingTest()
-        self.sviToSviRoutingTest()
-        self.sviIPv4HostPostRoutedFloodTest()
-        self.sviIPv6HostPostRoutedFloodTest()
-        self.sviIPv4HostStaticMacMoveTest()
-        self.sviIPv6HostStaticMacMoveTest()
-        self.sviRouteDynamicMacTest()
-        self.sviRouteDynamicMacMoveTest()
-        self.sviIPv4ArpMoveTest()
-        self.sviIPv6IcmpMoveTest()
-        self.sviLagHostTest()
-        self.sviIPv4LagHostStaticMacMoveTest()
-        self.sviIPv6LagHostStaticMacMoveTest()
-        self.sviLagHostDynamicMacTest()
-        self.sviIPv4LagHostDynamicMacMoveTest()
-        self.sviIPv6LagHostDynamicMacMoveTest()
-        self.sviIPv4MtuTest()
-        self.sviIPv6MtuTest()
-        self.sviTaggingTest()
-        self.sviMyIPTest()
-        self.sviStatsTest()
-        self.incorrectVlanIdTest()
-        self.duplicateVlanRifCreationTest()
-        self.sviArpReplyTest()
-
     def tearDown(self):
+        # When removing nhop, neighbor and route, calling api in this order:
+        # route -> nhop -> neighbor
+        # Related Issue: https://github.com/opencomputeproject/SAI/issues/1607
         sai_thrift_remove_route_entry(self.client, self.route_entry5)
         sai_thrift_remove_route_entry(self.client, self.route_entry5_v6)
         sai_thrift_remove_route_entry(self.client, self.route_entry6)
@@ -5074,8 +5374,8 @@ class L3SviTest(SaiHelper):
         sai_thrift_remove_next_hop(self.client, self.nhop6)
         sai_thrift_remove_next_hop(self.client, self.nhop7)
 
-        sai_thrift_set_lag_attribute(self.client, self.lag10, port_vlan_id=1)
-        sai_thrift_set_lag_attribute(self.client, self.lag11, port_vlan_id=1)
+        sai_thrift_set_lag_attribute(self.client, self.lag10, port_vlan_id=0)
+        sai_thrift_set_lag_attribute(self.client, self.lag11, port_vlan_id=0)
 
         sai_thrift_remove_router_interface(self.client, self.vlan200_rif)
 
@@ -5113,9 +5413,9 @@ class L3SviTest(SaiHelper):
 
         sai_thrift_remove_router_interface(self.client, self.vlan100_rif)
 
-        sai_thrift_set_port_attribute(self.client, self.port24, port_vlan_id=1)
-        sai_thrift_set_port_attribute(self.client, self.port25, port_vlan_id=1)
-        sai_thrift_set_port_attribute(self.client, self.port26, port_vlan_id=1)
+        sai_thrift_set_port_attribute(self.client, self.port24, port_vlan_id=0)
+        sai_thrift_set_port_attribute(self.client, self.port25, port_vlan_id=0)
+        sai_thrift_set_port_attribute(self.client, self.port26, port_vlan_id=0)
 
         sai_thrift_remove_vlan_member(self.client, self.vlan_member100)
         sai_thrift_remove_vlan_member(self.client, self.vlan_member101)
@@ -5127,12 +5427,17 @@ class L3SviTest(SaiHelper):
         sai_thrift_remove_bridge_port(self.client, self.port25_bp)
         sai_thrift_remove_bridge_port(self.client, self.port26_bp)
 
-        super(L3SviTest, self).tearDown()
+        super(L3SviTestHelper, self).tearDown()
 
-    def sviRifIPv4DisableTest(self):
-        """
-        Verifies if IPv4 packets are dropped when admin_v4_state is False
-        """
+
+class SviRifIPv4DisableTest(L3SviTestHelper):
+    """
+    Verifies if IPv4 packets are dropped when admin_v4_state is False
+    """
+    def setUp(self):
+        super(SviRifIPv4DisableTest, self).setUp()
+
+    def runTest(self):
         print("\nsviRifIPv4DisableTest()")
 
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
@@ -5247,10 +5552,18 @@ class L3SviTest(SaiHelper):
             sai_thrift_remove_vlan_member(self.client, vlan_member103)
             sai_thrift_remove_bridge_port(self.client, port27_bp)
 
-    def sviRifIPv6DisableTest(self):
-        """
-        Verifies IPv6 packets are dropped when admin_v6_state is False
-        """
+    def tearDown(self):
+        super(SviRifIPv4DisableTest, self).tearDown()
+
+
+class SviRifIPv6DisableTest(L3SviTestHelper):
+    """
+    Verifies IPv6 packets are dropped when admin_v6_state is False
+    """
+    def setUp(self):
+        super(SviRifIPv6DisableTest, self).setUp()
+
+    def runTest(self):
         print("\nsviRifIPv6DisableTest()")
 
         pkt = simple_tcpv6_packet(
@@ -5336,11 +5649,19 @@ class L3SviTest(SaiHelper):
             sai_thrift_remove_vlan_member(self.client, vlan_member103)
             sai_thrift_remove_bridge_port(self.client, port27_bp)
 
-    def sviBridgingTest(self):
-        """
-        Verifies L2 bridging on an SVI port if rmac miss and L2 flooding
-        on an SVI if broadcast packet is received
-        """
+    def tearDown(self):
+        super(SviRifIPv6DisableTest, self).tearDown()
+
+
+class SviBridgingTest(L3SviTestHelper):
+    """
+    Verifies L2 bridging on an SVI port if rmac miss and L2 flooding
+    on an SVI if broadcast packet is received
+    """
+    def setUp(self):
+        super(SviBridgingTest, self).setUp()
+
+    def runTest(self):
         print("\nsviBridgingTest()")
 
         sai_thrift_set_vlan_attribute(
@@ -5469,10 +5790,18 @@ class L3SviTest(SaiHelper):
             sai_thrift_set_vlan_attribute(
                 self.client, self.vlan100, learn_disable=False)
 
-    def sviHostTest(self):
-        """
-        Verifies routing after NHOP resolved via static MAC entry
-        """
+    def tearDown(self):
+        super(SviBridgingTest, self).tearDown()
+
+
+class SviHostTest(L3SviTestHelper):
+    """
+    Verifies routing after NHOP resolved via static MAC entry
+    """
+    def setUp(self):
+        super(SviHostTest, self).setUp()
+
+    def runTest(self):
         print("\nsviHostTest()")
 
         mac_action = SAI_PACKET_ACTION_FORWARD
@@ -5554,11 +5883,19 @@ class L3SviTest(SaiHelper):
             sai_thrift_remove_fdb_entry(self.client, fdb_entry1)
             sai_thrift_remove_fdb_entry(self.client, fdb_entry2)
 
-    def sviHostVlanTaggingTest(self):
-        """
-        Verifies routing after NHOP resolved via static MAC entry
-        on tagged member
-        """
+    def tearDown(self):
+        super(SviHostTest, self).tearDown()
+
+
+class SviHostVlanTaggingTest(L3SviTestHelper):
+    """
+    Verifies routing after NHOP resolved via static MAC entry
+    on tagged member
+    """
+    def setUp(self):
+        super(SviHostVlanTaggingTest, self).setUp()
+
+    def runTest(self):
         print("\nsviHostVlanTaggingTest()")
         print("Test routing after NHOP resolved via static MAC entry")
 
@@ -5614,13 +5951,21 @@ class L3SviTest(SaiHelper):
             sai_thrift_remove_vlan_member(self.client, vlan_member103)
             sai_thrift_remove_bridge_port(self.client, port27_bp)
 
-    def sviToSviRoutingTest(self):
-        '''
-        vlan100/24 -> vlan200/lag10
-        vlan100/27 -> vlan200/lag10
-        vlan200/lag10 -> vlan100/24
-        vlan200/lag10 -> vlan100/27
-        '''
+    def tearDown(self):
+        super(SviHostVlanTaggingTest, self).tearDown()
+
+
+class SviToSviRoutingTest(L3SviTestHelper):
+    '''
+    vlan100/24 -> vlan200/lag10
+    vlan100/27 -> vlan200/lag10
+    vlan200/lag10 -> vlan100/24
+    vlan200/lag10 -> vlan100/27
+    '''
+    def setUp(self):
+        super(SviToSviRoutingTest, self).setUp()
+
+    def runTest(self):
         print("\nsviToSviRoutingTest()")
         print("Test routing between SVI")
 
@@ -5744,10 +6089,18 @@ class L3SviTest(SaiHelper):
             sai_thrift_remove_bridge_port(self.client, port27_bp)
             sai_thrift_flush_fdb_entries(self.client)
 
-    def sviIPv4HostPostRoutedFloodTest(self):
-        """
-        Verifies post routed flood when static mac entry is missing
-        """
+    def tearDown(self):
+        super(SviToSviRoutingTest, self).tearDown()
+
+
+class SviIPv4HostPostRoutedFloodTest(L3SviTestHelper):
+    """
+    Verifies post routed flood when static mac entry is missing
+    """
+    def setUp(self):
+        super(SviIPv4HostPostRoutedFloodTest, self).setUp()
+
+    def runTest(self):
         print("\nsviIPv4HostPostRoutedFloodTest()")
         print("Test post routed flood when static mac entry is missing")
 
@@ -5801,10 +6154,18 @@ class L3SviTest(SaiHelper):
                                        self.dev_port26])
         self.vlan100_rif_counter_out += 3
 
-    def sviIPv6HostPostRoutedFloodTest(self):
-        """
-        Verifies IPv6 host post routed flood when static mac entry is missing
-        """
+    def tearDown(self):
+        super(SviIPv4HostPostRoutedFloodTest, self).tearDown()
+
+
+class SviIPv6HostPostRoutedFloodTest(L3SviTestHelper):
+    """
+    Verifies IPv6 host post routed flood when static mac entry is missing
+    """
+    def setUp(self):
+        super(SviIPv6HostPostRoutedFloodTest, self).setUp()
+
+    def runTest(self):
         print("\nsviIPv6HostPostRoutedFloodTest()")
         print("Test post routed flood when static mac entry is missing")
 
@@ -5860,11 +6221,19 @@ class L3SviTest(SaiHelper):
             self.dev_port26])
         self.vlan100_rif_counter_out += 3
 
-    def sviIPv4HostStaticMacMoveTest(self):
-        """
-        Verifies static configuration of MAC address on port and change
-        of this configuration
-        """
+    def tearDown(self):
+        super(SviIPv6HostPostRoutedFloodTest, self).tearDown()
+
+
+class SviIPv4HostStaticMacMoveTest(L3SviTestHelper):
+    """
+    Verifies static configuration of MAC address on port and change
+    of this configuration
+    """
+    def setUp(self):
+        super(SviIPv4HostStaticMacMoveTest, self).setUp()
+
+    def runTest(self):
         print("\nsviIPv4HostStaticMacMoveTest()")
 
         mac_action = SAI_PACKET_ACTION_FORWARD
@@ -5913,11 +6282,19 @@ class L3SviTest(SaiHelper):
         finally:
             sai_thrift_remove_fdb_entry(self.client, fdb_entry)
 
-    def sviIPv6HostStaticMacMoveTest(self):
-        """
-        Verifies static configuration of MAC address on port and change
-        of this configuration
-        """
+    def tearDown(self):
+        super(SviIPv4HostStaticMacMoveTest, self).tearDown()
+
+
+class SviIPv6HostStaticMacMoveTest(L3SviTestHelper):
+    """
+    Verifies static configuration of MAC address on port and change
+    of this configuration
+    """
+    def setUp(self):
+        super(SviIPv6HostStaticMacMoveTest, self).setUp()
+
+    def runTest(self):
         print("\nsviIPv6HostStaticMacMoveTest()")
 
         mac_action = SAI_PACKET_ACTION_FORWARD
@@ -5966,11 +6343,19 @@ class L3SviTest(SaiHelper):
         finally:
             sai_thrift_remove_fdb_entry(self.client, fdb_entry)
 
-    def sviRouteDynamicMacTest(self):
-        """
-        Verifies dynamic MAC address managment test for the VLAN router
-        interface
-        """
+    def tearDown(self):
+        super(SviIPv6HostStaticMacMoveTest, self).tearDown()
+
+
+class SviRouteDynamicMacTest(L3SviTestHelper):
+    """
+    Verifies dynamic MAC address managment test for the VLAN router
+    interface
+    """
+    def setUp(self):
+        super(SviRouteDynamicMacTest, self).setUp()
+
+    def runTest(self):
         print("\nsviRouteDynamicMacTest()")
 
         arp_pkt = simple_arp_packet(eth_dst='FF:FF:FF:FF:FF:FF',
@@ -6074,11 +6459,19 @@ class L3SviTest(SaiHelper):
             sai_thrift_remove_neighbor_entry(self.client, neighbor_entry)
             sai_thrift_flush_fdb_entries(self.client)
 
-    def sviRouteDynamicMacMoveTest(self):
-        """
-        Verifies routing after NHOP resolved via dynamically learn MAC entry
-        is moved
-        """
+    def tearDown(self):
+        super(SviRouteDynamicMacTest, self).tearDown()
+
+
+class SviRouteDynamicMacMoveTest(L3SviTestHelper):
+    """
+    Verifies routing after NHOP resolved via dynamically learn MAC entry
+    is moved
+    """
+    def setUp(self):
+        super(SviRouteDynamicMacMoveTest, self).setUp()
+
+    def runTest(self):
         print("\nsviRouteDynamicMacMoveTest()")
 
         arp_pkt = simple_arp_packet(eth_dst='FF:FF:FF:FF:FF:FF',
@@ -6145,11 +6538,19 @@ class L3SviTest(SaiHelper):
         finally:
             sai_thrift_flush_fdb_entries(self.client)
 
-    def sviIPv4ArpMoveTest(self):
-        """
-        Verifies routing after NHOP resolved via dynamically learn MAC entry
-        for the IPv4 standard
-        """
+    def tearDown(self):
+        super(SviRouteDynamicMacMoveTest, self).tearDown()
+
+
+class SviIPv4ArpMoveTest(L3SviTestHelper):
+    """
+    Verifies routing after NHOP resolved via dynamically learn MAC entry
+    for the IPv4 standard
+    """
+    def setUp(self):
+        super(SviIPv4ArpMoveTest, self).setUp()
+
+    def runTest(self):
         print("\nsviIPv4ArpMoveTest()")
         print("Test routing after NHOP resolved via dynamically learn "
               "MAC entry")
@@ -6242,11 +6643,19 @@ class L3SviTest(SaiHelper):
         finally:
             sai_thrift_flush_fdb_entries(self.client)
 
-    def sviIPv6IcmpMoveTest(self):
-        """
-        Verifies routing after NHOP resolved via dynamically learn MAC entry
-        for the IPv6 standard
-        """
+    def tearDown(self):
+        super(SviIPv4ArpMoveTest, self).tearDown()
+
+
+class SviIPv6IcmpMoveTest(L3SviTestHelper):
+    """
+    Verifies routing after NHOP resolved via dynamically learn MAC entry
+    for the IPv6 standard
+    """
+    def setUp(self):
+        super(SviIPv6IcmpMoveTest, self).setUp()
+
+    def runTest(self):
         print("\nsviIPv6IcmpMoveTest()")
         print("Test routing after NHOP resolved via dynamically learn "
               "MAC entry")
@@ -6338,10 +6747,18 @@ class L3SviTest(SaiHelper):
         finally:
             sai_thrift_flush_fdb_entries(self.client)
 
-    def sviLagHostTest(self):
-        """
-        Verifies routing after NHOP resolved via static MAC entry on LAG
-        """
+    def tearDown(self):
+        super(SviIPv6IcmpMoveTest, self).tearDown()
+
+
+class SviLagHostTest(L3SviTestHelper):
+    """
+    Verifies routing after NHOP resolved via static MAC entry on LAG
+    """
+    def setUp(self):
+        super(SviLagHostTest, self).setUp()
+
+    def runTest(self):
         print("\nsviLagHostTest()")
         print("Test routing after NHOP resolved via static MAC entry")
 
@@ -6432,10 +6849,18 @@ class L3SviTest(SaiHelper):
             sai_thrift_flush_fdb_entries(
                 self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
 
-    def sviIPv4LagHostStaticMacMoveTest(self):
-        """
-        Verifies moving MAC address between ports on LAG for the IPv4
-        """
+    def tearDown(self):
+        super(SviLagHostTest, self).tearDown()
+
+
+class SviIPv4LagHostStaticMacMoveTest(L3SviTestHelper):
+    """
+    Verifies moving MAC address between ports on LAG for the IPv4
+    """
+    def setUp(self):
+        super(SviIPv4LagHostStaticMacMoveTest, self).setUp()
+
+    def runTest(self):
         print("\nsviIPv4LagHostStaticMacMoveTest()")
 
         mac_action = SAI_PACKET_ACTION_FORWARD
@@ -6483,10 +6908,18 @@ class L3SviTest(SaiHelper):
         finally:
             sai_thrift_remove_fdb_entry(self.client, fdb_entry)
 
-    def sviIPv6LagHostStaticMacMoveTest(self):
-        """
-        Verfies moving MAC address between ports on LAG for the IPv6
-        """
+    def tearDown(self):
+        super(SviIPv4LagHostStaticMacMoveTest, self).tearDown()
+
+
+class SviIPv6LagHostStaticMacMoveTest(L3SviTestHelper):
+    """
+    Verfies moving MAC address between ports on LAG for the IPv6
+    """
+    def setUp(self):
+        super(SviIPv6LagHostStaticMacMoveTest, self).setUp()
+
+    def runTest(self):
         print("\nsviIPv6LagHostStaticMacMoveTest()")
 
         mac_action = SAI_PACKET_ACTION_FORWARD
@@ -6534,11 +6967,19 @@ class L3SviTest(SaiHelper):
         finally:
             sai_thrift_remove_fdb_entry(self.client, fdb_entry)
 
-    def sviLagHostDynamicMacTest(self):
-        """
-        Verifies routing after NHOP resolved via dynamically learn
-        MAC entry for LAG
-        """
+    def tearDown(self):
+        super(SviIPv6LagHostStaticMacMoveTest, self).tearDown()
+
+
+class SviLagHostDynamicMacTest(L3SviTestHelper):
+    """
+    Verifies routing after NHOP resolved via dynamically learn
+    MAC entry for LAG
+    """
+    def setUp(self):
+        super(SviLagHostDynamicMacTest, self).setUp()
+
+    def runTest(self):
         print("\nsviLagHostDynamicMacTest()")
         print("Test routing after NHOP resolved via dynamically learn"
               "MAC entry")
@@ -6587,11 +7028,19 @@ class L3SviTest(SaiHelper):
         finally:
             sai_thrift_flush_fdb_entries(self.client)
 
-    def sviIPv4LagHostDynamicMacMoveTest(self):
-        """
-        Verifies routing after NHOP resolved via dynamically learn MAC entry
-        is moved for the IPv4 on LAG
-        """
+    def tearDown(self):
+        super(SviLagHostDynamicMacTest, self).tearDown()
+
+
+class SviIPv4LagHostDynamicMacMoveTest(L3SviTestHelper):
+    """
+    Verifies routing after NHOP resolved via dynamically learn MAC entry
+    is moved for the IPv4 on LAG
+    """
+    def setUp(self):
+        super(SviIPv4LagHostDynamicMacMoveTest, self).setUp()
+
+    def runTest(self):
         print("\nSVIIPv4LagHostDynamicMacMoveTest()")
         print("Test routing after NHOP resolved via dynamically learn "
               "MAC entry")
@@ -6660,11 +7109,19 @@ class L3SviTest(SaiHelper):
         finally:
             sai_thrift_flush_fdb_entries(self.client)
 
-    def sviIPv6LagHostDynamicMacMoveTest(self):
-        """
-        Verifies routing after NHOP resolved via dynamically learn MAC entry
-        is moved for the IPv6 on LAG
-        """
+    def tearDown(self):
+        super(SviIPv4LagHostDynamicMacMoveTest, self).tearDown()
+
+
+class SviIPv6LagHostDynamicMacMoveTest(L3SviTestHelper):
+    """
+    Verifies routing after NHOP resolved via dynamically learn MAC entry
+    is moved for the IPv6 on LAG
+    """
+    def setUp(self):
+        super(SviIPv6LagHostDynamicMacMoveTest, self).setUp()
+
+    def runTest(self):
         print("\nsviIPv6LagHostDynamicMacMoveTest()")
         print("Test routing after NHOP resolved via dynamically learn"
               "MAC entry")
@@ -6732,11 +7189,18 @@ class L3SviTest(SaiHelper):
         finally:
             sai_thrift_flush_fdb_entries(self.client)
 
-    def sviIPv4MtuTest(self):
-        """
-        Verifies if IPv4 packet is forwarded, dropped and punted to CPU
-        depending on the MTU with and without a trap for SVI
-        """
+    def tearDown(self):
+        super(SviIPv6LagHostDynamicMacMoveTest, self).tearDown()
+
+class SviIPv4MtuTest(L3SviTestHelper):
+    """
+    Verifies if IPv4 packet is forwarded, dropped and punted to CPU
+    depending on the MTU with and without a trap for SVI
+    """
+    def setUp(self):
+        super(SviIPv4MtuTest, self).setUp()
+
+    def runTest(self):
         print("\nsviIPv4MtuTest()")
 
         # set MTU to 200 for vlan100_rif
@@ -6842,11 +7306,19 @@ class L3SviTest(SaiHelper):
         finally:
             sai_thrift_remove_fdb_entry(self.client, fdb_entry)
 
-    def sviIPv6MtuTest(self):
-        """
-        Verifies if IPv6 packet is forwarded, dropped and punted to CPU
-        depending on the MTU with and without a trap for SVI
-        """
+    def tearDown(self):
+        super(SviIPv4MtuTest, self).tearDown()
+
+
+class SviIPv6MtuTest(L3SviTestHelper):
+    """
+    Verifies if IPv6 packet is forwarded, dropped and punted to CPU
+    depending on the MTU with and without a trap for SVI
+    """
+    def setUp(self):
+        super(SviIPv6MtuTest, self).setUp()
+
+    def runTest(self):
         print("\nsviIPv6MtuTest()")
 
         # set MTU to 200 for vlan200_rif
@@ -6964,12 +7436,20 @@ class L3SviTest(SaiHelper):
         finally:
             sai_thrift_remove_fdb_entry(self.client, fdb_entry)
 
-    def sviTaggingTest(self):
-        """
-        Verifies if packet is not routed if tagged packet ingresses on
-        untagged SVI and if packet is dropped if unknown vlan tagged packet
-        ingresses on tagged SVI
-        """
+    def tearDown(self):
+        super(SviIPv6MtuTest, self).tearDown()
+
+
+class SviTaggingTest(L3SviTestHelper):
+    """
+    Verifies if packet is not routed if tagged packet ingresses on
+    untagged SVI and if packet is dropped if unknown vlan tagged packet
+    ingresses on tagged SVI
+    """
+    def setUp(self):
+        super(SviTaggingTest, self).setUp()
+
+    def runTest(self):
         print("\nsviTaggingTest()")
 
         vlan_id = 100
@@ -7043,10 +7523,18 @@ class L3SviTest(SaiHelper):
             sai_thrift_remove_vlan_member(self.client, vlan_member103)
             sai_thrift_remove_bridge_port(self.client, port27_bp)
 
-    def sviMyIPTest(self):
-        """
-        Verifies if MYIP works for subnet routes
-        """
+    def tearDown(self):
+        super(SviTaggingTest, self).tearDown()
+
+
+class SviMyIPTest(L3SviTestHelper):
+    """
+    Verifies if MYIP works for subnet routes
+    """
+    def setUp(self):
+        super(SviMyIPTest, self).setUp()
+
+    def runTest(self):
         print("\nsviMyIPTest()")
 
         vlan_id = 10
@@ -7124,10 +7612,18 @@ class L3SviTest(SaiHelper):
             sai_thrift_remove_route_entry(self.client, ip2me_route)
             sai_thrift_remove_router_interface(self.client, vlan10_rif)
 
-    def sviStatsTest(self):
-        """
-        Verifies Ingress and Egress SVI packets stats
-        """
+    def tearDown(self):
+        super(SviMyIPTest, self).tearDown()
+
+
+class SviStatsTest(L3SviTestHelper):
+    """
+    Verifies Ingress and Egress SVI packets stats
+    """
+    def setUp(self):
+        super(SviStatsTest, self).setUp()
+
+    def runTest(self):
         print("\nsviStatsTest()")
 
         vlan100_rif_stats = sai_thrift_get_router_interface_stats(
@@ -7163,10 +7659,18 @@ class L3SviTest(SaiHelper):
         self.assertTrue((self.vlan200_rif_counter_out - self.vlan200_bcast_out)
                         == vlan200_stats['SAI_VLAN_STAT_OUT_UCAST_PKTS'])
 
-    def incorrectVlanIdTest(self):
-        """
-        Verifies if RIF creation fails when TYPE is VLAN and vlan_id is 0
-        """
+    def tearDown(self):
+        super(SviStatsTest, self).tearDown()
+
+
+class IncorrectVlanIdTest(L3SviTestHelper):
+    """
+    Verifies if RIF creation fails when TYPE is VLAN and vlan_id is 0
+    """
+    def setUp(self):
+        super(IncorrectVlanIdTest, self).setUp()
+
+    def runTest(self):
         print("\nincorrectVlanIdTest()")
 
         try:
@@ -7181,10 +7685,18 @@ class L3SviTest(SaiHelper):
             if vlan_rif:
                 sai_thrift_remove_router_interface(self.client, vlan_rif)
 
-    def duplicateVlanRifCreationTest(self):
-        """
-        Verifies if duplicate VLAN interface creation fails
-        """
+    def tearDown(self):
+        super(IncorrectVlanIdTest, self).tearDown()
+
+
+class DuplicateVlanRifCreationTest(L3SviTestHelper):
+    """
+    Verifies if duplicate VLAN interface creation fails
+    """
+    def setUp(self):
+        super(DuplicateVlanRifCreationTest, self).setUp()
+
+    def runTest(self):
         print("duplicateVlanRifCreationTest")
 
         existing_rif_vlan = self.vlan30
@@ -7201,10 +7713,18 @@ class L3SviTest(SaiHelper):
             if dupl_vlan_rif:
                 sai_thrift_remove_router_interface(self.client, dupl_vlan_rif)
 
-    def sviArpReplyTest(self):
-        """
-        Verifies ARP replies from linux interface on tagged and untagged RIF
-        """
+    def tearDown(self):
+        super(DuplicateVlanRifCreationTest, self).tearDown()
+
+
+class SviArpReplyTest(L3SviTestHelper):
+    """
+    Verifies ARP replies from linux interface on tagged and untagged RIF
+    """
+    def setUp(self):
+        super(SviArpReplyTest, self).setUp()
+
+    def runTest(self):
         print("\nsviArpReplyTest()")
 
         untagged_port = self.port24
@@ -7355,17 +7875,20 @@ class L3SviTest(SaiHelper):
             sai_thrift_remove_vlan_member(self.client, vlan_member103)
             sai_thrift_remove_bridge_port(self.client, port27_bp)
 
+    def tearDown(self):
+        super(SviArpReplyTest, self).tearDown()
+
 
 @group("draft")
 @group("mtu-trap")
-class L3MtuTrapTest(SaiHelper):
+class L3MtuTrapTestHelper(PlatformSaiHelper):
     """
     This class contains router interface tests where packets are forwarded
     or punted to CPU depending on the MTU
     """
 
     def setUp(self):
-        super(L3MtuTrapTest, self).setUp()
+        super(L3MtuTrapTestHelper, self).setUp()
 
         self.port10_rif_counter_in = 0
         self.port10_rif_counter_out = 0
@@ -7560,15 +8083,6 @@ class L3MtuTrapTest(SaiHelper):
         sai_thrift_create_route_entry(
             self.client, self.route_entry100_v6, next_hop_id=self.nhop100)
 
-    def runTest(self):
-        self.ipv4MtuTrapTest()
-        self.ipv6MtuTrapTest()
-        self.subPortIpv4MtuTrapTest()
-        self.subPortIpv6MtuTrapTest()
-        self.sviIpv4MtuTrapTest()
-        self.sviIpv6MtuTrapTest()
-        self.mtuPacketStatsTest()
-
     def tearDown(self):
         sai_thrift_remove_route_entry(self.client, self.route_entry100)
         sai_thrift_remove_route_entry(self.client, self.route_entry100_v6)
@@ -7576,8 +8090,8 @@ class L3MtuTrapTest(SaiHelper):
         sai_thrift_remove_next_hop(self.client, self.nhop100)
         sai_thrift_remove_router_interface(self.client, self.vlan100_rif)
 
-        sai_thrift_set_port_attribute(self.client, self.port24, port_vlan_id=1)
-        sai_thrift_set_port_attribute(self.client, self.port25, port_vlan_id=1)
+        sai_thrift_set_port_attribute(self.client, self.port24, port_vlan_id=0)
+        sai_thrift_set_port_attribute(self.client, self.port25, port_vlan_id=0)
         sai_thrift_remove_vlan_member(self.client, self.vlan_member100)
         sai_thrift_remove_vlan_member(self.client, self.vlan_member101)
         sai_thrift_remove_vlan(self.client, self.vlan100)
@@ -7612,13 +8126,18 @@ class L3MtuTrapTest(SaiHelper):
         sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry3)
         sai_thrift_remove_router_interface(self.client, self.lag1_rif)
 
-        super(L3MtuTrapTest, self).tearDown()
+        super(L3MtuTrapTestHelper, self).tearDown()
 
-    def ipv4MtuTrapTest(self):
-        """
-        Verifies if IPv4 packet is forwarded or punted to CPU as a trap,
-        depending on the MTU
-        """
+
+class Ipv4MtuTrapTest(L3MtuTrapTestHelper):
+    """
+    Verifies if IPv4 packet is forwarded or punted to CPU as a trap,
+    depending on the MTU
+    """
+    def setUp(self):
+        super(Ipv4MtuTrapTest, self).setUp()
+
+    def runTest(self):
         print("\nipv4MtuTrapTest()")
 
         # set MTU to 200 for port 10 and lag 1
@@ -7730,11 +8249,19 @@ class L3MtuTrapTest(SaiHelper):
             sai_thrift_set_router_interface_attribute(
                 self.client, self.lag1_rif, mtu=mtu_lag1_rif['mtu'])
 
-    def ipv6MtuTrapTest(self):
-        """
-        Verifies if IPv6 packet is forwarded or punted to CPU as a trap,
-        depending on the MTU
-        """
+    def tearDown(self):
+        super(Ipv4MtuTrapTest, self).tearDown()
+
+
+class Ipv6MtuTrapTest(L3MtuTrapTestHelper):
+    """
+    Verifies if IPv6 packet is forwarded or punted to CPU as a trap,
+    depending on the MTU
+    """
+    def setUp(self):
+        super(Ipv6MtuTrapTest, self).setUp()
+
+    def runTest(self):
         print("\nipv6MtuTrapTest()")
 
         mtu_port10_rif = sai_thrift_get_router_interface_attribute(
@@ -7848,11 +8375,19 @@ class L3MtuTrapTest(SaiHelper):
             sai_thrift_set_router_interface_attribute(
                 self.client, self.lag1_rif, mtu=mtu_lag1_rif['mtu'])
 
-    def subPortIpv4MtuTrapTest(self):
-        """
-        Verifies if IPv4 packet is forwarded or punted to CPU as a trap,
-        depending on the MTU
-        """
+    def tearDown(self):
+        super(Ipv6MtuTrapTest, self).tearDown()
+
+
+class SubPortIpv4MtuTrapTest(L3MtuTrapTestHelper):
+    """
+    Verifies if IPv4 packet is forwarded or punted to CPU as a trap,
+    depending on the MTU
+    """
+    def setUp(self):
+        super(SubPortIpv4MtuTrapTest, self).setUp()
+
+    def runTest(self):
         print("\nsubPortIpv4MtuTrapTest()")
 
         # set MTU to 200 for subport 10_100
@@ -7926,11 +8461,19 @@ class L3MtuTrapTest(SaiHelper):
             sai_thrift_remove_hostif_trap(self.client, trap)
             sai_thrift_remove_hostif_trap_group(self.client, trap_group)
 
-    def subPortIpv6MtuTrapTest(self):
-        """
-        Verifies if IPv6 packet is forwarded or punted to CPU as a trap,
-        depending on the MTU
-        """
+    def tearDown(self):
+        super(SubPortIpv4MtuTrapTest, self).tearDown()
+
+
+class SubPortIpv6MtuTrapTest(L3MtuTrapTestHelper):
+    """
+    Verifies if IPv6 packet is forwarded or punted to CPU as a trap,
+    depending on the MTU
+    """
+    def setUp(self):
+        super(SubPortIpv6MtuTrapTest, self).setUp()
+
+    def runTest(self):
         print("\nsubPortIpv6MtuTrapTest()")
 
         # set MTU to 200 for subport 10_100
@@ -8008,11 +8551,19 @@ class L3MtuTrapTest(SaiHelper):
             sai_thrift_remove_hostif_trap(self.client, trap)
             sai_thrift_remove_hostif_trap_group(self.client, trap_group)
 
-    def sviIpv4MtuTrapTest(self):
-        """
-        Verifies if IPv4 packet is forwarded or punted to CPU as a trap,
-        depending on the MTU
-        """
+    def tearDown(self):
+        super(SubPortIpv6MtuTrapTest, self).tearDown()
+
+
+class SviIpv4MtuTrapTest(L3MtuTrapTestHelper):
+    """
+    Verifies if IPv4 packet is forwarded or punted to CPU as a trap,
+    depending on the MTU
+    """
+    def setUp(self):
+        super(SviIpv4MtuTrapTest, self).setUp()
+
+    def runTest(self):
         print("\nsviIpv4MtuTrapTest()")
 
         # set MTU to 200 for vlan100_rif
@@ -8090,11 +8641,19 @@ class L3MtuTrapTest(SaiHelper):
             sai_thrift_remove_hostif_trap_group(self.client, trap_group)
             sai_thrift_remove_fdb_entry(self.client, fdb_entry)
 
-    def sviIpv6MtuTrapTest(self):
-        """
-        Verifies if IPv6 packet is forwarded or punted to CPU as a trap,
-        depending on the MTU
-        """
+    def tearDown(self):
+        super(SviIpv4MtuTrapTest, self).tearDown()
+
+
+class SviIpv6MtuTrapTest(L3MtuTrapTestHelper):
+    """
+    Verifies if IPv6 packet is forwarded or punted to CPU as a trap,
+    depending on the MTU
+    """
+    def setUp(self):
+        super(SviIpv6MtuTrapTest, self).setUp()
+
+    def runTest(self):
         print("\nsviIpv6MtuTrapTest()")
 
         # set MTU to 200 for vlan100_rif
@@ -8176,10 +8735,18 @@ class L3MtuTrapTest(SaiHelper):
             sai_thrift_remove_hostif_trap_group(self.client, trap_group)
             sai_thrift_remove_fdb_entry(self.client, fdb_entry)
 
-    def mtuPacketStatsTest(self):
-        """
-        Verifies Ingress and Egress RIF stats for unicast packets
-        """
+    def tearDown(self):
+        super(SviIpv6MtuTrapTest, self).tearDown()
+
+
+class MtuPacketStatsTest(L3MtuTrapTestHelper):
+    """
+    Verifies Ingress and Egress RIF stats for unicast packets
+    """
+    def setUp(self):
+        super(MtuPacketStatsTest, self).setUp()
+
+    def runTest(self):
         print("\nmtuPacketStatsTest()")
 
         time.sleep(4)
@@ -8221,622 +8788,277 @@ class L3MtuTrapTest(SaiHelper):
         self.assertTrue(self.vlan100_rif_counter_out == vlan100_rif_stats[
             'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'])
 
+    def tearDown(self):
+        super(MtuPacketStatsTest, self).tearDown()
 
-class L3SubPortTestHelper(PlatformSaiHelper):
-    """
-    This class contains base router interface tests common setup and teardown
-    for L3 subport RIFs
-    """
 
+class VirtualInterfaceTestHelper(PlatformSaiHelper):
+    """
+    This class contains virtual router interface tests
+    """
     def setUp(self):
-        super(L3SubPortTestHelper, self).setUp()
+        super(VirtualInterfaceTestHelper, self).setUp()
+        dmac1 = '00:11:22:33:44:55'
 
-        dmac0 = '00:11:22:33:44:55'
-        dmac1 = '00:22:22:33:44:55'
-        dmac2 = '00:33:22:33:44:55'
-        dmac3 = '00:44:22:33:44:55'
-        dmac4 = '00:55:22:33:44:55'
-        mac_action = SAI_PACKET_ACTION_FORWARD
-
-        # L3 RIF on port10, port11 and lag3
-        self.neighbor_entry0 = sai_thrift_neighbor_entry_t(
-            rif_id=self.port10_rif, ip_address=sai_ipaddress('10.10.10.1'))
-        sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry0, dst_mac_address=dmac0)
-        self.nhop0 = sai_thrift_create_next_hop(
-            self.client,
-            ip=sai_ipaddress('10.10.10.1'),
-            router_interface_id=self.port10_rif,
-            type=SAI_NEXT_HOP_TYPE_IP)
-
-        self.neighbor_entry1 = sai_thrift_neighbor_entry_t(
-            rif_id=self.port11_rif, ip_address=sai_ipaddress('10.10.10.2'))
-        sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry1, dst_mac_address=dmac1)
         self.nhop1 = sai_thrift_create_next_hop(
             self.client,
             ip=sai_ipaddress('10.10.10.2'),
-            router_interface_id=self.port11_rif,
+            router_interface_id=self.port10_rif,
             type=SAI_NEXT_HOP_TYPE_IP)
-
-        self.neighbor_entry2 = sai_thrift_neighbor_entry_t(
-            rif_id=self.lag3_rif, ip_address=sai_ipaddress('10.10.10.3'))
+        self.neighbor_entry1 = sai_thrift_neighbor_entry_t(
+            rif_id=self.port10_rif, ip_address=sai_ipaddress('10.10.10.2'))
         sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry2, dst_mac_address=dmac2)
-        self.nhop2 = sai_thrift_create_next_hop(
-            self.client,
-            ip=sai_ipaddress('10.10.10.3'),
-            router_interface_id=self.lag3_rif,
-            type=SAI_NEXT_HOP_TYPE_IP)
-
-        self.port24_bp = sai_thrift_create_bridge_port(
-            self.client,
-            bridge_id=self.default_1q_bridge,
-            port_id=self.port24,
-            type=SAI_BRIDGE_PORT_TYPE_PORT,
-            admin_state=True)
-        self.port25_bp = sai_thrift_create_bridge_port(
-            self.client,
-            bridge_id=self.default_1q_bridge,
-            port_id=self.port25,
-            type=SAI_BRIDGE_PORT_TYPE_PORT,
-            admin_state=True)
-
-        # add SVI on vlan600, port24 and vlan700, port 25
-        self.vlan600 = sai_thrift_create_vlan(self.client, vlan_id=600)
-        self.vlan_member601 = sai_thrift_create_vlan_member(
-            self.client,
-            vlan_id=self.vlan600,
-            bridge_port_id=self.port24_bp,
-            vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
-        self.vlan600_rif = sai_thrift_create_router_interface(
-            self.client,
-            type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
-            virtual_router_id=self.default_vrf,
-            vlan_id=self.vlan600)
-        self.neighbor_entry3 = sai_thrift_neighbor_entry_t(
-            rif_id=self.vlan600_rif, ip_address=sai_ipaddress('10.10.10.4'))
-        sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry3, dst_mac_address=dmac3)
-        self.nhop3 = sai_thrift_create_next_hop(
-            self.client,
-            ip=sai_ipaddress('10.10.10.4'),
-            router_interface_id=self.vlan600_rif,
-            type=SAI_NEXT_HOP_TYPE_IP)
-        self.fdb_entry3 = sai_thrift_fdb_entry_t(
-            switch_id=self.switch_id, mac_address=dmac3, bv_id=self.vlan600)
-        sai_thrift_create_fdb_entry(self.client,
-                                    self.fdb_entry3,
-                                    type=SAI_FDB_ENTRY_TYPE_STATIC,
-                                    bridge_port_id=self.port24_bp,
-                                    packet_action=mac_action)
-        sai_thrift_set_port_attribute(
-            self.client, self.port24, port_vlan_id=600)
-
-        self.vlan700 = sai_thrift_create_vlan(self.client, vlan_id=700)
-        self.vlan_member701 = sai_thrift_create_vlan_member(
-            self.client,
-            vlan_id=self.vlan700,
-            bridge_port_id=self.port25_bp,
-            vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_TAGGED)
-        self.vlan700_rif = sai_thrift_create_router_interface(
-            self.client,
-            type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
-            virtual_router_id=self.default_vrf,
-            vlan_id=self.vlan700)
-        self.neighbor_entry4 = sai_thrift_neighbor_entry_t(
-            rif_id=self.vlan700_rif, ip_address=sai_ipaddress('10.10.10.5'))
-        sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry4, dst_mac_address=dmac4)
-        self.nhop4 = sai_thrift_create_next_hop(
-            self.client,
-            ip=sai_ipaddress('10.10.10.5'),
-            router_interface_id=self.vlan700_rif,
-            type=SAI_NEXT_HOP_TYPE_IP)
-        self.fdb_entry4 = sai_thrift_fdb_entry_t(
-            switch_id=self.switch_id, mac_address=dmac4, bv_id=self.vlan700)
-        sai_thrift_create_fdb_entry(self.client,
-                                    self.fdb_entry4,
-                                    type=SAI_FDB_ENTRY_TYPE_STATIC,
-                                    bridge_port_id=self.port25_bp,
-                                    packet_action=mac_action)
-
-        # add subport 100, 200 on port10
-        self.subport10_100 = sai_thrift_create_router_interface(
-            self.client,
-            type=SAI_ROUTER_INTERFACE_TYPE_SUB_PORT,
-            virtual_router_id=self.default_vrf,
-            port_id=self.port10,
-            admin_v4_state=True,
-            outer_vlan_id=100)
-        self.neighbor_entry_sp10_100 = sai_thrift_neighbor_entry_t(
-            rif_id=self.subport10_100, ip_address=sai_ipaddress('20.20.0.10'))
-        sai_thrift_create_neighbor_entry(self.client,
-                                         self.neighbor_entry_sp10_100,
-                                         dst_mac_address="00:33:33:33:01:00")
-        self.nhop_sp10_100 = sai_thrift_create_next_hop(
-            self.client,
-            ip=sai_ipaddress('20.20.0.10'),
-            router_interface_id=self.subport10_100,
-            type=SAI_NEXT_HOP_TYPE_IP)
-
-        self.subport10_200 = sai_thrift_create_router_interface(
-            self.client,
-            type=SAI_ROUTER_INTERFACE_TYPE_SUB_PORT,
-            virtual_router_id=self.default_vrf,
-            port_id=self.port10,
-            admin_v4_state=True,
-            outer_vlan_id=200)
-        self.neighbor_entry_sp10_200 = sai_thrift_neighbor_entry_t(
-            rif_id=self.subport10_200, ip_address=sai_ipaddress('20.20.0.20'))
-        sai_thrift_create_neighbor_entry(self.client,
-                                         self.neighbor_entry_sp10_200,
-                                         dst_mac_address="00:33:33:33:02:00")
-        self.nhop_sp10_200 = sai_thrift_create_next_hop(
-            self.client,
-            ip=sai_ipaddress('20.20.0.20'),
-            router_interface_id=self.subport10_200,
-            type=SAI_NEXT_HOP_TYPE_IP)
-
-        # add subport 200, 300 on port11
-        self.subport11_200 = sai_thrift_create_router_interface(
-            self.client,
-            type=SAI_ROUTER_INTERFACE_TYPE_SUB_PORT,
-            virtual_router_id=self.default_vrf,
-            port_id=self.port11,
-            admin_v4_state=True,
-            outer_vlan_id=200)
-        self.neighbor_entry_sp11_200 = sai_thrift_neighbor_entry_t(
-            rif_id=self.subport11_200, ip_address=sai_ipaddress('20.20.1.20'))
-        sai_thrift_create_neighbor_entry(self.client,
-                                         self.neighbor_entry_sp11_200,
-                                         dst_mac_address="00:33:33:33:12:00")
-        self.nhop_sp11_200 = sai_thrift_create_next_hop(
-            self.client,
-            ip=sai_ipaddress('20.20.1.20'),
-            router_interface_id=self.subport11_200,
-            type=SAI_NEXT_HOP_TYPE_IP)
-
-        self.subport11_300 = sai_thrift_create_router_interface(
-            self.client,
-            type=SAI_ROUTER_INTERFACE_TYPE_SUB_PORT,
-            virtual_router_id=self.default_vrf,
-            port_id=self.port11,
-            admin_v4_state=True,
-            outer_vlan_id=300)
-        self.neighbor_entry_sp11_300 = sai_thrift_neighbor_entry_t(
-            rif_id=self.subport11_300, ip_address=sai_ipaddress('20.20.1.30'))
-        sai_thrift_create_neighbor_entry(self.client,
-                                         self.neighbor_entry_sp11_300,
-                                         dst_mac_address="00:33:33:33:13:00")
-        self.nhop_sp11_300 = sai_thrift_create_next_hop(
-            self.client,
-            ip=sai_ipaddress('20.20.1.30'),
-            router_interface_id=self.subport11_300,
-            type=SAI_NEXT_HOP_TYPE_IP)
-
-        # add subport 400, 500 on lag3
-        self.sublag3_400 = sai_thrift_create_router_interface(
-            self.client,
-            type=SAI_ROUTER_INTERFACE_TYPE_SUB_PORT,
-            virtual_router_id=self.default_vrf,
-            port_id=self.lag3,
-            admin_v4_state=True,
-            outer_vlan_id=400)
-        self.neighbor_entry_sl3_400 = sai_thrift_neighbor_entry_t(
-            rif_id=self.sublag3_400, ip_address=sai_ipaddress('20.20.0.40'))
-        sai_thrift_create_neighbor_entry(self.client,
-                                         self.neighbor_entry_sl3_400,
-                                         dst_mac_address="00:33:33:33:04:00")
-        self.nhop_sl3_400 = sai_thrift_create_next_hop(
-            self.client,
-            ip=sai_ipaddress('20.20.0.40'),
-            router_interface_id=self.sublag3_400,
-            type=SAI_NEXT_HOP_TYPE_IP)
-
-        self.sublag3_500 = sai_thrift_create_router_interface(
-            self.client,
-            type=SAI_ROUTER_INTERFACE_TYPE_SUB_PORT,
-            virtual_router_id=self.default_vrf,
-            port_id=self.lag3,
-            admin_v4_state=True,
-            outer_vlan_id=500)
-        self.neighbor_entry_sl3_500 = sai_thrift_neighbor_entry_t(
-            rif_id=self.sublag3_500, ip_address=sai_ipaddress('20.20.0.50'))
-        sai_thrift_create_neighbor_entry(self.client,
-                                         self.neighbor_entry_sl3_500,
-                                         dst_mac_address="00:33:33:33:05:00")
-        self.nhop_sl3_500 = sai_thrift_create_next_hop(
-            self.client,
-            ip=sai_ipaddress('20.20.0.50'),
-            router_interface_id=self.sublag3_500,
-            type=SAI_NEXT_HOP_TYPE_IP)
-
-        # add subport 600 on port24, this port is untagged on vlan600
-        self.subport24_600 = sai_thrift_create_router_interface(
-            self.client,
-            type=SAI_ROUTER_INTERFACE_TYPE_SUB_PORT,
-            virtual_router_id=self.default_vrf,
-            port_id=self.port24,
-            admin_v4_state=True,
-            outer_vlan_id=600)
-        self.neighbor_entry_sp24_600 = sai_thrift_neighbor_entry_t(
-            rif_id=self.subport24_600, ip_address=sai_ipaddress('20.20.3.60'))
-        sai_thrift_create_neighbor_entry(self.client,
-                                         self.neighbor_entry_sp24_600,
-                                         dst_mac_address="00:33:33:33:36:00")
-        self.nhop_sp24_600 = sai_thrift_create_next_hop(
-            self.client,
-            ip=sai_ipaddress('20.20.3.60'),
-            router_interface_id=self.subport24_600,
-            type=SAI_NEXT_HOP_TYPE_IP)
-
-        # add subport 400, 500 on port25, this port is tagged on vlan700
-        self.subport25_400 = sai_thrift_create_router_interface(
-            self.client,
-            type=SAI_ROUTER_INTERFACE_TYPE_SUB_PORT,
-            virtual_router_id=self.default_vrf,
-            port_id=self.port25,
-            admin_v4_state=True,
-            outer_vlan_id=400)
-        self.neighbor_entry_sp25_400 = sai_thrift_neighbor_entry_t(
-            rif_id=self.subport25_400, ip_address=sai_ipaddress('20.20.4.40'))
-        sai_thrift_create_neighbor_entry(self.client,
-                                         self.neighbor_entry_sp25_400,
-                                         dst_mac_address="00:33:33:33:44:00")
-        self.nhop_sp25_400 = sai_thrift_create_next_hop(
-            self.client,
-            ip=sai_ipaddress('20.20.4.40'),
-            router_interface_id=self.subport25_400,
-            type=SAI_NEXT_HOP_TYPE_IP)
-
-        self.subport25_500 = sai_thrift_create_router_interface(
-            self.client,
-            type=SAI_ROUTER_INTERFACE_TYPE_SUB_PORT,
-            virtual_router_id=self.default_vrf,
-            port_id=self.port25,
-            admin_v4_state=True,
-            outer_vlan_id=500)
-        self.neighbor_entry_sp25_500 = sai_thrift_neighbor_entry_t(
-            rif_id=self.subport25_500, ip_address=sai_ipaddress('20.20.4.50'))
-        sai_thrift_create_neighbor_entry(self.client,
-                                         self.neighbor_entry_sp25_500,
-                                         dst_mac_address="00:33:33:33:45:00")
-        self.nhop_sp25_500 = sai_thrift_create_next_hop(
-            self.client,
-            ip=sai_ipaddress('20.20.4.50'),
-            router_interface_id=self.subport25_500,
-            type=SAI_NEXT_HOP_TYPE_IP)
+            self.client, self.neighbor_entry1, dst_mac_address=dmac1)
 
         self.route_entry0 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('30.30.0.1/32'))
+            vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
         sai_thrift_create_route_entry(
-            self.client, self.route_entry0, next_hop_id=self.nhop0)
-
-        self.route_entry1 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('30.30.1.1/32'))
-        sai_thrift_create_route_entry(
-            self.client, self.route_entry1, next_hop_id=self.nhop1)
-
-        self.route_entry1_ipv6 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf,
-            destination=sai_ipprefix(
-                '1234:5678:9abc:def0:4422:1133:5577:99aa/128'))
-        sai_thrift_create_route_entry(
-            self.client, self.route_entry1_ipv6, next_hop_id=self.nhop0)
-
-        self.route_entry2 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('30.30.2.1/32'))
-        sai_thrift_create_route_entry(
-            self.client, self.route_entry2, next_hop_id=self.nhop2)
-
-        self.route_entry3 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('30.30.3.1/32'))
-        sai_thrift_create_route_entry(
-            self.client, self.route_entry3, next_hop_id=self.nhop3)
-
-        self.route_entry4 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('30.30.4.1/32'))
-        sai_thrift_create_route_entry(
-            self.client, self.route_entry4, next_hop_id=self.nhop4)
-
-        self.route_entry_sp10_100 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('40.40.0.10/32'))
-        sai_thrift_create_route_entry(self.client,
-                                      self.route_entry_sp10_100,
-                                      next_hop_id=self.nhop_sp10_100)
-
-        self.route_entry_sp10_100_ipv6 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf,
-            destination=sai_ipprefix(
-                '1234:5678:9abc:def0:4422:1133:5577:8899/128'))
-        sai_thrift_create_route_entry(self.client,
-                                      self.route_entry_sp10_100_ipv6,
-                                      next_hop_id=self.nhop_sp10_100)
-
-        self.route_entry_sp10_200 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('40.40.0.20/32'))
-        sai_thrift_create_route_entry(self.client,
-                                      self.route_entry_sp10_200,
-                                      next_hop_id=self.nhop_sp10_200)
-
-        self.route_entry_sp11_200 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('40.40.1.20/32'))
-        sai_thrift_create_route_entry(self.client,
-                                      self.route_entry_sp11_200,
-                                      next_hop_id=self.nhop_sp11_200)
-
-        self.route_entry_sp11_300 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('40.40.1.30/32'))
-        sai_thrift_create_route_entry(self.client,
-                                      self.route_entry_sp11_300,
-                                      next_hop_id=self.nhop_sp11_300)
-
-        self.route_entry_sl3_400 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('40.40.0.40/32'))
-        sai_thrift_create_route_entry(self.client,
-                                      self.route_entry_sl3_400,
-                                      next_hop_id=self.nhop_sl3_400)
-
-        self.route_entry_sl3_500 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('40.40.0.50/32'))
-        sai_thrift_create_route_entry(self.client,
-                                      self.route_entry_sl3_500,
-                                      next_hop_id=self.nhop_sl3_500)
-
-        self.route_entry_sp24_600 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('40.40.3.60/32'))
-        sai_thrift_create_route_entry(self.client,
-                                      self.route_entry_sp24_600,
-                                      next_hop_id=self.nhop_sp24_600)
-
-        self.route_entry_sp25_400 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('40.40.4.40/32'))
-        sai_thrift_create_route_entry(self.client,
-                                      self.route_entry_sp25_400,
-                                      next_hop_id=self.nhop_sp25_400)
-
-        self.route_entry_sp25_500 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('40.40.4.50/32'))
-        sai_thrift_create_route_entry(self.client,
-                                      self.route_entry_sp25_500,
-                                      next_hop_id=self.nhop_sp25_500)
-
-        # ECMP
-        self.nhop_group = sai_thrift_create_next_hop_group(
-            self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
-        self.nhop_group_member1 = sai_thrift_create_next_hop_group_member(
-            self.client, next_hop_group_id=self.nhop_group,
-            next_hop_id=self.nhop_sp10_200)
-        self.nhop_group_member2 = sai_thrift_create_next_hop_group_member(
-            self.client, next_hop_group_id=self.nhop_group,
-            next_hop_id=self.nhop_sp11_200)
-        self.nhop_group_member3 = sai_thrift_create_next_hop_group_member(
-            self.client, next_hop_group_id=self.nhop_group,
-            next_hop_id=self.nhop_sl3_400)
-        self.nhop_group_member4 = sai_thrift_create_next_hop_group_member(
-            self.client, next_hop_group_id=self.nhop_group,
-            next_hop_id=self.nhop_sp24_600)
-        self.nhop_group_member5 = sai_thrift_create_next_hop_group_member(
-            self.client, next_hop_group_id=self.nhop_group,
-            next_hop_id=self.nhop_sp25_500)
-
-        self.route_entry_ecmp = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('60.60.60.0/16'))
-        sai_thrift_create_route_entry(
-            self.client, self.route_entry_ecmp, next_hop_id=self.nhop_group)
+            self.client, self.route_entry0, next_hop_id=self.nhop1)
 
     def tearDown(self):
-        sai_thrift_remove_route_entry(self.client, self.route_entry_ecmp)
-        sai_thrift_remove_next_hop_group_member(
-            self.client, self.nhop_group_member1)
-        sai_thrift_remove_next_hop_group_member(
-            self.client, self.nhop_group_member2)
-        sai_thrift_remove_next_hop_group_member(
-            self.client, self.nhop_group_member3)
-        sai_thrift_remove_next_hop_group_member(
-            self.client, self.nhop_group_member4)
-        sai_thrift_remove_next_hop_group_member(
-            self.client, self.nhop_group_member5)
-        sai_thrift_remove_next_hop_group(self.client, self.nhop_group)
-
-        sai_thrift_remove_route_entry(self.client, self.route_entry_sp25_500)
-        sai_thrift_remove_route_entry(self.client, self.route_entry_sp25_400)
-        sai_thrift_remove_route_entry(self.client, self.route_entry_sp24_600)
-        sai_thrift_remove_route_entry(self.client, self.route_entry_sp10_100)
-        sai_thrift_remove_route_entry(
-            self.client, self.route_entry_sp10_100_ipv6)
-        sai_thrift_remove_route_entry(self.client, self.route_entry_sp10_200)
-        sai_thrift_remove_route_entry(self.client, self.route_entry_sp11_200)
-        sai_thrift_remove_route_entry(self.client, self.route_entry_sp11_300)
-        sai_thrift_remove_route_entry(self.client, self.route_entry_sl3_400)
-        sai_thrift_remove_route_entry(self.client, self.route_entry_sl3_500)
-        sai_thrift_remove_route_entry(self.client, self.route_entry4)
-        sai_thrift_remove_route_entry(self.client, self.route_entry3)
-        sai_thrift_remove_route_entry(self.client, self.route_entry2)
-        sai_thrift_remove_route_entry(self.client, self.route_entry1)
-        sai_thrift_remove_route_entry(self.client, self.route_entry1_ipv6)
         sai_thrift_remove_route_entry(self.client, self.route_entry0)
-
-        sai_thrift_remove_neighbor_entry(
-            self.client, self.neighbor_entry_sp24_600)
-        sai_thrift_remove_next_hop(self.client, self.nhop_sp24_600)
-        sai_thrift_remove_router_interface(self.client, self.subport24_600)
-
-        sai_thrift_remove_neighbor_entry(
-            self.client, self.neighbor_entry_sp25_500)
-        sai_thrift_remove_neighbor_entry(
-            self.client, self.neighbor_entry_sp25_400)
-        sai_thrift_remove_next_hop(self.client, self.nhop_sp25_500)
-        sai_thrift_remove_next_hop(self.client, self.nhop_sp25_400)
-        sai_thrift_remove_router_interface(self.client, self.subport25_500)
-        sai_thrift_remove_router_interface(self.client, self.subport25_400)
-
-        sai_thrift_remove_neighbor_entry(
-            self.client, self.neighbor_entry_sl3_500)
-        sai_thrift_remove_neighbor_entry(
-            self.client, self.neighbor_entry_sl3_400)
-        sai_thrift_remove_next_hop(self.client, self.nhop_sl3_500)
-        sai_thrift_remove_next_hop(self.client, self.nhop_sl3_400)
-        sai_thrift_remove_router_interface(self.client, self.sublag3_500)
-        sai_thrift_remove_router_interface(self.client, self.sublag3_400)
-
-        sai_thrift_remove_neighbor_entry(
-            self.client, self.neighbor_entry_sp11_300)
-        sai_thrift_remove_neighbor_entry(
-            self.client, self.neighbor_entry_sp11_200)
-        sai_thrift_remove_next_hop(self.client, self.nhop_sp11_300)
-        sai_thrift_remove_next_hop(self.client, self.nhop_sp11_200)
-        sai_thrift_remove_router_interface(self.client, self.subport11_300)
-        sai_thrift_remove_router_interface(self.client, self.subport11_200)
-
-        sai_thrift_remove_neighbor_entry(
-            self.client, self.neighbor_entry_sp10_200)
-        sai_thrift_remove_neighbor_entry(
-            self.client, self.neighbor_entry_sp10_100)
-        sai_thrift_remove_next_hop(self.client, self.nhop_sp10_200)
-        sai_thrift_remove_next_hop(self.client, self.nhop_sp10_100)
-        sai_thrift_remove_router_interface(self.client, self.subport10_200)
-        sai_thrift_remove_router_interface(self.client, self.subport10_100)
-
-        sai_thrift_set_port_attribute(self.client, self.port24, port_vlan_id=1)
-
-        sai_thrift_remove_fdb_entry(self.client, self.fdb_entry4)
-        sai_thrift_remove_fdb_entry(self.client, self.fdb_entry3)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry4)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry3)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry2)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry1)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry0)
-
-        sai_thrift_remove_next_hop(self.client, self.nhop4)
-        sai_thrift_remove_next_hop(self.client, self.nhop3)
-        sai_thrift_remove_next_hop(self.client, self.nhop2)
         sai_thrift_remove_next_hop(self.client, self.nhop1)
-        sai_thrift_remove_next_hop(self.client, self.nhop0)
-
-        sai_thrift_remove_router_interface(self.client, self.vlan700_rif)
-        sai_thrift_remove_router_interface(self.client, self.vlan600_rif)
-        sai_thrift_remove_vlan_member(self.client, self.vlan_member701)
-        sai_thrift_remove_vlan_member(self.client, self.vlan_member601)
-        sai_thrift_remove_vlan(self.client, self.vlan700)
-        sai_thrift_remove_vlan(self.client, self.vlan600)
-
-        sai_thrift_remove_bridge_port(self.client, self.port25_bp)
-        sai_thrift_remove_bridge_port(self.client, self.port24_bp)
-
-        super(L3SubPortTestHelper, self).tearDown()
+        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry1)
+        super(VirtualInterfaceTestHelper, self).tearDown()
 
 
-class RifToSubPortTest(L3SubPortTestHelper):
+class VirtualInterfaceType(VirtualInterfaceTestHelper):
     """
-    Verifies packet routed with valid vlan on sub-port
-    and routing between L3 RIF and sub-port
+    Verifies if packet is forwarded correctly before
+    and after MAC address is updated for virtual RIF.
     """
-
     def setUp(self):
-        super(RifToSubPortTest, self).setUp()
+        super(VirtualInterfaceType, self).setUp()
 
-    @warm_test(is_test_rebooting=True)
     def runTest(self):
+        print("\nVirtualInterfaceType()")
 
-        print("\nrifToSubPortTest()")
+        new_router_mac = "00:77:66:55:44:44"
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                 eth_src='00:22:22:22:22:22',
-                                ip_dst='40.40.0.10',
-                                ip_src='30.30.0.1',
+                                ip_dst='10.10.10.1',
+                                ip_src='192.168.0.1',
                                 ip_id=105,
-                                ip_ttl=64,
-                                pktlen=100)
-        tagged_pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                       eth_src='00:22:22:22:22:22',
-                                       ip_dst='40.40.0.10',
-                                       ip_src='30.30.0.1',
-                                       ip_id=105,
-                                       ip_ttl=64,
-                                       dl_vlan_enable=True,
-                                       vlan_vid=700,
-                                       pktlen=104)
+                                ip_ttl=64)
         exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
                                     eth_src=ROUTER_MAC,
-                                    ip_dst='40.40.0.10',
-                                    ip_src='30.30.0.1',
+                                    ip_dst='10.10.10.1',
+                                    ip_src='192.168.0.1',
                                     ip_id=105,
-                                    ip_ttl=63,
-                                    dl_vlan_enable=True,
-                                    vlan_vid=100,
-                                    pktlen=104)
+                                    ip_ttl=63)
+        pkt1 = simple_tcp_packet(eth_dst=new_router_mac,
+                                 eth_src='00:22:22:22:22:22',
+                                 ip_dst='10.10.10.1',
+                                 ip_src='192.168.0.1',
+                                 ip_id=105,
+                                 ip_ttl=64)
+        exp_pkt1 = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
+                                     eth_src=ROUTER_MAC,
+                                     ip_dst='10.10.10.1',
+                                     ip_src='192.168.0.1',
+                                     ip_id=105,
+                                     ip_ttl=63)
 
-        pkt_data = [
-            ['40.40.0.10', '00:33:33:33:01:00', 100, [10],
-             'subport10_100'],
-            ['40.40.0.20', '00:33:33:33:02:00', 200, [10],
-             'subport10_200'],
-            ['40.40.1.20', '00:33:33:33:12:00', 200, [11],
-             'subport11_200'],
-            ['40.40.1.30', '00:33:33:33:13:00', 300, [11],
-             'subport11_300'],
-            ['40.40.0.40', '00:33:33:33:04:00', 400, [14, 15, 16],
-             'sublag3_400'],
-            ['40.40.0.50', '00:33:33:33:05:00', 500, [14, 15, 16],
-             'sublag3_500'],
-            ['40.40.3.60', '00:33:33:33:36:00', 600, [24],
-             'subport24_600'],
-            ['40.40.4.40', '00:33:33:33:44:00', 400, [25],
-             'subport25_400'],
-            ['40.40.4.50', '00:33:33:33:45:00', 500, [25],
-             'subport25_500'],
-        ]
-        ingress_rifs = [10, 11, 15, 24]
-        for port in ingress_rifs:
-            for content in pkt_data:
-                pkt[IP].dst = content[0]
-                exp_pkt[IP].dst = content[0]
-                exp_pkt[Ether].dst = content[1]
-                exp_pkt[Dot1Q].vlan = content[2]
-                iport = getattr(self, 'dev_port%s' % port)
-                eport = [getattr(self, 'dev_port%s' % i)
-                         for i in content[3]]
-                send_packet(self, iport, pkt)
-                verify_packet_any_port(self, exp_pkt, eport)
+        try:
+            print("Sending packet on port %d with mac %s, forward"
+                  % (self.dev_port11, ROUTER_MAC))
+            send_packet(self, self.dev_port11, pkt)
+            verify_packet(self, exp_pkt, self.dev_port10)
 
-        for content in pkt_data:
-            tagged_pkt[IP].dst = content[0]
-            exp_pkt[IP].dst = content[0]
-            exp_pkt[Ether].dst = content[1]
-            exp_pkt[Dot1Q].vlan = content[2]
-            eport = [getattr(self, 'dev_port%s' % i) for i in content[3]]
-            send_packet(self, self.dev_port25, tagged_pkt)
-            verify_packet_any_port(self, exp_pkt, eport)
+            print("Updating src_mac_address to %s" % (new_router_mac))
 
-        print("\nVerification done")
+            port11_rif = sai_thrift_create_router_interface(
+                self.client,
+                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                virtual_router_id=self.default_vrf,
+                port_id=self.port11,
+                is_virtual=True,
+                src_mac_address=new_router_mac)
+
+            port11_rif_attr = sai_thrift_get_router_interface_attribute(
+                self.client,
+                router_interface_oid=port11_rif,
+                src_mac_address=True,
+            )
+            self.assertIsNotNone(port11_rif_attr)
+            src_mac_address = port11_rif_attr.get('src_mac_address')
+            self.assertEqual(src_mac_address, new_router_mac)
+
+            print("Sending packet on port %d with mac %s, forwarded"
+                  % (self.dev_port11, new_router_mac))
+            send_packet(self, self.dev_port11, pkt1)
+            verify_packet(self, exp_pkt1, self.dev_port10)
+            self.assertTrue(sai_thrift_remove_router_interface(
+                self.client, port11_rif) == 0)
+        finally:
+            pass
 
     def tearDown(self):
-        super(RifToSubPortTest, self).tearDown()
+        super(VirtualInterfaceType, self).tearDown()
 
 
-class L3SviTestHelper(PlatformSaiHelper):
+class VirtualRIFType(VirtualInterfaceTestHelper):
     """
-    This class contains base router interface tests common setup and teardown
-    for SVI RIFs
+    Verifies the type of RIF created.
+    """
+    def setUp(self):
+        super(VirtualRIFType, self).setUp()
 
-    Topology
-    L3 intf  - 10, 11
-    vlan 100 - 24, 25, 26
-    vlan 200 - lag10(30, 31), lag11(28, 29)
-    27 extra port used for testing
+    def runTest(self):
+        print("\nVirtualRIFType()")
+        try:
+            new_router_mac = "00:77:66:55:44:44"
+            v_rif = sai_thrift_create_router_interface(
+                self.client,
+                type=SAI_ROUTER_INTERFACE_TYPE_PORT,
+                virtual_router_id=self.default_vrf,
+                port_id=self.port11,
+                is_virtual=True,
+                src_mac_address=new_router_mac)
+            self.assertGreater(v_rif, 0)
+            v_rif_attr = sai_thrift_get_router_interface_attribute(
+                self.client,
+                router_interface_oid=v_rif,
+                is_virtual=True)
+            is_virtual = None
+            if v_rif_attr is not None:
+                is_virtual = v_rif_attr.get('is_virtual')
+            self.assertEqual(is_virtual, True)
+            self.assertTrue(sai_thrift_remove_router_interface(
+                self.client, v_rif) == 0)
+        finally:
+            pass
+
+    def tearDown(self):
+        super(VirtualRIFType, self).tearDown()
+
+
+class EnumQueryCapabilityHelper(PlatformSaiHelper):
+    """
+    This class contains tests that verify enum query
+    capability for supported SAI RIF types.
     """
 
     def setUp(self):
-        """
-        Topology
-        L3 intf  - 10, 11
-        vlan 100 - 24, 25, 26
-        vlan 200 - lag10(30, 31), lag11(28, 29)
-        27 extra port used for testing
-        """
-        super(L3SviTestHelper, self).setUp()
+        super(EnumQueryCapabilityHelper, self).setUp()
 
+        self.enum_capab = sai_thrift_query_attribute_enum_values_capability(
+            self.client,
+            SAI_OBJECT_TYPE_ROUTER_INTERFACE,
+            SAI_ROUTER_INTERFACE_ATTR_TYPE)
+
+    def tearDown(self):
+        super(EnumQueryCapabilityHelper, self).tearDown()
+
+
+class RifTypePort(EnumQueryCapabilityHelper):
+    """
+    Verifies enum query capability for RIF of type PORT.
+    """
+    def setUp(self):
+        super(RifTypePort, self).setUp()
+
+    def runTest(self):
+        print("\nrifTypePort()")
+
+        rif = self.port10_rif
+        rif_attr = sai_thrift_get_router_interface_attribute(
+            self.client,
+            router_interface_oid=rif,
+            type=True)
+        rif_type = rif_attr.get('type')
+        self.assertIn(rif_type, self.enum_capab)
+
+    def tearDown(self):
+        super(RifTypePort, self).tearDown()
+
+
+class RifTypeVlan(EnumQueryCapabilityHelper):
+    """
+    Verifies enum query capability for RIF of type VLAN.
+    """
+    def setUp(self):
+        super(RifTypeVlan, self).setUp()
+
+    def runTest(self):
+        print("\nrifTypeVlan()")
+
+        rif = self.vlan30_rif
+        rif_attr = sai_thrift_get_router_interface_attribute(
+            self.client,
+            router_interface_oid=rif,
+            type=True)
+        rif_type = rif_attr.get('type')
+        self.assertIn(rif_type, self.enum_capab)
+
+    def tearDown(self):
+        super(RifTypeVlan, self).tearDown()
+
+
+class RifTypeLoopback(EnumQueryCapabilityHelper):
+    """
+    Verifies enum query capability for RIF of type LOOPBACK.
+    """
+    def setUp(self):
+        super(RifTypeLoopback, self).setUp()
+
+    def runTest(self):
+        print("\nrifTypeLoopback()")
+
+        try:
+            rif = sai_thrift_create_router_interface(
+                self.client,
+                type=SAI_ROUTER_INTERFACE_TYPE_LOOPBACK,
+                virtual_router_id=self.default_vrf)
+            rif_attr = sai_thrift_get_router_interface_attribute(
+                self.client,
+                router_interface_oid=rif,
+                type=True)
+            rif_type = rif_attr.get('type')
+            self.assertIn(rif_type, self.enum_capab)
+        finally:
+            sai_thrift_remove_router_interface(self.client, rif)
+
+    def tearDown(self):
+        super(RifTypeLoopback, self).tearDown()
+
+
+class RifTypeSubPort(EnumQueryCapabilityHelper):
+    """
+    Verifies enum query capability for RIF of type SUB_PORT.
+    """
+    def setUp(self):
+        super(RifTypeSubPort, self).setUp()
+
+    def runTest(self):
+        print("\nrifTypeSubPort()")
+
+        try:
+            rif = sai_thrift_create_router_interface(
+                self.client,
+                type=SAI_ROUTER_INTERFACE_TYPE_SUB_PORT,
+                virtual_router_id=self.default_vrf,
+                port_id=self.port24,
+                outer_vlan_id=100)
+            rif_attr = sai_thrift_get_router_interface_attribute(
+                self.client,
+                router_interface_oid=rif,
+                type=True)
+            rif_type = rif_attr.get('type')
+            self.assertIn(rif_type, self.enum_capab)
+        finally:
+            sai_thrift_remove_router_interface(self.client, rif)
+
+    def tearDown(self):
+        super(RifTypeSubPort, self).tearDown()
+
+
+class SVIRifVlanTestHelper(PlatformSaiHelper):
+    """
+    This class contains virtual router interface tests for SVIs
+    """
+    def setUp(self):
+        super(SVIRifVlanTestHelper, self).setUp()
         self.port24_bp = sai_thrift_create_bridge_port(
             self.client,
             bridge_id=self.default_1q_bridge,
@@ -8856,7 +9078,6 @@ class L3SviTestHelper(PlatformSaiHelper):
             type=SAI_BRIDGE_PORT_TYPE_PORT,
             admin_state=True)
 
-        # vlan100 with members port24, port25 and port26
         self.vlan100 = sai_thrift_create_vlan(self.client, vlan_id=100)
         self.vlan_member100 = sai_thrift_create_vlan_member(
             self.client,
@@ -8867,12 +9088,13 @@ class L3SviTestHelper(PlatformSaiHelper):
             self.client,
             vlan_id=self.vlan100,
             bridge_port_id=self.port25_bp,
-            vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
+            vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_TAGGED)
         self.vlan_member102 = sai_thrift_create_vlan_member(
             self.client,
             vlan_id=self.vlan100,
             bridge_port_id=self.port26_bp,
             vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
+
         sai_thrift_set_port_attribute(
             self.client, self.port24, port_vlan_id=100)
         sai_thrift_set_port_attribute(
@@ -8891,30 +9113,20 @@ class L3SviTestHelper(PlatformSaiHelper):
         self.dmac2 = '00:22:22:33:44:55'  # 10.10.10.2
         self.dmac3 = '00:33:22:33:44:55'  # 10.10.10.3
         self.dmac4 = '00:44:22:33:44:55'  # 11.11.11.1
-        self.dmac5 = '00:11:33:33:44:55'  # 20.10.10.1
-        self.dmac6 = '00:22:33:33:44:55'  # 20.10.10.2
-        self.dmac7 = '00:44:33:33:44:55'  # 20.11.11.1
 
-        # create nhop1, nhop2 & nhop3 on SVI
-        self.neighbor_entry1 = sai_thrift_neighbor_entry_t(
-            rif_id=self.vlan100_rif, ip_address=sai_ipaddress('10.10.0.1'))
-        sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry1, dst_mac_address=self.dmac1)
         self.nhop1 = sai_thrift_create_next_hop(
             self.client,
             ip=sai_ipaddress('10.10.0.1'),
             router_interface_id=self.vlan100_rif,
             type=SAI_NEXT_HOP_TYPE_IP)
+        self.neighbor_entry1 = sai_thrift_neighbor_entry_t(
+            rif_id=self.vlan100_rif, ip_address=sai_ipaddress('10.10.0.1'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry1, dst_mac_address=self.dmac1)
         self.route_entry1 = sai_thrift_route_entry_t(
             vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.1/32'))
         sai_thrift_create_route_entry(
             self.client, self.route_entry1, next_hop_id=self.nhop1)
-        self.route_entry1_v6 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf,
-            destination=sai_ipprefix(
-                '1234:5678:9abc:def0:4422:1133:5577:0000/128'))
-        sai_thrift_create_route_entry(
-            self.client, self.route_entry1_v6, next_hop_id=self.nhop1)
 
         self.neighbor_entry2 = sai_thrift_neighbor_entry_t(
             rif_id=self.vlan100_rif, ip_address=sai_ipaddress('10.10.0.2'))
@@ -8929,431 +9141,142 @@ class L3SviTestHelper(PlatformSaiHelper):
             vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.2/32'))
         sai_thrift_create_route_entry(
             self.client, self.route_entry2, next_hop_id=self.nhop2)
-        self.route_entry2_v6 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf,
-            destination=sai_ipprefix(
-                '1234:5678:9abc:def0:4422:1133:5577:2222/128'))
-        sai_thrift_create_route_entry(
-            self.client, self.route_entry2_v6, next_hop_id=self.nhop2)
 
-        self.neighbor_entry3 = sai_thrift_neighbor_entry_t(
-            rif_id=self.vlan100_rif, ip_address=sai_ipaddress('10.10.0.3'))
-        sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry3, dst_mac_address=self.dmac3)
         self.nhop3 = sai_thrift_create_next_hop(
             self.client,
             ip=sai_ipaddress('10.10.0.3'),
             router_interface_id=self.vlan100_rif,
             type=SAI_NEXT_HOP_TYPE_IP)
+        self.neighbor_entry3 = sai_thrift_neighbor_entry_t(
+            rif_id=self.vlan100_rif, ip_address=sai_ipaddress('10.10.0.3'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry3, dst_mac_address=self.dmac3)
         self.route_entry3 = sai_thrift_route_entry_t(
             vr_id=self.default_vrf, destination=sai_ipprefix('10.10.10.3/32'))
         sai_thrift_create_route_entry(
             self.client, self.route_entry3, next_hop_id=self.nhop3)
 
         # create nhop and route to L2 intf
-        self.neighbor_entry4 = sai_thrift_neighbor_entry_t(
-            rif_id=self.port10_rif, ip_address=sai_ipaddress('11.11.0.2'))
-        sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry4, dst_mac_address=self.dmac4)
         self.nhop4 = sai_thrift_create_next_hop(
             self.client,
             ip=sai_ipaddress('11.11.0.2'),
             router_interface_id=self.port10_rif,
             type=SAI_NEXT_HOP_TYPE_IP)
+        self.neighbor_entry4 = sai_thrift_neighbor_entry_t(
+            rif_id=self.port10_rif, ip_address=sai_ipaddress('11.11.0.2'))
+        sai_thrift_create_neighbor_entry(
+            self.client, self.neighbor_entry4, dst_mac_address=self.dmac4)
         self.route_entry4 = sai_thrift_route_entry_t(
             vr_id=self.default_vrf, destination=sai_ipprefix('11.11.11.1/32'))
         sai_thrift_create_route_entry(
             self.client, self.route_entry4, next_hop_id=self.nhop4)
-        self.route_entry4_v6 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf,
-            destination=sai_ipprefix(
-                '1234:5678:9abc:def0:4422:1133:5577:1111/128'))
-        sai_thrift_create_route_entry(
-            self.client, self.route_entry4_v6, next_hop_id=self.nhop4)
 
-        self.lag10 = sai_thrift_create_lag(self.client)
-        self.lag10_bp = sai_thrift_create_bridge_port(
-            self.client,
-            bridge_id=self.default_1q_bridge,
-            port_id=self.lag10,
-            type=SAI_BRIDGE_PORT_TYPE_PORT,
-            admin_state=True)
-        self.lag10_member30 = sai_thrift_create_lag_member(
-            self.client, lag_id=self.lag10, port_id=self.port30)
-        self.lag10_member31 = sai_thrift_create_lag_member(
-            self.client, lag_id=self.lag10, port_id=self.port31)
-
-        self.lag11 = sai_thrift_create_lag(self.client)
-        self.lag11_bp = sai_thrift_create_bridge_port(
-            self.client,
-            bridge_id=self.default_1q_bridge,
-            port_id=self.lag11,
-            type=SAI_BRIDGE_PORT_TYPE_PORT,
-            admin_state=True)
-        self.lag11_member28 = sai_thrift_create_lag_member(
-            self.client, lag_id=self.lag11, port_id=self.port28)
-        self.lag11_member29 = sai_thrift_create_lag_member(
-            self.client, lag_id=self.lag11, port_id=self.port29)
-
-        # vlan200 with members lag10 and lag11
-        self.vlan200 = sai_thrift_create_vlan(self.client, vlan_id=200)
-        self.vlan_member200 = sai_thrift_create_vlan_member(
-            self.client,
-            vlan_id=self.vlan200,
-            bridge_port_id=self.lag10_bp,
-            vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
-        self.vlan_member201 = sai_thrift_create_vlan_member(
-            self.client,
-            vlan_id=self.vlan200,
-            bridge_port_id=self.lag11_bp,
-            vlan_tagging_mode=SAI_VLAN_TAGGING_MODE_UNTAGGED)
-        sai_thrift_set_lag_attribute(self.client, self.lag10, port_vlan_id=200)
-        sai_thrift_set_lag_attribute(self.client, self.lag11, port_vlan_id=200)
-
-        self.vlan200_rif = sai_thrift_create_router_interface(
-            self.client,
-            type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
-            virtual_router_id=self.default_vrf,
-            vlan_id=self.vlan200)
-
-        # Create nhop5 and nhop6 on SVI
-        self.neighbor_entry5 = sai_thrift_neighbor_entry_t(
-            rif_id=self.vlan200_rif, ip_address=sai_ipaddress('20.10.0.1'))
-        sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry5, dst_mac_address=self.dmac5)
-        self.nhop5 = sai_thrift_create_next_hop(
-            self.client,
-            ip=sai_ipaddress('20.10.0.1'),
-            router_interface_id=self.vlan200_rif,
-            type=SAI_NEXT_HOP_TYPE_IP)
-        self.route_entry5 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('20.10.10.1/32'))
-        sai_thrift_create_route_entry(
-            self.client, self.route_entry5, next_hop_id=self.nhop5)
-        self.route_entry5_v6 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf,
-            destination=sai_ipprefix(
-                '1234:5678:9abc:def0:4422:1133:5577:99aa/128'))
-        sai_thrift_create_route_entry(
-            self.client, self.route_entry5_v6, next_hop_id=self.nhop5)
-
-        self.neighbor_entry6 = sai_thrift_neighbor_entry_t(
-            rif_id=self.vlan200_rif, ip_address=sai_ipaddress('20.10.0.2'))
-        sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry6, dst_mac_address=self.dmac6)
-        self.nhop6 = sai_thrift_create_next_hop(
-            self.client,
-            ip=sai_ipaddress('20.10.0.2'),
-            router_interface_id=self.vlan200_rif,
-            type=SAI_NEXT_HOP_TYPE_IP)
-        self.route_entry6 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('20.10.10.2/32'))
-        sai_thrift_create_route_entry(
-            self.client, self.route_entry6, next_hop_id=self.nhop6)
-        self.route_entry6_v6 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf,
-            destination=sai_ipprefix(
-                '1234:5678:9abc:def0:1122:3344:5566:7788/128'))
-        sai_thrift_create_route_entry(
-            self.client, self.route_entry6_v6, next_hop_id=self.nhop6)
-
-        self.neighbor_entry7 = sai_thrift_neighbor_entry_t(
-            rif_id=self.port11_rif, ip_address=sai_ipaddress('21.11.0.2'))
-        sai_thrift_create_neighbor_entry(
-            self.client, self.neighbor_entry7, dst_mac_address=self.dmac7)
-        self.nhop7 = sai_thrift_create_next_hop(
-            self.client,
-            ip=sai_ipaddress('21.11.0.2'),
-            router_interface_id=self.port11_rif,
-            type=SAI_NEXT_HOP_TYPE_IP)
-        self.route_entry7 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf, destination=sai_ipprefix('21.11.11.1/32'))
-        sai_thrift_create_route_entry(
-            self.client, self.route_entry7, next_hop_id=self.nhop7)
-        self.route_entry7_v6 = sai_thrift_route_entry_t(
-            vr_id=self.default_vrf,
-            destination=sai_ipprefix(
-                '1234:5678:9abc:def0:1122:3344:5566:6677/128'))
-        sai_thrift_create_route_entry(
-            self.client, self.route_entry7_v6, next_hop_id=self.nhop7)
-    
     def tearDown(self):
-        # When removing nhop, neighbor and route, calling api in this order:
-        # route -> nhop -> neighbor
-        # Related Issue: https://github.com/opencomputeproject/SAI/issues/1607
-
-        sai_thrift_remove_route_entry(self.client, self.route_entry5)
-        sai_thrift_remove_route_entry(self.client, self.route_entry5_v6)
-        sai_thrift_remove_route_entry(self.client, self.route_entry6)
-        sai_thrift_remove_route_entry(self.client, self.route_entry6_v6)
-        sai_thrift_remove_route_entry(self.client, self.route_entry7)
-        sai_thrift_remove_route_entry(self.client, self.route_entry7_v6)
-
-        sai_thrift_remove_next_hop(self.client, self.nhop5)
-        sai_thrift_remove_next_hop(self.client, self.nhop6)
-        sai_thrift_remove_next_hop(self.client, self.nhop7)
-
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry5)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry6)
-        sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry7)
-
-        sai_thrift_set_lag_attribute(self.client, self.lag10, port_vlan_id=1)
-        sai_thrift_set_lag_attribute(self.client, self.lag11, port_vlan_id=1)
-
-        sai_thrift_remove_router_interface(self.client, self.vlan200_rif)
-
-        sai_thrift_remove_vlan_member(self.client, self.vlan_member200)
-        sai_thrift_remove_vlan_member(self.client, self.vlan_member201)
-
-        sai_thrift_remove_vlan(self.client, self.vlan200)
-
-        sai_thrift_remove_lag_member(self.client, self.lag10_member30)
-        sai_thrift_remove_lag_member(self.client, self.lag10_member31)
-        sai_thrift_remove_lag_member(self.client, self.lag11_member28)
-        sai_thrift_remove_lag_member(self.client, self.lag11_member29)
-        sai_thrift_remove_bridge_port(self.client, self.lag10_bp)
-        sai_thrift_remove_bridge_port(self.client, self.lag11_bp)
-        sai_thrift_remove_lag(self.client, self.lag10)
-        sai_thrift_remove_lag(self.client, self.lag11)
-
-        sai_thrift_remove_route_entry(self.client, self.route_entry1)
-        sai_thrift_remove_route_entry(self.client, self.route_entry1_v6)
-        sai_thrift_remove_route_entry(self.client, self.route_entry2)
-        sai_thrift_remove_route_entry(self.client, self.route_entry2_v6)
-        sai_thrift_remove_route_entry(self.client, self.route_entry3)
         sai_thrift_remove_route_entry(self.client, self.route_entry4)
-        sai_thrift_remove_route_entry(self.client, self.route_entry4_v6)
-
-        sai_thrift_remove_next_hop(self.client, self.nhop1)
-        sai_thrift_remove_next_hop(self.client, self.nhop2)
-        sai_thrift_remove_next_hop(self.client, self.nhop3)
-        sai_thrift_remove_next_hop(self.client, self.nhop4)
+        sai_thrift_remove_route_entry(self.client, self.route_entry3)
+        sai_thrift_remove_route_entry(self.client, self.route_entry2)
+        sai_thrift_remove_route_entry(self.client, self.route_entry1)
 
         sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry1)
         sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry2)
         sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry3)
         sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry4)
 
-        sai_thrift_remove_router_interface(self.client, self.vlan100_rif)
+        sai_thrift_remove_next_hop(self.client, self.nhop1)
+        sai_thrift_remove_next_hop(self.client, self.nhop2)
+        sai_thrift_remove_next_hop(self.client, self.nhop3)
+        sai_thrift_remove_next_hop(self.client, self.nhop4)
 
-        sai_thrift_set_port_attribute(self.client, self.port24, port_vlan_id=1)
-        sai_thrift_set_port_attribute(self.client, self.port25, port_vlan_id=1)
-        sai_thrift_set_port_attribute(self.client, self.port26, port_vlan_id=1)
+        sai_thrift_remove_router_interface(self.client, self.vlan100_rif)
+        sai_thrift_set_port_attribute(self.client, self.port24, port_vlan_id=0)
+        sai_thrift_set_port_attribute(self.client, self.port25, port_vlan_id=0)
+        sai_thrift_set_port_attribute(self.client, self.port26, port_vlan_id=0)
 
         sai_thrift_remove_vlan_member(self.client, self.vlan_member100)
         sai_thrift_remove_vlan_member(self.client, self.vlan_member101)
         sai_thrift_remove_vlan_member(self.client, self.vlan_member102)
 
         sai_thrift_remove_vlan(self.client, self.vlan100)
-
         sai_thrift_remove_bridge_port(self.client, self.port24_bp)
         sai_thrift_remove_bridge_port(self.client, self.port25_bp)
         sai_thrift_remove_bridge_port(self.client, self.port26_bp)
 
-        super(L3SviTestHelper, self).tearDown()
+        super(SVIRifVlanTestHelper, self).tearDown()
 
 
-class SviHostTest(L3SviTestHelper):
+class SviRifIpv4Test(SVIRifVlanTestHelper):
     """
-    Verifies routing after NHOP resolved via static MAC entry
+    Verifies if packet is forwarded correctly before
+    and after MAC address is updated for virtual RIF for SVI's.
     """
-
     def setUp(self):
-        """
-        Topology
-        L3 intf  - 10, 11
-        vlan 100 - 24, 25, 26
-        vlan 200 - lag10(30, 31), lag11(28, 29)
-        27 extra port used for testing
-        """
-        super(SviHostTest, self).setUp()
+        super(SviRifIpv4Test, self).setUp()
 
-    @warm_test(is_test_rebooting=False)
     def runTest(self):
-        print("\nSviHostTest()")
-
-        mac_action = SAI_PACKET_ACTION_FORWARD
-        fdb_entry1 = sai_thrift_fdb_entry_t(switch_id=self.switch_id,
-                                            mac_address='00:11:22:33:44:55',
-                                            bv_id=self.vlan100)
-        sai_thrift_create_fdb_entry(self.client,
-                                    fdb_entry1,
-                                    type=SAI_FDB_ENTRY_TYPE_STATIC,
-                                    bridge_port_id=self.port24_bp,
-                                    packet_action=mac_action)
-
-        fdb_entry2 = sai_thrift_fdb_entry_t(switch_id=self.switch_id,
-                                            mac_address='00:22:22:33:44:55',
-                                            bv_id=self.vlan100)
-        sai_thrift_create_fdb_entry(self.client,
-                                    fdb_entry2,
-                                    type=SAI_FDB_ENTRY_TYPE_STATIC,
-                                    bridge_port_id=self.port25_bp,
-                                    packet_action=mac_action)
-
+        print("\nsviRifIpv4Test()")
+        new_router_mac = "00:77:66:55:44:44"
         pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                 eth_src='00:22:22:22:22:22',
-                                ip_dst='10.10.10.1',
+                                ip_dst='11.11.11.1',
                                 ip_src='192.168.0.1',
                                 ip_id=105,
-                                ip_ttl=64)
-        exp_pkt = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
+                                ip_ttl=64,
+                                pktlen=100)
+        exp_pkt = simple_tcp_packet(eth_dst='00:44:22:33:44:55',
                                     eth_src=ROUTER_MAC,
-                                    ip_dst='10.10.10.1',
+                                    ip_dst='11.11.11.1',
                                     ip_src='192.168.0.1',
                                     ip_id=105,
-                                    ip_ttl=63)
-        pkt1 = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                 eth_src='00:22:22:22:22:22',
-                                 ip_dst='10.10.10.2',
-                                 ip_src='192.168.0.1',
-                                 ip_id=105,
-                                 ip_ttl=64)
-        exp_pkt1 = simple_tcp_packet(eth_dst='00:22:22:33:44:55',
-                                     eth_src=ROUTER_MAC,
-                                     ip_dst='10.10.10.2',
-                                     ip_src='192.168.0.1',
-                                     ip_id=105,
-                                     ip_ttl=63)
-        pkt2 = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    ip_ttl=63,
+                                    pktlen=100)
+        tagged_pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                       eth_src='00:22:22:22:22:22',
+                                       ip_dst='11.11.11.1',
+                                       ip_src='192.168.0.1',
+                                       ip_id=105,
+                                       ip_ttl=64,
+                                       dl_vlan_enable=True,
+                                       vlan_vid=100,
+                                       pktlen=104)
+        pkt1 = simple_tcp_packet(eth_dst=new_router_mac,
                                  eth_src='00:22:22:22:22:22',
                                  ip_dst='11.11.11.1',
                                  ip_src='192.168.0.1',
                                  ip_id=105,
                                  ip_ttl=64)
-        exp_pkt2 = simple_tcp_packet(eth_dst='00:44:22:33:44:55',
-                                     eth_src=ROUTER_MAC,
-                                     ip_dst='11.11.11.1',
-                                     ip_src='192.168.0.1',
-                                     ip_id=105,
-                                     ip_ttl=63)
-
         try:
-            print("Sending packet port %d to port %d, (192.168.0.1 -> "
-                  "10.10.10.1) Routed" % (self.dev_port10, self.dev_port24))
-            send_packet(self, self.dev_port10, pkt)
-            verify_packets(self, exp_pkt, [self.dev_port24])
+            print("Sending packet on port %d, routed" % self.dev_port24)
+            send_packet(self, self.dev_port24, pkt)
+            verify_packets(self, exp_pkt, [self.dev_port10])
 
-            print("Sending packet port %d to port %d, (192.168.0.1 -> "
-                  "10.10.10.2) Routed" % (self.dev_port10, self.dev_port25))
-            send_packet(self, self.dev_port10, pkt1)
-            verify_packets(self, exp_pkt1, [self.dev_port25])
+            print("Adding new virtual SVI rif with new ingress rif rmac")
+            vlan100_rif = sai_thrift_create_router_interface(
+                self.client,
+                type=SAI_ROUTER_INTERFACE_TYPE_VLAN,
+                virtual_router_id=self.default_vrf,
+                vlan_id=self.vlan100,
+                is_virtual=True,
+                src_mac_address=new_router_mac)
 
-            print("Sending packet port %d to port %d, (192.168.0.1 -> "
-                  "11.11.11.1) Routed" % (self.dev_port24, self.dev_port10))
-            send_packet(self, self.dev_port24, pkt2)
-            verify_packets(self, exp_pkt2, [self.dev_port10])
+            print("Sending packet on port %d with mac %s, forwarded"
+                  % (self.dev_port24, new_router_mac))
+            send_packet(self, self.dev_port24, pkt1)
+            verify_packet(self, exp_pkt, self.dev_port10)
+
+            print("Sending tagged packet on port %d with mac %s, forwarded"
+                  % (self.dev_port25, new_router_mac))
+            send_packet(self, self.dev_port25, tagged_pkt)
+            verify_packet(self, exp_pkt, self.dev_port10)
+
+            print("Sending packet on port %d with mac %s, forwarded"
+                  % (self.dev_port26, new_router_mac))
+            send_packet(self, self.dev_port26, pkt1)
+            verify_packet(self, exp_pkt, self.dev_port10)
+
+            self.assertTrue(sai_thrift_remove_router_interface(
+                self.client, vlan100_rif) == 0)
         finally:
-            sai_thrift_remove_fdb_entry(self.client, fdb_entry1)
-            sai_thrift_remove_fdb_entry(self.client, fdb_entry2)
+            pass
 
     def tearDown(self):
-        super(SviHostTest, self).tearDown()
-
-
-class SviLagHostTest(L3SviTestHelper):
-    """
-    Verifies routing after NHOP resolved via static MAC entry on LAG
-    """
-
-    def setUp(self):
-        """
-        Topology
-        L3 intf  - 10, 11
-        vlan 100 - 24, 25, 26
-        vlan 200 - lag10(30, 31), lag11(28, 29)
-        27 extra port used for testing
-        """
-        super(SviLagHostTest, self).setUp()
-
-    @warm_test(is_test_rebooting=False)
-    def runTest(self):
-        print("\nSviLagHostTest()")
-        print("Test routing after NHOP resolved via static MAC entry")
-
-        mac_action = SAI_PACKET_ACTION_FORWARD
-        fdb_entry1 = sai_thrift_fdb_entry_t(switch_id=self.switch_id,
-                                            mac_address='00:11:33:33:44:55',
-                                            bv_id=self.vlan200)
-        sai_thrift_create_fdb_entry(self.client,
-                                    fdb_entry1,
-                                    type=SAI_FDB_ENTRY_TYPE_STATIC,
-                                    bridge_port_id=self.lag10_bp,
-                                    packet_action=mac_action)
-
-        fdb_entry2 = sai_thrift_fdb_entry_t(switch_id=self.switch_id,
-                                            mac_address='00:22:33:33:44:55',
-                                            bv_id=self.vlan200)
-        sai_thrift_create_fdb_entry(self.client,
-                                    fdb_entry2,
-                                    type=SAI_FDB_ENTRY_TYPE_STATIC,
-                                    bridge_port_id=self.lag11_bp,
-                                    packet_action=mac_action)
-
-        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                eth_src='00:22:22:22:22:22',
-                                ip_dst='20.10.10.1',
-                                ip_src='192.168.0.1',
-                                ip_id=105,
-                                ip_ttl=64)
-        exp_pkt = simple_tcp_packet(eth_dst='00:11:33:33:44:55',
-                                    eth_src=ROUTER_MAC,
-                                    ip_dst='20.10.10.1',
-                                    ip_src='192.168.0.1',
-                                    ip_id=105,
-                                    ip_ttl=63)
-        pkt1 = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                 eth_src='00:22:22:22:22:22',
-                                 ip_dst='20.10.10.2',
-                                 ip_src='192.168.0.1',
-                                 ip_id=105,
-                                 ip_ttl=64)
-        exp_pkt1 = simple_tcp_packet(eth_dst='00:22:33:33:44:55',
-                                     eth_src=ROUTER_MAC,
-                                     ip_dst='20.10.10.2',
-                                     ip_src='192.168.0.1',
-                                     ip_id=105,
-                                     ip_ttl=63)
-        pkt2 = simple_tcp_packet(eth_dst=ROUTER_MAC,
-                                 eth_src='00:22:22:22:22:22',
-                                 ip_dst='21.11.11.1',
-                                 ip_src='192.168.0.1',
-                                 ip_id=105,
-                                 ip_ttl=64)
-        exp_pkt2 = simple_tcp_packet(eth_dst='00:44:33:33:44:55',
-                                     eth_src=ROUTER_MAC,
-                                     ip_dst='21.11.11.1',
-                                     ip_src='192.168.0.1',
-                                     ip_id=105,
-                                     ip_ttl=63)
-
-        try:
-            print("Sending packet port %d to lag 3, (192.168.0.1 -> "
-                  "20.10.10.1) Routed" % (self.dev_port11))
-            send_packet(self, self.dev_port11, pkt)
-            verify_packet_any_port(
-                self, exp_pkt, [self.dev_port30, self.dev_port31])
-
-            print("Sending packet port %d to lag 4, (192.168.0.1 -> "
-                  "20.10.10.2) Routed" % (self.dev_port11))
-            send_packet(self, self.dev_port11, pkt1)
-            verify_packet_any_port(
-                self, exp_pkt1, [self.dev_port28, self.dev_port29])
-
-            print("Sending packet port %d to port %d (192.168.0.1 -> "
-                  "21.11.11.1) Routed" % (self.dev_port15, self.dev_port11))
-            send_packet(self, self.dev_port30, pkt2)
-            verify_packet(self, exp_pkt2, self.dev_port11)
-
-            print("Sending packet port %d to port %d, (192.168.0.1 -> "
-                  "21.11.11.1) Routed" % (self.dev_port16, self.dev_port11))
-            send_packet(self, self.dev_port31, pkt2)
-            verify_packet(self, exp_pkt2, self.dev_port11)
-
-        finally:
-            sai_thrift_flush_fdb_entries(
-                self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
-
-    def tearDown(self):
-        super(SviLagHostTest, self).tearDown()
-
+        super(SviRifIpv4Test, self).tearDown()
