@@ -110,4 +110,7 @@ class SwitchConfiger(object):
             self.client, number_of_active_ports=True)
         self.test_obj.dut.active_ports_no = attr['number_of_active_ports']
         print("Get number_of_active_ports {}".format(self.test_obj.dut.active_ports_no))
+
+        adapter.CATCH_EXCEPTIONS = capture_status
+        adapter.EXPECTED_ERROR_CODE = expected_code
         print("Restore all the expect error code and exception captures.")
