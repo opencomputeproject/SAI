@@ -277,7 +277,7 @@ def query_counter(test, cnt_func, *args, **kwargs):
             unsupported_counters.append(counter)
         result[counter] = stats[counter]
     restore_api_error_code()
-    return result, supported_counters, unsupported_counters
+    return result
 
 
 def clear_counter(test, cnt_func, *args, **kwargs):
@@ -319,13 +319,12 @@ def clear_counter(test, cnt_func, *args, **kwargs):
     for id in id_list:
         kwargs["counter_ids"] = [id]
         counter = id_dict[id]
-        stats = cnt_func(test.client, *args, **kwargs)
+        cnt_func(test.client, *args, **kwargs)
         if test.status() == SAI_STATUS_SUCCESS:
             supported_counters.append(counter)
         else:
             unsupported_counters.append(counter)
     restore_api_error_code()
-    return supported_counters, unsupported_counters
 
 
 capture_status = True
@@ -337,7 +336,7 @@ def ignore_api_errors():
     and will not be raised.
 
     """
-    print("Ignore all the expect error code and exception captures.")
+    #print("Ignore all the expect error code and exception captures.")
     global capture_status, expected_code
     capture_status = adapter.CATCH_EXCEPTIONS
     expected_code = adapter.EXPECTED_ERROR_CODE
@@ -350,7 +349,7 @@ def restore_api_error_code():
     """
     Restore API error code and catch status.
     """
-    print("Restore all the expect error code and exception captures.")
+    #print("Restore all the expect error code and exception captures.")
     global capture_status, expected_code
     adapter.CATCH_EXCEPTIONS = capture_status
     adapter.EXPECTED_ERROR_CODE = expected_code
