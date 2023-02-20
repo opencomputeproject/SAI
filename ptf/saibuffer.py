@@ -186,13 +186,23 @@ class BufferStatistics(MinimalPortVlanConfig):
         print()
         print("Clear bufer pool and ingress priority group stats")
 
+        stats = sai_thrift_get_buffer_pool_stats(self.client, self.ingr_pool)
+        print('SAI_BUFFER_POOL_STAT_WATERMARK_BYTES:',
+              stats['SAI_BUFFER_POOL_STAT_WATERMARK_BYTES'])
         status = sai_thrift_clear_buffer_pool_stats(
             self.client, self.ingr_pool)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
-        status = sai_thrift_clear_ingress_priority_group_stats(
-            self.client, self.ipg)
-        self.assertEqual(status, SAI_STATUS_SUCCESS)
+        stats = sai_thrift_get_ingress_priority_group_stats_ext(
+            self.client, self.ipg, SAI_STATS_MODE_READ_AND_CLEAR)
+        print('SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS:',
+              stats['SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS'])
+        print('SAI_INGRESS_PRIORITY_GROUP_STAT_BYTES:',
+              stats['SAI_INGRESS_PRIORITY_GROUP_STAT_BYTES'])
+        print('SAI_INGRESS_PRIORITY_GROUP_STAT_WATERMARK_BYTES:',
+              stats['SAI_INGRESS_PRIORITY_GROUP_STAT_WATERMARK_BYTES'])
+        print('SAI_INGRESS_PRIORITY_GROUP_STAT_DROPPED_PACKETS:',
+              stats['SAI_INGRESS_PRIORITY_GROUP_STAT_DROPPED_PACKETS'])
 
         print("Get stats and verify they are cleared")
 
