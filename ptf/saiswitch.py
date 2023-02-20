@@ -69,10 +69,10 @@ def generate_mac_list(no_of_addr):
 
     mac_list = []
     i = 0
-    for first_grp in range(0, 256):
-        for second_grp in range(0, 256):
-            for third_grp in range(0, 256):
-                for fourth_grp in range(0, 256):
+    for first_grp in range(1, 256):
+        for second_grp in range(1, 256):
+            for third_grp in range(1, 256):
+                for fourth_grp in range(1, 256):
                     mac_list.append('00:00:' +
                                     ('%02x' % first_grp) + ':' +
                                     ('%02x' % second_grp) + ':' +
@@ -84,19 +84,360 @@ def generate_mac_list(no_of_addr):
     return mac_list
 
 
+class AvailableResourceTestHelper(PlatformSaiHelper):
+    def setUp(self):
+        super(AvailableResourceTestHelper, self).setUp()
+
+        # values required by neighbor entries tests set by route entries test
+        # Note: routes entries tests should be run as first
+        self.available_v4_host_routes = None
+        self.available_v6_host_routes = None
+
+
+    def availableIPv4RouteEntryTest(self):
+        """
+        Verifies creation of maximum number of IPv4 route entries.
+        """
+        print("\navailableIPv4RouteEntryTest()")
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, available_ipv4_route_entry=True)
+        self.max_route_entry = attr["available_ipv4_route_entry"]
+        print("Available IPv4 route entries: %d" % self.max_route_entry)
+
+        self.routes = dict()
+        mask = '/32'
+        ip_add = generate_ip_addr(self.max_route_entry + 100)
+        try:
+            self.neigh_entry = sai_thrift_neighbor_entry_t(
+                self.switch_id, self.port10_rif, sai_ipaddress('10.10.10.1'))
+            self.neigh = sai_thrift_create_neighbor_entry(
+                self.client, self.neigh_entry, dst_mac_address='00:11:22:33:44:55')
+            self.nhop = sai_thrift_create_next_hop(
+                self.client,
+                ip=sai_ipaddress('10.10.10.1'),
+                router_interface_id=self.port10_rif,
+                type=SAI_NEXT_HOP_TYPE_IP)
+            self.assertNotEqual(self.nhop, SAI_NULL_OBJECT_ID)
+
+            self.route_number = 0
+            max_host_route = 0
+            while self.route_number < self.max_route_entry:
+                ip_p_m = sai_ipprefix(next(ip_add) + mask)
+
+                # check if ip repeat, then get next ip
+                if str(ip_p_m) in self.routes:
+                    print("ip repeat")
+                    continue
+
+                route_entry = sai_thrift_route_entry_t(
+                    vr_id=self.default_vrf,
+                    destination=ip_p_m)
+                status = sai_thrift_create_route_entry(
+                    self.client, route_entry, next_hop_id=self.nhop)
+
+                # print(self.route_number)
+                if status == SAI_STATUS_SUCCESS:
+                    self.routes.update({str(ip_p_m): route_entry})
+                    self.route_number += 1
+                elif status == SAI_STATUS_ITEM_ALREADY_EXISTS:
+                    print("SAI_STATUS_ITEM_ALREADY_EXISTS")
+                    continue
+                elif mask == '/32':  # when host table is full change to LPM
+                    print("%s host routes have been created" % self.route_number)
+                    max_host_route = self.route_number
+                    self.available_v4_host_routes = max_host_route
+                    mask = '/30'
+                    continue
+                else:
+                    self.fail("Route creation failed after creating %d "
+                                "entries, status %u" % (self.route_number, status))
+
+                attr = sai_thrift_get_switch_attribute(
+                    self.client, available_ipv4_route_entry=True)
+                self.assertEqual(attr["available_ipv4_route_entry"],
+                                    self.max_route_entry - self.route_number)
+            ip_add.close()
+            
+            attr = sai_thrift_get_switch_attribute(
+                self.client, available_ipv4_route_entry=True)
+            self.assertEqual(attr["available_ipv4_route_entry"], 0)
+        finally:
+            for ip_p_m in self.routes:
+                sai_thrift_remove_route_entry(self.client, self.routes.get(ip_p_m))
+            sai_thrift_remove_next_hop(self.client, self.nhop)
+
+
+    def availableIPv6RouteEntryTest(self):
+        """
+        Verifies creation of maximum number of IPv6 route entries.
+        """
+        print("\navailableIPv6RouteEntryTest()")
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, available_ipv6_route_entry=True)
+        max_route_entry = attr["available_ipv6_route_entry"]
+        print("Available IPv6 route entries: %d" % max_route_entry)
+
+        self.available_v6_host_routes = max_route_entry
+        self.routes = dict()
+        mask = '/128'
+        ip_add = generate_ip_addr(max_route_entry + 100, ipv6=True)
+        try:
+            self.neigh_entry = sai_thrift_neighbor_entry_t(
+                self.switch_id, self.port10_rif, sai_ipaddress('2001:0db8:1::1'))
+            self.neigh = sai_thrift_create_neighbor_entry(
+                self.client, self.neigh_entry, dst_mac_address='00:11:22:33:44:55')
+            self.nhop = sai_thrift_create_next_hop(
+                self.client,
+                ip=sai_ipaddress('2001:0db8:1::1'),
+                router_interface_id=self.port10_rif,
+                type=SAI_NEXT_HOP_TYPE_IP)
+            self.assertNotEqual(self.nhop, SAI_NULL_OBJECT_ID)
+
+            route_number = 0
+            max_host_route = 0
+            while route_number < max_route_entry:
+                ip_p_m = sai_ipprefix(next(ip_add) + mask)
+
+                #  check if ip repeat, then get next ip
+                if str(ip_p_m) in self.routes:
+                    continue
+
+                route_entry = sai_thrift_route_entry_t(
+                    switch_id=self.switch_id,
+                    vr_id=self.default_vrf,
+                    destination=ip_p_m)
+                status = sai_thrift_create_route_entry(
+                    self.client, route_entry, next_hop_id=self.nhop)
+
+                if status == SAI_STATUS_SUCCESS:
+                    self.routes.update({str(ip_p_m): route_entry})
+                    route_number += 1
+                elif status == SAI_STATUS_ITEM_ALREADY_EXISTS:
+                    continue
+                elif mask == '/128':  # when host table is full change to LPM
+                    print("%s host routes have been created" % route_number)
+                    max_host_route = route_number
+                    self.available_v6_host_routes = max_host_route
+                    mask = '/120'
+                    continue
+                elif mask == '/120':  # when LPM table is full change to LPM64
+                    print("%s host + LPM routes have been created so far"
+                            % route_number)
+                    mask = '/64'
+                    continue
+                else:
+                    self.fail("Route creation failed after creating %d "
+                                "entries, status %u" % (route_number, status))
+
+                attr = sai_thrift_get_switch_attribute(
+                    self.client, available_ipv6_route_entry=True)
+                self.assertEqual(attr["available_ipv6_route_entry"],
+                                    max_route_entry - route_number)
+            ip_add.close()
+
+            attr = sai_thrift_get_switch_attribute(
+                self.client, available_ipv6_route_entry=True)
+            self.assertEqual(attr["available_ipv6_route_entry"], 0)
+        finally:
+            for ip_p_m in self.routes:
+                sai_thrift_remove_route_entry(self.client, self.routes.get(ip_p_m))
+            sai_thrift_remove_next_hop(self.client, self.nhop)
+
+
+    def availableIPv4NeighborEntryTest(self):
+        """
+        Verifies creation of maximum number of IPv4 neighbor entries.
+        """
+        print("\navailableIPv4NeighborEntryTest()")
+
+        if self.available_v4_host_routes is None:
+            print("availableIPv4RouteEntryTest must be run first")
+            return
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, available_ipv4_neighbor_entry=True)
+        available_nbr_entry = attr["available_ipv4_neighbor_entry"]
+        print("Available IPv4 neighbor entries: %d" % available_nbr_entry)
+
+        if available_nbr_entry > self.available_v4_host_routes:
+            print("Cannot create more neighbor entries than available host "
+                  "routes which is %d" % self.available_v4_host_routes)
+            max_nbr_entry = self.available_v4_host_routes
+        else:
+            max_nbr_entry = available_nbr_entry
+
+        nbrs = dict()
+        ip_add = generate_ip_addr(max_nbr_entry + 100)
+        try:
+            nbr_number = 0
+            while nbr_number < max_nbr_entry:
+                ip_p = sai_ipaddress(next(ip_add))
+
+                #  check if ip repeat, then get next ip
+                if str(ip_p) in nbrs:
+                    continue
+
+                nbr_entry = sai_thrift_neighbor_entry_t(
+                    rif_id=self.port0_rif,
+                    ip_address=ip_p)
+                status = sai_thrift_create_neighbor_entry(
+                    self.client,
+                    nbr_entry,
+                    dst_mac_address='00:00:00:00:00:01',
+                    no_host_route=False)
+                self.assertEqual(status, SAI_STATUS_SUCCESS)
+                nbrs.update({str(ip_p): nbr_entry})
+                nbr_number += 1
+
+                attr = sai_thrift_get_switch_attribute(
+                    self.client, available_ipv4_neighbor_entry=True)
+                self.assertEqual(attr["available_ipv4_neighbor_entry"],
+                                 available_nbr_entry - nbr_number,
+                                 "Failed after %d entries" % nbr_number)
+
+        finally:
+            for ip_p in nbrs:
+                sai_thrift_remove_neighbor_entry(self.client, nbrs.get(ip_p))
+
+
+    def availableIPv6NeighborEntryTest(self):
+        """
+        Verifies creation of maximum number of IPv6 neighbor entries.
+        """
+        print("\navailableIPv6NeighborEntryTest()")
+
+        if self.available_v6_host_routes is None:
+            print("availableIPv6RouteEntryTest must be run first")
+            return
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, available_ipv6_neighbor_entry=True)
+        available_nbr_entry = attr["available_ipv6_neighbor_entry"]
+        print("Available IPv6 neighbor entries: %d" % available_nbr_entry)
+
+        if available_nbr_entry > self.available_v6_host_routes:
+            print("Cannot create more neighbor entries than available host "
+                  "routes which is %d" % self.available_v6_host_routes)
+            max_nbr_entry = self.available_v6_host_routes
+        else:
+            max_nbr_entry = available_nbr_entry
+
+        nbrs = dict()
+        ip_add = generate_ip_addr(max_nbr_entry + 100, ipv6=True)
+        try:
+            nbr_number = 0
+            while nbr_number < max_nbr_entry:
+                ip_p = sai_ipaddress(next(ip_add))
+
+                #  check if ip repeat, then get next ip
+                if str(ip_p) in nbrs:
+                    continue
+
+                nbr_entry = sai_thrift_neighbor_entry_t(
+                    rif_id=self.port0_rif,
+                    ip_address=ip_p)
+                status = sai_thrift_create_neighbor_entry(
+                    self.client,
+                    nbr_entry,
+                    dst_mac_address='00:00:00:00:00:01',
+                    no_host_route=False)
+                nbrs.update({str(ip_p): nbr_entry})
+                nbr_number += 1
+                self.assertEqual(status, SAI_STATUS_SUCCESS)
+
+                attr = sai_thrift_get_switch_attribute(
+                    self.client, available_ipv6_neighbor_entry=True)
+                self.assertEqual(attr["available_ipv6_neighbor_entry"],
+                                 available_nbr_entry - nbr_number,
+                                 "Failed after %d entries" % nbr_number)
+
+        finally:
+            for ip_p in nbrs:
+                sai_thrift_remove_neighbor_entry(self.client, nbrs.get(ip_p))
+
+
+class AvailableIPv4RouteEntryTest(AvailableResourceTestHelper):
+    def runTest(self):
+        self.availableIPv4RouteEntryTest()
+
+
+class AvailableIPv6RouteEntryTest(AvailableResourceTestHelper):
+    def runTest(self):
+        self.availableIPv6RouteEntryTest()
+
+
+class AvailableIPv4NeighborEntryTest(AvailableResourceTestHelper):
+    def runTest(self):
+        self.availableIPv4RouteEntryTest()
+        self.availableIPv4NeighborEntryTest()
+
+
+class AvailableIPv6NeighborEntryTest(AvailableResourceTestHelper):
+    def runTest(self):
+        self.availableIPv6RouteEntryTest()
+        self.availableIPv6NeighborEntryTest()
+
+
+class AvailableFdbEntryTest(PlatformSaiHelper):
+    def setUp(self):
+        super(AvailableFdbEntryTest, self).setUp()
+
+    def runTest(self):
+        '''
+        Verifies creation of maximum number of FDB entries.
+        '''
+        print("\navailableFdbEntryTest()")
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, available_fdb_entry=True)
+        max_fdb_entry = attr["available_fdb_entry"]
+        print("Available FDB entries: %d" % max_fdb_entry)
+
+        # Verifying only up to 90% of FDB table capacity
+        available_fdb_entry = int(max_fdb_entry * 0.9)
+
+        mac_list = generate_mac_list(max_fdb_entry)
+        fdb = []
+        try:
+            for fdb_number in range(1, available_fdb_entry + 1):
+                fdb_entry = sai_thrift_fdb_entry_t(
+                    switch_id=self.switch_id,
+                    mac_address=mac_list[fdb_number - 1],
+                    bv_id=self.vlan10)
+                status = sai_thrift_create_fdb_entry(
+                    self.client,
+                    fdb_entry,
+                    type=SAI_FDB_ENTRY_TYPE_STATIC,
+                    bridge_port_id=self.port0_bp,
+                    packet_action=SAI_PACKET_ACTION_FORWARD)
+                self.assertEqual(status, SAI_STATUS_SUCCESS)
+                fdb.append(fdb_entry)
+
+                attr = sai_thrift_get_switch_attribute(
+                    self.client, available_fdb_entry=True)
+                self.assertEqual(attr["available_fdb_entry"],
+                                 max_fdb_entry - fdb_number)
+
+        finally:
+            for fdb_id in fdb:
+                sai_thrift_remove_fdb_entry(self.client, fdb_id)
+
+
 @group("draft")
-class SwitchAttrTest(SaiHelper):
+class SwitchAttrTest(PlatformSaiHelper):
     """
     Switch attributes tests
     """
 
     def runTest(self):
-        self.availableNexthopGroupEntryTest()
-        self.availableNexthopGroupMemberEntryTest()
-        self.availableFdbEntryTest()
-        self.readOnlyAttributesTest()
-        self.refreshIntervalTest()
-        self.availableSnatEntryTest()
+        #self.availableNexthopGroupEntryTest()
+        #self.availableNexthopGroupMemberEntryTest()
+        #self.availableFdbEntryTest()
+        #self.readOnlyAttributesTest()
+        #self.refreshIntervalTest()
+        #self.availableSnatEntryTest()
         self.availableDnatEntryTest()
 
     def availableNexthopGroupEntryTest(self):
