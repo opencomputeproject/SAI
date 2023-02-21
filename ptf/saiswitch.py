@@ -1038,6 +1038,130 @@ class AvailableDnatEntryTest(PlatformSaiHelper):
     def runTest(self):
         self.availableDnatEntryTest()
 
+class AvailableNexthopGroupEntryTest(PlatformSaiHelper):
+    """
+    Verifies creation of maximum number of nexthop group entries.
+    """
+    def availableNexthopGroupEntryTest(self):
+        print("\navailableNexthopGroupEntryTest()")
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, available_next_hop_group_entry=True)
+        max_nhg_entry = attr["available_next_hop_group_entry"]
+        print("Available nexthop group entries: %d" % max_nhg_entry)
+
+        nhg = []
+        try:
+            for nhg_number in range(1, max_nhg_entry + 1):
+                nexthop_group = sai_thrift_create_next_hop_group(
+                    self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+                self.assertNotEqual(nexthop_group, SAI_NULL_OBJECT_ID)
+                nhg.append(nexthop_group)
+
+                attr = sai_thrift_get_switch_attribute(
+                    self.client, available_next_hop_group_entry=True)
+                self.assertEqual(attr["available_next_hop_group_entry"],
+                                 max_nhg_entry - nhg_number)
+
+            self.assertEqual(attr["available_next_hop_group_entry"], 0)
+
+            # try to create one more nexthop group - should not be possible:
+            try:
+                nexthop_group = sai_thrift_create_next_hop_group(
+                    self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+                self.assertEqual(nexthop_group, SAI_NULL_OBJECT_ID)
+                print("No more nexthop group may be created")
+            except AssertionError:
+                sai_thrift_remove_next_hop_group(self.client, nexthop_group)
+                self.fail("Number of available nexthop groups "
+                          "may be exceeded")
+
+        finally:
+            for nhg_id in nhg:
+                sai_thrift_remove_next_hop_group(self.client, nhg_id)
+
+
+class AvailableNexthopGroupMemberEntryTest(PlatformSaiHelper):
+    """
+    Verifies creation of maximum number of nexthop group member entries.
+    """
+    def availableNexthopGroupMemberEntryTest(self):
+        print("\navailableNexthopGroupMemberEntryTest()")
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, available_next_hop_group_entry=True)
+        max_nhg_entry = attr["available_next_hop_group_entry"]
+        print("Available nexthop group entries: %d" % max_nhg_entry)
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, available_next_hop_group_member_entry=True)
+        max_member_entry = attr["available_next_hop_group_member_entry"]
+        print("Available nexthop group member entries: %d" % max_member_entry)
+
+        max_member_per_group = 64
+
+        nhg = []
+        nhop = dict()
+        members = []
+        member_number = 0
+        group_number = 0
+        ip_add = generate_ip_addr(max_member_entry + 100)
+        try:
+            while member_number < max_member_entry and \
+                    group_number < max_nhg_entry:
+                nexthop_group = sai_thrift_create_next_hop_group(
+                    self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
+                self.assertNotEqual(nexthop_group, SAI_NULL_OBJECT_ID)
+                nhg.append(nexthop_group)
+
+                group_number += 1
+
+                nhop_per_group_number = 0
+                while nhop_per_group_number < max_member_per_group:
+                    ip_p = sai_ipaddress(next(ip_add))
+
+                    if str(ip_p) in nhop:
+                        continue
+
+                    nexthop = sai_thrift_create_next_hop(
+                        self.client,
+                        ip=ip_p,
+                        router_interface_id=self.port10_rif,
+                        type=SAI_NEXT_HOP_TYPE_IP)
+                    self.assertNotEqual(nexthop, SAI_NULL_OBJECT_ID)
+                    nhop.update({str(ip_p): nexthop})
+                    nhop_per_group_number += 1
+
+                    nhop_member = sai_thrift_create_next_hop_group_member(
+                        self.client,
+                        next_hop_group_id=nexthop_group,
+                        next_hop_id=nexthop)
+                    self.assertNotEqual(nhop_member, SAI_NULL_OBJECT_ID)
+                    members.append(nhop_member)
+                    member_number += 1
+
+                    attr = sai_thrift_get_switch_attribute(
+                        self.client,
+                        available_next_hop_group_member_entry=True)
+                    self.assertEqual(
+                        attr["available_next_hop_group_member_entry"],
+                        max_member_entry - member_number)
+
+            attr = sai_thrift_get_switch_attribute(
+                self.client, available_next_hop_group_entry=True)
+            self.assertEqual(attr["available_next_hop_group_entry"], 0)
+
+        finally:
+            for member_id in members:
+                sai_thrift_remove_next_hop_group_member(self.client, member_id)
+            for ip_p in nhop:
+                sai_thrift_remove_next_hop(self.client, nhop.get(ip_p))
+            for nhg_id in nhg:
+                sai_thrift_remove_next_hop_group(self.client, nhg_id)
+    
+    def runTest(self):
+        self.availableNexthopGroupMemberEntryTest()
+
 
 @group("draft")
 class SwitchAttrTest(PlatformSaiHelper):
