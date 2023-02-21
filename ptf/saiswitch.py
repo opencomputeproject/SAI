@@ -282,7 +282,7 @@ class AvailableResourceTestHelper(PlatformSaiHelper):
                     continue
 
                 nbr_entry = sai_thrift_neighbor_entry_t(
-                    rif_id=self.port0_rif,
+                    rif_id=self.port10_rif,
                     ip_address=ip_p)
                 status = sai_thrift_create_neighbor_entry(
                     self.client,
@@ -338,7 +338,7 @@ class AvailableResourceTestHelper(PlatformSaiHelper):
                     continue
 
                 nbr_entry = sai_thrift_neighbor_entry_t(
-                    rif_id=self.port0_rif,
+                    rif_id=self.port10_rif,
                     ip_address=ip_p)
                 status = sai_thrift_create_neighbor_entry(
                     self.client,
@@ -1042,6 +1042,7 @@ class AvailableDnatEntryTest(PlatformSaiHelper):
     def runTest(self):
         self.availableDnatEntryTest()
 
+
 class AvailableNexthopGroupEntryTest(PlatformSaiHelper):
     """
     Verifies creation of maximum number of nexthop group entries.
@@ -1233,6 +1234,112 @@ class AvailableAclTableTest(PlatformSaiHelper):
                 for acl_table in acl_table_list:
                     sai_thrift_remove_acl_table(self.client, acl_table)
 
+
+class AvailableIPv4NexthopEntryTest(PlatformSaiHelper):
+    """
+    Verifies creation of maximum number of IPv4 nexthop entries.
+    """
+    def runTest(self):
+        print("\navailableIPv4NexthopEntryTest()")
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, available_ipv4_nexthop_entry=True)
+        max_nhop_entry = attr["available_ipv4_nexthop_entry"]
+        print("Available IPv4 nexthop entries: %d" % max_nhop_entry)
+
+        nbrs = dict()
+        nhop = dict()
+        ip_add = generate_ip_addr(max_nhop_entry + 100)
+        try:
+            nhop_number = 0
+            while nhop_number < max_nhop_entry:
+                ip_p = sai_ipaddress(next(ip_add))
+
+                if str(ip_p) in nhop:
+                    continue
+                
+                nbr_entry = sai_thrift_neighbor_entry_t(
+                    self.switch_id,
+                    self.port10_rif,
+                    ip_p)
+                status = sai_thrift_create_neighbor_entry(
+                    self.client,
+                    nbr_entry,
+                    dst_mac_address='00:11:22:33:44:55')
+                self.assertEqual(status, SAI_STATUS_SUCCESS)
+
+                nexthop = sai_thrift_create_next_hop(
+                    self.client,
+                    ip=ip_p,
+                    router_interface_id=self.port10_rif,
+                    type=SAI_NEXT_HOP_TYPE_IP)
+                self.assertNotEqual(nexthop, SAI_NULL_OBJECT_ID)
+                nbrs.update({str(ip_p): nbr_entry})
+                nhop.update({str(ip_p): nexthop})
+                nhop_number += 1
+
+                attr = sai_thrift_get_switch_attribute(
+                    self.client, available_ipv4_nexthop_entry=True)
+                self.assertEqual(attr["available_ipv4_nexthop_entry"],
+                                 max_nhop_entry - nhop_number)
+
+            self.assertEqual(attr["available_ipv4_nexthop_entry"], 0)
+
+        finally:
+            for ip_p in nhop:
+                sai_thrift_remove_next_hop(self.client, nhop.get(ip_p))
+                sai_thrift_remove_neighbor_entry(self.client, nbrs.get(ip_p))
+
+
+class AvailableIPv6NexthopEntryTest(PlatformSaiHelper):
+    """
+    Verifies creation of maximum number of IPv6 nexthop entries.
+    """
+    def runTest(self):
+        print("\navailableIPv6NexthopEntryTest()")
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, available_ipv6_nexthop_entry=True)
+        max_nhop_entry = attr["available_ipv6_nexthop_entry"]
+        print("Available IPv6 nexthop entries: %d" % max_nhop_entry)
+
+        nbrs = dict()
+        nhop = dict()
+        ip_add = generate_ip_addr(max_nhop_entry + 100, ipv6=True)
+        try:
+            nhop_number = 0
+            while nhop_number < max_nhop_entry:
+                ip_p = sai_ipaddress(next(ip_add))
+
+                if str(ip_p) in nhop:
+                    continue
+
+                nbr_entry = sai_thrift_neighbor_entry_t(
+                    self.switch_id, self.port10_rif, ip_p)
+                status = sai_thrift_create_neighbor_entry(
+                    self.client, nbr_entry, dst_mac_address='00:11:22:33:44:55')
+
+                nexthop = sai_thrift_create_next_hop(
+                    self.client,
+                    ip=ip_p,
+                    router_interface_id=self.port10_rif,
+                    type=SAI_NEXT_HOP_TYPE_IP)
+                self.assertNotEqual(nexthop, SAI_NULL_OBJECT_ID)
+                nbrs.update({str(ip_p): nbr_entry})
+                nhop.update({str(ip_p): nexthop})
+                nhop_number += 1
+
+                attr = sai_thrift_get_switch_attribute(
+                    self.client, available_ipv6_nexthop_entry=True)
+                self.assertEqual(attr["available_ipv6_nexthop_entry"],
+                                 max_nhop_entry - nhop_number)
+
+            self.assertEqual(attr["available_ipv6_nexthop_entry"], 0)
+
+        finally:
+            for ip_p in nhop:
+                sai_thrift_remove_next_hop(self.client, nhop.get(ip_p))
+                sai_thrift_remove_neighbor_entry(self.client, nbrs.get(ip_p))
 
 
 @group("draft")
