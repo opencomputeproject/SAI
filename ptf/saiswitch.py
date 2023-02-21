@@ -17,12 +17,12 @@ Thrift SAI interface Switch tests
 """
 from ipaddress import ip_address
 
-from sai_thrift.sai_headers import *
+from sai_thrift.sai_headers import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
 from ptf.mask import Mask
 from lpm import LpmDict
 
-from sai_base_test import *
+from sai_base_test import * # pylint: disable=wildcard-import; lgtm[py/polluting-import]
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(THIS_DIR, '..'))
@@ -381,13 +381,10 @@ class AvailableIPv6NeighborEntryTest(AvailableResourceTestHelper):
 
 
 class AvailableFdbEntryTest(PlatformSaiHelper):
-    def setUp(self):
-        super(AvailableFdbEntryTest, self).setUp()
-
+    """
+    Verifies creation of maximum number of FDB entries.
+    """
     def runTest(self):
-        '''
-        Verifies creation of maximum number of FDB entries.
-        '''
         print("\navailableFdbEntryTest()")
 
         attr = sai_thrift_get_switch_attribute(
@@ -423,6 +420,623 @@ class AvailableFdbEntryTest(PlatformSaiHelper):
         finally:
             for fdb_id in fdb:
                 sai_thrift_remove_fdb_entry(self.client, fdb_id)
+
+
+class ReadOnlyAttributesTest(PlatformSaiHelper):
+    """
+    Verifies get on read only attributes.
+    """    
+    def readOnlyAttributesTest(self):
+        print("\nreadOnlyAttributesTest()")
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               number_of_active_ports=True)
+        print(attr)
+        self.assertNotEqual(attr["number_of_active_ports"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_NUMBER_OF_ACTIVE_PORTS"], 0)
+        active_ports = attr["number_of_active_ports"]
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, max_number_of_supported_ports=True)
+        print(attr)
+        self.assertNotEqual(attr["max_number_of_supported_ports"], 0)
+        self.assertNotEqual(
+            attr["SAI_SWITCH_ATTR_MAX_NUMBER_OF_SUPPORTED_PORTS"], 0)
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client,
+            port_list=sai_thrift_object_list_t(idlist=[], count=active_ports))
+        print(attr)
+        self.assertNotEqual(attr["port_list"].count, 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_PORT_LIST"].count, 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client, port_max_mtu=True)
+        print(attr)
+        self.assertNotEqual(attr["port_max_mtu"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_PORT_MAX_MTU"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client, cpu_port=True)
+        print(attr)
+        self.assertNotEqual(attr["cpu_port"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_CPU_PORT"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               max_virtual_routers=True)
+        print(attr)
+        self.assertNotEqual(attr["max_virtual_routers"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_MAX_VIRTUAL_ROUTERS"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               fdb_table_size=True)
+        print(attr)
+        self.assertNotEqual(attr["fdb_table_size"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_FDB_TABLE_SIZE"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               l3_neighbor_table_size=True)
+        print(attr)
+        self.assertNotEqual(attr["l3_neighbor_table_size"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_L3_NEIGHBOR_TABLE_SIZE"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               l3_route_table_size=True)
+        print(attr)
+        self.assertNotEqual(attr["l3_route_table_size"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_L3_ROUTE_TABLE_SIZE"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client, lag_members=True)
+        print(attr)
+        self.assertNotEqual(attr["lag_members"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_LAG_MEMBERS"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               number_of_lags=True)
+        print(attr)
+        self.assertNotEqual(attr["number_of_lags"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_NUMBER_OF_LAGS"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client, ecmp_members=True)
+        print(attr)
+        self.assertNotEqual(attr["ecmp_members"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_ECMP_MEMBERS"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               number_of_ecmp_groups=True)
+        print(attr)
+        self.assertNotEqual(attr["number_of_ecmp_groups"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_NUMBER_OF_ECMP_GROUPS"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               number_of_unicast_queues=True)
+        print(attr)
+        self.assertNotEqual(attr["number_of_unicast_queues"], 0)
+        self.assertNotEqual(
+            attr["SAI_SWITCH_ATTR_NUMBER_OF_UNICAST_QUEUES"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               number_of_multicast_queues=True)
+        print(attr)
+        self.assertNotEqual(attr["number_of_multicast_queues"], 0)
+        self.assertNotEqual(
+            attr["SAI_SWITCH_ATTR_NUMBER_OF_MULTICAST_QUEUES"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               number_of_queues=True)
+        print(attr)
+        self.assertNotEqual(attr["number_of_queues"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_NUMBER_OF_QUEUES"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               number_of_cpu_queues=True)
+        print(attr)
+        self.assertNotEqual(attr["number_of_cpu_queues"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_NUMBER_OF_CPU_QUEUES"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               acl_table_minimum_priority=True)
+        print(attr)
+        self.assertEqual(attr["acl_table_minimum_priority"], 0)
+        self.assertEqual(
+            attr["SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY"], 0)
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, acl_table_maximum_priority=True)
+        print(attr)
+        self.assertNotEqual(attr["acl_table_maximum_priority"], 0)
+        self.assertNotEqual(
+            attr["SAI_SWITCH_ATTR_ACL_TABLE_MAXIMUM_PRIORITY"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               acl_entry_minimum_priority=True)
+        print(attr)
+        self.assertEqual(attr["acl_entry_minimum_priority"], 0)
+        self.assertEqual(attr["SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               acl_entry_maximum_priority=True)
+        print(attr)
+        self.assertNotEqual(attr["acl_entry_maximum_priority"], 0)
+        self.assertNotEqual(
+            attr["SAI_SWITCH_ATTR_ACL_ENTRY_MAXIMUM_PRIORITY"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               default_vlan_id=True)
+        print(attr)
+        self.assertNotEqual(attr["default_vlan_id"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_DEFAULT_VLAN_ID"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               default_stp_inst_id=True)
+        print(attr)
+        self.assertEqual(attr["default_stp_inst_id"], SAI_NULL_OBJECT_ID)
+        self.assertEqual(
+            attr["SAI_SWITCH_ATTR_DEFAULT_STP_INST_ID"], SAI_NULL_OBJECT_ID)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               max_stp_instance=True)
+        print(attr)
+        self.assertNotEqual(attr["max_stp_instance"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_MAX_STP_INSTANCE"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               default_virtual_router_id=True)
+        print(attr)
+        self.assertNotEqual(attr["default_virtual_router_id"], 0)
+        self.assertNotEqual(
+            attr["SAI_SWITCH_ATTR_DEFAULT_VIRTUAL_ROUTER_ID"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               default_1q_bridge_id=True)
+        print(attr)
+        self.assertNotEqual(attr["default_1q_bridge_id"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID"], 0)
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, qos_max_number_of_traffic_classes=True)
+        print(attr)
+        self.assertNotEqual(attr["qos_max_number_of_traffic_classes"], 0)
+        self.assertNotEqual(
+            attr["SAI_SWITCH_ATTR_QOS_MAX_NUMBER_OF_TRAFFIC_CLASSES"], 0)
+
+        attr_name = "SAI_SWITCH_ATTR_QOS_MAX_NUMBER_OF_SCHEDULER_GROUP_" + \
+            "HIERARCHY_LEVELS"
+        attr = sai_thrift_get_switch_attribute(
+            self.client,
+            qos_max_number_of_scheduler_group_hierarchy_levels=True)
+        print(attr)
+        self.assertNotEqual(
+            attr["qos_max_number_of_scheduler_group_hierarchy_levels"], 0)
+        self.assertNotEqual(attr[attr_name], 0)
+
+        scheduler_group_levels = attr[
+            "qos_max_number_of_scheduler_group_hierarchy_levels"]
+        value = sai_thrift_u32_list_t(count=scheduler_group_levels,
+                                      uint32list=[])
+        attr_name = "SAI_SWITCH_ATTR_QOS_MAX_NUMBER_OF_SCHEDULER_GROUPS_" + \
+            "PER_HIERARCHY_LEVEL"
+        attr = sai_thrift_get_switch_attribute(
+            self.client,
+            qos_max_number_of_scheduler_groups_per_hierarchy_level=value)
+        print(attr)
+        self.assertNotEqual(
+            attr["qos_max_number_of_scheduler_groups_per_hierarchy_level"], 0)
+        self.assertNotEqual(attr[attr_name], 0)
+
+        attr_name = "SAI_SWITCH_ATTR_QOS_MAX_NUMBER_OF_CHILDS_" + \
+            "PER_SCHEDULER_GROUP"
+        attr = sai_thrift_get_switch_attribute(
+            self.client, qos_max_number_of_childs_per_scheduler_group=True)
+        print(attr)
+        self.assertNotEqual(
+            attr["qos_max_number_of_childs_per_scheduler_group"], 0)
+        self.assertNotEqual(attr[attr_name], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               total_buffer_size=True)
+        print(attr)
+        self.assertNotEqual(attr["total_buffer_size"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_TOTAL_BUFFER_SIZE"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               ingress_buffer_pool_num=True)
+        print(attr)
+        self.assertNotEqual(attr["ingress_buffer_pool_num"], 0)
+        self.assertNotEqual(
+            attr["SAI_SWITCH_ATTR_INGRESS_BUFFER_POOL_NUM"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               egress_buffer_pool_num=True)
+        print(attr)
+        self.assertNotEqual(attr["egress_buffer_pool_num"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_EGRESS_BUFFER_POOL_NUM"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client, ecmp_hash=True)
+        print(attr)
+        self.assertNotEqual(attr["ecmp_hash"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_ECMP_HASH"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client, lag_hash=True)
+        print(attr)
+        self.assertNotEqual(attr["lag_hash"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_LAG_HASH"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               max_acl_action_count=True)
+        print(attr)
+        self.assertNotEqual(attr["max_acl_action_count"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_MAX_ACL_ACTION_COUNT"], 0)
+        max_acl_action_count = attr["max_acl_action_count"]
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               max_acl_range_count=True)
+        print(attr)
+        self.assertNotEqual(attr["max_acl_range_count"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_MAX_ACL_RANGE_COUNT"], 0)
+
+        s32 = sai_thrift_s32_list_t(int32list=[], count=max_acl_action_count)
+        cap = sai_thrift_acl_capability_t(action_list=s32)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               acl_capability=cap)
+        print(attr)
+        self.assertNotEqual(attr["acl_capability"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_ACL_CAPABILITY"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               max_mirror_session=True)
+        print(attr)
+        self.assertNotEqual(attr["max_mirror_session"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_MAX_MIRROR_SESSION"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               default_trap_group=True)
+        print(attr)
+        self.assertNotEqual(attr["default_trap_group"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               acl_stage_ingress=cap)
+        print(attr)
+        self.assertNotEqual(attr["acl_stage_ingress"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_ACL_STAGE_INGRESS"], 0)
+
+        attr = sai_thrift_get_switch_attribute(self.client,
+                                               acl_stage_egress=cap)
+        print(attr)
+        self.assertNotEqual(attr["acl_stage_egress"], 0)
+        self.assertNotEqual(attr["SAI_SWITCH_ATTR_ACL_STAGE_EGRESS"], 0)
+
+    def runTest(self):
+        self.readOnlyAttributesTest()
+
+
+class RefreshIntervalTest(PlatformSaiHelper):
+    """
+    Verifies SAI_SWITCH_ATTR_COUNTER_REFRESH_INTERVAL switch attribute
+    applied to VLAN and RIF stats
+    """
+    def refreshIntervalTest(self):
+        print("\nrefreshIntervalTest()")
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, counter_refresh_interval=True)
+        init_interval = attr["counter_refresh_interval"]
+        print("Counters refresh interval initially set to %d sec"
+              % init_interval)
+
+        test_vlan = self.vlan10
+        test_vlan_port = self.dev_port0
+        test_rif = self.port10_rif
+        test_rif_port = self.dev_port10
+        test_interval = 10
+
+        vlan_stats = sai_thrift_get_vlan_stats(self.client, test_vlan)
+        init_vlan_counter = vlan_stats['SAI_VLAN_STAT_IN_PACKETS']
+
+        rif_stats = sai_thrift_get_router_interface_stats(
+            self.client, test_rif)
+        init_rif_counter = rif_stats['SAI_ROUTER_INTERFACE_STAT_IN_PACKETS']
+
+        pkt = simple_udp_packet()
+
+        try:
+            print("\nTesting VLAN stats counters refresh time")
+            # compensate refresh time shift
+            send_packet(self, test_vlan_port, pkt)
+            while sai_thrift_get_vlan_stats(self.client, test_vlan)[
+                    'SAI_VLAN_STAT_IN_PACKETS'] == init_vlan_counter:
+                time.sleep(0.1)
+            init_vlan_counter += 1
+
+            send_packet(self, test_vlan_port, pkt)
+            vlan_stats = sai_thrift_get_vlan_stats(self.client, test_vlan)
+            counter = vlan_stats['SAI_VLAN_STAT_IN_PACKETS']
+            self.assertEqual(counter, init_vlan_counter)
+
+            # determine refresh time
+            timer_start = time.time()
+            timer_end = time.time()
+            while counter == init_vlan_counter:
+                vlan_stats = sai_thrift_get_vlan_stats(self.client, test_vlan)
+                counter = vlan_stats['SAI_VLAN_STAT_IN_PACKETS']
+                timer_end = time.time()
+            init_vlan_counter += 1
+
+            interval = int(round(timer_end - timer_start))
+            print("VLAN stats refreshed after %d sec" % interval)
+            self.assertEqual(init_interval, int(round(interval)))
+
+            vlan_stats = sai_thrift_get_vlan_stats(self.client, test_vlan)
+            counter = vlan_stats['SAI_VLAN_STAT_IN_PACKETS']
+            self.assertEqual(counter, init_vlan_counter)
+
+            print("Setting refresh interval to %d sec" % test_interval)
+            sai_thrift_set_switch_attribute(
+                self.client, counter_refresh_interval=test_interval)
+
+            attr = sai_thrift_get_switch_attribute(
+                self.client, counter_refresh_interval=True)
+            set_interval = attr["counter_refresh_interval"]
+            print("Refresh interval set to %d sec" % set_interval)
+            self.assertEqual(set_interval, test_interval)
+
+            # compensate refresh time shift
+            send_packet(self, test_vlan_port, pkt)
+            while sai_thrift_get_vlan_stats(self.client, test_vlan)[
+                    'SAI_VLAN_STAT_IN_PACKETS'] == init_vlan_counter:
+                time.sleep(0.1)
+            init_vlan_counter += 1
+
+            send_packet(self, test_vlan_port, pkt)
+            vlan_stats = sai_thrift_get_vlan_stats(self.client, test_vlan)
+            counter = vlan_stats['SAI_VLAN_STAT_IN_PACKETS']
+            self.assertEqual(counter, init_vlan_counter)
+
+            # determine refresh time
+            timer_start = time.time()
+            timer_end = time.time()
+            while counter == init_vlan_counter:
+                vlan_stats = sai_thrift_get_vlan_stats(self.client, test_vlan)
+                counter = vlan_stats['SAI_VLAN_STAT_IN_PACKETS']
+                timer_end = time.time()
+            init_vlan_counter += 1
+
+            interval = int(round(timer_end - timer_start))
+            print("VLAN stats refreshed after %d sec" % interval)
+            self.assertEqual(test_interval, interval)
+
+            vlan_stats = sai_thrift_get_vlan_stats(self.client, test_vlan)
+            counter = vlan_stats['SAI_VLAN_STAT_IN_PACKETS']
+            self.assertEqual(counter, init_vlan_counter)
+
+        finally:
+            sai_thrift_set_switch_attribute(
+                self.client, counter_refresh_interval=init_interval)
+
+        try:
+            print("\nTesting RIF stats counters refresh time")
+            # compensate refresh time shift
+            send_packet(self, test_rif_port, pkt)
+            while sai_thrift_get_router_interface_stats(self.client, test_rif)[
+                    'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'] == \
+                    init_rif_counter:
+                time.sleep(0.1)
+            init_rif_counter += 1
+
+            send_packet(self, test_rif_port, pkt)
+            rif_stats = sai_thrift_get_router_interface_stats(
+                self.client, test_rif)
+            counter = rif_stats['SAI_ROUTER_INTERFACE_STAT_IN_PACKETS']
+            self.assertEqual(counter, init_rif_counter)
+
+            # determine refresh time
+            timer_start = time.time()
+            timer_end = time.time()
+            while counter == init_rif_counter:
+                rif_stats = sai_thrift_get_router_interface_stats(
+                    self.client, test_rif)
+                counter = rif_stats['SAI_ROUTER_INTERFACE_STAT_IN_PACKETS']
+                timer_end = time.time()
+            init_rif_counter += 1
+
+            interval = int(round(timer_end - timer_start))
+            print("RIF stats refreshed after %d sec" % interval)
+            self.assertEqual(init_interval, int(round(interval)))
+
+            rif_stats = sai_thrift_get_router_interface_stats(
+                self.client, test_rif)
+            counter = rif_stats['SAI_ROUTER_INTERFACE_STAT_IN_PACKETS']
+            self.assertEqual(counter, init_rif_counter)
+
+            print("Setting refresh interval to %d sec" % test_interval)
+            sai_thrift_set_switch_attribute(
+                self.client, counter_refresh_interval=test_interval)
+
+            attr = sai_thrift_get_switch_attribute(
+                self.client, counter_refresh_interval=True)
+            set_interval = attr["counter_refresh_interval"]
+            print("Refresh interval set to %d sec" % set_interval)
+            self.assertEqual(set_interval, test_interval)
+
+            # compensate refresh time shift
+            send_packet(self, test_rif_port, pkt)
+            while sai_thrift_get_router_interface_stats(self.client, test_rif)[
+                    'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'] == \
+                    init_rif_counter:
+                time.sleep(0.1)
+            init_rif_counter += 1
+
+            send_packet(self, test_rif_port, pkt)
+            rif_stats = sai_thrift_get_router_interface_stats(
+                self.client, test_rif)
+            counter = rif_stats['SAI_ROUTER_INTERFACE_STAT_IN_PACKETS']
+            self.assertEqual(counter, init_rif_counter)
+
+            # determine refresh time
+            timer_start = time.time()
+            timer_end = time.time()
+            while counter == init_rif_counter:
+                rif_stats = sai_thrift_get_router_interface_stats(
+                    self.client, test_rif)
+                counter = rif_stats['SAI_ROUTER_INTERFACE_STAT_IN_PACKETS']
+                timer_end = time.time()
+            init_rif_counter += 1
+
+            interval = int(round(timer_end - timer_start))
+            print("RIF stats refreshed after %d sec" % interval)
+            self.assertEqual(test_interval, interval)
+
+            rif_stats = sai_thrift_get_router_interface_stats(
+                self.client, test_rif)
+            counter = rif_stats['SAI_VLAN_STAT_IN_PACKETS']
+            self.assertEqual(counter, init_vlan_counter)
+
+        finally:
+            sai_thrift_set_switch_attribute(
+                self.client, counter_refresh_interval=init_interval)
+
+    def runTest(self):
+        self.refreshIntervalTest()
+
+
+class AvailableSnatEntryTest(PlatformSaiHelper):
+    """
+    Verifies creation of maximum number of snat entries.
+    """
+    def availableSnatEntryTest(self):
+        print("\navailableSnatEntryTest()")
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, available_snat_entry=True)
+        max_snat_entry = attr["available_snat_entry"]
+        print("Available SNAT entries: %d" % max_snat_entry)
+
+        snat_list = []
+        addr = generate_ip_addr(max_snat_entry + 1)
+        try:
+            for snat_number in range(1, max_snat_entry + 1):
+                nat_data = sai_thrift_nat_entry_data_t(
+                    key=sai_thrift_nat_entry_key_t(
+                        src_ip=next(addr), proto=6),
+                    mask=sai_thrift_nat_entry_mask_t(
+                        src_ip='255.255.255.255', proto=63))
+
+                snat = sai_thrift_nat_entry_t(
+                    vr_id=self.default_vrf,
+                    data=nat_data,
+                    nat_type=SAI_NAT_TYPE_SOURCE_NAT)
+
+                status = sai_thrift_create_nat_entry(
+                    self.client, snat, nat_type=SAI_NAT_TYPE_SOURCE_NAT)
+                self.assertEqual(status, SAI_STATUS_SUCCESS)
+
+                snat_list.append(snat)
+
+                attr = sai_thrift_get_switch_attribute(
+                    self.client, available_snat_entry=True)
+                self.assertEqual(attr["available_snat_entry"],
+                                 max_snat_entry - snat_number)
+
+            # checking if no more SNAT entry may be created
+            nat_data = sai_thrift_nat_entry_data_t(
+                key=sai_thrift_nat_entry_key_t(
+                    src_ip=next(addr),
+                    proto=6),
+                mask=sai_thrift_nat_entry_mask_t(
+                    src_ip='255.255.255.255',
+                    proto=63))
+            try:
+                snat = sai_thrift_nat_entry_t(
+                    vr_id=self.default_vrf,
+                    data=nat_data,
+                    nat_type=SAI_NAT_TYPE_SOURCE_NAT)
+
+                stat = sai_thrift_create_nat_entry(
+                    self.client, snat,
+                    nat_type=SAI_NAT_TYPE_SOURCE_NAT)
+                self.assertNotEqual(stat, SAI_STATUS_SUCCESS)
+
+            finally:
+                if not stat:
+                    sai_thrift_remove_nat_entry(self.client, snat)
+
+        finally:
+            for snat in snat_list:
+                sai_thrift_remove_nat_entry(self.client, snat)
+
+    def runTest(self):
+        self.availableSnatEntryTest()
+
+
+class AvailableDnatEntryTest(PlatformSaiHelper):
+    """
+    Verifies creation of maximum number of dnat entries.
+    """
+    def availableDnatEntryTest(self):
+        print("\navailableDnatEntryTest()")
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, available_dnat_entry=True)
+        max_dnat_entry = attr["available_dnat_entry"]
+        print("Available DNAT entries: %d" % max_dnat_entry)
+
+        dnat_list = []
+        addr = generate_ip_addr(max_dnat_entry + 1)
+        try:
+            for dnat_number in range(1, max_dnat_entry + 1):
+                nat_data = sai_thrift_nat_entry_data_t(
+                    key=sai_thrift_nat_entry_key_t(
+                        dst_ip=next(addr),
+                        proto=6,
+                        l4_src_port=100),
+                    mask=sai_thrift_nat_entry_mask_t(
+                        dst_ip='255.255.255.255', proto=63, l4_src_port=255))
+
+                dnat = sai_thrift_nat_entry_t(
+                    vr_id=self.default_vrf,
+                    data=nat_data,
+                    nat_type=SAI_NAT_TYPE_DESTINATION_NAT)
+
+                status = sai_thrift_create_nat_entry(
+                    self.client, dnat, nat_type=SAI_NAT_TYPE_DESTINATION_NAT)
+                self.assertEqual(status, SAI_STATUS_SUCCESS)
+
+                dnat_list.append(dnat)
+
+                attr = sai_thrift_get_switch_attribute(
+                    self.client, available_dnat_entry=True)
+                self.assertEqual(attr["available_dnat_entry"],
+                                 max_dnat_entry - dnat_number)
+
+            # checking if no more DNAT entry may be created
+            nat_data = sai_thrift_nat_entry_data_t(
+                key=sai_thrift_nat_entry_key_t(
+                    dst_ip=next(addr),
+                    proto=6),
+                mask=sai_thrift_nat_entry_mask_t(
+                    dst_ip='255.255.255.255',
+                    proto=63))
+            try:
+                dnat = sai_thrift_nat_entry_t(
+                    vr_id=self.default_vrf,
+                    data=nat_data,
+                    nat_type=SAI_NAT_TYPE_DESTINATION_NAT)
+
+                stat = sai_thrift_create_nat_entry(
+                    self.client, dnat,
+                    nat_type=SAI_NAT_TYPE_DESTINATION_NAT)
+                self.assertNotEqual(stat, SAI_STATUS_SUCCESS)
+
+            finally:
+                if not stat:
+                    sai_thrift_remove_nat_entry(self.client, dnat)
+
+        finally:
+            for dnat in dnat_list:
+                sai_thrift_remove_nat_entry(self.client, dnat)
+
+    def runTest(self):
+        self.availableDnatEntryTest()
 
 
 @group("draft")
