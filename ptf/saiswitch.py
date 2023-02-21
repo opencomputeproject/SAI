@@ -158,6 +158,7 @@ class AvailableResourceTestHelper(PlatformSaiHelper):
                 self.assertEqual(attr["available_ipv4_route_entry"],
                                     self.max_route_entry - self.route_number)
             ip_add.close()
+            self.available_v4_host_routes = self.route_number
             
             attr = sai_thrift_get_switch_attribute(
                 self.client, available_ipv4_route_entry=True)
@@ -236,6 +237,7 @@ class AvailableResourceTestHelper(PlatformSaiHelper):
                 self.assertEqual(attr["available_ipv6_route_entry"],
                                     max_route_entry - route_number)
             ip_add.close()
+            self.available_v6_host_routes = route_number
 
             attr = sai_thrift_get_switch_attribute(
                 self.client, available_ipv6_route_entry=True)
@@ -720,6 +722,8 @@ class RefreshIntervalTest(PlatformSaiHelper):
 
         attr = sai_thrift_get_switch_attribute(
             self.client, counter_refresh_interval=True)
+        # Can not get this attribute on Broadcom, status return -196608
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
         init_interval = attr["counter_refresh_interval"]
         print("Counters refresh interval initially set to %d sec"
               % init_interval)
@@ -1163,19 +1167,87 @@ class AvailableNexthopGroupMemberEntryTest(PlatformSaiHelper):
         self.availableNexthopGroupMemberEntryTest()
 
 
+class AvailableAclTableTest(PlatformSaiHelper):
+    """
+    Verifies creation of maximum number of acl tables.
+    """
+    def runTest(self):
+        print("\navailableAclTableTest()")
+
+        acl_resource = sai_thrift_acl_resource_t(
+            stage=SAI_SWITCH_ATTR_ACL_STAGE_INGRESS)
+        attr = sai_thrift_get_switch_attribute(
+            self.client, available_acl_table=acl_resource)
+        available_acl_tables = attr["available_acl_table"]
+
+        resource_list = available_acl_tables.resourcelist
+        try:
+            acl_table_list_list = []
+            for resource in resource_list:
+                stage = resource.stage
+                bind_point = resource.bind_point
+                avail_num = resource.avail_num
+                print("Available tables on stage %d, bind_point %d: %d"
+                      % (stage, bind_point, avail_num))
+
+                acl_table_list = []
+                for counter in range(1, avail_num + 1):
+                    acl_table = sai_thrift_create_acl_table(
+                        self.client,
+                        acl_stage=stage,
+                        acl_bind_point_type_list=sai_thrift_s32_list_t(
+                            count=1, int32list=[bind_point]))
+                    self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+
+                    acl_table_list.append(acl_table)
+
+                    # check remained entries
+                    attr = sai_thrift_get_switch_attribute(
+                        self.client, available_acl_table=acl_resource)
+
+                    for res in attr["available_acl_table"].resourcelist:
+                        if res.stage == stage and res.bind_point == bind_point:
+                            # Acl table counter wasn't right on Broadcom
+                            self.assertEqual(res.avail_num, avail_num - counter)
+                            break
+
+                # try to create one more table - should not be possible
+                try:
+                    acl_table = sai_thrift_create_acl_table(
+                        self.client,
+                        acl_stage=stage,
+                        acl_bind_point_type_list=sai_thrift_s32_list_t(
+                            count=1, int32list=[bind_point]))
+                    self.assertEqual(acl_table, SAI_NULL_OBJECT_ID)
+                except AssertionError:
+                    sai_thrift_remove_acl_table(self.client, acl_table)
+                    self.fail("Number of available ACL table entries "
+                              "may be exceeded")
+
+                print("Required number of ACL tables created")
+
+                acl_table_list_list.append(acl_table_list)
+
+        finally:
+            for acl_table_list in acl_table_list_list:
+                for acl_table in acl_table_list:
+                    sai_thrift_remove_acl_table(self.client, acl_table)
+
+
+
 @group("draft")
-class SwitchAttrTest(PlatformSaiHelper):
+class SwitchAttrTest(SaiHelper):
     """
     Switch attributes tests
     """
 
     def runTest(self):
-        #self.availableNexthopGroupEntryTest()
-        #self.availableNexthopGroupMemberEntryTest()
-        #self.availableFdbEntryTest()
-        #self.readOnlyAttributesTest()
-        #self.refreshIntervalTest()
-        #self.availableSnatEntryTest()
+        self.availableNexthopGroupEntryTest()
+        self.availableNexthopGroupMemberEntryTest()
+        self.availableFdbEntryTest()
+        self.readOnlyAttributesTest()
+        self.refreshIntervalTest()
+        self.availableSnatEntryTest()
         self.availableDnatEntryTest()
 
     def availableNexthopGroupEntryTest(self):
