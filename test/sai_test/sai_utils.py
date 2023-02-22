@@ -27,11 +27,6 @@ import time
 import struct
 import socket
 
-from functools import wraps
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from typing import FunctionType 
-
 from ptf.packet import *
 from ptf.testutils import *
 from config.switch_configer import t0_switch_config_helper
