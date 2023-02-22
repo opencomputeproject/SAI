@@ -23,6 +23,15 @@ from platform_helper.common_sai_helper import * # pylint: disable=wildcard-impor
 
 class MlnxSaiHelper(CommonSaiHelper):
     """
-    This class contains Mellanox(brcm) specified functions for the platform setup and test context configuration.
+    This class contains Mellanox(mlnx) specified functions for the platform setup and test context configuration.
     """
     platform = 'mlnx'
+
+    def __init__(self, *args, **kwargs) -> None:
+        """
+        Init the Port configer.
+
+        Args:
+            test_obj: the test object
+        """
+        super().__init__(*args, **kwargs)

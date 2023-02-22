@@ -196,14 +196,9 @@ class BrcmSaiHelper(CommonSaiHelper):
 
     def config_port(self):
 
-        self.port_list = self.port_configer.get_lane_sorted_port_list()
+        port_obj_list_with_lane = self.port_configer.get_port_default_lane()
+        self.port_list = self.port_configer.get_lane_sorted_port_list(port_obj_list_with_lane)
         self.port_configer.generate_port_obj_list_by_interface_config()
-        self.port_configer.assign_port_config(self.port_config_ini_loader.portConfigs)
-        self.port_configer.assign_config_db(
-            self.config_db_loader.port_config,
-            self.port_config_ini_loader.portConfigs)
-        
-        
 
         attr = sai_thrift_get_switch_attribute(
             self.client, default_trap_group=True)
@@ -239,4 +234,4 @@ class BrcmSaiHelper(CommonSaiHelper):
         #Port needs to be init and setup at same time.
         #Make the process happened in turn_up_and_check_ports
         print("BrcmSaiHelperBase::recreate_ports does not support. Just Parse Port Config")
-        self.ports_config = self.port_config_ini_loader.ports_config
+        # self.ports_config = self.port_config_ini_loader.ports_config
