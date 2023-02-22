@@ -95,7 +95,7 @@ class QueueConfigDataHelper(PlatformSaiHelper):
         sai_thrift_remove_router_interface(self.client, self.rif_id25)
         sai_thrift_remove_virtual_router(self.client, self.vr_id)
         super(QueueConfigDataHelper, self).tearDown()
-
+@group("draft")
 class queueCreateTest(QueueConfigDataHelper):
     """
     The test verifies a queue creation.
@@ -151,7 +151,7 @@ class queueCreateTest(QueueConfigDataHelper):
     def tearDown(self):
         super(queueCreateTest, self).tearDown()
 
-
+@group("draft")
 class portQueueQueryTest(QueueConfigDataHelper):
     """
     The test queries SAI_QUEUE_ATTR_PORT and SAI_QUEUE_ATTR_INDEX
@@ -197,7 +197,7 @@ class portQueueQueryTest(QueueConfigDataHelper):
     def tearDown(self):
         super(portQueueQueryTest, self).tearDown()
 
-
+@group("draft")
 class bufferQueueTest(QueueConfigDataHelper):
     """
     The test is dedicated to working buffers with queues. After creating
@@ -323,7 +323,7 @@ class bufferQueueTest(QueueConfigDataHelper):
     def tearDown(self):
         super(bufferQueueTest, self).tearDown()
 
-
+@group("draft")
 class schedulerQueueTest(QueueConfigDataHelper):
     """
     The test scenario consists of attaching scheduler profile to a queue
@@ -515,7 +515,7 @@ class schedulerQueueTest(QueueConfigDataHelper):
     def tearDown(self):
         super(schedulerQueueTest, self).tearDown()
 
-
+@group("draft")
 class pfcPriorityQueueTest(QueueConfigDataHelper):
     """
     The test verifies the correct configuration of mapping
@@ -594,7 +594,7 @@ class pfcPriorityQueueTest(QueueConfigDataHelper):
     def tearDown(self):
         super(pfcPriorityQueueTest, self).tearDown()
 
-
+@group("draft")
 class cpuPortQueueObjectTest(QueueConfigDataHelper):
     """
     The test uses CPU port instead of external port for
@@ -1237,7 +1237,7 @@ class dwrrBandwidthDistributionTest(QueueConfigDataHelper):  # noqa pylint: disa
     def tearDown(self):
         super(dwrrBandwidthDistributionTest, self).tearDown()
 
-
+@group("draft")
 class strictPriorityQueueTest(QueueConfigDataHelper):
     """
     After the creation of strict priority type for scheduler profile,

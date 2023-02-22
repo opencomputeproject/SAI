@@ -20,7 +20,7 @@ from sai_thrift.sai_headers import *
 
 from sai_base_test import *
 
-
+@group("draft")
 class hostIfGenlTest(PlatformSaiHelper):
     '''
     This verifies the correctness of host interface creation
@@ -65,7 +65,7 @@ class HostifCreationTestHelper(PlatformSaiHelper):
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
 
         super(HostifCreationTestHelper, self).tearDown()
-
+@group("draft")
 class lagNetdevHostifCreationTest(HostifCreationTestHelper):
     '''
     Verify correctness of host interface creation of type netdev
@@ -173,7 +173,7 @@ class lagNetdevHostifCreationTest(HostifCreationTestHelper):
     def tearDown(self):
         super(lagNetdevHostifCreationTest, self).tearDown()
 
-
+@group("draft")
 class vlanSviNetdevHostifCreationTest(HostifCreationTestHelper):
     '''
     Verify correctness of host interfaces creation of type netdev
@@ -472,7 +472,7 @@ class HostifTaggingTestHelper(PlatformSaiHelper):
 
         super(HostifTaggingTestHelper, self).tearDown()
 
-
+@group("draft")
 class hostifStripTagTest(HostifTaggingTestHelper):
     '''
     Verify VLAN tag stripping on host interface
@@ -534,7 +534,7 @@ class hostifStripTagTest(HostifTaggingTestHelper):
     def tearDown(self):
         super(hostifStripTagTest, self).tearDown()
 
-
+@group("draft")
 class hostifKeepTagTest(HostifTaggingTestHelper):
     '''
     Verify VLAN tag keeping on host interface
@@ -607,7 +607,7 @@ class hostifKeepTagTest(HostifTaggingTestHelper):
     def tearDown(self):
         super(hostifKeepTagTest, self).tearDown()
 
-
+@group("draft")
 class hostifOriginalTagTest(HostifTaggingTestHelper):
     '''
     Verify keeping original VLAN tagging on host interface
@@ -757,7 +757,7 @@ class HostifTrapActionTestHelper(PlatformSaiHelper):
         sai_thrift_remove_vlan(self.client, self.vlan100)
 
         super(HostifTrapActionTestHelper, self).tearDown()
-
+@group("draft")
 class dropTrapActionTest(HostifTrapActionTestHelper):
     '''
     Verify drop trap action
@@ -787,7 +787,7 @@ class dropTrapActionTest(HostifTrapActionTestHelper):
     def tearDown(self):
         super(dropTrapActionTest, self).tearDown()
 
-
+@group("draft")
 class forwardTrapActionTest(HostifTrapActionTestHelper):
     '''
     Verify forward trap action
@@ -819,7 +819,7 @@ class forwardTrapActionTest(HostifTrapActionTestHelper):
     def tearDown(self):
         super(forwardTrapActionTest, self).tearDown()
 
-
+@group("draft")
 class copyTrapActionTest(HostifTrapActionTestHelper):
     '''
     Verify copy trap action
@@ -862,7 +862,7 @@ class copyTrapActionTest(HostifTrapActionTestHelper):
     def tearDown(self):
         super(copyTrapActionTest, self).tearDown()
 
-
+@group("draft")
 class copyTrapActionTaggedTest(HostifTrapActionTestHelper):
     '''
     This verifies copy trap action using tagged ARP packet
@@ -934,7 +934,7 @@ class copyTrapActionTaggedTest(HostifTrapActionTestHelper):
     def tearDown(self):
         super(copyTrapActionTaggedTest, self).tearDown()
 
-
+@group("draft")
 class trapTrapActionTest(HostifTrapActionTestHelper):
     '''
     Verify trap trap action
@@ -975,7 +975,7 @@ class trapTrapActionTest(HostifTrapActionTestHelper):
     def tearDown(self):
         super(trapTrapActionTest, self).tearDown()
 
-
+@group("draft")
 class logTrapActionTest(HostifTrapActionTestHelper):
     '''
     Verify log trap action.
@@ -1019,7 +1019,7 @@ class logTrapActionTest(HostifTrapActionTestHelper):
     def tearDown(self):
         super(logTrapActionTest, self).tearDown()
 
-
+@group("draft")
 class denyTrapActionTest(HostifTrapActionTestHelper):
     '''
     Verify deny trap action
@@ -1050,7 +1050,7 @@ class denyTrapActionTest(HostifTrapActionTestHelper):
     def tearDown(self):
         super(denyTrapActionTest, self).tearDown()
 
-
+@group("draft")
 class transitTrapActionTest(HostifTrapActionTestHelper):
     '''
     Verify transit trap action
@@ -1083,7 +1083,7 @@ class transitTrapActionTest(HostifTrapActionTestHelper):
     def tearDown(self):
         super(transitTrapActionTest, self).tearDown()
 
-
+@group("draft")
 class hostifPriorityTest(HostifTrapActionTestHelper):
     '''
     Verify if packets are handled using hostif trap with higher prioriy set
@@ -1317,7 +1317,7 @@ class arpRxTxTest(PlatformSaiHelper):
     def tearDown(self):
         super(arpRxTxTest, self).tearDown()
 
-
+@group("draft")
 class portHostifTxTest(PlatformSaiHelper):
     """
     Verify port host interface tx
@@ -1423,7 +1423,7 @@ class HostifTableMatchTestHelper(PlatformSaiHelper):
 
         super(HostifTableMatchTestHelper, self).tearDown()
 
-
+@group("draft")
 class wildcardEntryCbChannelLldp(HostifTableMatchTestHelper):
     '''
     Verify hostif interface table match for entry type Wildcard and
@@ -1492,7 +1492,7 @@ class wildcardEntryCbChannelLldp(HostifTableMatchTestHelper):
     def tearDown(self):
         super(wildcardEntryCbChannelLldp, self).tearDown()
 
-
+@group("draft")
 class wildcardEntryCbChannelLacp(HostifTableMatchTestHelper):
     '''
     Verify hostif interface table match for entry type Wildcard and
@@ -1572,7 +1572,7 @@ class wildcardEntryCbChannelLacp(HostifTableMatchTestHelper):
     def tearDown(self):
         super(wildcardEntryCbChannelLacp, self).tearDown()
 
-
+@group("draft")
 class wildcardEntryCbChannelStp(HostifTableMatchTestHelper):
     '''
     Verify hostif interface table match for entry type Wildcard and
@@ -1835,7 +1835,7 @@ class HostifTrapTypesTestHelper(PlatformSaiHelper):
 
         super(HostifTrapTypesTestHelper, self).tearDown()
 
-
+@group("draft")
 class arpTrapTest(HostifTrapTypesTestHelper):
     '''
     Verify trap of type ARP
@@ -1935,7 +1935,7 @@ class arpTrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(arpTrapTest, self).tearDown()
 
-
+@group("draft")
 class ttlErrorTrapTest(HostifTrapTypesTestHelper):
     '''
     Verify trap of type TTL
@@ -1990,7 +1990,7 @@ class ttlErrorTrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(ttlErrorTrapTest, self).tearDown()
 
-
+@group("draft")
 class bgpTrapTest(HostifTrapTypesTestHelper):
     '''
     Verify trap of type BGP
@@ -2073,7 +2073,7 @@ class bgpTrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(bgpTrapTest, self).tearDown()
 
-
+@group("draft")
 class dhcpTrapTest(HostifTrapTypesTestHelper):
     '''
     Verify trap of type DHCP
@@ -2135,7 +2135,7 @@ class dhcpTrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(dhcpTrapTest, self).tearDown()
 
-
+@group("draft")
 class ip2meTrapTest(HostifTrapTypesTestHelper):
     '''
     Verify trap of type IP2ME
@@ -2179,7 +2179,7 @@ class ip2meTrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(ip2meTrapTest, self).tearDown()
 
-
+@group("draft")
 class lacpTrapTest(HostifTrapTypesTestHelper):
     '''
     Verify trap of type LACP
@@ -2226,7 +2226,7 @@ class lacpTrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(lacpTrapTest, self).tearDown()
 
-
+@group("draft")
 class lldpTrapTest(HostifTrapTypesTestHelper):
     '''
     Verify trap of type LLDP
@@ -2288,7 +2288,7 @@ class lldpTrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(lldpTrapTest, self).tearDown()
 
-
+@group("draft")
 class ospfTrapTest(HostifTrapTypesTestHelper):
     '''
     Verify trap of type OSPF
@@ -2347,7 +2347,7 @@ class ospfTrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(ospfTrapTest, self).tearDown()
 
-
+@group("draft")
 class igmpTrapTest(HostifTrapTypesTestHelper):
     '''
     Verify trap of different IGMP types
@@ -2413,7 +2413,7 @@ class igmpTrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(igmpTrapTest, self).tearDown()
 
-
+@group("draft")
 class ipv6MldTrapTest(HostifTrapTypesTestHelper):
     '''
     This verifies trap of type IPV6 MLD
@@ -2513,7 +2513,7 @@ class ipv6MldTrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(ipv6MldTrapTest, self).tearDown()
 
-
+@group("draft")
 class stpTrapTest(HostifTrapTypesTestHelper):
     '''
     Verify trap of type STP
@@ -2557,7 +2557,7 @@ class stpTrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(stpTrapTest, self).tearDown()
 
-
+@group("draft")
 class pvrstTrapTest(HostifTrapTypesTestHelper):
     '''
     This verifies trap of type PVRST
@@ -2601,7 +2601,7 @@ class pvrstTrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(pvrstTrapTest, self).tearDown()
 
-
+@group("draft")
 class pimTrapTest(HostifTrapTypesTestHelper):
     '''
     Verify trap of type PIM
@@ -2645,7 +2645,7 @@ class pimTrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(pimTrapTest, self).tearDown()
 
-
+@group("draft")
 class udldTrapTest(HostifTrapTypesTestHelper):
     '''
     Verify trap of type UDLD
@@ -2689,7 +2689,7 @@ class udldTrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(udldTrapTest, self).tearDown()
 
-
+@group("draft")
 class ipv6NDTrapTest(HostifTrapTypesTestHelper):
     '''
     Verify trap of type ICMP neighbor discovery
@@ -2795,7 +2795,7 @@ class ipv6NDTrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(ipv6NDTrapTest, self).tearDown()
 
-
+@group("draft")
 class bfdRxTrapTest(HostifTrapTypesTestHelper):
     '''
     Verify trap of type BFD RX
@@ -2841,7 +2841,7 @@ class bfdRxTrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(bfdRxTrapTest, self).tearDown()
 
-
+@group("draft")
 class dhcpv6TrapTest(HostifTrapTypesTestHelper):
     '''
     Verify trap of type DHCPv6
@@ -2902,7 +2902,7 @@ class dhcpv6TrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(dhcpv6TrapTest, self).tearDown()
 
-
+@group("draft")
 class ptpTrapTest(HostifTrapTypesTestHelper):
     '''
     Verify trap of type PTP
@@ -2958,7 +2958,7 @@ class ptpTrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(ptpTrapTest, self).tearDown()
 
-
+@group("draft")
 class isisTrapTest(HostifTrapTypesTestHelper):
     '''
     This verifies trap of type ISIS
@@ -3008,7 +3008,7 @@ class isisTrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(isisTrapTest, self).tearDown()
 
-
+@group("draft")
 class bfdv6RxTrapTest(HostifTrapTypesTestHelper):
     '''
     This verifies trap of type BFDV6 RX
@@ -3054,7 +3054,7 @@ class bfdv6RxTrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(bfdv6RxTrapTest, self).tearDown()
 
-
+@group("draft")
 class dhcpL2TrapTest(HostifTrapTypesTestHelper):
     '''
     This verifies trap of type DHCP L2
@@ -3116,7 +3116,7 @@ class dhcpL2TrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(dhcpL2TrapTest, self).tearDown()
 
-
+@group("draft")
 class dhcpv6L2TrapTest(HostifTrapTypesTestHelper):
     '''
     This verifies trap of type DHCPv6 L2
@@ -3177,7 +3177,7 @@ class dhcpv6L2TrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(dhcpv6L2TrapTest, self).tearDown()
 
-
+@group("draft")
 class vrrpTrapTest(HostifTrapTypesTestHelper):
     '''
     This verifies trap of type VRRP
@@ -3223,7 +3223,7 @@ class vrrpTrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(vrrpTrapTest, self).tearDown()
 
-
+@group("draft")
 class vrrpv6TrapTest(HostifTrapTypesTestHelper):
     '''
     This verifies trap of type VRRPV6
@@ -3268,7 +3268,7 @@ class vrrpv6TrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(vrrpv6TrapTest, self).tearDown()
 
-
+@group("draft")
 class eapolTrapTest(HostifTrapTypesTestHelper):
     '''
     This verifies trap of type EAPOL
@@ -3312,7 +3312,7 @@ class eapolTrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(eapolTrapTest, self).tearDown()
 
-
+@group("draft")
 class mplsRouterAlertTrapTest(HostifTrapTypesTestHelper):
     '''
     Verify trap of type MPLS router alert
@@ -3362,7 +3362,7 @@ class mplsRouterAlertTrapTest(HostifTrapTypesTestHelper):
     def tearDown(self):
         super(mplsRouterAlertTrapTest, self).tearDown()
 
-
+@group("draft")
 class mplsTtlErrorTrapTest(HostifTrapTypesTestHelper):
     '''
     Verify trap of type MPLS TTL error
@@ -3500,7 +3500,7 @@ class HostifUserDefinedTrapACLTestHelper(PlatformSaiHelper):
 
         super(HostifUserDefinedTrapACLTestHelper, self).tearDown()
 
-
+@group("draft")
 class aclIpSrcNetdevTrapTest(HostifUserDefinedTrapACLTestHelper):
     '''
     Verify the traffic matching ACL rule associated with user defined trap
@@ -3727,7 +3727,7 @@ class trapPriorityTest(PlatformSaiHelper):
     def tearDown(self):
         super(trapPriorityTest, self).tearDown()
 
-
+@group("draft")
 class trapTypeTest(PlatformSaiHelper):
     """
     Verify type attribute getting
@@ -3768,7 +3768,7 @@ class trapTypeTest(PlatformSaiHelper):
     def tearDown(self):
         super(trapTypeTest, self).tearDown()
 
-
+@group("draft")
 class trapGroupTest(PlatformSaiHelper):
     """
     Verify group attribute getting
@@ -3815,7 +3815,7 @@ class trapGroupTest(PlatformSaiHelper):
     def tearDown(self):
         super(trapGroupTest, self).tearDown()
 
-
+@group("draft")
 class trapActionTest(PlatformSaiHelper):
     """
     Verify action attribute getting
@@ -3855,7 +3855,7 @@ class trapActionTest(PlatformSaiHelper):
     def tearDown(self):
         super(trapActionTest, self).tearDown()
 
-
+@group("draft")
 class hostIfOperStatusTest(PlatformSaiHelper):
     '''
     - This verifies the correctness of host interface creation
@@ -3996,7 +3996,7 @@ class hostIfOperStatusTest(PlatformSaiHelper):
                                      entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
         super(hostIfOperStatusTest, self).tearDown()
 
-
+@group("draft")
 class HostifUserDefinedTrapNeighborTest(PlatformSaiHelper):
     '''
     Test hostif user defined traps
@@ -4052,7 +4052,7 @@ class HostifUserDefinedTrapNeighborTest(PlatformSaiHelper):
             sai_thrift_remove_hostif(self.client, self.hostifs.pop())
 
         super(HostifUserDefinedTrapNeighborTest, self).tearDown()
-
+@group("draft")
 class neighborTrapTest(HostifUserDefinedTrapNeighborTest):
     '''
     Verify the Neighbor entry with packet action trap and user defined

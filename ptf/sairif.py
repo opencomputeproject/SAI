@@ -114,7 +114,7 @@ class L3InterfaceTestHelper(PlatformSaiHelper):
         sai_thrift_remove_router_interface(self.client, self.lag1_rif)
 
         super(L3InterfaceTestHelper, self).tearDown()
-
+@group("draft")
 class Ipv4FibLagTest(L3InterfaceTestHelper):
     """
     Verifies basic  forwarding on RIF using LAG and with new lag member
@@ -277,7 +277,7 @@ class Ipv4FibLagTest(L3InterfaceTestHelper):
     def tearDown(self):
         super(Ipv4FibLagTest, self).tearDown()
 
-
+@group("draft")
 class Ipv6FibLagTest(L3InterfaceTestHelper):
     """
     Verifies basic IPv6 forwarding on RIF using LAG, with new lag member
@@ -463,7 +463,7 @@ class Ipv6FibLagTest(L3InterfaceTestHelper):
     def tearDown(self):
         super(Ipv6FibLagTest, self).tearDown()
 
-
+@group("draft")
 class RifSharedMtuTest(L3InterfaceTestHelper):
     """
     Verifies same MTU value shared between RIF and if MTU check works
@@ -673,7 +673,7 @@ class RifSharedMtuTest(L3InterfaceTestHelper):
     def tearDown(self):
         super(RifSharedMtuTest, self).tearDown()
 
-
+@group("draft")
 class McastDisableTest(L3InterfaceTestHelper):
     """
     Verify IPv4 multicast packets are dropped when V4_MCAST_ENABLE
@@ -825,7 +825,7 @@ class McastDisableTest(L3InterfaceTestHelper):
     def tearDown(self):
         super(McastDisableTest, self).tearDown()
 
-
+@group("draft")
 class DuplicatePortRifCreationTest(L3InterfaceTestHelper):
     """
     Verifies if duplicate L3 RIF creation fails
@@ -935,7 +935,7 @@ class L3InterfaceSimplifiedTestHelper(PlatformSaiHelper):
 
         super(L3InterfaceSimplifiedTestHelper, self).tearDown()
 
-
+@group("draft")
 class MacUpdateTest(L3InterfaceSimplifiedTestHelper):
     """
     Verifies if packet is forwarded correctly after MAC address updated
@@ -1032,7 +1032,7 @@ class MacUpdateTest(L3InterfaceSimplifiedTestHelper):
     def tearDown(self):
         super(MacUpdateTest, self).tearDown()
 
-
+@group("draft")
 class Ipv4FibLPMTest(L3InterfaceSimplifiedTestHelper):
     """
     Verifies basic forwarding for IPv4 LPM routes
@@ -1068,7 +1068,7 @@ class Ipv4FibLPMTest(L3InterfaceSimplifiedTestHelper):
     def tearDown(self):
         super(Ipv4FibLPMTest, self).tearDown()
 
-
+@group("draft")
 class Ipv4FibTest(L3InterfaceSimplifiedTestHelper):
     """
     Verifies basic forwarding for IPv4 host
@@ -1136,7 +1136,7 @@ class Ipv4FibTest(L3InterfaceSimplifiedTestHelper):
     def tearDown(self):
         super(Ipv4FibTest, self).tearDown()
 
-
+@group("draft")
 class Ipv4DisableTest(L3InterfaceSimplifiedTestHelper):
     """
     Verifies if IPv4 packets are dropped when admin_v4_state is false
@@ -1200,7 +1200,7 @@ class Ipv4DisableTest(L3InterfaceSimplifiedTestHelper):
     def tearDown(self):
         super(Ipv4DisableTest, self).tearDown()
 
-
+@group("draft")
 class RifMyIPTest(L3InterfaceSimplifiedTestHelper):
     """
     Verifies if MYIP works for subnet routes
@@ -1258,7 +1258,7 @@ class RifMyIPTest(L3InterfaceSimplifiedTestHelper):
 
     def tearDown(self):
         super(RifMyIPTest, self).tearDown()
-
+@group("draft")
 class Ipv6DisableTest(L3InterfaceSimplifiedTestHelper):
     """
     Verifies if IPv6 packets are dropped when admin_v6_state is False
@@ -1320,7 +1320,7 @@ class Ipv6DisableTest(L3InterfaceSimplifiedTestHelper):
     def tearDown(self):
         super(Ipv6DisableTest, self).tearDown()
 
-
+@group("draft")
 class Ipv6FibTest(L3InterfaceSimplifiedTestHelper):
     """
     Verifies basic forwarding for IPv6 host
@@ -1357,7 +1357,7 @@ class Ipv6FibTest(L3InterfaceSimplifiedTestHelper):
     def tearDown(self):
         super(Ipv6FibTest, self).tearDown()
 
-
+@group("draft")
 class Ipv6FibLpmTest(L3InterfaceSimplifiedTestHelper):
     """
     Verifies basic forwarding for IPv6 LPM route
@@ -1436,7 +1436,7 @@ class L3InterfaceAclTestHelper(PlatformSaiHelper):
 
         super(L3InterfaceAclTestHelper, self).tearDown()
 
-
+@group("draft")
 class Ipv4IngressAclTest(L3InterfaceAclTestHelper):
     """
     Verifies Ingress ACL table and group bind to RIF
@@ -1552,7 +1552,7 @@ class Ipv4IngressAclTest(L3InterfaceAclTestHelper):
     def tearDown(self):
         super(Ipv4IngressAclTest, self).tearDown()
 
-
+@group("draft")
 class Ipv4EgressAclTest(L3InterfaceAclTestHelper):
     # TODO: test requires additional verification
     """
@@ -1732,7 +1732,7 @@ class NegativeRifTest(PlatformSaiHelper):
     def tearDown(self):
         super(NegativeRifTest, self).tearDown()
 
-
+@group("draft")
 class LoopbackRifTest(PlatformSaiHelper):
     """
     Verifies multiple loopback RIF on same VRF is allowed
@@ -1763,7 +1763,7 @@ class LoopbackRifTest(PlatformSaiHelper):
     def tearDown(self):
         super(LoopbackRifTest, self).tearDown()
 
-
+@group("draft")
 class RifCreateOrUpdateRmacTest(PlatformSaiHelper):
     """
     Verifies RIF can be created or updated with custom rmac
@@ -2107,7 +2107,7 @@ class L3InterfaceMtuTestHelper(PlatformSaiHelper):
 
         super(L3InterfaceMtuTestHelper, self).tearDown()
 
-
+@group("draft")
 class Ipv4MtuTest(L3InterfaceMtuTestHelper):
     """
     Verifies if IPv4 packet is forwarded, dropped and punted to CPU
@@ -2339,7 +2339,7 @@ class Ipv4MtuTest(L3InterfaceMtuTestHelper):
     def tearDown(self):
         super(Ipv4MtuTest, self).tearDown()
 
-
+@group("draft")
 class Ipv6MtuTest(L3InterfaceMtuTestHelper):
     """
     Verifies if IPv6 packet is forwarded, dropped and punted to CPU
@@ -3113,7 +3113,7 @@ class L3SubPortTestHelper(PlatformSaiHelper):
 
         super(L3SubPortTestHelper, self).tearDown()
 
-
+@group("draft")
 class PvMissTest(L3SubPortTestHelper):
     """
     Verifies packet dropped when invalid vlan tag on port
@@ -3170,7 +3170,7 @@ class PvMissTest(L3SubPortTestHelper):
     def tearDown(self):
         super(PvMissTest, self).tearDown()
 
-
+@group("draft")
 class SubPortToSubPortTest(L3SubPortTestHelper):
     """
     Verifies routing between sub-ports and between sub-ports
@@ -3256,7 +3256,7 @@ class SubPortToSubPortTest(L3SubPortTestHelper):
     def tearDown(self):
         super(SubPortToSubPortTest, self).tearDown()
 
-
+@group("draft")
 class SubPortToRifTest(L3SubPortTestHelper):
     """
     Verifies routing between SVI and sub-port
@@ -3340,7 +3340,7 @@ class SubPortToRifTest(L3SubPortTestHelper):
     def tearDown(self):
         super(SubPortToRifTest, self).tearDown()
 
-
+@group("draft")
 class RifToSubPortTest(L3SubPortTestHelper):
     """
     Verifies packet routed with valid vlan on sub-port
@@ -3437,7 +3437,7 @@ class RifToSubPortTest(L3SubPortTestHelper):
     def tearDown(self):
         super(RifToSubPortTest, self).tearDown()
 
-
+@group("draft")
 class NoFloodTest(L3SubPortTestHelper):
     """
     Verifies if packet is not flooded on the tagged VLAN when no route hit
@@ -3511,7 +3511,7 @@ class NoFloodTest(L3SubPortTestHelper):
     def tearDown(self):
         super(NoFloodTest, self).tearDown()
 
-
+@group("draft")
 class VlanConflictTest(L3SubPortTestHelper):
     """
     Verifies if deleting VLAN RIF affects sub-port RIF with same
@@ -3660,7 +3660,7 @@ class VlanConflictTest(L3SubPortTestHelper):
     def tearDown(self):
         super(VlanConflictTest, self).tearDown()
 
-
+@group("draft")
 class SubPortAdminV4StatusTest(L3SubPortTestHelper):
     """
     Verifies if admin status DOWN disables packet forwarding on ingress
@@ -3714,7 +3714,7 @@ class SubPortAdminV4StatusTest(L3SubPortTestHelper):
     def tearDown(self):
         super(SubPortAdminV4StatusTest, self).tearDown()
 
-
+@group("draft")
 class SubPortAdminV6StatusTest(L3SubPortTestHelper):
     """
     Verifies if admin status DOWN disables packet forwarding on ingress
@@ -3772,7 +3772,7 @@ class SubPortAdminV6StatusTest(L3SubPortTestHelper):
     def tearDown(self):
         super(SubPortAdminV6StatusTest, self).tearDown()
 
-
+@group("draft")
 class SubPortV4MtuTest(L3SubPortTestHelper):
     """
     Verifies if IPv4 packet is forwarded, dropped and punted to CPU
@@ -3899,7 +3899,7 @@ class SubPortV4MtuTest(L3SubPortTestHelper):
     def tearDown(self):
         super(SubPortV4MtuTest, self).tearDown()
 
-
+@group("draft")
 class SubPortV6MtuTest(L3SubPortTestHelper):
     """
     Verifies if IPv6 packet is forwarded, dropped and punted to CPU
@@ -4037,7 +4037,7 @@ class SubPortV6MtuTest(L3SubPortTestHelper):
     def tearDown(self):
         super(SubPortV6MtuTest, self).tearDown()
 
-
+@group("draft")
 class SubPortIngressAclTest(L3SubPortTestHelper):
     """
     Verifies ingress ACL table and group is bound correctly to sub-port
@@ -4152,7 +4152,7 @@ class SubPortIngressAclTest(L3SubPortTestHelper):
     def tearDown(self):
         super(SubPortIngressAclTest, self).tearDown()
 
-
+@group("draft")
 class SubPortEgressAclTest(L3SubPortTestHelper):
     """
     Verifies egress ACL table and group is bound correctly to sub-port
@@ -4269,7 +4269,7 @@ class SubPortEgressAclTest(L3SubPortTestHelper):
     def tearDown(self):
         super(SubPortEgressAclTest, self).tearDown()
 
-
+@group("draft")
 class SubPortECMPTest(L3SubPortTestHelper):
     """
     Verifies load-balancing when sub-port is part of ECMP
@@ -4369,7 +4369,7 @@ class SubPortECMPTest(L3SubPortTestHelper):
     def tearDown(self):
         super(SubPortECMPTest, self).tearDown()
 
-
+@group("draft")
 class SubPortMyIPTest(L3SubPortTestHelper):
     """
     Verifies if MYIP works for subnet routes
@@ -4515,7 +4515,7 @@ class SubPortMyIPTest(L3SubPortTestHelper):
     def tearDown(self):
         super(SubPortMyIPTest, self).tearDown()
 
-
+@group("draft")
 class SubPortNoTest(L3SubPortTestHelper):
     '''
     SONiC enforces a minimum scalability requirement on the number
@@ -4571,7 +4571,7 @@ class SubPortNoTest(L3SubPortTestHelper):
     def tearDown(self):
         super(SubPortNoTest, self).tearDown()
 
-
+@group("draft")
 class SubPortQosGroupTest(L3SubPortTestHelper):
     """
     Verifies QoS group setting inherited from parent port or LAG
@@ -5254,7 +5254,7 @@ class L3SviTestHelper(PlatformSaiHelper):
 
         super(L3SviTestHelper, self).tearDown()
 
-
+@group("draft")
 class SviRifIPv4DisableTest(L3SviTestHelper):
     """
     Verifies if IPv4 packets are dropped when admin_v4_state is False
@@ -5380,7 +5380,7 @@ class SviRifIPv4DisableTest(L3SviTestHelper):
     def tearDown(self):
         super(SviRifIPv4DisableTest, self).tearDown()
 
-
+@group("draft")
 class SviRifIPv6DisableTest(L3SviTestHelper):
     """
     Verifies IPv6 packets are dropped when admin_v6_state is False
@@ -5477,7 +5477,7 @@ class SviRifIPv6DisableTest(L3SviTestHelper):
     def tearDown(self):
         super(SviRifIPv6DisableTest, self).tearDown()
 
-
+@group("draft")
 class SviBridgingTest(L3SviTestHelper):
     """
     Verifies L2 bridging on an SVI port if rmac miss and L2 flooding
@@ -5618,7 +5618,7 @@ class SviBridgingTest(L3SviTestHelper):
     def tearDown(self):
         super(SviBridgingTest, self).tearDown()
 
-
+@group("draft")
 class SviHostTest(L3SviTestHelper):
     """
     Verifies routing after NHOP resolved via static MAC entry
@@ -5711,7 +5711,7 @@ class SviHostTest(L3SviTestHelper):
     def tearDown(self):
         super(SviHostTest, self).tearDown()
 
-
+@group("draft")
 class SviHostVlanTaggingTest(L3SviTestHelper):
     """
     Verifies routing after NHOP resolved via static MAC entry
@@ -5779,7 +5779,7 @@ class SviHostVlanTaggingTest(L3SviTestHelper):
     def tearDown(self):
         super(SviHostVlanTaggingTest, self).tearDown()
 
-
+@group("draft")
 class SviToSviRoutingTest(L3SviTestHelper):
     '''
     vlan100/24 -> vlan200/lag10
@@ -5917,7 +5917,7 @@ class SviToSviRoutingTest(L3SviTestHelper):
     def tearDown(self):
         super(SviToSviRoutingTest, self).tearDown()
 
-
+@group("draft")
 class SviIPv4HostPostRoutedFloodTest(L3SviTestHelper):
     """
     Verifies post routed flood when static mac entry is missing
@@ -5982,7 +5982,7 @@ class SviIPv4HostPostRoutedFloodTest(L3SviTestHelper):
     def tearDown(self):
         super(SviIPv4HostPostRoutedFloodTest, self).tearDown()
 
-
+@group("draft")
 class SviIPv6HostPostRoutedFloodTest(L3SviTestHelper):
     """
     Verifies IPv6 host post routed flood when static mac entry is missing
@@ -6049,7 +6049,7 @@ class SviIPv6HostPostRoutedFloodTest(L3SviTestHelper):
     def tearDown(self):
         super(SviIPv6HostPostRoutedFloodTest, self).tearDown()
 
-
+@group("draft")
 class SviIPv4HostStaticMacMoveTest(L3SviTestHelper):
     """
     Verifies static configuration of MAC address on port and change
@@ -6110,7 +6110,7 @@ class SviIPv4HostStaticMacMoveTest(L3SviTestHelper):
     def tearDown(self):
         super(SviIPv4HostStaticMacMoveTest, self).tearDown()
 
-
+@group("draft")
 class SviIPv6HostStaticMacMoveTest(L3SviTestHelper):
     """
     Verifies static configuration of MAC address on port and change
@@ -6171,7 +6171,7 @@ class SviIPv6HostStaticMacMoveTest(L3SviTestHelper):
     def tearDown(self):
         super(SviIPv6HostStaticMacMoveTest, self).tearDown()
 
-
+@group("draft")
 class SviRouteDynamicMacTest(L3SviTestHelper):
     """
     Verifies dynamic MAC address managment test for the VLAN router
@@ -6287,7 +6287,7 @@ class SviRouteDynamicMacTest(L3SviTestHelper):
     def tearDown(self):
         super(SviRouteDynamicMacTest, self).tearDown()
 
-
+@group("draft")
 class SviRouteDynamicMacMoveTest(L3SviTestHelper):
     """
     Verifies routing after NHOP resolved via dynamically learn MAC entry
@@ -6366,7 +6366,7 @@ class SviRouteDynamicMacMoveTest(L3SviTestHelper):
     def tearDown(self):
         super(SviRouteDynamicMacMoveTest, self).tearDown()
 
-
+@group("draft")
 class SviIPv4ArpMoveTest(L3SviTestHelper):
     """
     Verifies routing after NHOP resolved via dynamically learn MAC entry
@@ -6471,7 +6471,7 @@ class SviIPv4ArpMoveTest(L3SviTestHelper):
     def tearDown(self):
         super(SviIPv4ArpMoveTest, self).tearDown()
 
-
+@group("draft")
 class SviIPv6IcmpMoveTest(L3SviTestHelper):
     """
     Verifies routing after NHOP resolved via dynamically learn MAC entry
@@ -6575,7 +6575,7 @@ class SviIPv6IcmpMoveTest(L3SviTestHelper):
     def tearDown(self):
         super(SviIPv6IcmpMoveTest, self).tearDown()
 
-
+@group("draft")
 class SviLagHostTest(L3SviTestHelper):
     """
     Verifies routing after NHOP resolved via static MAC entry on LAG
@@ -6677,7 +6677,7 @@ class SviLagHostTest(L3SviTestHelper):
     def tearDown(self):
         super(SviLagHostTest, self).tearDown()
 
-
+@group("draft")
 class SviIPv4LagHostStaticMacMoveTest(L3SviTestHelper):
     """
     Verifies moving MAC address between ports on LAG for the IPv4
@@ -6736,7 +6736,7 @@ class SviIPv4LagHostStaticMacMoveTest(L3SviTestHelper):
     def tearDown(self):
         super(SviIPv4LagHostStaticMacMoveTest, self).tearDown()
 
-
+@group("draft")
 class SviIPv6LagHostStaticMacMoveTest(L3SviTestHelper):
     """
     Verfies moving MAC address between ports on LAG for the IPv6
@@ -6795,7 +6795,7 @@ class SviIPv6LagHostStaticMacMoveTest(L3SviTestHelper):
     def tearDown(self):
         super(SviIPv6LagHostStaticMacMoveTest, self).tearDown()
 
-
+@group("draft")
 class SviLagHostDynamicMacTest(L3SviTestHelper):
     """
     Verifies routing after NHOP resolved via dynamically learn
@@ -6856,7 +6856,7 @@ class SviLagHostDynamicMacTest(L3SviTestHelper):
     def tearDown(self):
         super(SviLagHostDynamicMacTest, self).tearDown()
 
-
+@group("draft")
 class SviIPv4LagHostDynamicMacMoveTest(L3SviTestHelper):
     """
     Verifies routing after NHOP resolved via dynamically learn MAC entry
@@ -6937,7 +6937,7 @@ class SviIPv4LagHostDynamicMacMoveTest(L3SviTestHelper):
     def tearDown(self):
         super(SviIPv4LagHostDynamicMacMoveTest, self).tearDown()
 
-
+@group("draft")
 class SviIPv6LagHostDynamicMacMoveTest(L3SviTestHelper):
     """
     Verifies routing after NHOP resolved via dynamically learn MAC entry
@@ -7016,7 +7016,7 @@ class SviIPv6LagHostDynamicMacMoveTest(L3SviTestHelper):
 
     def tearDown(self):
         super(SviIPv6LagHostDynamicMacMoveTest, self).tearDown()
-
+@group("draft")
 class SviIPv4MtuTest(L3SviTestHelper):
     """
     Verifies if IPv4 packet is forwarded, dropped and punted to CPU
@@ -7134,7 +7134,7 @@ class SviIPv4MtuTest(L3SviTestHelper):
     def tearDown(self):
         super(SviIPv4MtuTest, self).tearDown()
 
-
+@group("draft")
 class SviIPv6MtuTest(L3SviTestHelper):
     """
     Verifies if IPv6 packet is forwarded, dropped and punted to CPU
@@ -7264,7 +7264,7 @@ class SviIPv6MtuTest(L3SviTestHelper):
     def tearDown(self):
         super(SviIPv6MtuTest, self).tearDown()
 
-
+@group("draft")
 class SviTaggingTest(L3SviTestHelper):
     """
     Verifies if packet is not routed if tagged packet ingresses on
@@ -7351,7 +7351,7 @@ class SviTaggingTest(L3SviTestHelper):
     def tearDown(self):
         super(SviTaggingTest, self).tearDown()
 
-
+@group("draft")
 class SviMyIPTest(L3SviTestHelper):
     """
     Verifies if MYIP works for subnet routes
@@ -7440,7 +7440,7 @@ class SviMyIPTest(L3SviTestHelper):
     def tearDown(self):
         super(SviMyIPTest, self).tearDown()
 
-
+@group("draft")
 class SviStatsTest(L3SviTestHelper):
     """
     Verifies Ingress and Egress SVI packets stats
@@ -7487,7 +7487,7 @@ class SviStatsTest(L3SviTestHelper):
     def tearDown(self):
         super(SviStatsTest, self).tearDown()
 
-
+@group("draft")
 class IncorrectVlanIdTest(L3SviTestHelper):
     """
     Verifies if RIF creation fails when TYPE is VLAN and vlan_id is 0
@@ -7513,7 +7513,7 @@ class IncorrectVlanIdTest(L3SviTestHelper):
     def tearDown(self):
         super(IncorrectVlanIdTest, self).tearDown()
 
-
+@group("draft")
 class DuplicateVlanRifCreationTest(L3SviTestHelper):
     """
     Verifies if duplicate VLAN interface creation fails
@@ -7541,7 +7541,7 @@ class DuplicateVlanRifCreationTest(L3SviTestHelper):
     def tearDown(self):
         super(DuplicateVlanRifCreationTest, self).tearDown()
 
-
+@group("draft")
 class SviArpReplyTest(L3SviTestHelper):
     """
     Verifies ARP replies from linux interface on tagged and untagged RIF
@@ -7953,7 +7953,7 @@ class L3MtuTrapTestHelper(PlatformSaiHelper):
 
         super(L3MtuTrapTestHelper, self).tearDown()
 
-
+@group("draft")
 class Ipv4MtuTrapTest(L3MtuTrapTestHelper):
     """
     Verifies if IPv4 packet is forwarded or punted to CPU as a trap,
@@ -8077,7 +8077,7 @@ class Ipv4MtuTrapTest(L3MtuTrapTestHelper):
     def tearDown(self):
         super(Ipv4MtuTrapTest, self).tearDown()
 
-
+@group("draft")
 class Ipv6MtuTrapTest(L3MtuTrapTestHelper):
     """
     Verifies if IPv6 packet is forwarded or punted to CPU as a trap,
@@ -8203,7 +8203,7 @@ class Ipv6MtuTrapTest(L3MtuTrapTestHelper):
     def tearDown(self):
         super(Ipv6MtuTrapTest, self).tearDown()
 
-
+@group("draft")
 class SubPortIpv4MtuTrapTest(L3MtuTrapTestHelper):
     """
     Verifies if IPv4 packet is forwarded or punted to CPU as a trap,
@@ -8289,7 +8289,7 @@ class SubPortIpv4MtuTrapTest(L3MtuTrapTestHelper):
     def tearDown(self):
         super(SubPortIpv4MtuTrapTest, self).tearDown()
 
-
+@group("draft")
 class SubPortIpv6MtuTrapTest(L3MtuTrapTestHelper):
     """
     Verifies if IPv6 packet is forwarded or punted to CPU as a trap,
@@ -8379,7 +8379,7 @@ class SubPortIpv6MtuTrapTest(L3MtuTrapTestHelper):
     def tearDown(self):
         super(SubPortIpv6MtuTrapTest, self).tearDown()
 
-
+@group("draft")
 class SviIpv4MtuTrapTest(L3MtuTrapTestHelper):
     """
     Verifies if IPv4 packet is forwarded or punted to CPU as a trap,
@@ -8469,7 +8469,7 @@ class SviIpv4MtuTrapTest(L3MtuTrapTestHelper):
     def tearDown(self):
         super(SviIpv4MtuTrapTest, self).tearDown()
 
-
+@group("draft")
 class SviIpv6MtuTrapTest(L3MtuTrapTestHelper):
     """
     Verifies if IPv6 packet is forwarded or punted to CPU as a trap,
@@ -8563,7 +8563,7 @@ class SviIpv6MtuTrapTest(L3MtuTrapTestHelper):
     def tearDown(self):
         super(SviIpv6MtuTrapTest, self).tearDown()
 
-
+@group("draft")
 class MtuPacketStatsTest(L3MtuTrapTestHelper):
     """
     Verifies Ingress and Egress RIF stats for unicast packets
@@ -8616,7 +8616,7 @@ class MtuPacketStatsTest(L3MtuTrapTestHelper):
     def tearDown(self):
         super(MtuPacketStatsTest, self).tearDown()
 
-
+@group("draft")
 class VirtualInterfaceTestHelper(PlatformSaiHelper):
     """
     This class contains virtual router interface tests
@@ -8646,7 +8646,7 @@ class VirtualInterfaceTestHelper(PlatformSaiHelper):
         sai_thrift_remove_neighbor_entry(self.client, self.neighbor_entry1)
         super(VirtualInterfaceTestHelper, self).tearDown()
 
-
+@group("draft")
 class VirtualInterfaceType(VirtualInterfaceTestHelper):
     """
     Verifies if packet is forwarded correctly before
@@ -8721,7 +8721,7 @@ class VirtualInterfaceType(VirtualInterfaceTestHelper):
     def tearDown(self):
         super(VirtualInterfaceType, self).tearDown()
 
-
+@group("draft")
 class VirtualRIFType(VirtualInterfaceTestHelper):
     """
     Verifies the type of RIF created.
@@ -8757,7 +8757,7 @@ class VirtualRIFType(VirtualInterfaceTestHelper):
     def tearDown(self):
         super(VirtualRIFType, self).tearDown()
 
-
+@group("draft")
 class EnumQueryCapabilityHelper(PlatformSaiHelper):
     """
     This class contains tests that verify enum query
@@ -8775,7 +8775,7 @@ class EnumQueryCapabilityHelper(PlatformSaiHelper):
     def tearDown(self):
         super(EnumQueryCapabilityHelper, self).tearDown()
 
-
+@group("draft")
 class RifTypePort(EnumQueryCapabilityHelper):
     """
     Verifies enum query capability for RIF of type PORT.
@@ -8797,7 +8797,7 @@ class RifTypePort(EnumQueryCapabilityHelper):
     def tearDown(self):
         super(RifTypePort, self).tearDown()
 
-
+@group("draft")
 class RifTypeVlan(EnumQueryCapabilityHelper):
     """
     Verifies enum query capability for RIF of type VLAN.
@@ -8819,7 +8819,7 @@ class RifTypeVlan(EnumQueryCapabilityHelper):
     def tearDown(self):
         super(RifTypeVlan, self).tearDown()
 
-
+@group("draft")
 class RifTypeLoopback(EnumQueryCapabilityHelper):
     """
     Verifies enum query capability for RIF of type LOOPBACK.
@@ -8847,7 +8847,7 @@ class RifTypeLoopback(EnumQueryCapabilityHelper):
     def tearDown(self):
         super(RifTypeLoopback, self).tearDown()
 
-
+@group("draft")
 class RifTypeSubPort(EnumQueryCapabilityHelper):
     """
     Verifies enum query capability for RIF of type SUB_PORT.
@@ -8877,7 +8877,7 @@ class RifTypeSubPort(EnumQueryCapabilityHelper):
     def tearDown(self):
         super(RifTypeSubPort, self).tearDown()
 
-
+@group("draft")
 class SVIRifVlanTestHelper(PlatformSaiHelper):
     """
     This class contains virtual router interface tests for SVIs
@@ -9028,7 +9028,7 @@ class SVIRifVlanTestHelper(PlatformSaiHelper):
 
         super(SVIRifVlanTestHelper, self).tearDown()
 
-
+@group("draft")
 class SviRifIpv4Test(SVIRifVlanTestHelper):
     """
     Verifies if packet is forwarded correctly before
