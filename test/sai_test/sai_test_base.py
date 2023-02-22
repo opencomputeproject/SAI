@@ -379,6 +379,7 @@ class T0TestBase(ThriftInterfaceDataPlane):
               skip_reason = None):
 
         super(T0TestBase, self).setUp(skip_reason = skip_reason)
+        self.set_accepted_exception()
         self.set_logger_name()
         config_db_loader: ConfigDBLoader = None
         if 'config_db_json' in self.test_params:
@@ -432,6 +433,13 @@ class T0TestBase(ThriftInterfaceDataPlane):
             self.dut = self.persist_helper.read_dut()
             self.t1_list = self.persist_helper.read_t1_list()
             self.servers = self.persist_helper.read_server_list()
+
+    def set_accepted_exception(self):
+        """
+        Set accepted exceptions.
+        """
+        adapter.CATCH_EXCEPTIONS=CATCH_EXCEPTIONS
+        adapter.EXPECTED_ERROR_CODE += ACCEPTED_ERROR_CODE
 
     def persist_config(self):
         """
