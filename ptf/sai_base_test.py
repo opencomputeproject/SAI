@@ -372,11 +372,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
 
         """
         print("Ignore all the expect error code and exception captures.")
-        capture_status = adapter.CATCH_EXCEPTIONS
-        expected_code = adapter.EXPECTED_ERROR_CODE
-
-        adapter.CATCH_EXCEPTIONS = True
-        adapter.EXPECTED_ERROR_CODE = []
+        ignore_api_errors()
 
         attr = sai_thrift_get_switch_attribute(
             self.client, number_of_system_ports=True)
@@ -391,9 +387,8 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.active_ports_no = attr['number_of_active_ports']
         print("Get number_of_active_ports {}".format(self.active_ports_no))
 
-        adapter.CATCH_EXCEPTIONS = capture_status
-        adapter.EXPECTED_ERROR_CODE = expected_code
         print("Restore all the expect error code and exception captures.")
+        restore_api_error_code()
 
 
     def set_logger_name(self):
