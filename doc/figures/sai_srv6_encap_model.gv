@@ -11,7 +11,6 @@ digraph g {
     ];
     node [
         fontsize = "16"
-        shape = "ellipse"
     ];
     edge [
     ];
@@ -30,9 +29,8 @@ digraph g {
               <TR><TD colspan="2" BGCOLOR="palegreen" PORT="title">SAI Route</TD></TR>
               <tr><td>Prefix</td><td>10.0.0.0/8</td></tr>
               <tr><td>VRF</td><td>VRF-A</td></tr>
-              <tr><td>Prefix Agg ID</td><td>10</td></tr>
+              <tr><td BGCOLOR="tomato">Prefix Agg ID</td><td BGCOLOR="tomato">10</td></tr>
               <tr><td>Prefix</td><td port="nexthop">Overlay NHG1</td></tr>
-              <tr><td colspan="2" BGCOLOR="black"></td></tr>
             </TABLE>
             >
             shape = plaintext
@@ -43,9 +41,8 @@ digraph g {
               <TR><TD colspan="2" BGCOLOR="palegreen" PORT="title">SAI Route</TD></TR>
               <tr><td>Prefix</td><td>12.0.0.0/8</td></tr>
               <tr><td>VRF</td><td>VRF-A</td></tr>
-              <tr><td>Prefix Agg ID</td><td>20</td></tr>
+              <tr><td BGCOLOR="tomato">Prefix Agg ID</td><td BGCOLOR="tomato">20</td></tr>
               <tr><td>Prefix</td><td port="nexthop">SRv6 NH1</td></tr>
-              <tr><td colspan="2" BGCOLOR="black"></td></tr>
             </TABLE>
             >
             shape = plaintext
@@ -104,9 +101,6 @@ digraph g {
     "srv6_nh1":tunnel -> "node21-tunnel":tunnel
     "srv6_nh2":tunnel -> "node22-tunnel":tunnel
 
-    "srv6_nh1":sidlist -> "sidlist_table":sidlist1 [ shape = box ]
-    "srv6_nh2":sidlist -> "sidlist_table":sidlist2
-
     subgraph cluster_tunnel {
         rank = same
         "node21-tunnel" [
@@ -129,8 +123,8 @@ digraph g {
               <TR><TD colspan="2">Encap Mapper OID 1</TD></TR>
               <tr><td colspan="2" BGCOLOR="black"></td></tr>
               <TR><TD BGCOLOR="skyblue" colspan="3">PrefixID to VPNSID</TD></TR>
-              <TR><TD>10</TD><TD PORT="sidlist1">VPN SID1</TD></TR>
-              <TR><TD>20</TD><TD PORT="sidlist2">VPN SID2</TD></TR>
+              <TR><TD BGCOLOR="tomato">10</TD><TD PORT="sidlist1" BGCOLOR="tomato">VPN SID1</TD></TR>
+              <TR><TD BGCOLOR="tomato">20</TD><TD PORT="sidlist2" BGCOLOR="tomato">VPN SID2</TD></TR>
             </TABLE>
             >
             shape = plaintext
@@ -156,7 +150,7 @@ digraph g {
               <TR><TD colspan="2">Encap Mapper OID 2</TD></TR>
               <tr><td colspan="2" BGCOLOR="black"></td></tr>
               <TR><TD BGCOLOR="skyblue" colspan="3">PrefixID to VPNSID</TD></TR>
-              <TR><TD>10</TD><TD PORT="sidlist1">VPN SID3</TD></TR>
+              <TR><TD BGCOLOR="tomato">10</TD><TD PORT="sidlist1" BGCOLOR="tomato">VPN SID3</TD></TR>
             </TABLE>
             >
             shape = plaintext
@@ -164,14 +158,31 @@ digraph g {
         "node22-tunnel":mapper -> "node22-encap_mapper":mapper 
     }
 
-    "sidlist_table" [ label = <
-        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
-          <TR><TD PORT="heading" colspan="2" BGCOLOR="palegreen">SIDList</TD></TR>
-          <TR><TD PORT="sidlist1">SIDList ID1</TD><TD BGCOLOR="lightblue">IPv6 address list1</TD></TR>
-          <TR><TD PORT="sidlist2">SIDList ID2</TD><TD BGCOLOR="lightblue">IPv6 address list2</TD></TR>
-          <TR><TD PORT="sidlist3">SIDList ID3</TD><TD BGCOLOR="lightblue">IPv6 address list3</TD></TR>
-        </TABLE>
-        >
-        shape = box
-    ]
+    subgraph sidlist_block {
+        label = <SID Lists>
+        rank = same
+
+        "SID_List1" [
+            label = <
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+              <TR><TD colspan="2" BGCOLOR="palegreen" PORT="title">SAI SIDList 1</TD></TR>
+              <TR><TD>SID</TD><TD>IPv6 address list</TD></TR>
+              <TR><TD BGCOLOR="tomato">Underlay NH</TD><TD BGCOLOR="tomato">IP NH_OID</TD></TR>
+            </TABLE>
+            >
+            shape = plaintext
+        ]
+        "SID_List2" [
+            label = <
+            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0">
+              <TR><TD colspan="2" BGCOLOR="palegreen" PORT="title">SAI SIDList 2</TD></TR>
+              <TR><TD>SID</TD><TD>IPv6 address list</TD></TR>
+              <TR><TD BGCOLOR="tomato">Underlay NH</TD><TD BGCOLOR="tomato">Unspecified</TD></TR>
+            </TABLE>
+            >
+            shape = plaintext
+        ]
+    }
+    "srv6_nh1":sidlist -> "SID_List1":title
+    "srv6_nh2":sidlist -> "SID_List2":title
 }

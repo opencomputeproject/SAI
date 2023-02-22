@@ -142,8 +142,12 @@ __Figure 1: SRv6 pipeline__
 ## SAI Changes
 
 ### Prefix Aggregation ID
-When multiple prefixes use the same set of remote SRv6 Endpoint(s) but with different VPN SID values, prefix aggregation id allows SAI to derive different VPN SID while using same destination (NH or Next hop group).
-Prefix aggregation ID is a unique number that can be associated to a single destination, an NH (end point) or a Next hop group (set of end points). The use of prefix aggregation ID allows sharing of hardware resources depending on the hardware.
+Prefix Aggregation ID is a number that identifies a target on the overlay
+network, such as a VPN service. The route can be associated to a single SRv6
+Next Hop (Endpoint) or a Next hop group of SRv6 NH's for the VPN. Prefix
+Aggregation Id allows SAI to derive VPN SID per SRv6 Endpoint (SRv6 Tunnel)
+when muliple SRv6 Endpoints are part of the VPN service.
+
 The tunnel map entry table is programmed with the prefix aggregation id to VPN SID mapping.
 
 ### NULL SIDList / SIDList with empty list
@@ -154,12 +158,21 @@ SIDList with empty sidlist array could be used for cases where the encapsulated 
 Every SRv6 End node is represented by a SAI P2P Tunnel entry. All the VPN SIDs on this end node are specified using a tunnel map.
 
 ### Tunnel Map
-Tunnel Map entry table is contains the VPN SID associated to the remote end node.
+Tunnel Map entry table contains mapping of Prefix aggregation ID to VPN SID of the remote end node.
 
 ### SAI Object relationship
 
+The diagram below shows the objects and relationship. The diagram only shows relevant fields in the different tables.
+
+NOTE: Below object types have been combined to keep the diagram simple.
+* Next hop group and member list
+* Tunnel map and Tunnel map entry table
+
+New objects are highlighed in RED.
+
 ![SAI SRv6 Encap model](figures/sai_srv6_encap_model.png "Figure 1: SRv6 VPN Encap model ")
 __Figure 1: SRv6 VPN Encap model.__
+
 
 ### SRv6 VPN Programming steps using Tunnel maps
 - Create SAI tunnel for end node.
