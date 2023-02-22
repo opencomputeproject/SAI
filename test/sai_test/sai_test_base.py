@@ -362,9 +362,9 @@ class T0TestBase(ThriftInterfaceDataPlane):
 
     def setUp(self,
               force_config=False,
+              is_remove_default_vlan=True,
               is_create_hostIf=True,
               is_recreate_bridge=True,
-              is_reset_default_vlan=True,
               is_create_vlan=True,
               is_create_fdb=True,
               is_create_default_route=True,
@@ -397,14 +397,14 @@ class T0TestBase(ThriftInterfaceDataPlane):
         if force_config or not self.common_configured:
             self.create_device()
             t0_switch_config_helper(self)
-            remove_default_vlan(self)
+            if is_remove_default_vlan:
+                remove_default_vlan(self)
             t0_port_config_helper(
                 test_obj=self,
                 is_create_hostIf=is_create_hostIf,
                 is_recreate_bridge=is_recreate_bridge)
             t0_vlan_config_helper(
                 test_obj=self,
-                is_reset_default_vlan=is_reset_default_vlan,
                 is_create_vlan=is_create_vlan)
             t0_fdb_config_helper(
                 test_obj=self,

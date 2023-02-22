@@ -139,18 +139,4 @@ class PortConfigInILoader():
         except Exception as e:
             raise e
 
-@auto_str
-class PortConfig(object):
-    """
-    Represent the PortConfig Object
 
-    Attrs:
-        name: interface name
-        lanes: lanes
-        speed: port speed
-    """
-
-    def __init__(self, name=None, lanes=None, speed=None):
-        self.name = name
-        self.lanes = lanes
-        self.speed = speed

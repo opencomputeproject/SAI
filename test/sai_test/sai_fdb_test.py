@@ -40,10 +40,8 @@ class L2PortForwardingTest(T0TestBase):
         # str-msn2700-04 ERR saiserverv2#SDK: 
         # [SAI_LAG.ERR] mlnx_sai_lag.c[617]- validate_port: Can't add port which is under bridge
         T0TestBase.setUp(self,
-                        is_reset_default_vlan=False,
                         is_create_lag=False,
                         is_create_route_for_lag=False)
-        
 
     @warm_test(is_test_rebooting=True)
     def runTest(self):
@@ -98,8 +96,7 @@ class VlanLearnDisableTest(T0TestBase):
         Set up test
         """
         T0TestBase.setUp(
-            self, 
-            is_reset_default_vlan=False, 
+            self
             #skip_reason = "SKIP! Skip test for broadcom, learn_disable, report error code -196608, no error log. Item: 15000933"
             )
         status = sai_thrift_flush_fdb_entries(
@@ -181,7 +178,7 @@ class BridgePortLearnDisableTest(T0TestBase):
         """
         Set up test
         """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
         status = sai_thrift_flush_fdb_entries(
             self.client, entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
@@ -284,8 +281,7 @@ class NonBridgePortNoLearnTest(T0TestBase):
         Set up test
         """
         T0TestBase.setUp(
-            self, 
-            is_reset_default_vlan=False,
+            self
             #skip_reason ="SKIP! Skip test for broadcom, non bridge port still can learn. Item: 15000950"
             )
         status = sai_thrift_flush_fdb_entries(
@@ -389,7 +385,7 @@ class NewVlanmemberLearnTest(T0TestBase):
         """
         Set up test
         """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
         self.new_vlan10_member = sai_thrift_create_vlan_member(self.client,
                                                                vlan_id=self.dut.vlans[10].oid,
                                                                bridge_port_id=self.dut.port_obj_list[24].bridge_port_oid)
@@ -552,7 +548,7 @@ class InvalidateVlanmemberNoLearnTest(T0TestBase):
         """
         Set up test
         """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
     @warm_test(is_test_rebooting=False)
@@ -608,7 +604,7 @@ class BroadcastNoLearnTest(T0TestBase):
         """
         Set up test
         """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
 
     @warm_test(is_test_rebooting=False)
     def runTest(self):
@@ -662,7 +658,7 @@ class MulticastNoLearnTest(T0TestBase):
         """
         Set up test
         """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
 
     @warm_test(is_test_rebooting=False)
     def runTest(self):
@@ -720,7 +716,7 @@ class FdbAgingTest(T0TestBase):
         """
         Set up test
         """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
         sw_attr = sai_thrift_get_switch_attribute(
             self.client, fdb_aging_time=True)
         self.default_wait_time = sw_attr["fdb_aging_time"]
@@ -812,7 +808,7 @@ class FdbAgingAfterMoveTest(T0TestBase):
         """
         Set up test
         """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
         sw_attr = sai_thrift_get_switch_attribute(
             self.client, fdb_aging_time=True)
         self.default_wait_time = sw_attr["fdb_aging_time"]
@@ -929,7 +925,7 @@ class FdbMacMovingAfterAgingTest(T0TestBase):
         """
         Set up test
         """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
         sw_attr = sai_thrift_get_switch_attribute(
             self.client, fdb_aging_time=True)
         self.default_wait_time = sw_attr["fdb_aging_time"]
@@ -1038,8 +1034,7 @@ class FdbFlushVlanStaticTest(T0TestBase):
         Set up test
         """
         T0TestBase.setUp(
-            self, 
-            is_reset_default_vlan=False,
+            self
             #skip_reason ="SKIP! Static flush Not support by broadcom. Item:15419274"
             )
         status = sai_thrift_flush_fdb_entries(
@@ -1093,8 +1088,7 @@ class FdbFlushPortStaticTest(T0TestBase):
         Set up test
         """ 
         T0TestBase.setUp(
-            self, 
-            is_reset_default_vlan=False,
+            self
             #skip_reason ="SKIP! Static flush Not support by broadcom. Item:15419274"
             )
         sai_thrift_flush_fdb_entries(
@@ -1147,8 +1141,7 @@ class FdbFlushAllStaticTest(T0TestBase):
         Set up test
         """      
         T0TestBase.setUp(
-            self, 
-            is_reset_default_vlan=False,
+            self
             #skip_reason = "SKIP! Static flush Not support by broadcom. Item:15419274"
             )
         sai_thrift_flush_fdb_entries(
@@ -1195,7 +1188,7 @@ class FdbFlushVlanDynamicTest(T0TestBase):
         """
         Set up test
         """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
         # disable fdb aging
         # age time used in tests (in sec)
         self.age_time = 0
@@ -1288,7 +1281,7 @@ class FdbFlushPortDynamicTest(T0TestBase):
         """
         Set up test
         """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
 
     @warm_test(is_test_rebooting=False)
     def runTest(self):
@@ -1371,7 +1364,7 @@ class FdbFlushAllDynamicTest(T0TestBase):
         """
         Set up test
         """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
 
     @warm_test(is_test_rebooting=False)
     def runTest(self):
@@ -1458,8 +1451,7 @@ class FdbFlushAllTest(T0TestBase):
         Set up test
         """     
         T0TestBase.setUp(
-            self, 
-            is_reset_default_vlan=False,
+            self
             #skip_reason = "SKIP! Unstable, flood cannot be recovered. Item:15002648
             )
 
@@ -1543,7 +1535,7 @@ class FdbDisableMacMoveDropTest(T0TestBase):
         """
         Set up test
         """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
         self.fdb_entry = sai_thrift_fdb_entry_t(switch_id=self.dut.switch_id,
                                                 mac_address=self.servers[1][1].mac,
                                                 bv_id=self.dut.vlans[10].oid)
@@ -1593,7 +1585,7 @@ class FdbDynamicMacMoveTest(T0TestBase):
         """
         Set up test
         """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
         sai_thrift_flush_fdb_entries(
             self.client,
             entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)
@@ -1659,7 +1651,7 @@ class FdbStaticMacMoveTest(T0TestBase):
         """
         Set up test
         """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
         sai_thrift_flush_fdb_entries(
             self.client,
             entry_type=SAI_FDB_FLUSH_ENTRY_TYPE_ALL)

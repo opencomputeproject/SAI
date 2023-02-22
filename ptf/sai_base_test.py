@@ -43,7 +43,7 @@ import sai_thrift.sai_adapter as adapter
 
 from config.port_configer import PortConfiger
 from config.config_db_loader import ConfigDBLoader
-from config.port_config_ini_loader import PortConfig, PortConfigInILoader
+from config.port_config_ini_loader import PortConfigInILoader
 
 ROUTER_MAC = '00:77:66:55:44:00'
 THRIFT_PORT = 9092
@@ -309,6 +309,7 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.default_1q_bridge
         self.cpu_port_hdl
         self.active_ports_no - number of active ports
+        self.system_port_no - number of system ports
         self.port_list - list of all active port objects
         self.portX objects for all active ports (where X is a port number)
         self.port_configer for config ports
@@ -334,6 +335,10 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         """
         Device active ports.
         """
+        self.system_port_no: int = 0
+        """
+        Device system ports.
+        """
 
         self.active_port_obj_list: List['Port'] = []
         """
@@ -346,13 +351,9 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.config_db_loader: ConfigDBLoader = None
         self.port_config_ini_loader: PortConfigInILoader = None
         # TODO: Below two attributes should be move to port_configer
-        self.ports_config: Dict = None
+        self.ports_config = None
         """
         ports_config dict, use to compatiable with old data module
-        """
-        self.portConfigs: List[PortConfig] = None
-        """
-        PortConfig object List
         """
         self.bridge_port_list = []
         """
@@ -360,6 +361,39 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         """
         self.def_bridge_port_list = []
         self.def_vlan_member_list = []
+
+
+    def get_default_switch_attr(self):
+        """
+        Get default switch attr.
+        includes:
+            system_port_no: number_of_system_ports
+            active_ports_no: number_of_active_ports
+
+        """
+        print("Ignore all the expect error code and exception captures.")
+        capture_status = adapter.CATCH_EXCEPTIONS
+        expected_code = adapter.EXPECTED_ERROR_CODE
+
+        adapter.CATCH_EXCEPTIONS = True
+        adapter.EXPECTED_ERROR_CODE = []
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, number_of_system_ports=True)
+        number_of_system_ports = 0
+        if attr and 'number_of_system_ports' in attr:
+            number_of_system_ports = attr['number_of_system_ports']
+        self.system_port_no = number_of_system_ports
+        print("Get number_of_system_ports {}".format(self.system_port_no))
+
+        attr = sai_thrift_get_switch_attribute(
+            self.client, number_of_active_ports=True)
+        self.active_ports_no = attr['number_of_active_ports']
+        print("Get number_of_active_ports {}".format(self.active_ports_no))
+
+        adapter.CATCH_EXCEPTIONS = capture_status
+        adapter.EXPECTED_ERROR_CODE = expected_code
+        print("Restore all the expect error code and exception captures.")
 
 
     def set_logger_name(self):
@@ -378,18 +412,9 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         Method to get the active port list base on number_of_active_ports
 
         Sets the following class attributes:
-
-            self.active_ports_no - number of active ports
-
             self.port_list - list of all active port objects
-
             self.portX objects for all active ports
         '''
-
-        # get number of active ports
-        attr = sai_thrift_get_switch_attribute(
-            self.client, number_of_active_ports=True)
-        self.active_ports_no = attr['number_of_active_ports']
 
         # get port_list and portX objects
         attr = sai_thrift_get_switch_attribute(
@@ -565,19 +590,65 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         adapter.CATCH_EXCEPTIONS=True
 
 
+    def get_default_vlan(self):
+        """
+        Get default vlan.
+
+        Returns:
+            default_vlan_id
+        """
+        print("Get default vlan...")
+        def_attr = sai_thrift_get_switch_attribute(self.client, default_vlan_id=True)
+        self.assertNotEqual(def_attr['default_vlan_id'], 0)
+        return def_attr['default_vlan_id']
+
+
+    def get_vlan_member(self, vlan_id):
+        """
+        Get vlan member by vlan id.
+
+        Args:
+            vlan_id: vlan id
+        
+        Returns:
+            list: vlan member oid list
+        """
+        vlan_member_size = self.system_port_no + self.active_ports_no
+        vlan_member_list = sai_thrift_object_list_t(count=vlan_member_size)
+        mbr_list = sai_thrift_get_vlan_attribute(self.client, vlan_id, member_list=vlan_member_list)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        return mbr_list['SAI_VLAN_ATTR_MEMBER_LIST'].idlist
+
+
+    def remove_vlan_members(self, vlan_members):
+        """
+        Remove vlan members.
+
+        Args:
+            vlan_members: vlan member oids
+        """
+        for vlan_member in vlan_members:
+            status = sai_thrift_remove_vlan_member(self.client, vlan_member)
+            self.assertEqual(status, SAI_STATUS_SUCCESS)
+
+
+    def remove_default_vlan(self):
+        """
+        Remove default vlan
+        """
+        members = self.get_vlan_member(self.default_vlan_id)
+        self.remove_vlan_members(members)
+
+
     def setUp(self):
         super(SaiHelperBase, self).setUp()
-        if 'port_config_ini' in self.test_params:
-            self.port_config_ini_loader = PortConfigInILoader(self.test_params['port_config_ini'])
-        else:
-            self.port_config_ini_loader = PortConfigInILoader()        
-        self.port_config_ini_loader.parse_port_config()
-        self.ports_config = self.port_config_ini_loader.ports_config
 
         if 'config_db_json' in self.test_params:
             self.config_db_loader = ConfigDBLoader(self.test_params['config_db_json'])
         else:
             self.config_db_loader = ConfigDBLoader()
+        self.ports_config = self.config_db_loader.get_port_config()
+        
         self.port_configer = PortConfiger(self)
         self.def_bridge_port_list = []
         self.def_bridge_port_list = []
@@ -587,14 +658,15 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         self.getSwitchPorts()
         # initialize switch
         self.start_switch()
+        self.get_default_switch_attr()
 
         self.switch_resources = self.saveNumberOfAvaiableResources(debug=True)
 
         # get default vlan
-        attr = sai_thrift_get_switch_attribute(
-            self.client, default_vlan_id=True)
-        self.default_vlan_id = attr['default_vlan_id']
-        self.assertNotEqual(self.default_vlan_id, 0)
+        self.default_vlan_id = self.get_default_vlan()
+        
+        # remove default vlan
+        self.remove_default_vlan()
 
         self.recreate_ports()
 

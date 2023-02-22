@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from sai_test_base import T0TestBase
 
 
-def t0_vlan_config_helper(test_obj: 'T0TestBase', is_reset_default_vlan=True, is_create_vlan=True):
+def t0_vlan_config_helper(test_obj: 'T0TestBase', is_reset_default_vlan=False, is_create_vlan=True):
     """
     Make t0 Vlan configurations base on the configuration in the test plan.
     Set the configuration in test directly.

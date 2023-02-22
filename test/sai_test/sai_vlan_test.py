@@ -38,7 +38,7 @@ class Vlan_Domain_Forwarding_Test(T0TestBase):
         """
         Set up test
         """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
     
     @warm_test(is_test_rebooting=True)
     def runTest(self):
@@ -565,7 +565,7 @@ class VlanMemberInvalidTest(T0TestBase):
     This test verifies when adding a VLAN member to a non-exist VLAN, it will fail.
     """
     def setUp(self):
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
 
     @warm_test(is_test_rebooting=False)
     def runTest(self):
@@ -591,12 +591,11 @@ class DisableMacLearningTaggedTest(T0TestBase):
     """
     def setUp(self):
         T0TestBase.setUp(
-            self, 
-            is_reset_default_vlan=False,
-            is_create_vlan_itf=False, 
-            is_create_route_for_vlan_itf=False, 
-            is_create_route_for_lag=False, 
-            is_create_lag=False, 
+            self,
+            is_create_vlan_itf=False,
+            is_create_route_for_vlan_itf=False,
+            is_create_route_for_lag=False,
+            is_create_lag=False,
             is_create_default_route=False)
         print("DisableMacLearningTaggedTest")
         sai_thrift_set_vlan_attribute(
@@ -638,12 +637,11 @@ class DisableMacLearningUntaggedTest(T0TestBase):
     """
     def setUp(self):
         T0TestBase.setUp(
-            self, 
-            is_reset_default_vlan=False, 
-            is_create_vlan_itf=False, 
-            is_create_route_for_vlan_itf=False, 
-            is_create_route_for_lag=False, 
-            is_create_lag=False, 
+            self,
+            is_create_vlan_itf=False,
+            is_create_route_for_vlan_itf=False,
+            is_create_route_for_lag=False,
+            is_create_lag=False,
             is_create_default_route=False)
         print("DisableMacLearningUntaggedTest")
         sai_thrift_set_vlan_attribute(
@@ -682,7 +680,7 @@ class ArpRequestFloodingTest(T0TestBase):
     This test verifies the flooding when receive a arp request
     """
     def setUp(self):
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
         ip2 = "192.168.0.2"
         self.arp_request = simple_arp_packet(
             eth_dst=self.servers[1][2].mac,
@@ -710,7 +708,7 @@ class ArpRequestLearningTest(T0TestBase):
     This test verifies the mac learning when receive a arp request
     """
     def setUp(self):
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
 
     @warm_test(is_test_rebooting=True)
     def runTest(self):
@@ -745,7 +743,7 @@ class TaggedVlanStatusTest(T0TestBase):
     This test verifies VLAN-related counters with tagged pkt 
     """
     def setUp(self):
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
 
     @warm_test(is_test_rebooting=False)
     def runTest(self):
@@ -840,7 +838,7 @@ class UntaggedVlanStatusTest(T0TestBase):
     This test verifies VLAN-related counters with untagged pkt 
     """
     def setUp(self):
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
 
     @warm_test(is_test_rebooting=False)
     def runTest(self):

@@ -1376,7 +1376,7 @@ class SviMacAgingTest(T0TestBase):
         """
         Set up test
         """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
         sw_attr = sai_thrift_get_switch_attribute(
             self.client, fdb_aging_time=True)
         self.default_wait_time = sw_attr["fdb_aging_time"]
@@ -1455,7 +1455,7 @@ class SviMacAgingV6Test(T0TestBase):
         """
         Set up test
         """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
         sw_attr = sai_thrift_get_switch_attribute(
             self.client, fdb_aging_time=True)
         self.default_wait_time = sw_attr["fdb_aging_time"]
