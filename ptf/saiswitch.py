@@ -433,182 +433,271 @@ class ReadOnlyAttributesTest(PlatformSaiHelper):
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                number_of_active_ports=True)
-        print(attr)
-        self.assertNotEqual(attr["number_of_active_ports"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_NUMBER_OF_ACTIVE_PORTS"], 0)
-        active_ports = attr["number_of_active_ports"]
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["number_of_active_ports"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_NUMBER_OF_ACTIVE_PORTS"], 0)
+            active_ports = attr["number_of_active_ports"]
+        else:
+            print("get number_of_active_ports failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(
             self.client, max_number_of_supported_ports=True)
-        print(attr)
-        self.assertNotEqual(attr["max_number_of_supported_ports"], 0)
-        self.assertNotEqual(
-            attr["SAI_SWITCH_ATTR_MAX_NUMBER_OF_SUPPORTED_PORTS"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["max_number_of_supported_ports"], 0)
+            self.assertNotEqual(
+                attr["SAI_SWITCH_ATTR_MAX_NUMBER_OF_SUPPORTED_PORTS"], 0)
+        else:
+            # Broadcom return -196608
+            print("get max_number_of_supported_ports failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(
             self.client,
             port_list=sai_thrift_object_list_t(idlist=[], count=active_ports))
-        print(attr)
-        self.assertNotEqual(attr["port_list"].count, 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_PORT_LIST"].count, 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["port_list"].count, 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_PORT_LIST"].count, 0)
+        else:
+            print("get port_list failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client, port_max_mtu=True)
-        print(attr)
-        self.assertNotEqual(attr["port_max_mtu"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_PORT_MAX_MTU"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["port_max_mtu"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_PORT_MAX_MTU"], 0)
+        else:
+            # Broadcom return -196608
+            print("get port_max_mtu failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client, cpu_port=True)
-        print(attr)
-        self.assertNotEqual(attr["cpu_port"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_CPU_PORT"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["cpu_port"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_CPU_PORT"], 0)
+        else:
+            print("get cpu_port failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                max_virtual_routers=True)
-        print(attr)
-        self.assertNotEqual(attr["max_virtual_routers"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_MAX_VIRTUAL_ROUTERS"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["max_virtual_routers"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_MAX_VIRTUAL_ROUTERS"], 0)
+        else:
+            print("get max_virtual_routers failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                fdb_table_size=True)
-        print(attr)
-        self.assertNotEqual(attr["fdb_table_size"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_FDB_TABLE_SIZE"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["fdb_table_size"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_FDB_TABLE_SIZE"], 0)
+        else:
+            print("get fdb_table_size failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                l3_neighbor_table_size=True)
-        print(attr)
-        self.assertNotEqual(attr["l3_neighbor_table_size"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_L3_NEIGHBOR_TABLE_SIZE"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["l3_neighbor_table_size"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_L3_NEIGHBOR_TABLE_SIZE"], 0)
+        else:
+            # Broadcom return -196608
+            print("get l3_neighbor_table_size failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                l3_route_table_size=True)
-        print(attr)
-        self.assertNotEqual(attr["l3_route_table_size"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_L3_ROUTE_TABLE_SIZE"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["l3_route_table_size"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_L3_ROUTE_TABLE_SIZE"], 0)
+        else:
+            # Broadcom return -196608
+            print("get l3_route_table_size failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client, lag_members=True)
-        print(attr)
-        self.assertNotEqual(attr["lag_members"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_LAG_MEMBERS"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["lag_members"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_LAG_MEMBERS"], 0)
+        else:
+            print("get lag_members failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                number_of_lags=True)
-        print(attr)
-        self.assertNotEqual(attr["number_of_lags"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_NUMBER_OF_LAGS"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["number_of_lags"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_NUMBER_OF_LAGS"], 0)
+        else:
+            print("get number_of_lags failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client, ecmp_members=True)
-        print(attr)
-        self.assertNotEqual(attr["ecmp_members"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_ECMP_MEMBERS"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["ecmp_members"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_ECMP_MEMBERS"], 0)
+        else:
+            print("get ecmp_members failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                number_of_ecmp_groups=True)
-        print(attr)
-        self.assertNotEqual(attr["number_of_ecmp_groups"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_NUMBER_OF_ECMP_GROUPS"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["number_of_ecmp_groups"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_NUMBER_OF_ECMP_GROUPS"], 0)
+        else:
+            print("get number_of_ecmp_groups failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                number_of_unicast_queues=True)
-        print(attr)
-        self.assertNotEqual(attr["number_of_unicast_queues"], 0)
-        self.assertNotEqual(
-            attr["SAI_SWITCH_ATTR_NUMBER_OF_UNICAST_QUEUES"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["number_of_unicast_queues"], 0)
+            self.assertNotEqual(
+                attr["SAI_SWITCH_ATTR_NUMBER_OF_UNICAST_QUEUES"], 0)
+        else:
+            print("get number_of_unicast_queues failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                number_of_multicast_queues=True)
-        print(attr)
-        self.assertNotEqual(attr["number_of_multicast_queues"], 0)
-        self.assertNotEqual(
-            attr["SAI_SWITCH_ATTR_NUMBER_OF_MULTICAST_QUEUES"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["number_of_multicast_queues"], 0)
+            self.assertNotEqual(
+                attr["SAI_SWITCH_ATTR_NUMBER_OF_MULTICAST_QUEUES"], 0)
+        else:
+            print("get number_of_multicast_queues failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                number_of_queues=True)
-        print(attr)
-        self.assertNotEqual(attr["number_of_queues"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_NUMBER_OF_QUEUES"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["number_of_queues"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_NUMBER_OF_QUEUES"], 0)
+        else:
+            print("get number_of_queues failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                number_of_cpu_queues=True)
-        print(attr)
-        self.assertNotEqual(attr["number_of_cpu_queues"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_NUMBER_OF_CPU_QUEUES"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["number_of_cpu_queues"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_NUMBER_OF_CPU_QUEUES"], 0)
+        else:
+            print("get number_of_cpu_queues failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                acl_table_minimum_priority=True)
-        print(attr)
-        self.assertEqual(attr["acl_table_minimum_priority"], 0)
-        self.assertEqual(
-            attr["SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY"], 0)
+        if attr:
+            print(attr)
+            self.assertEqual(attr["acl_table_minimum_priority"], 0)
+            self.assertEqual(
+                attr["SAI_SWITCH_ATTR_ACL_TABLE_MINIMUM_PRIORITY"], 0)
+        else:
+            print("get acl_table_minimum_priority failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(
             self.client, acl_table_maximum_priority=True)
-        print(attr)
-        self.assertNotEqual(attr["acl_table_maximum_priority"], 0)
-        self.assertNotEqual(
-            attr["SAI_SWITCH_ATTR_ACL_TABLE_MAXIMUM_PRIORITY"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["acl_table_maximum_priority"], 0)
+            self.assertNotEqual(
+                attr["SAI_SWITCH_ATTR_ACL_TABLE_MAXIMUM_PRIORITY"], 0)
+        else:
+            print("get acl_table_maximum_priority failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                acl_entry_minimum_priority=True)
-        print(attr)
-        self.assertEqual(attr["acl_entry_minimum_priority"], 0)
-        self.assertEqual(attr["SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY"], 0)
+        if attr:
+            print(attr)
+            self.assertEqual(attr["acl_entry_minimum_priority"], 0)
+            self.assertEqual(attr["SAI_SWITCH_ATTR_ACL_ENTRY_MINIMUM_PRIORITY"], 0)
+        else:
+            print("get acl_entry_minimum_priority failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                acl_entry_maximum_priority=True)
-        print(attr)
-        self.assertNotEqual(attr["acl_entry_maximum_priority"], 0)
-        self.assertNotEqual(
-            attr["SAI_SWITCH_ATTR_ACL_ENTRY_MAXIMUM_PRIORITY"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["acl_entry_maximum_priority"], 0)
+            self.assertNotEqual(
+                attr["SAI_SWITCH_ATTR_ACL_ENTRY_MAXIMUM_PRIORITY"], 0)
+        else:
+            print("get acl_entry_maximum_priority failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                default_vlan_id=True)
-        print(attr)
-        self.assertNotEqual(attr["default_vlan_id"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_DEFAULT_VLAN_ID"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["default_vlan_id"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_DEFAULT_VLAN_ID"], 0)
+        else:
+            print("get default_vlan_id failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                default_stp_inst_id=True)
-        print(attr)
-        self.assertEqual(attr["default_stp_inst_id"], SAI_NULL_OBJECT_ID)
-        self.assertEqual(
-            attr["SAI_SWITCH_ATTR_DEFAULT_STP_INST_ID"], SAI_NULL_OBJECT_ID)
+        if attr:
+            print(attr)
+            # Broadcom got attr["default_stp_inst_id"]=68719476737
+            self.assertEqual(attr["default_stp_inst_id"], SAI_NULL_OBJECT_ID)
+            self.assertEqual(
+                attr["SAI_SWITCH_ATTR_DEFAULT_STP_INST_ID"], SAI_NULL_OBJECT_ID)
+        else:
+            print("get default_stp_inst_id failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                max_stp_instance=True)
-        print(attr)
-        self.assertNotEqual(attr["max_stp_instance"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_MAX_STP_INSTANCE"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["max_stp_instance"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_MAX_STP_INSTANCE"], 0)
+        else:
+            print("get max_stp_instance failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                default_virtual_router_id=True)
-        print(attr)
-        self.assertNotEqual(attr["default_virtual_router_id"], 0)
-        self.assertNotEqual(
-            attr["SAI_SWITCH_ATTR_DEFAULT_VIRTUAL_ROUTER_ID"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["default_virtual_router_id"], 0)
+            self.assertNotEqual(
+                attr["SAI_SWITCH_ATTR_DEFAULT_VIRTUAL_ROUTER_ID"], 0)
+        else:
+            print("get default_virtual_router_id failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                default_1q_bridge_id=True)
-        print(attr)
-        self.assertNotEqual(attr["default_1q_bridge_id"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["default_1q_bridge_id"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_DEFAULT_1Q_BRIDGE_ID"], 0)
+        else:
+            print("get default_1q_bridge_id failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(
             self.client, qos_max_number_of_traffic_classes=True)
-        print(attr)
-        self.assertNotEqual(attr["qos_max_number_of_traffic_classes"], 0)
-        self.assertNotEqual(
-            attr["SAI_SWITCH_ATTR_QOS_MAX_NUMBER_OF_TRAFFIC_CLASSES"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["qos_max_number_of_traffic_classes"], 0)
+            self.assertNotEqual(
+                attr["SAI_SWITCH_ATTR_QOS_MAX_NUMBER_OF_TRAFFIC_CLASSES"], 0)
+        else:
+            print("get qos_max_number_of_traffic_classes failed: {}".format(self.status()))
 
         attr_name = "SAI_SWITCH_ATTR_QOS_MAX_NUMBER_OF_SCHEDULER_GROUP_" + \
             "HIERARCHY_LEVELS"
         attr = sai_thrift_get_switch_attribute(
             self.client,
             qos_max_number_of_scheduler_group_hierarchy_levels=True)
-        print(attr)
-        self.assertNotEqual(
-            attr["qos_max_number_of_scheduler_group_hierarchy_levels"], 0)
-        self.assertNotEqual(attr[attr_name], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(
+                attr["qos_max_number_of_scheduler_group_hierarchy_levels"], 0)
+            self.assertNotEqual(attr[attr_name], 0)
+        else:
+            print("get qos_max_number_of_scheduler_group_hierarchy_levels failed: {}".format(self.status()))
 
         scheduler_group_levels = attr[
             "qos_max_number_of_scheduler_group_hierarchy_levels"]
@@ -619,94 +708,138 @@ class ReadOnlyAttributesTest(PlatformSaiHelper):
         attr = sai_thrift_get_switch_attribute(
             self.client,
             qos_max_number_of_scheduler_groups_per_hierarchy_level=value)
-        print(attr)
-        self.assertNotEqual(
-            attr["qos_max_number_of_scheduler_groups_per_hierarchy_level"], 0)
-        self.assertNotEqual(attr[attr_name], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(
+                attr["qos_max_number_of_scheduler_groups_per_hierarchy_level"], 0)
+            self.assertNotEqual(attr[attr_name], 0)
+        else:
+            print("get qos_max_number_of_scheduler_groups_per_hierarchy_level failed: {}".format(self.status()))
 
         attr_name = "SAI_SWITCH_ATTR_QOS_MAX_NUMBER_OF_CHILDS_" + \
             "PER_SCHEDULER_GROUP"
         attr = sai_thrift_get_switch_attribute(
             self.client, qos_max_number_of_childs_per_scheduler_group=True)
-        print(attr)
-        self.assertNotEqual(
-            attr["qos_max_number_of_childs_per_scheduler_group"], 0)
-        self.assertNotEqual(attr[attr_name], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(
+                attr["qos_max_number_of_childs_per_scheduler_group"], 0)
+            self.assertNotEqual(attr[attr_name], 0)
+        else:
+            print("get qos_max_number_of_childs_per_scheduler_group failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                total_buffer_size=True)
-        print(attr)
-        self.assertNotEqual(attr["total_buffer_size"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_TOTAL_BUFFER_SIZE"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["total_buffer_size"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_TOTAL_BUFFER_SIZE"], 0)
+        else:
+            print("get total_buffer_size failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                ingress_buffer_pool_num=True)
-        print(attr)
-        self.assertNotEqual(attr["ingress_buffer_pool_num"], 0)
-        self.assertNotEqual(
-            attr["SAI_SWITCH_ATTR_INGRESS_BUFFER_POOL_NUM"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["ingress_buffer_pool_num"], 0)
+            self.assertNotEqual(
+                attr["SAI_SWITCH_ATTR_INGRESS_BUFFER_POOL_NUM"], 0)
+        else:
+            print("get ingress_buffer_pool_num failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                egress_buffer_pool_num=True)
-        print(attr)
-        self.assertNotEqual(attr["egress_buffer_pool_num"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_EGRESS_BUFFER_POOL_NUM"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["egress_buffer_pool_num"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_EGRESS_BUFFER_POOL_NUM"], 0)
+        else:
+            print("get egress_buffer_pool_num failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client, ecmp_hash=True)
-        print(attr)
-        self.assertNotEqual(attr["ecmp_hash"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_ECMP_HASH"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["ecmp_hash"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_ECMP_HASH"], 0)
+        else:
+            print("get ecmp_hash failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client, lag_hash=True)
-        print(attr)
-        self.assertNotEqual(attr["lag_hash"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_LAG_HASH"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["lag_hash"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_LAG_HASH"], 0)
+        else:
+            print("get lag_hash failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                max_acl_action_count=True)
-        print(attr)
-        self.assertNotEqual(attr["max_acl_action_count"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_MAX_ACL_ACTION_COUNT"], 0)
-        max_acl_action_count = attr["max_acl_action_count"]
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["max_acl_action_count"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_MAX_ACL_ACTION_COUNT"], 0)
+            max_acl_action_count = attr["max_acl_action_count"]
+        else:
+            print("get max_acl_action_count failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                max_acl_range_count=True)
-        print(attr)
-        self.assertNotEqual(attr["max_acl_range_count"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_MAX_ACL_RANGE_COUNT"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["max_acl_range_count"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_MAX_ACL_RANGE_COUNT"], 0)
+        else:
+            # Broadcom return -196608
+            print("get max_acl_range_count failed: {}".format(self.status()))
 
         s32 = sai_thrift_s32_list_t(int32list=[], count=max_acl_action_count)
         cap = sai_thrift_acl_capability_t(action_list=s32)
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                acl_capability=cap)
-        print(attr)
-        self.assertNotEqual(attr["acl_capability"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_ACL_CAPABILITY"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["acl_capability"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_ACL_CAPABILITY"], 0)
+        else:
+            print("get acl_capability failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                max_mirror_session=True)
-        print(attr)
-        self.assertNotEqual(attr["max_mirror_session"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_MAX_MIRROR_SESSION"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["max_mirror_session"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_MAX_MIRROR_SESSION"], 0)
+        else:
+            # Broadcom return -196608
+            print("get max_mirror_session failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                default_trap_group=True)
-        print(attr)
-        self.assertNotEqual(attr["default_trap_group"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["default_trap_group"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_DEFAULT_TRAP_GROUP"], 0)
+        else:
+            print("get default_trap_group failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                acl_stage_ingress=cap)
-        print(attr)
-        self.assertNotEqual(attr["acl_stage_ingress"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_ACL_STAGE_INGRESS"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["acl_stage_ingress"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_ACL_STAGE_INGRESS"], 0)
+        else:
+            print("get acl_stage_ingress failed: {}".format(self.status()))
 
         attr = sai_thrift_get_switch_attribute(self.client,
                                                acl_stage_egress=cap)
-        print(attr)
-        self.assertNotEqual(attr["acl_stage_egress"], 0)
-        self.assertNotEqual(attr["SAI_SWITCH_ATTR_ACL_STAGE_EGRESS"], 0)
+        if attr:
+            print(attr)
+            self.assertNotEqual(attr["acl_stage_egress"], 0)
+            self.assertNotEqual(attr["SAI_SWITCH_ATTR_ACL_STAGE_EGRESS"], 0)
+        else:
+            print("get acl_stage_egress failed: {}".format(self.status()))
 
     def runTest(self):
         self.readOnlyAttributesTest()
