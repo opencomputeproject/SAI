@@ -2777,6 +2777,17 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_ECMP_MEMBER_COUNT,
 
     /**
+     * @brief Adaptive routing and switching quality map
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ARS_PROFILE
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_ARS_PROFILE,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
