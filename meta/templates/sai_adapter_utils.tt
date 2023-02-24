@@ -10,6 +10,7 @@ from functools import wraps
 [%- BLOCK invocation_logger_imports %]
 import inspect 
 import logging
+from functools import wraps
 [% END -%]
 
 [%- ######################################################################## -%]
@@ -180,7 +181,7 @@ def invocation_logger(func):
     SAI interface invocation logger.
     Use it to log all the invocated method in this sai_adapater.
     """
-     
+    @wraps(func) 
     def inner_logger(*args, **kwargs):
  
         args_name = inspect.getargspec(func)[0]
