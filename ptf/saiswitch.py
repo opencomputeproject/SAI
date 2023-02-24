@@ -1065,6 +1065,7 @@ class AvailableSnatEntryTest(PlatformSaiHelper):
 
                 status = sai_thrift_create_nat_entry(
                     self.client, snat, nat_type=SAI_NAT_TYPE_SOURCE_NAT)
+                # Broadcom return -23 SAI_STATUS_NOT_EXECUTED
                 self.assertEqual(status, SAI_STATUS_SUCCESS)
 
                 snat_list.append(snat)
@@ -1136,6 +1137,7 @@ class AvailableDnatEntryTest(PlatformSaiHelper):
 
                 status = sai_thrift_create_nat_entry(
                     self.client, dnat, nat_type=SAI_NAT_TYPE_DESTINATION_NAT)
+                # Broadcom return -23 SAI_STATUS_NOT_EXECUTED
                 self.assertEqual(status, SAI_STATUS_SUCCESS)
 
                 dnat_list.append(dnat)
@@ -1217,6 +1219,9 @@ class AvailableNexthopGroupEntryTest(PlatformSaiHelper):
         finally:
             for nhg_id in nhg:
                 sai_thrift_remove_next_hop_group(self.client, nhg_id)
+    
+    def runTest(self):
+        self.availableNexthopGroupEntryTest()
 
 
 class AvailableNexthopGroupMemberEntryTest(PlatformSaiHelper):
@@ -1390,7 +1395,7 @@ class AvailableIPv4NexthopEntryTest(PlatformSaiHelper):
 
                 if str(ip_p) in nhop:
                     continue
-                
+
                 nbr_entry = sai_thrift_neighbor_entry_t(
                     self.switch_id,
                     self.port10_rif,
