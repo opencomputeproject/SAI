@@ -2793,6 +2793,7 @@ typedef enum _sai_switch_attr_t
      * true: Trigger the switch isolate process
      * false: Undo the isolation operation.
      * This attribute is for VOQ Chassis only
+     * If this attribute is set to true, it overrides port level isolation setting.
      *
      * @type bool
      * @flags CREATE_AND_SET
