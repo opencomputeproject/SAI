@@ -871,6 +871,10 @@ class RefreshIntervalTest(PlatformSaiHelper):
     Verifies SAI_SWITCH_ATTR_COUNTER_REFRESH_INTERVAL switch attribute
     applied to VLAN and RIF stats
     """
+    def setUp(self):
+        set_accepted_exception()
+        super(RefreshIntervalTest, self).setUp()
+
     def refreshIntervalTest(self):
         print("\nrefreshIntervalTest()")
 
