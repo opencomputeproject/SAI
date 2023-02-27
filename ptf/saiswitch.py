@@ -27,6 +27,23 @@ from sai_base_test import * # pylint: disable=wildcard-import; lgtm[py/polluting
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(THIS_DIR, '..'))
 
+CATCH_EXCEPTIONS=True
+# SAI_STATUS_NOT_IMPLEMENTED
+ACCEPTED_ERROR_CODE = [SAI_STATUS_NOT_IMPLEMENTED]
+#SAI_STATUS_ATTR_NOT_IMPLEMENTED
+ACCEPTED_ERROR_CODE += range(SAI_STATUS_ATTR_NOT_IMPLEMENTED_MAX, SAI_STATUS_ATTR_NOT_IMPLEMENTED_0)
+#SAI_STATUS_ATTR_NOT_IMPLEMENTED
+ACCEPTED_ERROR_CODE += range(SAI_STATUS_UNKNOWN_ATTRIBUTE_MAX, SAI_STATUS_UNKNOWN_ATTRIBUTE_0)
+#SAI_STATUS_ATTR_NOT_SUPPORTED
+ACCEPTED_ERROR_CODE += range(SAI_STATUS_ATTR_NOT_SUPPORTED_MAX, SAI_STATUS_ATTR_NOT_SUPPORTED_0)
+
+def set_accepted_exception():
+    """
+    Set accepted exceptions.
+    """
+    adapter.CATCH_EXCEPTIONS=CATCH_EXCEPTIONS
+    adapter.EXPECTED_ERROR_CODE += ACCEPTED_ERROR_CODE
+
 
 def generate_ip_addr(no_of_addr, ipv6=False):
     '''
@@ -427,7 +444,11 @@ class AvailableFdbEntryTest(PlatformSaiHelper):
 class ReadOnlyAttributesTest(PlatformSaiHelper):
     """
     Verifies get on read only attributes.
-    """    
+    """
+    def setUp(self):
+        set_accepted_exception()
+        super(ReadOnlyAttributesTest, self).setUp()
+
     def readOnlyAttributesTest(self):
         print("\nreadOnlyAttributesTest()")
 
