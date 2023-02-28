@@ -272,6 +272,28 @@ sai_status_t sai_query_attribute_enum_values_capability(
         _Inout_ sai_s32_list_t *enum_values_capability);
 
 /**
+ * @brief Query an enum attribute (enum or enum list) list of implemented enum values given additional input attribute values
+ *
+ * Used to query capabilities in case the queried attribute capability is dependent on other attribute values
+ *
+ * @param[in] switch_id SAI Switch object id
+ * @param[in] object_type SAI object type
+ * @param[in] attr_id SAI attribute ID
+ * @param[in] additional_attr_count Number of additional attribute values
+ * @param[in] additional_attr_list List of attribute values
+ * @param[inout] enum_values_capability List of implemented enum values
+ *
+ * @return #SAI_STATUS_SUCCESS on success, #SAI_STATUS_BUFFER_OVERFLOW if list size insufficient, failure status code on error
+ */
+sai_status_t sai_query_attribute_enum_values_capability_ext(
+        _In_ sai_object_id_t switch_id,
+        _In_ sai_object_type_t object_type,
+        _In_ sai_attr_id_t attr_id,
+        _In_ uint32_t additional_attr_count,
+        _In_ const sai_attribute_t* additional_attr_list,
+        _Inout_ sai_s32_list_t* enum_values_capability);
+
+/**
  * @brief Query statistics capability for statistics bound at object level
  *
  * @param[in] switch_id SAI Switch object id
