@@ -2798,7 +2798,7 @@ typedef enum _sai_switch_attr_t
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
-     * @validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_VOQ
+     * @validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_FABRIC
      */
     SAI_SWITCH_ATTR_SWITCH_ISOLATE,
 
