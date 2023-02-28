@@ -290,8 +290,8 @@ sai_status_t sai_query_attribute_enum_values_capability_ext(
         _In_ sai_object_type_t object_type,
         _In_ sai_attr_id_t attr_id,
         _In_ uint32_t additional_attr_count,
-        _In_ const sai_attribute_t* additional_attr_list,
-        _Inout_ sai_s32_list_t* enum_values_capability);
+        _In_ const sai_attribute_t *additional_attr_list,
+        _Inout_ sai_s32_list_t *enum_values_capability);
 
 /**
  * @brief Query statistics capability for statistics bound at object level
