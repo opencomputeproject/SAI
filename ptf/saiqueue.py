@@ -248,7 +248,7 @@ class bufferQueueTest(QueueConfigDataHelper):
                 buffer_profile_id=buff_prof)
             self.assertEqual(status, SAI_STATUS_SUCCESS)
 
-            clear_counter(self, clear_counter, sai_thrift_clear_queue_stats, queue_id[0])
+            clear_counter(self, sai_thrift_clear_queue_stats, queue_id[0])
             pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                     eth_src="00:00:00:00:00:22",
                                     ip_dst="172.16.1.1",
