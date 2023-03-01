@@ -112,7 +112,8 @@ class TunnelConfiger(object):
             underlay_interface=tunnel.urif_lpb[0],
             overlay_interface=tunnel.orif_lpb[0],
             encap_ecn_mode=SAI_TUNNEL_ENCAP_ECN_MODE_STANDARD,
-            decap_ecn_mode=SAI_TUNNEL_DECAP_ECN_MODE_STANDARD)
+            decap_ecn_mode=SAI_TUNNEL_DECAP_ECN_MODE_STANDARD,
+            loopback_packet_action=SAI_PACKET_ACTION_DROP)
         
         return tunnel
 
