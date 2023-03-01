@@ -89,7 +89,7 @@ typedef enum _sai_bfd_encapsulation_type_t
     SAI_BFD_ENCAPSULATION_TYPE_NONE,
 
     /**
-     * @brief SRV6 Tunnel Encapsulation | L2 Ethernet header | SRV6 Header | IP header | Original BFD packet
+     * @brief SRV6 Tunnel Encapsulation | L2 Ethernet header | IPV6 Header | SRV6 Header | Inner IP header | Original BFD packet
      */
     SAI_BFD_ENCAPSULATION_TYPE_SRV6,
 
