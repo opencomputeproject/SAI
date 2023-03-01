@@ -565,7 +565,10 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         Start switch.
         """
         self.switch_id = sai_thrift_create_switch(
-        self.client, init_switch=True, src_mac_address=ROUTER_MAC)
+        self.client, init_switch=True, src_mac_address=ROUTER_MAC,
+            port_state_change_notify=None, fdb_event_notify=None,
+            switch_shutdown_request_notify=None,
+            switch_state_change_notify=None)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
 
