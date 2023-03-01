@@ -105,16 +105,14 @@ class BufferStatistics(MinimalPortVlanConfig):
         traffic.start()
 
         while traffic.is_alive():
-            stats = sai_thrift_get_buffer_pool_stats(
-                self.client, self.ingr_pool)
+            stats = query_counter(self, sai_thrift_get_buffer_pool_stats, self.ingr_pool)
 
             if (stats["SAI_BUFFER_POOL_STAT_CURR_OCCUPANCY_BYTES"]
                     > bp_curr_occupancy_bytes):
                 bp_curr_occupancy_bytes = stats["SAI_BUFFER_POOL_STAT_"
                                                 "CURR_OCCUPANCY_BYTES"]
 
-            stats = sai_thrift_get_ingress_priority_group_stats(
-                self.client, self.ipg)
+            stats = query_counter(self, sai_thrift_get_ingress_priority_group_stats, self.ipg)
 
             if (stats["SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_BYTES"]
                     > ipg_curr_occupancy_bytes):
@@ -132,7 +130,7 @@ class BufferStatistics(MinimalPortVlanConfig):
 
         time.sleep(self.sleep_time)
 
-        stats = sai_thrift_get_buffer_pool_stats(self.client, self.ingr_pool)
+        stats = query_counter(self, sai_thrift_get_buffer_pool_stats, self.ingr_pool)
 
         if verify_reserved_buffer_size:
             expected_watermark = self.reserved_buf_size
@@ -148,8 +146,7 @@ class BufferStatistics(MinimalPortVlanConfig):
         self.assertGreaterEqual(
             stats["SAI_BUFFER_POOL_STAT_WATERMARK_BYTES"], expected_watermark)
 
-        stats = sai_thrift_get_ingress_priority_group_stats(
-            self.client, self.ipg)
+        stats = query_counter(self, sai_thrift_get_ingress_priority_group_stats, self.ipg)
 
         print("SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_BYTES "
               "(max measured)", ipg_curr_occupancy_bytes)
@@ -186,33 +183,20 @@ class BufferStatistics(MinimalPortVlanConfig):
         print()
         print("Clear bufer pool and ingress priority group stats")
 
-        stats = sai_thrift_get_buffer_pool_stats(self.client, self.ingr_pool)
-        print('SAI_BUFFER_POOL_STAT_WATERMARK_BYTES:',
-              stats['SAI_BUFFER_POOL_STAT_WATERMARK_BYTES'])
-        status = sai_thrift_clear_buffer_pool_stats(
-            self.client, self.ingr_pool)
+        status = clear_counter(self, sai_thrift_clear_buffer_pool_stats, self.ingr_pool)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
-        stats = sai_thrift_get_ingress_priority_group_stats_ext(
-            self.client, self.ipg, SAI_STATS_MODE_READ_AND_CLEAR)
-        print('SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS:',
-              stats['SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS'])
-        print('SAI_INGRESS_PRIORITY_GROUP_STAT_BYTES:',
-              stats['SAI_INGRESS_PRIORITY_GROUP_STAT_BYTES'])
-        print('SAI_INGRESS_PRIORITY_GROUP_STAT_WATERMARK_BYTES:',
-              stats['SAI_INGRESS_PRIORITY_GROUP_STAT_WATERMARK_BYTES'])
-        print('SAI_INGRESS_PRIORITY_GROUP_STAT_DROPPED_PACKETS:',
-              stats['SAI_INGRESS_PRIORITY_GROUP_STAT_DROPPED_PACKETS'])
+        status = clear_counter(self, sai_thrift_clear_ingress_priority_group_stats, self.ipg)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)
 
         print("Get stats and verify they are cleared")
 
-        stats = sai_thrift_get_buffer_pool_stats(self.client, self.ingr_pool)
+        stats = query_counter(self, sai_thrift_get_buffer_pool_stats, self.ingr_pool)
 
         self.assertEqual(
             stats["SAI_BUFFER_POOL_STAT_WATERMARK_BYTES"], 0)
 
-        stats = sai_thrift_get_ingress_priority_group_stats(
-            self.client, self.ipg)
+        stats = query_counter(self, sai_thrift_get_ingress_priority_group_stats, self.ipg)
 
         self.assertEqual(
             stats["SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS"], 0)
@@ -227,12 +211,10 @@ class BufferStatistics(MinimalPortVlanConfig):
         print()
 
         # Make sure test starts with cleared counters.
-        status = sai_thrift_clear_buffer_pool_stats(
-            self.client, self.ingr_pool)
+        status = clear_counter(self, sai_thrift_clear_buffer_pool_stats, self.ingr_pool)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
-        status = sai_thrift_clear_ingress_priority_group_stats(
-            self.client, self.ipg)
+        status = clear_counter(self, sai_thrift_clear_ingress_priority_group_stats, self.ipg)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
         print("Buffer pool size:", self.buf_size)
@@ -323,12 +305,10 @@ class Forwarding(MinimalPortVlanConfig):
         """
 
         for i in range(3):
-            status = sai_thrift_clear_port_stats(
-                self.client, self.port_list[i])
+            status = clear_counter(self, sai_thrift_clear_port_stats, self.port_list[i])
             self.assertEqual(status, SAI_STATUS_SUCCESS)
 
-        status = sai_thrift_clear_ingress_priority_group_stats(
-            self.client, self.ipg)
+        status = clear_counter(self, sai_thrift_clear_ingress_priority_group_stats, self.ipg)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
         print("Send {} pkts, pkt size: {} B".format(self.tx_cnt, self.pkt_len))
@@ -338,10 +318,9 @@ class Forwarding(MinimalPortVlanConfig):
         print("Verify traffic\n")
         time.sleep(2)
 
-        stats_ipg = sai_thrift_get_ingress_priority_group_stats(
-            self.client, self.ipg)
-        stats_p1 = sai_thrift_get_port_stats(self.client, self.port1)
-        stats_p2 = sai_thrift_get_port_stats(self.client, self.port2)
+        stats_ipg = query_counter(self, sai_thrift_get_ingress_priority_group_stats, self.ipg)
+        stats_p1 = query_counter(self, sai_thrift_get_port_stats, self.port1)
+        stats_p2 = query_counter(self, sai_thrift_get_port_stats, self.port2)
 
         self.assertEqual(
             stats_ipg["SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS"], self.tx_cnt)
@@ -627,13 +606,12 @@ class BufferPoolNumber(MinimalPortVlanConfig):
         time.sleep(2)
 
         for i in range(ingr_pool_num):
-            stats = sai_thrift_get_ingress_priority_group_stats(
-                self.client, self.ipgs[i])
+            stats = query_counter(self, sai_thrift_get_ingress_priority_group_stats, self.ipgs[i])
             self.assertEqual(
                 stats["SAI_INGRESS_PRIORITY_GROUP_STAT_PACKETS"], 1)
 
         for i in range(egr_pool_num):
-            stats = sai_thrift_get_queue_stats(self.client, self.queues[i])
+            stats = query_counter(self, sai_thrift_get_queue_stats, self.queues[i])
             self.assertEqual(stats["SAI_QUEUE_STAT_PACKETS"], 1)
 
     def tearDown(self):
