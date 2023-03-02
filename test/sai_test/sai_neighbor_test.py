@@ -295,8 +295,8 @@ class RemoveAddNeighborTestIPV4(T0TestBase):
         print("Packet dropped")
         post_cpu_queue_state = sai_thrift_get_queue_stats(
             self.client, self.cpu_queue0)["SAI_QUEUE_STAT_PACKETS"]
-        #self.assertEqual(post_cpu_queue_state - pre_cpu_queue_state, 1)
-        # Disable above check beacuse of bug 15205360
+        self.assertEqual(post_cpu_queue_state - pre_cpu_queue_state, 1)
+        # bug 15205360 above check 
         print(str(post_cpu_queue_state - pre_cpu_queue_state))
         sai_thrift_create_neighbor_entry(
             self.client,
@@ -390,8 +390,8 @@ class RemoveAddNeighborTestIPV6(T0TestBase):
         print("Packet dropped")
         post_cpu_queue_state = sai_thrift_get_queue_stats(
             self.client, self.cpu_queue0)["SAI_QUEUE_STAT_PACKETS"]
-        #self.assertEqual(post_cpu_queue_state - pre_cpu_queue_state, 1)
-        # Disable above check beacuse of bug 15205360
+        self.assertEqual(post_cpu_queue_state - pre_cpu_queue_state, 1)
+        # bug 15205360 above check 
         print(str(post_cpu_queue_state - pre_cpu_queue_state))
         sai_thrift_create_neighbor_entry(
             self.client,
