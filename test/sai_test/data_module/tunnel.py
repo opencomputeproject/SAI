@@ -63,22 +63,22 @@ class Tunnel(route_item):
         self.oport_devs = oport_indexs
         self.uport_devs = uport_indexs
 
-        self.lpb_ip = LOOPBACK_IPV4
-        self.tun_ip = None
+        self.lpb_ip = [LOOPBACK_IPV4]
+        self.tun_ip = []
         self.tun_lpb_mask = "/32"
 
         self.inner_dmac = INNER_DMAC
  
         # underlay configuration
-        self.uvrf = None
+        self.uvrf = []
 
         # overlay configuration
-        self.ovrf = None
+        self.ovrf = []
 
         # loopback RIFs for tunnel
-        self.urif_lpb = None
+        self.urif_lpb = []
 
-        self.orif_lpb = None
+        self.orif_lpb = []
 
         self.tunnel_type = tunnel_type
 

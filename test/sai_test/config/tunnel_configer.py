@@ -42,8 +42,8 @@ def t0_tunnel_config_helper(test_obj: 'T0TestBase',
     tunnel_configer = TunnelConfiger(test_obj)
 
     if is_create_tunnel:
-        tunnel = tunnel_configer.create_tunnel([1], [17,18], ttl_mode)
-        tunnel.tun_ip = test_obj.servers[11][1].ipv4
+        tunnel = tunnel_configer.create_tunnel([1], [17, 18], ttl_mode)
+        tunnel.tun_ip.append(test_obj.servers[11][1].ipv4)
         tunnel_configer.create_tunnel_term(tunnel)
         test_obj.dut.tunnel_list.append(tunnel)
 
@@ -86,35 +86,38 @@ class TunnelConfiger(object):
                                 ttl_mode= ttl_mode)
         
         # underlay configuration
-        self.uvrf = self.test_obj.dut.default_vrf
+        tunnel.uvrf.append(self.test_obj.dut.default_vrf)
 
         # overlay configuration
-        self.ovrf = self.test_obj.dut.default_vrf
+        tunnel.ovrf.append(self.test_obj.dut.default_vrf)
 
-        tunnel.urif_lpb = sai_thrift_create_router_interface(
+        tunnel.urif_lpb.append(sai_thrift_create_router_interface(
             self.client,
             type=SAI_ROUTER_INTERFACE_TYPE_LOOPBACK,
-            virtual_router_id=tunnel.uvrf)
+            virtual_router_id=tunnel.uvrf[0]))
 
-        tunnel.orif_lpb = sai_thrift_create_router_interface(
+        tunnel.orif_lpb.append(sai_thrift_create_router_interface(
             self.client,
             type=SAI_ROUTER_INTERFACE_TYPE_LOOPBACK,
-            virtual_router_id=tunnel.ovrf)
+            virtual_router_id=tunnel.ovrf[0]))
 
         # tunnel
         tunnel.oid = sai_thrift_create_tunnel(
             self.client,
             type=tunnel.tunnel_type,
-            encap_src_ip=sai_ipaddress(tunnel.lpb_ip),
+            encap_src_ip=sai_ipaddress(tunnel.lpb_ip[0]),
             encap_ttl_val = TTL_VAL,
             encap_ttl_mode = ttl_mode,
             decap_ttl_mode = ttl_mode,
-            underlay_interface=tunnel.urif_lpb,
-            overlay_interface=tunnel.orif_lpb)
+            underlay_interface=tunnel.urif_lpb[0],
+            overlay_interface=tunnel.orif_lpb[0],
+            encap_ecn_mode=SAI_TUNNEL_ENCAP_ECN_MODE_STANDARD,
+            decap_ecn_mode=SAI_TUNNEL_DECAP_ECN_MODE_STANDARD,
+            loopback_packet_action=SAI_PACKET_ACTION_DROP)
         
         return tunnel
 
-    def create_tunnel_term(self, tunnel):
+    def create_tunnel_term(self, tunnel, i=0):
         """
         Create tunnel term.
 
@@ -128,11 +131,11 @@ class TunnelConfiger(object):
             vr_id=tunnel.uvrf,
             action_tunnel_id=tunnel.oid,
             type=tunnel.term_type,
-            dst_ip=sai_ipaddress(tunnel.lpb_ip),
-            src_ip=sai_ipaddress(tunnel.tun_ip))
+            dst_ip=sai_ipaddress(tunnel.lpb_ip[i]),
+            src_ip=sai_ipaddress(tunnel.tun_ip[i]))
         tunnel.tunnel_terms.append(tunnel_term)
 
-    def create_tunnel_route_v4_v6(self, tunnel, vm_ip, vm_ipv6):
+    def create_tunnel_route_v4_v6(self, tunnel, vm_ip, vm_ipv6, index=0):
         """
         Create tunnel special route v4 and v6.
 
@@ -146,7 +149,7 @@ class TunnelConfiger(object):
             self.client,
             type=SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP,
             tunnel_id=tunnel.oid,
-            ip=sai_ipaddress(tunnel.tun_ip),
+            ip=sai_ipaddress(tunnel.tun_ip[index]),
             tunnel_mac=tunnel.inner_dmac)
 
         # routes to VM via tunnel nexthop

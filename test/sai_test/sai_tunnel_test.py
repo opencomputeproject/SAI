@@ -11,8 +11,10 @@ class IpInIpTnnnelBase(T0TestBase):
         tunnel_config = self.dut.tunnel_list[-1]
         self.oport_dev = self.dut.port_obj_list[1].dev_port_index
         self.uport_dev = self.dut.port_obj_list[18].dev_port_index
-        self.tun_ip = tunnel_config.tun_ip
-        self.lpb_ip = tunnel_config.lpb_ip
+        self.tun_ip_list = tunnel_config.tun_ip
+        self.lpb_ip_list = tunnel_config.lpb_ip
+        self.tun_ip = tunnel_config.tun_ip[0]
+        self.lpb_ip = tunnel_config.lpb_ip[0]
 
         self.recv_dev_port_idxs = self.get_dev_port_indexes(self.servers[11][1].l3_lag_obj.member_port_indexs)
         self.vm_ip = "100.100.1.1"
