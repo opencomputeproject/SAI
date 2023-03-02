@@ -32,8 +32,10 @@ def t0_tunnel_config_helper(test_obj: 'T0TestBase',
                             is_create_tunnel=True,  
                             ttl_mode=SAI_TUNNEL_TTL_MODE_PIPE_MODEL,
                             peer_mode=SAI_TUNNEL_PEER_MODE_P2MP,
-                            packet_loop_action=None):
-    """
+                            packet_loop_action=None,
+                            decap_ecn_mode=None,
+                            encap_ecn_mode=None):
+    """_
     Make tunnel configurations base on the configuration in the test plan.
     set the configuration in test directly.
 
@@ -44,7 +46,7 @@ def t0_tunnel_config_helper(test_obj: 'T0TestBase',
     tunnel_configer = TunnelConfiger(test_obj)
 
     if is_create_tunnel:
-        tunnel = tunnel_configer.create_tunnel([1], [17,18], ttl_mode, peer_mode, packet_loop_action)
+        tunnel = tunnel_configer.create_tunnel([1], [17,18], ttl_mode, peer_mode, packet_loop_action, decap_ecn_mode, encap_ecn_mode)
         tunnel.tun_ips.append(test_obj.servers[11][1].ipv4)
         tunnel_configer.create_tunnel_term(tunnel)
         test_obj.dut.tunnel_list.append(tunnel)
@@ -75,7 +77,9 @@ class TunnelConfiger(object):
                       uports=[], 
                       ttl_mode=None, 
                       peer_mode=None,
-                      packet_loopback_action=None):
+                      packet_loopback_action=None,
+                      decap_ecn_mode=None,
+                      encap_ecn_mode=None):
         """
         Create tunnel.
 
@@ -91,7 +95,9 @@ class TunnelConfiger(object):
                                 tunnel_type = SAI_TUNNEL_TYPE_IPINIP,
                                 term_type = SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P,
                                 ttl_mode=ttl_mode,
-                                peer_mode=peer_mode)
+                                peer_mode=peer_mode,
+                                decap_ecn_mode=decap_ecn_mode,
+                                encap_ecn_mode=encap_ecn_mode)
         
         # underlay configuration
         tunnel.uvrf.append(self.test_obj.dut.default_vrf)
@@ -120,7 +126,9 @@ class TunnelConfiger(object):
             peer_mode=peer_mode,
             loopback_packet_action=packet_loopback_action,
             underlay_interface=tunnel.urif_lpb[0],
-            overlay_interface=tunnel.orif_lpb[0])
+            overlay_interface=tunnel.orif_lpb[0],
+            decap_ecn_mode=decap_ecn_mode,
+            encap_ecn_mode=encap_ecn_mode)
         self.test_obj.assertEqual(self.test_obj.status(),SAI_STATUS_SUCCESS)
         return tunnel
 

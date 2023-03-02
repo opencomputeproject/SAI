@@ -376,7 +376,11 @@ class T0TestBase(ThriftInterfaceDataPlane):
               is_create_route_for_nhopgrp=False,
               is_create_tunnel=False,
               wait_sec=5,
-              skip_reason = None):
+              skip_reason = None,
+              peer_mode=SAI_TUNNEL_PEER_MODE_P2MP,
+              decap_ecn_mode=None,
+              encap_ecn_mode=None,
+              packet_loop_action=None):
 
         super(T0TestBase, self).setUp(skip_reason = skip_reason)
         self.set_logger_name()
@@ -421,7 +425,11 @@ class T0TestBase(ThriftInterfaceDataPlane):
                 is_create_route_for_vlan=is_create_route_for_vlan_itf,
                 is_create_route_for_nhopgrp=is_create_route_for_nhopgrp)
             t0_tunnel_config_helper(test_obj=self,
-                                    is_create_tunnel=is_create_tunnel)              
+                                    is_create_tunnel=is_create_tunnel,
+                                    peer_mode=peer_mode,
+                                    packet_loop_action=packet_loop_action,
+                                    decap_ecn_mode=None,
+                                    encap_ecn_mode=None)              
             print("common config done")
             self.persist_config()
             print("Waiting for switch to get ready before test, {} seconds ...".format(

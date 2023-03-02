@@ -664,3 +664,59 @@ class SviIPInIPTunnelDecapFloodV6InV4Test(IpInIpTnnnelBase):
             self.ipip_tunnel_decap_svi_flood_test_v6()
         finally:
             pass
+        
+class PeerModeTest(T0TestBase):
+    '''
+    This class test SAI_TUNNEL_PEER_MODE_P2P
+    '''
+    def setUp(self):
+        peer_mode =  SAI_TUNNEL_PEER_MODE_P2P
+        T0TestBase.setUp(self, is_create_tunnel=True, peer_mode=SAI_TUNNEL_PEER_MODE_P2P)
+
+    def runTest(self):
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        
+    def tearDown(self):
+        T0TestBase.tearDown(self)
+
+class LoopBackPacketActionTest(T0TestBase):
+    '''
+    This class test SAI_TUNNEL_PEER_MODE_P2P
+    '''
+    def setUp(self):
+        action = SAI_PACKET_ACTION_DROP
+        T0TestBase.setUp(self, is_create_tunnel=True, packet_loop_action=action)
+
+    def runTest(self):
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        
+    def tearDown(self):
+        T0TestBase.tearDown(self)
+
+class DecapEcnModeTest(T0TestBase):
+    '''
+    This class test decap_ecn_mode
+    '''
+    def setUp(self):
+        decap_ecn = SAI_TUNNEL_DECAP_ECN_MODE_COPY_FROM_OUTER
+        T0TestBase.setUp(self, is_create_tunnel=True, decap_ecn_mode=decap_ecn)
+
+    def runTest(self):
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        
+    def tearDown(self):
+        T0TestBase.tearDown(self)
+
+class EncapEcnModeTest(T0TestBase):
+    '''
+    This class test encap_ecn_mode
+    '''
+    def setUp(self):
+        encap_ecn = SAI_TUNNEL_DECAP_ECN_MODE_COPY_FROM_OUTER
+        T0TestBase.setUp(self, is_create_tunnel=True, encap_ecn_mode=SAI_TUNNEL_ENCAP_ECN_MODE_STANDARD)
+
+    def runTest(self):
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        
+    def tearDown(self):
+        T0TestBase.tearDown(self)

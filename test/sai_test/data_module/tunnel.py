@@ -39,6 +39,8 @@ class Tunnel(route_item):
                  term_type = None,
                  ttl_mode = None,
                  peer_mode = None,
+                 decap_ecn_mode=None,
+                 encap_ecn_mode=None,
                  rif_list:List= [],
                  nexthopv4_list:List['Nexthop'] = [],
                  nexthopv6_list:List['Nexthop'] = [],
@@ -88,6 +90,10 @@ class Tunnel(route_item):
         self.ttl_mode = ttl_mode
         
         self.peer_mode = peer_mode
+        
+        self.encap_ecn_mode = encap_ecn_mode
+        
+        self.decap_ecn_mode = decap_ecn_mode
         
         self.tunnel_terms = []
 
