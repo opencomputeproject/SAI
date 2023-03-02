@@ -693,7 +693,8 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
     def tearDown(self):
         try:
             for port in self.port_list:
-                sai_thrift_clear_port_stats(self.client, port)
+                clear_counter(
+                    self, sai_thrift_clear_port_stats, port)
                 sai_thrift_set_port_attribute(
                     self.client, port, port_vlan_id=0)
             #Todo: Remove this condition after brcm's remove_switch issue fixed

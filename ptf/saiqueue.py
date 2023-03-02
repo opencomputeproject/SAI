@@ -248,7 +248,8 @@ class bufferQueueTest(QueueConfigDataHelper):
                 buffer_profile_id=buff_prof)
             self.assertEqual(status, SAI_STATUS_SUCCESS)
 
-            clear_counter(self, sai_thrift_clear_queue_stats, queue_id[0])
+            clear_counter(
+                    self, sai_thrift_clear_queue_stats, queue_id[0])
             pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                     eth_src="00:00:00:00:00:22",
                                     ip_dst="172.16.1.1",
@@ -266,7 +267,8 @@ class bufferQueueTest(QueueConfigDataHelper):
             send_packet(self, self.dev_port25, pkt)
             verify_packet(self, exp_pkt, self.dev_port26)
             print("\tPacket received on PORT26")
-            stats = query_counter(self, sai_thrift_get_queue_stats, queue_id[0])
+            stats = query_counter(
+                    self, sai_thrift_get_queue_stats, queue_id[0])
             cnt = stats["SAI_QUEUE_STAT_PACKETS"]
             self.assertEqual(cnt, 1)
 
@@ -287,7 +289,8 @@ class bufferQueueTest(QueueConfigDataHelper):
                                                   buffer_profile_id=True)
             self.assertEqual(attr["buffer_profile_id"], default_buff_prof)
 
-            clear_counter(self, sai_thrift_clear_queue_stats, queue_id[0])
+            clear_counter(
+                    self, sai_thrift_clear_queue_stats, queue_id[0])
             pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                     eth_src="00:00:00:00:00:22",
                                     ip_dst="172.16.1.1",
@@ -305,7 +308,8 @@ class bufferQueueTest(QueueConfigDataHelper):
             send_packet(self, self.dev_port25, pkt)
             verify_packet(self, exp_pkt, self.dev_port26)
             print("\tPacket received on PORT26")
-            stats = query_counter(self, sai_thrift_get_queue_stats, queue_id[0])
+            stats = query_counter(
+                    self, sai_thrift_get_queue_stats, queue_id[0])
             cnt = stats["SAI_QUEUE_STAT_PACKETS"]
             self.assertEqual(cnt, 1)
             print("\tTest completed successfully")
@@ -315,7 +319,8 @@ class bufferQueueTest(QueueConfigDataHelper):
                     self, sai_thrift_get_queue_stats_ext, queue_id[0], SAI_STATS_MODE_READ_AND_CLEAR)
             cnt = stats["SAI_QUEUE_STAT_PACKETS"]
             self.assertEqual(cnt, 1)
-            stats = query_counter(self, sai_thrift_get_queue_stats, queue_id[0])
+            stats = query_counter(
+                    self, sai_thrift_get_queue_stats, queue_id[0])
             cnt = stats["SAI_QUEUE_STAT_PACKETS"]
             self.assertEqual(cnt, 0)
             print("\tTest completed successfully")
@@ -1074,9 +1079,11 @@ class dwrrBandwidthDistributionTest(QueueConfigDataHelper):  # noqa pylint: disa
             map_list2.append(tc_to_queue)
 
             # Clear statistics for each queue in PORT25
-            clear_counter(self, sai_thrift_clear_queue_stats, queue_id_list_port25[i])
+            clear_counter(
+                    self, sai_thrift_clear_queue_stats, queue_id_list_port25[i])
             # Clear statistics for each queue in PORT26
-            clear_counter(self, sai_thrift_clear_queue_stats, queue_id_list_port26[i])
+            clear_counter(
+                    self, sai_thrift_clear_queue_stats, queue_id_list_port26[i])
 
         qos_map_list2 = sai_thrift_qos_map_list_t(
             count=len(map_list2),
@@ -1186,7 +1193,8 @@ class dwrrBandwidthDistributionTest(QueueConfigDataHelper):  # noqa pylint: disa
             for queue in range(0, num_queues):
                 time.sleep(5)
 
-                q_stats = query_counter(self, sai_thrift_get_queue_stats,
+                q_stats = query_counter(
+                    self, sai_thrift_get_queue_stats,
                     queue_id_list_port26[queue])
                 rec_pkt_num = q_stats["SAI_QUEUE_STAT_PACKETS"]
                 print("Queue:", queue)
@@ -1199,12 +1207,14 @@ class dwrrBandwidthDistributionTest(QueueConfigDataHelper):  # noqa pylint: disa
             print("\tTest completed successfully")
 
         finally:
-            stats = query_counter(self, sai_thrift_get_queue_stats_ext,
+            stats = query_counter(
+                    self, sai_thrift_get_queue_stats_ext,
                 queue_id_list_port26[0],
                 SAI_STATS_MODE_READ_AND_CLEAR)
             cnt = stats["SAI_QUEUE_STAT_PACKETS"]
             self.assertEqual(cnt, 2)
-            stats = query_counter(self, sai_thrift_get_queue_stats,
+            stats = query_counter(
+                    self, sai_thrift_get_queue_stats,
                   queue_id_list_port26[0])
             cnt = stats["SAI_QUEUE_STAT_PACKETS"]
             self.assertEqual(cnt, 0)
@@ -1307,9 +1317,11 @@ class strictPriorityQueueTest(QueueConfigDataHelper):
             map_list2.append(tc_to_queue)
 
             # Clear statistics for each queue in PORT25
-            clear_counter(self, sai_thrift_clear_queue_stats, queue_id_list_port25[i])
+            clear_counter(
+                    self, sai_thrift_clear_queue_stats, queue_id_list_port25[i])
             # Clear statistics for each queue in PORT26
-            clear_counter(self, sai_thrift_clear_queue_stats, queue_id_list_port26[i])
+            clear_counter(
+                    self, sai_thrift_clear_queue_stats, queue_id_list_port26[i])
 
         qos_map_list2 = sai_thrift_qos_map_list_t(
             count=len(map_list2),
@@ -1394,17 +1406,20 @@ class strictPriorityQueueTest(QueueConfigDataHelper):
             time.sleep(4)
 
             # Statistics read
-            q_stats_port26 = query_counter(self, sai_thrift_get_queue_stats,
+            q_stats_port26 = query_counter(
+                    self, sai_thrift_get_queue_stats,
                 queue_id_list_port26[1])
             received_pkt_num = q_stats_port26["SAI_QUEUE_STAT_PACKETS"]
             print("\tqueue[1] of PORT26, no. packets:", received_pkt_num)
             # queue[0]
-            q_stats_port27 = query_counter(self, sai_thrift_get_queue_stats,
+            q_stats_port27 = query_counter(
+                    self, sai_thrift_get_queue_stats,
                 queue_id_list_port27[0])
             forwarded_pkt_num = q_stats_port27["SAI_QUEUE_STAT_PACKETS"]
             print("\tqueue[0] of PORT27, no. packets:", forwarded_pkt_num)
             # queue[1]
-            q_stats_port27 = query_counter(self, sai_thrift_get_queue_stats,
+            q_stats_port27 = query_counter(
+                    self, sai_thrift_get_queue_stats,
                 queue_id_list_port27[1])
             forwarded_pkt_num = q_stats_port27["SAI_QUEUE_STAT_PACKETS"]
             print("\tqueue[1] of PORT27, no. packets:", forwarded_pkt_num)

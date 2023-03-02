@@ -1717,8 +1717,8 @@ class PortAclBindingClass(PortFloodClass):
             # Find the port object for a given port
             port_obj = self.findPortObj(port)
             for port_stat in port_stats:
-                initial_stats = sai_thrift_get_port_stats(self.client,
-                                                          port_obj)
+                initial_stats = query_counter(
+                    self, sai_thrift_get_port_stats, port_obj)
                 stat = initial_stats[port_stat]
                 total_cnt += stat
         return total_cnt

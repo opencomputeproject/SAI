@@ -28,19 +28,21 @@ class MplsCpuTrapTest(SaiHelper):
     def setUp(self):
         super(MplsCpuTrapTest, self).setUp()
 
-        status = sai_thrift_clear_port_stats(self.client, self.port10)
+        status = clear_counter(
+                    self, sai_thrift_clear_port_stats, self.port10)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
-        status = sai_thrift_clear_router_interface_stats(
-            self.client, self.port10_rif)
+        status = clear_counter(
+                    self, sai_thrift_clear_router_interface_stats, self.port10_rif)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
-        stats = sai_thrift_get_port_stats(self.client, self.port10)
+        stats = query_counter(
+                    self, sai_thrift_get_port_stats, self.port10)
         self.port10_disc_stats = stats['SAI_PORT_STAT_IF_IN_DISCARDS']
         self.assertEqual(self.port10_disc_stats, 0)
 
-        stats = sai_thrift_get_router_interface_stats(
-            self.client, self.port10_rif)
+        stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, self.port10_rif)
         self.port10_rif_in_stats = \
             stats['SAI_ROUTER_INTERFACE_STAT_IN_PACKETS']
         self.assertEqual(self.port10_rif_in_stats, 0)
@@ -70,10 +72,11 @@ class MplsCpuTrapTest(SaiHelper):
             Return:
                 bool: True if statistics are correct, otherwise False
         '''
-        rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.port10_rif)
+        rif_stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, self.port10_rif)
 
-        port_stats = sai_thrift_get_port_stats(self.client, self.port10)
+        port_stats = query_counter(
+                    self, sai_thrift_get_port_stats, self.port10)
 
         if self.port10_rif_in_stats != \
                 rif_stats['SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'] or \
@@ -105,13 +108,13 @@ class MplsCpuTrapTest(SaiHelper):
             inner_frame=send_pkt['IP'])
 
         try:
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             print("Implicit null label action trap")
             send_packet(self, self.dev_port10, mpls_pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
@@ -637,7 +640,8 @@ class MplsIpv6Test(SaiHelper):
                     self.egress_rif_3, self.egress_rif_4, self.egress_rif_5,
                     self.egress_rif_6, self.egress_rif_7, self.egress_rif_8,
                     self.egress_rif_9, self.mpls_rif]:
-            status = sai_thrift_clear_router_interface_stats(self.client, rif)
+            status = clear_counter(
+                    self, sai_thrift_clear_router_interface_stats, rif)
             self.assertEqual(status, SAI_STATUS_SUCCESS)
 
         self.ingress_rif_in_stats = 0     # port 10
@@ -760,7 +764,8 @@ class MplsIpv6Test(SaiHelper):
                  self.egress_rif_2_out_stats, self.egress_rif_3_out_stats,
                  self.egress_rif_4_out_stats, self.egress_rif_5_out_stats,
                  self.egress_rif_9_out_stats, self.mpls_rif_out_stats]):
-            stats = sai_thrift_get_router_interface_stats(self.client, rif)
+            stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, rif)
 
             if in_cnt != stats['SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'] or \
                     out_cnt != stats['SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS']:
@@ -1221,12 +1226,12 @@ class MplsIpv6Test(SaiHelper):
             inner_frame=send_pkt['IPv6'])
 
         rif_cntr_id = 'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'
-        rif6_stats_start = sai_thrift_get_router_interface_stats(
-            self.client, self.egress_rif_6)
-        rif7_stats_start = sai_thrift_get_router_interface_stats(
-            self.client, self.egress_rif_7)
-        rif8_stats_start = sai_thrift_get_router_interface_stats(
-            self.client, self.egress_rif_8)
+        rif6_stats_start = query_counter(
+                    self, sai_thrift_get_router_interface_stats, self.egress_rif_6)
+        rif7_stats_start = query_counter(
+                    self, sai_thrift_get_router_interface_stats, self.egress_rif_7)
+        rif8_stats_start = query_counter(
+                    self, sai_thrift_get_router_interface_stats, self.egress_rif_8)
 
         print("ECMP - Send MPLS tag packet 7000")
         send_packet(self, self.dev_port10, mpls_pkt)
@@ -1234,12 +1239,12 @@ class MplsIpv6Test(SaiHelper):
         verify_any_packet_any_port(
             self, [recv_mpls_7070, recv_mpls_7171, recv_mpls_7272],
             [self.dev_port27, self.dev_port28, self.dev_port29])
-        rif6_stats_end = sai_thrift_get_router_interface_stats(
-            self.client, self.egress_rif_6)
-        rif7_stats_end = sai_thrift_get_router_interface_stats(
-            self.client, self.egress_rif_7)
-        rif8_stats_end = sai_thrift_get_router_interface_stats(
-            self.client, self.egress_rif_8)
+        rif6_stats_end = query_counter(
+                    self, sai_thrift_get_router_interface_stats, self.egress_rif_6)
+        rif7_stats_end = query_counter(
+                    self, sai_thrift_get_router_interface_stats, self.egress_rif_7)
+        rif8_stats_end = query_counter(
+                    self, sai_thrift_get_router_interface_stats, self.egress_rif_8)
 
         if (rif6_stats_end[rif_cntr_id] -
                 rif6_stats_start[rif_cntr_id] == 1):
@@ -1254,8 +1259,8 @@ class MplsIpv6Test(SaiHelper):
             final_egress_rif = 0
 
         iter_count = 10
-        rif_lb_start_count = sai_thrift_get_router_interface_stats(
-            self.client, final_egress_rif)
+        rif_lb_start_count = query_counter(
+                    self, sai_thrift_get_router_interface_stats, final_egress_rif)
 
         for _ in range(0, iter_count):
             l4_sport = random.randint(5000, 65535)
@@ -1266,8 +1271,8 @@ class MplsIpv6Test(SaiHelper):
             self.ingress_rif_in_stats += 1
 
         time.sleep(2)
-        rif_lb_end_count = sai_thrift_get_router_interface_stats(
-            self.client, final_egress_rif)
+        rif_lb_end_count = query_counter(
+                    self, sai_thrift_get_router_interface_stats, final_egress_rif)
         diff = (rif_lb_end_count[rif_cntr_id] -
                 rif_lb_start_count[rif_cntr_id])
         self.assertEqual(diff, iter_count)
@@ -1737,7 +1742,8 @@ class MplsIpv4Test(SaiHelper):
         for rif in [self.ingress_rif, self.egress_rif_1, self.egress_rif_2,
                     self.egress_rif_3, self.egress_rif_4, self.egress_rif_5,
                     self.egress_rif_9, self.egress_rif_vrf, self.mpls_rif]:
-            status = sai_thrift_clear_router_interface_stats(self.client, rif)
+            status = clear_counter(
+                    self, sai_thrift_clear_router_interface_stats, rif)
             self.assertEqual(status, SAI_STATUS_SUCCESS)
 
         self.ingress_rif_in_stats = 0     # port 10
@@ -1872,7 +1878,8 @@ class MplsIpv4Test(SaiHelper):
                  self.egress_rif_4_out_stats, self.egress_rif_5_out_stats,
                  self.egress_rif_9_out_stats, self.egress_rif_vrf_out_stats,
                  self.mpls_rif_out_stats]):
-            stats = sai_thrift_get_router_interface_stats(self.client, rif)
+            stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, rif)
 
             if in_cnt != stats['SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'] or \
                     out_cnt != stats['SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS']:
@@ -2419,12 +2426,12 @@ class MplsIpv4Test(SaiHelper):
             inner_frame=send_pkt['IP'])
 
         rif_cntr_id = 'SAI_ROUTER_INTERFACE_STAT_OUT_PACKETS'
-        rif6_stats_start = sai_thrift_get_router_interface_stats(
-            self.client, self.egress_rif_6)
-        rif7_stats_start = sai_thrift_get_router_interface_stats(
-            self.client, self.egress_rif_7)
-        rif8_stats_start = sai_thrift_get_router_interface_stats(
-            self.client, self.egress_rif_8)
+        rif6_stats_start = query_counter(
+                    self, sai_thrift_get_router_interface_stats, self.egress_rif_6)
+        rif7_stats_start = query_counter(
+                    self, sai_thrift_get_router_interface_stats, self.egress_rif_7)
+        rif8_stats_start = query_counter(
+                    self, sai_thrift_get_router_interface_stats, self.egress_rif_8)
 
         print("ECMP - Send MPLS tag packet 7000")
         send_packet(self, self.dev_port10, mpls_pkt)
@@ -2432,12 +2439,12 @@ class MplsIpv4Test(SaiHelper):
         verify_any_packet_any_port(
             self, [recv_mpls_7070, recv_mpls_7171, recv_mpls_7272],
             [self.dev_port27, self.dev_port28, self.dev_port29])
-        rif6_stats_end = sai_thrift_get_router_interface_stats(
-            self.client, self.egress_rif_6)
-        rif7_stats_end = sai_thrift_get_router_interface_stats(
-            self.client, self.egress_rif_7)
-        rif8_stats_end = sai_thrift_get_router_interface_stats(
-            self.client, self.egress_rif_8)
+        rif6_stats_end = query_counter(
+                    self, sai_thrift_get_router_interface_stats, self.egress_rif_6)
+        rif7_stats_end = query_counter(
+                    self, sai_thrift_get_router_interface_stats, self.egress_rif_7)
+        rif8_stats_end = query_counter(
+                    self, sai_thrift_get_router_interface_stats, self.egress_rif_8)
 
         if (rif6_stats_end[rif_cntr_id] -
                 rif6_stats_start[rif_cntr_id] == 1):
@@ -2452,8 +2459,8 @@ class MplsIpv4Test(SaiHelper):
             final_egress_rif = 0
 
         iter_count = 10
-        rif_lb_start_count = sai_thrift_get_router_interface_stats(
-            self.client, final_egress_rif)
+        rif_lb_start_count = query_counter(
+                    self, sai_thrift_get_router_interface_stats, final_egress_rif)
 
         for _ in range(0, iter_count):
             l4_sport = random.randint(5000, 65535)
@@ -2464,8 +2471,8 @@ class MplsIpv4Test(SaiHelper):
             self.ingress_rif_in_stats += 1
 
         time.sleep(2)
-        rif_lb_end_count = sai_thrift_get_router_interface_stats(
-            self.client, final_egress_rif)
+        rif_lb_end_count = query_counter(
+                    self, sai_thrift_get_router_interface_stats, final_egress_rif)
         diff = (rif_lb_end_count[rif_cntr_id] -
                 rif_lb_start_count[rif_cntr_id])
         self.assertEqual(diff, iter_count)

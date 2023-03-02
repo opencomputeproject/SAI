@@ -118,8 +118,8 @@ class lagNetdevHostifCreationTest(HostifCreationTestHelper):
             lag10_member2 = sai_thrift_create_lag_member(
                 self.client, lag_id=lag10, port_id=lag_ports[1])
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
 
             for dev_port in lag_dev_ports:
                 print("Sending LACP packet on LAG port %d" % dev_port)
@@ -131,8 +131,8 @@ class lagNetdevHostifCreationTest(HostifCreationTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + len(lag_dev_ports))
@@ -149,8 +149,8 @@ class lagNetdevHostifCreationTest(HostifCreationTestHelper):
             print("Verifying CPU port queue stats")
             pre_stats = post_stats
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
@@ -298,8 +298,8 @@ class vlanSviNetdevHostifCreationTest(HostifCreationTestHelper):
 
             hif2_socket = open_packet_socket(hostif2_name)
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
 
             print("Sending ARP packet on port %d (untagged VLAN member)"
                   % vlan_dev_ports[0])
@@ -328,8 +328,8 @@ class vlanSviNetdevHostifCreationTest(HostifCreationTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 4)
@@ -419,8 +419,8 @@ class portNetdevHostifCreationTest(PlatformSaiHelper):
                 type=SAI_HOSTIF_TABLE_ENTRY_TYPE_WILDCARD)
             self.assertNotEqual(hif_tbl_entry, 0)
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
 
             print("Sending LLDP packet on port %d" % hostif1_dev_port)
             send_packet(self, hostif1_dev_port, lldp_pkt)
@@ -438,8 +438,8 @@ class portNetdevHostifCreationTest(PlatformSaiHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 2)
@@ -741,8 +741,8 @@ class HostifTrapActionTestHelper(PlatformSaiHelper):
         self.arp_tagged_pkt = simple_arp_packet(arp_op=1,
                                                 vlan_vid=vid,
                                                 pktlen=104)
-        self.cpu_queue_state = sai_thrift_get_queue_stats(
-            self.client, self.cpu_queue0)["SAI_QUEUE_STAT_PACKETS"]
+        self.cpu_queue_state = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)["SAI_QUEUE_STAT_PACKETS"]
 
     def tearDown(self):
         sai_thrift_flush_fdb_entries(
@@ -847,8 +847,8 @@ class copyTrapActionTest(HostifTrapActionTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 1)
@@ -882,8 +882,8 @@ class copyTrapActionTaggedTest(HostifTrapActionTestHelper):
                 trap_type=SAI_HOSTIF_TRAP_TYPE_ARP_REQUEST)
             self.assertTrue(copy_trap != 0)
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
 
             print("Sending ARP packet on port %d" % self.iport_dev)
             send_packet(self, self.iport_dev, self.arp_pkt)
@@ -893,8 +893,8 @@ class copyTrapActionTaggedTest(HostifTrapActionTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 1)
@@ -913,8 +913,8 @@ class copyTrapActionTaggedTest(HostifTrapActionTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 1)
@@ -960,8 +960,8 @@ class trapTrapActionTest(HostifTrapActionTestHelper):
             print("Verifying LLDP packet is trapped by "
                   "checkig CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 1)
@@ -1004,8 +1004,8 @@ class logTrapActionTest(HostifTrapActionTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 1)
@@ -1287,16 +1287,16 @@ class arpRxTxTest(PlatformSaiHelper):
 
             self.assertEqual(hostif_ip.rstrip(), rif_ip)
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
 
             print("Sending ARP request on port %d" % test_dev_port)
             send_packet(self, test_dev_port, arp_req_pkt)
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
@@ -1407,8 +1407,8 @@ class HostifTableMatchTestHelper(PlatformSaiHelper):
         sai_thrift_set_port_attribute(
             self.client, self.eport, port_vlan_id=self.vid)
 
-        self.cpu_queue_state = sai_thrift_get_queue_stats(
-            self.client, self.cpu_queue0)["SAI_QUEUE_STAT_PACKETS"]
+        self.cpu_queue_state = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)["SAI_QUEUE_STAT_PACKETS"]
 
     def tearDown(self):
         sai_thrift_flush_fdb_entries(
@@ -1471,8 +1471,8 @@ class wildcardEntryCbChannelLldp(HostifTableMatchTestHelper):
             verify_packet(self, lldp_pkt, self.eport_dev)
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 1)
@@ -1552,8 +1552,8 @@ class wildcardEntryCbChannelLacp(HostifTableMatchTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + len(lag_dev_ports))
@@ -1659,8 +1659,8 @@ class wildcardEntryCbChannelStp(HostifTableMatchTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 2)
@@ -1807,8 +1807,8 @@ class HostifTrapTypesTestHelper(PlatformSaiHelper):
         sai_thrift_create_route_entry(self.client, self.ip2me_v6_route,
                                       next_hop_id=cpu_port)
 
-        self.cpu_queue_state = sai_thrift_get_queue_stats(
-            self.client, self.cpu_queue0)["SAI_QUEUE_STAT_PACKETS"]
+        self.cpu_queue_state = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)["SAI_QUEUE_STAT_PACKETS"]
 
     def tearDown(self):
         sai_thrift_flush_fdb_entries(
@@ -1919,8 +1919,8 @@ class arpTrapTest(HostifTrapTypesTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 4)
@@ -2057,8 +2057,8 @@ class bgpTrapTest(HostifTrapTypesTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 4)
@@ -2120,8 +2120,8 @@ class dhcpTrapTest(HostifTrapTypesTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 2)
@@ -2164,8 +2164,8 @@ class ip2meTrapTest(HostifTrapTypesTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 2)
@@ -2211,8 +2211,8 @@ class lacpTrapTest(HostifTrapTypesTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 2)
@@ -2273,8 +2273,8 @@ class lldpTrapTest(HostifTrapTypesTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 4)
@@ -2332,8 +2332,8 @@ class ospfTrapTest(HostifTrapTypesTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 4)
@@ -2397,8 +2397,8 @@ class igmpTrapTest(HostifTrapTypesTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + len(trap_info_list))
@@ -2493,8 +2493,8 @@ class ipv6MldTrapTest(HostifTrapTypesTestHelper):
             print("\tOK")
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 4)
@@ -2542,8 +2542,8 @@ class stpTrapTest(HostifTrapTypesTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 1)
@@ -2586,8 +2586,8 @@ class pvrstTrapTest(HostifTrapTypesTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 1)
@@ -2630,8 +2630,8 @@ class pimTrapTest(HostifTrapTypesTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 1)
@@ -2674,8 +2674,8 @@ class udldTrapTest(HostifTrapTypesTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 1)
@@ -2780,8 +2780,8 @@ class ipv6NDTrapTest(HostifTrapTypesTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 10)
@@ -2826,8 +2826,8 @@ class bfdRxTrapTest(HostifTrapTypesTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 1)
@@ -2887,8 +2887,8 @@ class dhcpv6TrapTest(HostifTrapTypesTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + len(dhcpv6_pkt_params_list))
@@ -2943,8 +2943,8 @@ class ptpTrapTest(HostifTrapTypesTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 2)
@@ -2993,8 +2993,8 @@ class isisTrapTest(HostifTrapTypesTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 6)
@@ -3039,8 +3039,8 @@ class bfdv6RxTrapTest(HostifTrapTypesTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 1)
@@ -3101,8 +3101,8 @@ class dhcpL2TrapTest(HostifTrapTypesTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 2)
@@ -3162,8 +3162,8 @@ class dhcpv6L2TrapTest(HostifTrapTypesTestHelper):
                 print("\tOK")
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + len(dhcpv6_pkt_params_list))
@@ -3208,8 +3208,8 @@ class vrrpTrapTest(HostifTrapTypesTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 1)
@@ -3254,8 +3254,8 @@ class vrrpv6TrapTest(HostifTrapTypesTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 1)
@@ -3297,8 +3297,8 @@ class eapolTrapTest(HostifTrapTypesTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 self.cpu_queue_state + 1)
@@ -3339,8 +3339,8 @@ class mplsRouterAlertTrapTest(HostifTrapTypesTestHelper):
                                           mpls_tags=[mpls_tag, mpls_tag_2],
                                           inner_frame=inner_pkt[IP])
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
 
             print("Tx MPLS packet with Router Alert Label 1  ")
             send_packet(self, self.iport_dev, mpls_pkt)
@@ -3349,8 +3349,8 @@ class mplsRouterAlertTrapTest(HostifTrapTypesTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
@@ -3390,8 +3390,8 @@ class mplsTtlErrorTrapTest(HostifTrapTypesTestHelper):
                                           mpls_tags=[mpls_tag],
                                           inner_frame=inner_pkt[IP])
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
 
             print("Tx MPLS packet with TTL=1 --> trap")
             send_packet(self, self.iport_dev, mpls_pkt)
@@ -3400,8 +3400,8 @@ class mplsTtlErrorTrapTest(HostifTrapTypesTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(5)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
@@ -3410,8 +3410,8 @@ class mplsTtlErrorTrapTest(HostifTrapTypesTestHelper):
                                           mpls_tags=[mpls_tag_ttl_0],
                                           inner_frame=inner_pkt[IP])
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
 
             print("Tx MPLS packet with TTL=0 --> trap")
             send_packet(self, self.iport_dev, mpls_pkt)
@@ -3420,8 +3420,8 @@ class mplsTtlErrorTrapTest(HostifTrapTypesTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(5)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
@@ -3430,8 +3430,8 @@ class mplsTtlErrorTrapTest(HostifTrapTypesTestHelper):
                                           mpls_tags=[mpls_tag_ttl_2],
                                           inner_frame=inner_pkt[IP])
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
 
             print("Tx MPLS packet with TTL=2 --> dp")
             send_packet(self, self.iport_dev, mpls_pkt)
@@ -3633,8 +3633,8 @@ class aclIpSrcNetdevTrapTest(HostifUserDefinedTrapACLTestHelper):
             self.assertTrue(acl_entry2 != 0)
             acl_entries.append(acl_entry2)
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
 
             # Send packets and verify they are properly trapped
             print("Sending IP packet 1")
@@ -3657,8 +3657,8 @@ class aclIpSrcNetdevTrapTest(HostifUserDefinedTrapACLTestHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 2)
@@ -3957,8 +3957,8 @@ class hostIfOperStatusTest(PlatformSaiHelper):
                 type=SAI_HOSTIF_TABLE_ENTRY_TYPE_WILDCARD)
             self.assertTrue(hif_tbl_entry != 0)
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
 
             print("Sending LLDP packet on port %d" % hostif1_dev_port)
             send_packet(self, hostif1_dev_port, lldp_pkt)
@@ -3976,8 +3976,8 @@ class hostIfOperStatusTest(PlatformSaiHelper):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 2)
@@ -4232,8 +4232,8 @@ class neighborTrapTest(HostifUserDefinedTrapNeighborTest):
             sai_thrift_set_route_entry_attribute(self.client, route2_entry,
                                                  next_hop_id=nhop2)
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             cpu_queue_pkt_count = 0
             print("Sending IP packet from port {} to {}".format(
                 self.dev_port12, self.hostif1_name))
@@ -4257,8 +4257,8 @@ class neighborTrapTest(HostifUserDefinedTrapNeighborTest):
 
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + cpu_queue_pkt_count)
@@ -4284,8 +4284,8 @@ class neighborTrapTest(HostifUserDefinedTrapNeighborTest):
             verify_no_other_packets(self)
             print("Verifying CPU port queue stats")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"])
