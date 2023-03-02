@@ -1173,13 +1173,15 @@ class Ipv4DisableTest(L3InterfaceSimplifiedTestHelper):
             self.client, self.port1_rif, admin_v4_state=False)
         time.sleep(3)
 
-        initial_stats = sai_thrift_get_port_stats(self.client, self.port1)
+        initial_stats = query_counter(
+                    self, sai_thrift_get_port_stats, self.port1)
         if_in_discards_pre = initial_stats['SAI_PORT_STAT_IF_IN_DISCARDS']
 
         print("Sending packet on port %d, discard" % self.dev_port1)
         send_packet(self, self.dev_port1, pkt)
         verify_no_other_packets(self, timeout=3)
-        stats = sai_thrift_get_port_stats(self.client, self.port1)
+        stats = query_counter(
+                    self, sai_thrift_get_port_stats, self.port1)
         if_in_discards = stats['SAI_PORT_STAT_IF_IN_DISCARDS']
         self.assertTrue(if_in_discards_pre + 1 == if_in_discards)
         self.port1_rif_counter_in += 1
@@ -1239,13 +1241,13 @@ class RifMyIPTest(L3InterfaceSimplifiedTestHelper):
                                     ip_ttl=64,
                                     pktlen=100)
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             print("Sending MYIP packet")
             send_packet(self, self.dev_port1, pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
@@ -1293,13 +1295,15 @@ class Ipv6DisableTest(L3InterfaceSimplifiedTestHelper):
         print("Disable IPv6 on ingress RIF")
         sai_thrift_set_router_interface_attribute(
             self.client, self.port1_rif, admin_v6_state=False)
-        initial_stats = sai_thrift_get_port_stats(self.client, self.port1)
+        initial_stats = query_counter(
+                    self, sai_thrift_get_port_stats, self.port1)
         if_in_discards_pre = initial_stats['SAI_PORT_STAT_IF_IN_DISCARDS']
 
         print("Sending packet on port %d, discard" % self.dev_port1)
         send_packet(self, self.dev_port1, pkt)
         verify_no_other_packets(self, timeout=1)
-        stats = sai_thrift_get_port_stats(self.client, self.port1)
+        stats = query_counter(
+                    self, sai_thrift_get_port_stats, self.port1)
         if_in_discards = stats['SAI_PORT_STAT_IF_IN_DISCARDS']
         self.assertTrue(if_in_discards_pre + 1 == if_in_discards)
         self.port1_rif_counter_in += 1
@@ -4463,8 +4467,8 @@ class SubPortMyIPTest(L3SubPortTestHelper):
                 ['40.40.4.51', 500, 25]   # self.subport25_500
             ]
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             for data in pkt_data:
                 ingress_port = getattr(self, 'dev_port%s' % data[2])
 
@@ -4474,8 +4478,8 @@ class SubPortMyIPTest(L3SubPortTestHelper):
                 send_packet(self, ingress_port, pkt)
 
             time.sleep(6)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + len(pkt_data))
@@ -7402,12 +7406,12 @@ class SviMyIPTest(L3SviTestHelper):
                                     ip_id=105,
                                     ip_ttl=64,
                                     pktlen=100)
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             send_packet(self, untagged_port, pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
@@ -7421,12 +7425,12 @@ class SviMyIPTest(L3SviTestHelper):
                                     ip_id=105,
                                     ip_ttl=64,
                                     pktlen=100)
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             send_packet(self, tagged_port, pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
@@ -7451,12 +7455,14 @@ class SviStatsTest(L3SviTestHelper):
     def runTest(self):
         print("\nsviStatsTest()")
 
-        vlan100_rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.vlan100_rif)
-        vlan200_rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.vlan200_rif)
-        vlan100_stats = sai_thrift_get_vlan_stats(self.client, self.vlan100)
-        vlan200_stats = sai_thrift_get_vlan_stats(self.client, self.vlan200)
+        vlan100_rif_stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, self.vlan100_rif)
+        vlan200_rif_stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, self.vlan200_rif)
+        vlan100_stats = query_counter(
+                    self, sai_thrift_get_vlan_stats, self.vlan100)
+        vlan200_stats = query_counter(
+                    self, sai_thrift_get_vlan_stats, self.vlan200)
 
         self.assertTrue(self.vlan100_rif_counter_in == vlan100_rif_stats[
             'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])
@@ -7660,23 +7666,23 @@ class SviArpReplyTest(L3SviTestHelper):
                                  % tg_hostif_name).read()
             self.assertEqual(hostif_ip.rstrip(), tg_port_ip)
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             print("Sending ARP request on untagged port")
             send_packet(self, untagged_dev_port, arp_req_pkt)
             self.assertTrue(socket_verify_packet(arp_req_pkt, utg_hif_socket))
             verify_packet(self, arp_resp_pkt, untagged_dev_port)
             print("Response received on the untagged port")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
             print("Request received on CPU port")
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             print("Sending ARP request on tagged port")
             send_packet(self, tagged_dev_port, tg_arp_req_pkt)
             self.assertTrue(
@@ -7684,8 +7690,8 @@ class SviArpReplyTest(L3SviTestHelper):
             verify_packet(self, tg_arp_resp_pkt, tagged_dev_port)
             print("Response received on the tagged port")
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
@@ -8037,30 +8043,30 @@ class Ipv4MtuTrapTest(L3MtuTrapTestHelper):
                                         ip_ttl=63,
                                         pktlen=201 + 14)
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             print("Sending packet port %d" % self.dev_port11, " -> cpu")
             send_packet(self, self.dev_port11, pkt)
             self.port11_rif_counter_in += 1
             self.port10_rif_counter_out += 1
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
 
             pkt['IP'].dst = '12.10.10.1'
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             print("Sending packet port %d" % self.dev_port11, " -> cpu")
             send_packet(self, self.dev_port11, pkt)
             self.port11_rif_counter_in += 1
             self.lag1_rif_counter_out += 1
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
@@ -8163,30 +8169,30 @@ class Ipv6MtuTrapTest(L3MtuTrapTestHelper):
                 ipv6_hlim=63,
                 pktlen=201 + 14 + 40)
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             print("Sending packet port %d" % self.dev_port11, " -> cpu")
             send_packet(self, self.dev_port11, pkt)
             self.port11_rif_counter_in += 1
             self.port10_rif_counter_out += 1
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
 
             pkt['IPv6'].dst = '1234:5678:9abc:def0:1122:3344:5566:7788'
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             print("Sending packet port %d" % self.dev_port11, " -> cpu")
             send_packet(self, self.dev_port11, pkt)
             self.port11_rif_counter_in += 1
             self.lag1_rif_counter_out += 1
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
@@ -8269,13 +8275,13 @@ class SubPortIpv4MtuTrapTest(L3MtuTrapTestHelper):
                                         vlan_vid=100,
                                         pktlen=201 + 18)
             print("Max MTU is 200, send pkt size 201, punt to cpu")
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             print("Sending packet port %d" % self.dev_port11, " -> cpu")
             send_packet(self, self.dev_port11, pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
@@ -8359,13 +8365,13 @@ class SubPortIpv6MtuTrapTest(L3MtuTrapTestHelper):
                 vlan_vid=100,
                 pktlen=201 + 40 + 18)
             print("Max MTU is 200, send pkt size 201, punt to cpu")
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             print("Sending packet port %d" % self.dev_port11, " -> cpu")
             send_packet(self, self.dev_port11, pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
@@ -8448,15 +8454,15 @@ class SviIpv4MtuTrapTest(L3MtuTrapTestHelper):
                                         ip_ttl=63,
                                         pktlen=201 + 14)
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             print("Sending packet port %d" % self.dev_port10, " -> cpu")
             send_packet(self, self.dev_port10, pkt)
             self.port10_rif_counter_in += 1
             self.vlan100_rif_counter_out += 1
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
@@ -8542,15 +8548,15 @@ class SviIpv6MtuTrapTest(L3MtuTrapTestHelper):
                 ipv6_hlim=63,
                 pktlen=201 + 14 + 40)
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             print("Sending packet port %d" % self.dev_port10, " -> cpu")
             send_packet(self, self.dev_port10, pkt)
             self.port10_rif_counter_in += 1
             self.vlan100_rif_counter_out += 1
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
@@ -8575,18 +8581,18 @@ class MtuPacketStatsTest(L3MtuTrapTestHelper):
         print("\nmtuPacketStatsTest()")
 
         time.sleep(4)
-        port10_rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.port10_rif)
-        port11_rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.port11_rif)
-        lag1_rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.lag1_rif)
-        subport10_100_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.subport10_100)
-        subport11_200_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.subport11_200)
-        vlan100_rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, self.vlan100_rif)
+        port10_rif_stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, self.port10_rif)
+        port11_rif_stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, self.port11_rif)
+        lag1_rif_stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, self.lag1_rif)
+        subport10_100_stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, self.subport10_100)
+        subport11_200_stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, self.subport11_200)
+        vlan100_rif_stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, self.vlan100_rif)
 
         self.assertTrue(self.port10_rif_counter_in == port10_rif_stats[
             'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'])

@@ -935,7 +935,8 @@ class L2VlanTest(SaiHelper):
         self.i_pkt_count += 1
         self.e_pkt_count += 1
 
-        stats = sai_thrift_get_port_stats(self.client, self.port0)
+        stats = query_counter(
+                    self, sai_thrift_get_port_stats, self.port0)
         if_in_vlan_discards_pre = \
             stats['SAI_PORT_STAT_IF_IN_VLAN_DISCARDS']
 
@@ -944,7 +945,8 @@ class L2VlanTest(SaiHelper):
         send_packet(self, self.dev_port0, v11_pkt)
         verify_no_other_packets(self, timeout=1)
 
-        stats = sai_thrift_get_port_stats(self.client, self.port0)
+        stats = query_counter(
+                    self, sai_thrift_get_port_stats, self.port0)
         if_in_vlan_discards = stats['SAI_PORT_STAT_IF_IN_VLAN_DISCARDS']
         self.assertEqual(if_in_vlan_discards_pre + 1, if_in_vlan_discards)
 
@@ -1706,7 +1708,8 @@ class L2VlanTest(SaiHelper):
                                 ip_dst='172.16.0.1',
                                 ip_id=101,
                                 ip_ttl=64)
-        stats = sai_thrift_get_vlan_stats(self.client, self.vlan10)
+        stats = query_counter(
+                    self, sai_thrift_get_vlan_stats, self.vlan10)
         in_bytes_pre = stats["SAI_VLAN_STAT_IN_OCTETS"]
         out_bytes_pre = stats["SAI_VLAN_STAT_OUT_OCTETS"]
         in_packets_pre = stats["SAI_VLAN_STAT_IN_PACKETS"]
@@ -1719,7 +1722,8 @@ class L2VlanTest(SaiHelper):
         verify_packet(self, pkt, self.dev_port24)
 
         # Check counters
-        stats = sai_thrift_get_vlan_stats(self.client, self.vlan10)
+        stats = query_counter(
+                    self, sai_thrift_get_vlan_stats, self.vlan10)
         in_bytes = stats["SAI_VLAN_STAT_IN_OCTETS"]
         out_bytes = stats["SAI_VLAN_STAT_OUT_OCTETS"]
         in_packets = stats["SAI_VLAN_STAT_IN_PACKETS"]
@@ -1748,10 +1752,12 @@ class L2VlanTest(SaiHelper):
         verify_packet(self, pkt, self.dev_port24)
 
         # Clear bytes and packets counter
-        sai_thrift_clear_vlan_stats(self.client, self.vlan10)
+        clear_counter(
+                    self, sai_thrift_clear_vlan_stats, self.vlan10)
 
         # Check counters
-        stats = sai_thrift_get_vlan_stats(self.client, self.vlan10)
+        stats = query_counter(
+                    self, sai_thrift_get_vlan_stats, self.vlan10)
         in_bytes = stats["SAI_VLAN_STAT_IN_OCTETS"]
         out_bytes = stats["SAI_VLAN_STAT_OUT_OCTETS"]
         in_packets = stats["SAI_VLAN_STAT_IN_PACKETS"]
@@ -1981,7 +1987,8 @@ class L2VlanTest(SaiHelper):
         statistics for VLAN
         """
         print("\nvlanStatsTest()")
-        stats = sai_thrift_get_vlan_stats(self.client, self.vlan10)
+        stats = query_counter(
+                    self, sai_thrift_get_vlan_stats, self.vlan10)
         in_bytes = stats["SAI_VLAN_STAT_IN_OCTETS"]
         out_bytes = stats["SAI_VLAN_STAT_OUT_OCTETS"]
         in_packets = stats["SAI_VLAN_STAT_IN_PACKETS"]
