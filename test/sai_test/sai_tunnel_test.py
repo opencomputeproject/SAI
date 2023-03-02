@@ -9,6 +9,7 @@ class IpInIpTnnnelBase(T0TestBase):
         T0TestBase.setUp(self, is_create_tunnel=True)
 
         tunnel_config = self.dut.tunnel_list[-1]
+        self.tunnel = tunnel_config
         self.oport_dev = self.dut.port_obj_list[1].dev_port_index
         self.uport_dev = self.dut.port_obj_list[18].dev_port_index
         self.tun_ip = tunnel_config.tun_ips[0]
@@ -177,7 +178,7 @@ class BasicIPInIPTunnelDecapv4Inv4Test(IpInIpTnnnelBase):
             router_interface_id=self.orif, type=SAI_NEXT_HOP_TYPE_IP)
 
         self.customer_route = sai_thrift_route_entry_t(
-            vr_id=self.ovrf,
+            vr_id=self.dut.default_vrf,
             destination=sai_ipprefix(self.customer_ip + '/32'))
 
         sai_thrift_create_route_entry(self.client,
