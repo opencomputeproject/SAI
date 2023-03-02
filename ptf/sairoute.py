@@ -587,6 +587,104 @@ class cpuForwardTest(PlatformSaiHelper):
     def tearDown(self):
         super(cpuForwardTest, self).tearDown()
 
+class RemoveAddNeighborTest(PlatformSaiHelper):
+    """
+    Verifies if IPv4 host route is not created according to
+    SAI_NEIGHBOR_ENTRY_ATTR_NO_HOST_ROUTE attribute value
+    """
+
+    def setUp(self):
+        """
+        Set up test.
+        """
+        super(RemoveAddNeighborTest, self).setUp()
+        self.ipv4_addr = "10.1.1.10"
+        self.mac_addr = "00:10:10:10:10:10"
+
+        self.lag_dev_ports = [self.dev_port17,self.dev_port18,self.dev_port19]
+
+        self.nbr_entry_v4 = sai_thrift_neighbor_entry_t(
+            rif_id=self.lag4_rif,
+            ip_address=sai_ipaddress(self.ipv4_addr))
+        status = sai_thrift_create_neighbor_entry(
+            self.client,
+            self.nbr_entry_v4,
+            dst_mac_address=self.mac_addr)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)        
+
+        self.net_route = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix(self.ipv4_addr+'/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.net_route, next_hop_id=self.lag4_rif)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+
+    def RemoveAddNeighborTestV4(self):
+        '''
+        Check the config, make sure the CPU queue0 is created and neighbor(NO_HOST_ROUTE=True) for LAGs already created
+        Create route interface for LAG1:rifx
+        Create a route for DIP:10.1.1.10/32 through the new rifx
+        Send packet for DIP:10.1.1.10 DMAC: SWITCH_MAC on port5
+        verify packet received with SMAC: SWITCH_MAC SIP 192.168.0.1 DIP:10.1.1.10 on one of LAG1 member
+        Delete the neighbor for IP:10.1.1.10
+        Send packet for DIP:10.1.1.10 DMAC: SWITCH_MAC on port5
+        Verify no packet on any port
+        Verify the CPU queue0 get one more item
+        Add the neighbor for IP:10.1.1.10 on LAG1 again
+        Send packet for DIP:10.1.1.10 DMAC: SWITCH_MAC on port5
+        verify packet received with SMAC: SWITCH_MAC SIP 192.168.0.1 DIP:10.1.1.10 on one of LAG1 member
+        '''
+        print("\nRemoveAddNeighborTest()")
+
+        print("Sending IPv4 packet when host route not exists")
+
+        pkt = simple_udp_packet(eth_dst=ROUTER_MAC,
+                                ip_dst=self.ipv4_addr,
+                                ip_ttl=64)
+
+        exp_pkt = simple_udp_packet(eth_dst=self.mac_addr,
+                                    eth_src=ROUTER_MAC,
+                                    ip_dst=self.ipv4_addr,
+                                    ip_ttl=63)
+
+        send_packet(self, self.dev_port10, pkt)
+        verify_packet_any_port(self, exp_pkt, self.lag_dev_ports)
+
+        sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_v4)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        pre_cpu_queue_state = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)[
+            "SAI_QUEUE_STAT_PACKETS"]
+        send_packet(self, self.dev_port10, pkt)
+        verify_no_other_packets(self)
+        print("Packet dropped")
+        post_cpu_queue_state = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)[
+            "SAI_QUEUE_STAT_PACKETS"]
+        self.assertEqual(post_cpu_queue_state - pre_cpu_queue_state, 1)
+        # bug 15205360 above check 
+        print(str(post_cpu_queue_state - pre_cpu_queue_state))
+        sai_thrift_create_neighbor_entry(
+            self.client,
+            self.nbr_entry_v4,
+            dst_mac_address=self.mac_addr)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        send_packet(self, self.dev_port10, pkt)
+        verify_packet_any_port(self, exp_pkt, self.lag_dev_ports)
+
+    def runTest(self):
+        try:
+            self.RemoveAddNeighborTestV4()
+        finally:
+            pass
+
+    def tearDown(self):
+        """
+        TearDown process
+        """
+        sai_thrift_remove_route_entry(self.client, self.net_route)
+        sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_v4)
+        super().tearDown()
+
 
 class routeNbrColisionTest(PlatformSaiHelper):
     '''
