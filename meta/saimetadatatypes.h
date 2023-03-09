@@ -1144,6 +1144,13 @@ typedef struct _sai_attr_metadata_t
     bool                                        isaclaction;
 
     /**
+     * @brief Determines whether attribute is ACL mask
+     *
+     * Can only be set for ACL table mask
+     */
+    bool                                        isaclmask;
+
+    /**
      * @brief Determines whether attribute is mandatory on create
      */
     bool                                        ismandatoryoncreate;
