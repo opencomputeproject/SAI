@@ -362,9 +362,9 @@ class T0TestBase(ThriftInterfaceDataPlane):
 
     def setUp(self,
               force_config=False,
+              is_remove_default_vlan=True,
               is_create_hostIf=True,
               is_recreate_bridge=True,
-              is_reset_default_vlan=True,
               is_create_vlan=True,
               is_create_fdb=True,
               is_create_default_route=True,
@@ -376,9 +376,14 @@ class T0TestBase(ThriftInterfaceDataPlane):
               is_create_route_for_nhopgrp=False,
               is_create_tunnel=False,
               wait_sec=5,
-              skip_reason = None):
+              skip_reason = None,
+              peer_mode=SAI_TUNNEL_PEER_MODE_P2MP,
+              decap_ecn_mode=None,
+              encap_ecn_mode=None,
+              packet_loop_action=None):
 
         super(T0TestBase, self).setUp(skip_reason = skip_reason)
+        self.set_accepted_exception()
         self.set_logger_name()
         config_db_loader: ConfigDBLoader = None
         if 'config_db_json' in self.test_params:
@@ -397,14 +402,14 @@ class T0TestBase(ThriftInterfaceDataPlane):
         if force_config or not self.common_configured:
             self.create_device()
             t0_switch_config_helper(self)
-            remove_default_vlan(self)
+            if is_remove_default_vlan:
+                remove_default_vlan(self)
             t0_port_config_helper(
                 test_obj=self,
                 is_create_hostIf=is_create_hostIf,
                 is_recreate_bridge=is_recreate_bridge)
             t0_vlan_config_helper(
                 test_obj=self,
-                is_reset_default_vlan=is_reset_default_vlan,
                 is_create_vlan=is_create_vlan)
             t0_fdb_config_helper(
                 test_obj=self,
@@ -421,7 +426,11 @@ class T0TestBase(ThriftInterfaceDataPlane):
                 is_create_route_for_vlan=is_create_route_for_vlan_itf,
                 is_create_route_for_nhopgrp=is_create_route_for_nhopgrp)
             t0_tunnel_config_helper(test_obj=self,
-                                    is_create_tunnel=is_create_tunnel)              
+                                    is_create_tunnel=is_create_tunnel,
+                                    peer_mode=peer_mode,
+                                    packet_loop_action=packet_loop_action,
+                                    decap_ecn_mode=None,
+                                    encap_ecn_mode=None)              
             print("common config done")
             self.persist_config()
             print("Waiting for switch to get ready before test, {} seconds ...".format(
@@ -432,6 +441,13 @@ class T0TestBase(ThriftInterfaceDataPlane):
             self.dut = self.persist_helper.read_dut()
             self.t1_list = self.persist_helper.read_t1_list()
             self.servers = self.persist_helper.read_server_list()
+
+    def set_accepted_exception(self):
+        """
+        Set accepted exceptions.
+        """
+        adapter.CATCH_EXCEPTIONS=CATCH_EXCEPTIONS
+        adapter.EXPECTED_ERROR_CODE += ACCEPTED_ERROR_CODE
 
     def persist_config(self):
         """

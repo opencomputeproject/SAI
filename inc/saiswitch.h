@@ -2777,6 +2777,25 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_ECMP_MEMBER_COUNT,
 
     /**
+     * @brief Adaptive routing and switching quality map
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ARS_PROFILE
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_ARS_PROFILE,
+
+    /**
+     * @brief Post Ingress ACL stage.
+     *
+     * @type sai_acl_capability_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_ACL_STAGE_POST_INGRESS,
+
+    /**
      * @brief Enable or disable credit watchdog
      *
      * Credit Watchdog can be enabled or disabled using this attribute for VOQ based system

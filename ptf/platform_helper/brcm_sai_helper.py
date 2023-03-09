@@ -145,9 +145,11 @@ class BrcmSaiHelper(CommonSaiHelper):
         Start switch and wait seconds for a warm up.
         """
         switch_init_wait = 5
-
         self.switch_id = sai_thrift_create_switch(
-            self.client, init_switch=True, src_mac_address=ROUTER_MAC)
+            self.client, init_switch=True, src_mac_address=ROUTER_MAC,
+            port_state_change_notify=None, fdb_event_notify=None,
+            switch_shutdown_request_notify=None,
+            switch_state_change_notify=None)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
 
         print("Waiting for switch to get ready, {} seconds ...".format(switch_init_wait))
@@ -196,14 +198,9 @@ class BrcmSaiHelper(CommonSaiHelper):
 
     def config_port(self):
 
-        self.port_list = self.port_configer.get_lane_sorted_port_list()
+        port_obj_list_with_lane = self.port_configer.get_port_default_lane()
+        self.port_list = self.port_configer.get_lane_sorted_port_list(port_obj_list_with_lane)
         self.port_configer.generate_port_obj_list_by_interface_config()
-        self.port_configer.assign_port_config(self.port_config_ini_loader.portConfigs)
-        self.port_configer.assign_config_db(
-            self.config_db_loader.port_config,
-            self.port_config_ini_loader.portConfigs)
-        
-        
 
         attr = sai_thrift_get_switch_attribute(
             self.client, default_trap_group=True)
@@ -239,4 +236,4 @@ class BrcmSaiHelper(CommonSaiHelper):
         #Port needs to be init and setup at same time.
         #Make the process happened in turn_up_and_check_ports
         print("BrcmSaiHelperBase::recreate_ports does not support. Just Parse Port Config")
-        self.ports_config = self.port_config_ini_loader.ports_config
+        # self.ports_config = self.port_config_ini_loader.ports_config

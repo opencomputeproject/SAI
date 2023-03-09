@@ -1819,12 +1819,12 @@ class Srv6MySidTest(SaiHelper):
                 self.end_b6_encap_sid,
                 packet_action=SAI_PACKET_ACTION_TRAP)
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             send_packet(self, self.dev_port11, sr6_pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
@@ -1916,18 +1916,19 @@ class Srv6MySidTest(SaiHelper):
             self.client, self.end_sid, counter_id=True)
         self.assertEqual(my_sid_cntr['counter_id'], self.end_sid_counter)
 
-        counter_stats = sai_thrift_get_counter_stats(
-            self.client, self.end_sid_counter)
+        counter_stats = query_counter(
+                    self, sai_thrift_get_counter_stats, self.end_sid_counter)
         self.assertEqual(counter_stats['SAI_COUNTER_STAT_PACKETS'],
                          self.end_sid_stats)
         self.asserNotEqual(counter_stats['SAI_COUNTER_STAT_BYTES'], 0)
 
         print("My SID counter correct")
 
-        sai_thrift_clear_counter_stats(self.client, self.end_sid_counter)
+        clear_counter(
+                    self, sai_thrift_clear_counter_stats, self.end_sid_counter)
 
-        counter_stats = sai_thrift_get_counter_stats(
-            self.client, self.end_sid_counter)
+        counter_stats = query_counter(
+                    self, sai_thrift_get_counter_stats, self.end_sid_counter)
         self.assertEqual(counter_stats['SAI_COUNTER_STAT_PACKETS'], 0)
         self.assertEqual(counter_stats['SAI_COUNTER_STAT_BYTES'], 0)
 
@@ -2713,7 +2714,8 @@ class Srv6MySidDropTest(SaiHelper):
 
         self.drop_stats = 0
 
-        sai_thrift_clear_port_stats(self.client, self.port11)
+        clear_counter(
+                    self, sai_thrift_clear_port_stats, self.port11)
 
         # tests packets
         self.inner_v4_pkt = simple_tcp_packet(ip_dst=self.ip_dst,
@@ -2729,7 +2731,8 @@ class Srv6MySidDropTest(SaiHelper):
         self.nonZeroSlEndDTxDropTest()
 
     def tearDown(self):
-        sai_thrift_clear_port_stats(self.client, self.port11)
+        clear_counter(
+                    self, sai_thrift_clear_port_stats, self.port11)
 
         sai_thrift_remove_debug_counter(self.client, self.debug_cnt)
         sai_thrift_remove_route_entry(self.client, self.und_route4)
@@ -2799,8 +2802,8 @@ class Srv6MySidDropTest(SaiHelper):
             self.drop_stats += drop_pkt_no
 
             print("Checking SRv6 debug counter")
-            dc_stats = sai_thrift_get_debug_counter_port_stats(
-                self.client, self.port11, [self.dc_index])
+            dc_stats = query_counter(
+                    self, sai_thrift_get_debug_counter_port_stats, self.port11, [self.dc_index])
             self.assertEqual(dc_stats[self.dc_index], self.drop_stats,
                              "SRv6 debug counter value = %d incorrect! "
                              "Should be: %d"
@@ -2846,8 +2849,8 @@ class Srv6MySidDropTest(SaiHelper):
             self.drop_stats += drop_pkt_no
 
             print("Checking SRv6 debug counter")
-            dc_stats = sai_thrift_get_debug_counter_port_stats(
-                self.client, self.port11, [self.dc_index])
+            dc_stats = query_counter(
+                    self, sai_thrift_get_debug_counter_port_stats, self.port11, [self.dc_index])
             self.assertEqual(dc_stats[self.dc_index], self.drop_stats,
                              "SRv6 debug counter value = %d incorrect! "
                              "Should be: %d"
@@ -2868,8 +2871,8 @@ class Srv6MySidDropTest(SaiHelper):
             self.drop_stats += drop_pkt_no
 
             print("Checking SRv6 debug counter")
-            dc_stats = sai_thrift_get_debug_counter_port_stats(
-                self.client, self.port11, [self.dc_index])
+            dc_stats = query_counter(
+                    self, sai_thrift_get_debug_counter_port_stats, self.port11, [self.dc_index])
             self.assertEqual(dc_stats[self.dc_index], self.drop_stats,
                              "SRv6 debug counter value = %d incorrect! "
                              "Should be: %d"
@@ -2892,8 +2895,8 @@ class Srv6MySidDropTest(SaiHelper):
             self.drop_stats += drop_pkt_no
 
             print("Checking SRv6 debug counter")
-            dc_stats = sai_thrift_get_debug_counter_port_stats(
-                self.client, self.port11, [self.dc_index])
+            dc_stats = query_counter(
+                    self, sai_thrift_get_debug_counter_port_stats, self.port11, [self.dc_index])
             self.assertEqual(dc_stats[self.dc_index], self.drop_stats,
                              "SRv6 debug counter value = %d incorrect! "
                              "Should be: %d"

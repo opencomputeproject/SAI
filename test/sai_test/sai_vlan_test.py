@@ -38,7 +38,7 @@ class Vlan_Domain_Forwarding_Test(T0TestBase):
         """
         Set up test
         """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
     
     @warm_test(is_test_rebooting=True)
     def runTest(self):
@@ -565,7 +565,7 @@ class VlanMemberInvalidTest(T0TestBase):
     This test verifies when adding a VLAN member to a non-exist VLAN, it will fail.
     """
     def setUp(self):
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
 
     @warm_test(is_test_rebooting=False)
     def runTest(self):
@@ -591,12 +591,11 @@ class DisableMacLearningTaggedTest(T0TestBase):
     """
     def setUp(self):
         T0TestBase.setUp(
-            self, 
-            is_reset_default_vlan=False,
-            is_create_vlan_itf=False, 
-            is_create_route_for_vlan_itf=False, 
-            is_create_route_for_lag=False, 
-            is_create_lag=False, 
+            self,
+            is_create_vlan_itf=False,
+            is_create_route_for_vlan_itf=False,
+            is_create_route_for_lag=False,
+            is_create_lag=False,
             is_create_default_route=False)
         print("DisableMacLearningTaggedTest")
         sai_thrift_set_vlan_attribute(
@@ -638,12 +637,11 @@ class DisableMacLearningUntaggedTest(T0TestBase):
     """
     def setUp(self):
         T0TestBase.setUp(
-            self, 
-            is_reset_default_vlan=False, 
-            is_create_vlan_itf=False, 
-            is_create_route_for_vlan_itf=False, 
-            is_create_route_for_lag=False, 
-            is_create_lag=False, 
+            self,
+            is_create_vlan_itf=False,
+            is_create_route_for_vlan_itf=False,
+            is_create_route_for_lag=False,
+            is_create_lag=False,
             is_create_default_route=False)
         print("DisableMacLearningUntaggedTest")
         sai_thrift_set_vlan_attribute(
@@ -682,7 +680,7 @@ class ArpRequestFloodingTest(T0TestBase):
     This test verifies the flooding when receive a arp request
     """
     def setUp(self):
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
         ip2 = "192.168.0.2"
         self.arp_request = simple_arp_packet(
             eth_dst=self.servers[1][2].mac,
@@ -710,7 +708,7 @@ class ArpRequestLearningTest(T0TestBase):
     This test verifies the mac learning when receive a arp request
     """
     def setUp(self):
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
 
     @warm_test(is_test_rebooting=True)
     def runTest(self):
@@ -745,7 +743,7 @@ class TaggedVlanStatusTest(T0TestBase):
     This test verifies VLAN-related counters with tagged pkt 
     """
     def setUp(self):
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
 
     @warm_test(is_test_rebooting=False)
     def runTest(self):
@@ -755,8 +753,8 @@ class TaggedVlanStatusTest(T0TestBase):
                                             vlan_vid=10,
                                             ip_id=101,
                                             ip_ttl=64)
-        stats = sai_thrift_get_vlan_stats(
-            self.client, self.dut.vlans[10].oid)
+        stats = query_counter(
+            self, sai_thrift_get_vlan_stats, self.dut.vlans[10].oid)
 
         in_bytes_pre = stats["SAI_VLAN_STAT_IN_OCTETS"]
         out_bytes_pre = stats["SAI_VLAN_STAT_OUT_OCTETS"]
@@ -771,8 +769,8 @@ class TaggedVlanStatusTest(T0TestBase):
         verify_packet(self, self.tagged_pkt,
                       self.dut.port_obj_list[2].dev_port_index)
 
-        stats = sai_thrift_get_vlan_stats(
-            self.client, self.dut.vlans[10].oid)
+        stats = query_counter(
+            self, sai_thrift_get_vlan_stats, self.dut.vlans[10].oid)
         in_bytes = stats["SAI_VLAN_STAT_IN_OCTETS"]
         out_bytes = stats["SAI_VLAN_STAT_OUT_OCTETS"]
         in_packets = stats["SAI_VLAN_STAT_IN_PACKETS"]
@@ -806,11 +804,12 @@ class TaggedVlanStatusTest(T0TestBase):
                       self.dut.port_obj_list[2].dev_port_index)
 
         # Clear bytes and packets counter
-        sai_thrift_clear_vlan_stats(self.client, self.dut.vlans[10].oid)
+        clear_counter(
+            self, sai_thrift_clear_vlan_stats, self.dut.vlans[10].oid)
 
         # Check counters
-        stats = sai_thrift_get_vlan_stats(
-            self.client, self.dut.vlans[10].oid)
+        stats = query_counter(
+            self, sai_thrift_get_vlan_stats, self.dut.vlans[10].oid)
         in_bytes = stats["SAI_VLAN_STAT_IN_OCTETS"]
         out_bytes = stats["SAI_VLAN_STAT_OUT_OCTETS"]
         in_packets = stats["SAI_VLAN_STAT_IN_PACKETS"]
@@ -840,7 +839,7 @@ class UntaggedVlanStatusTest(T0TestBase):
     This test verifies VLAN-related counters with untagged pkt 
     """
     def setUp(self):
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
 
     @warm_test(is_test_rebooting=False)
     def runTest(self):
@@ -849,7 +848,8 @@ class UntaggedVlanStatusTest(T0TestBase):
                                               eth_src=self.servers[1][1].mac,
                                               ip_id=101,
                                               ip_ttl=64)
-        stats = sai_thrift_get_vlan_stats(self.client, self.dut.vlans[10].oid)
+        stats = query_counter(
+            self, sai_thrift_get_vlan_stats, self.dut.vlans[10].oid)
 
         in_bytes_pre = stats["SAI_VLAN_STAT_IN_OCTETS"]
         out_bytes_pre = stats["SAI_VLAN_STAT_OUT_OCTETS"]
@@ -865,8 +865,8 @@ class UntaggedVlanStatusTest(T0TestBase):
                       self.dut.port_obj_list[2].dev_port_index)
 
         time.sleep(1)
-        stats = sai_thrift_get_vlan_stats(
-            self.client, self.dut.vlans[10].oid)
+        stats = query_counter(
+            self, sai_thrift_get_vlan_stats, self.dut.vlans[10].oid)
         in_bytes = stats["SAI_VLAN_STAT_IN_OCTETS"]
         out_bytes = stats["SAI_VLAN_STAT_OUT_OCTETS"]
         in_packets = stats["SAI_VLAN_STAT_IN_PACKETS"]
@@ -900,11 +900,12 @@ class UntaggedVlanStatusTest(T0TestBase):
                       self.dut.port_obj_list[2].dev_port_index)
 
         # Clear bytes and packets counter
-        sai_thrift_clear_vlan_stats(self.client, self.dut.vlans[10].oid)
+        clear_counter(
+            self, sai_thrift_clear_vlan_stats, self.dut.vlans[10].oid)
         # Check counters
 
-        stats = sai_thrift_get_vlan_stats(
-            self.client, self.dut.vlans[10].oid)
+        stats = query_counter(
+            self, sai_thrift_get_vlan_stats, self.dut.vlans[10].oid)
         in_bytes = stats["SAI_VLAN_STAT_IN_OCTETS"]
         out_bytes = stats["SAI_VLAN_STAT_OUT_OCTETS"]
         in_packets = stats["SAI_VLAN_STAT_IN_PACKETS"]

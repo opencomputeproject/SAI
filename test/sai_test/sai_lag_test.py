@@ -316,7 +316,8 @@ class LoadbalanceOnProtocolTest(T0TestBase):
         """                  
         T0TestBase.setUp(
             self,
-            skip_reason ="SKIP! Skip test for broadcom, can't load balance on protocol such as tcp and udp.Item: 15023123")
+            #skip_reason ="SKIP! Skip test for broadcom, can't load balance on protocol such as tcp and udp.Item: 15023123"
+            )
 
     def runTest(self):
         """
@@ -482,7 +483,8 @@ class DisableIngressTest(T0TestBase):
         """                        
         T0TestBase.setUp(
             self,
-            skip_reason = "SKIP! Skip test for broadcom, can't disable ingress of lag member. Item: 14988584")
+            #skip_reason = "SKIP! Skip test for broadcom, can't disable ingress of lag member. Item: 14988584"
+            )
 
     def runTest(self):
         """

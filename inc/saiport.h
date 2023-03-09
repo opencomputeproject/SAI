@@ -2165,6 +2165,114 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_MAX_FEC_SYMBOL_ERRORS_DETECTABLE,
 
     /**
+     * @brief Enable ARS on port. This enables the control for quality measure in switch pipeline.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_ARS_ENABLE,
+
+    /**
+     * @brief Scaling factor to account for different port speeds.
+     * Port speed is normalized using the scaling factor specified
+     * 10G:1, 25G:2.5, 40G:4, 50G:5, 100G:10, 200G:20, 400G:40
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_PORT_ATTR_ARS_ENABLE == true
+     */
+    SAI_PORT_ATTR_ARS_PORT_LOAD_SCALING_FACTOR,
+
+    /**
+     * @brief Enable historical or past port load quality measure in switch pipeline
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_PORT_ATTR_ARS_ENABLE == true
+     */
+    SAI_PORT_ATTR_ARS_PORT_LOAD_PAST_ENABLE,
+
+    /**
+     * @brief Enable future load quality measure in switch pipeline
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_PORT_ATTR_ARS_ENABLE == true
+     */
+    SAI_PORT_ATTR_ARS_PORT_LOAD_FUTURE_ENABLE,
+
+    /**
+     * @brief Port is part of primary or alternate path set
+     * false: Port is part of primary path set
+     * true: Port is part of alternate path set
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_PORT_ATTR_ARS_ENABLE == true
+     */
+    SAI_PORT_ATTR_ARS_ALTERNATE_PATH,
+
+    /**
+     * @brief Gather port debug information.
+     *
+     * Standard attribute to retrieve vendor-specific debug information about
+     * the port's current status. The returned data should be in the form of a
+     * JSON-encoded string.
+     *
+     * Example possible response:
+     * {
+     * "port_index": "123",
+     * "lane_1": {
+     * "serdes_fw_rev": "B345",
+     * "dc_offset": "1"
+     * },
+     * "additional_debug_data": "Some\n additional\n information"
+     * }
+     *
+     * @type sai_s8_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_JSON_FORMATTED_DEBUG_DATA,
+
+    /**
+     * @brief SAI ECMP hash algorithm which can override
+     * algorithm set by SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_ALGORITHM
+     * for this port
+     *
+     * @type sai_hash_algorithm_t
+     * @flags CREATE_AND_SET
+     * @default SAI_HASH_ALGORITHM_CRC
+     */
+    SAI_PORT_ATTR_ECMP_HASH_ALGORITHM,
+
+    /**
+     * @brief SAI ECMP hash seed which can override
+     * seed set by SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_SEED
+     * for this port
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_ATTR_ECMP_HASH_SEED,
+
+    /**
+     * @brief SAI ECMP hash offset which can override
+     * offset set by SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_OFFSET
+     * for this port
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_ATTR_ECMP_HASH_OFFSET,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,

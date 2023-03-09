@@ -94,13 +94,13 @@ class removeNexthopTest(L3NexthopTestHelper):
             verify_packet(self, exp_pkt, self.dev_port0)
 
             sai_thrift_remove_next_hop(self.client, nhop)
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             print("Sending packet on port %d, forward" % self.dev_port1)
             send_packet(self, self.dev_port1, pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"] -
                 pre_stats["SAI_QUEUE_STAT_PACKETS"],
@@ -192,8 +192,8 @@ class cpuNexthopTest(L3NexthopTestHelper):
             ipv6_hlim=64)
 
         try:
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
 
             print("Sending packet on port %d, forward to CPU, host ipv4" %
                   self.dev_port0)
@@ -212,8 +212,8 @@ class cpuNexthopTest(L3NexthopTestHelper):
             send_packet(self, self.dev_port0, pkt4)
 
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"] -
                 pre_stats["SAI_QUEUE_STAT_PACKETS"],

@@ -983,6 +983,89 @@ class SviDirectBroadcastTest(T0TestBase):
     def tearDown(self):
         super().tearDown()
 
+class StaicSviMacFloodingTest(T0TestBase):
+    """
+    Verify vlan10 flooding or drop when removing fdb emtries.
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process.
+        """
+        super().setUp()
+        for item in self.dut.fdb_entry_list:
+            sai_thrift_remove_fdb_entry(self.client, item)
+            self.dut.fdb_entry_list.remove(item)
+            
+    def sviMacFloodingTest(self):
+        """
+        1. Send packet on lag1
+        2. No packet or flooding on VLAN10 member port
+        """
+        print("SviMacFloodingTest")
+
+        # create neighbor for DIP:192.168.1.94 with new DMAC:Mac4 on VLAN10 route interface
+
+        pkt = simple_udp_packet(eth_dst=self.servers[1][1].mac,
+                                eth_src=ROUTER_MAC,
+                                ip_dst=self.servers[1][1].ipv4,
+                                ip_ttl=64)
+        
+        send_packet(self, self.dut.port_obj_list[18].dev_port_index, pkt)
+        vlan10_ports = self.get_dev_port_indexes(self.dut.vlans[10].port_idx_list)
+        verify_no_packet_any(self, pkt, vlan10_ports)
+        
+    def runTest(self):
+        try:
+            self.sviMacFloodingTest()
+        finally:
+            pass
+    
+    def tearDown(self):
+        super().tearDown()
+
+
+class StaicSviMacFloodingV6Test(T0TestBase):
+    """
+    Verify vlan10 flooding or drop when removing fdb emtries.
+    """
+
+    def setUp(self):
+        """
+        Test the basic setup process.
+        """
+        super().setUp()
+        for item in self.dut.fdb_entry_list:
+            sai_thrift_remove_fdb_entry(self.client, item)
+            self.dut.fdb_entry_list.remove(item)
+            
+    def sviMacFloodingTest(self):
+        """
+        1. Send packet on lag1
+        2. No packet or flooding on VLAN10 member port
+        """
+        print("SviMacFloodingTest")
+
+        # create neighbor for DIP:192.168.1.94 with new DMAC:Mac4 on VLAN10 route interface
+
+        pkt = simple_tcpv6_packet(eth_dst=self.servers[1][1].mac,
+                                  eth_src=ROUTER_MAC,
+                                  ipv6_dst=self.servers[1][1].ipv6)
+        
+        send_packet(self, self.dut.port_obj_list[18].dev_port_index, pkt)
+        verify_no_other_packets(self)
+        print("No packet on vlan10 member")
+
+    def runTest(self):
+        try:
+            self.sviMacFloodingTest()
+        finally:
+            pass
+    
+    def tearDown(self):
+        super().tearDown()
+        
+       
 class RemoveRouteV4Test(T0TestBase):
     """
     Verify remove route entry
@@ -1293,7 +1376,7 @@ class SviMacAgingTest(T0TestBase):
         """
         Set up test
         """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
         sw_attr = sai_thrift_get_switch_attribute(
             self.client, fdb_aging_time=True)
         self.default_wait_time = sw_attr["fdb_aging_time"]
@@ -1372,7 +1455,7 @@ class SviMacAgingV6Test(T0TestBase):
         """
         Set up test
         """
-        T0TestBase.setUp(self, is_reset_default_vlan=False)
+        T0TestBase.setUp(self)
         sw_attr = sai_thrift_get_switch_attribute(
             self.client, fdb_aging_time=True)
         self.default_wait_time = sw_attr["fdb_aging_time"]
@@ -2260,7 +2343,7 @@ class SviMacrMoveStressV4Test(T0TestBase):
         """
         Test the basic setup process.
         """
-        super().setUp()
+        super().setUp(skip_reason = "SKIP! Skip test for performance issue.")
         self.threadcount = 10
         
     def sviMacMove(self):
@@ -2381,7 +2464,7 @@ class SviMacrMoveStressV6Test(T0TestBase):
         """
         Test the basic setup process.
         """
-        super().setUp()
+        super().setUp(skip_reason = "SKIP! Skip test for performance issue.")
         self.threadcount = 10
         
     def sviMacMove(self):

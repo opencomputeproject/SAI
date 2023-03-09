@@ -277,6 +277,15 @@ typedef enum _sai_acl_action_type_t
     /** Set Forwarding class */
     SAI_ACL_ACTION_TYPE_SET_FORWARDING_CLASS = 0x00000034,
 
+    /** Set ARS monitoring */
+    SAI_ACL_ACTION_TYPE_SET_ARS_MONITORING = 0x00000035,
+
+    /** Set ARS object */
+    SAI_ACL_ACTION_TYPE_SET_ARS_OBJECT = 0x00000036,
+
+    /** Disable ARS forwarding */
+    SAI_ACL_ACTION_TYPE_DISABLE_ARS_FORWARDING = 0x00000037,
+
 } sai_acl_action_type_t;
 
 /**
@@ -1418,6 +1427,53 @@ typedef enum _sai_acl_table_attr_t
      * @flags READ_ONLY
      */
     SAI_ACL_TABLE_ATTR_AVAILABLE_ACL_COUNTER,
+
+    /**
+     * @brief Match type for the table
+     *
+     * @type sai_acl_table_match_type_t
+     * @flags CREATE_ONLY
+     * @default SAI_ACL_TABLE_MATCH_TYPE_TERNARY
+     */
+    SAI_ACL_TABLE_ATTR_ACL_TABLE_MATCH_TYPE,
+
+    /**
+     * @brief Start of Table Match valid bits
+     *
+     * The valid bits specify the bits of match field that should be
+     * included in the lookup key. If a match field does not have
+     * valid bits specified, all bits in the field are valid.
+     *
+     * For tables implemented using Exact Match, there is no further
+     * key masking supported in table entries. The mask for such
+     * entries needs to be set to all 1s.
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_VALID_BITS_START = 0x00003000,
+
+    /**
+     * @brief Src IPv6 Valid bits
+     *
+     * @type sai_acl_field_data_mask_t sai_ip6_t
+     * @flags CREATE_ONLY
+     * @default ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+     * @validonly SAI_ACL_TABLE_ATTR_FIELD_SRC_IPV6 == true
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_VALID_BITS_SRC_IPV6 = SAI_ACL_TABLE_ATTR_FIELD_VALID_BITS_START,
+
+    /**
+     * @brief Dst IPv6 Valid bits
+     *
+     * @type sai_acl_field_data_mask_t sai_ip6_t
+     * @flags CREATE_ONLY
+     * @default ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+     * @validonly SAI_ACL_TABLE_ATTR_FIELD_DST_IPV6 == true
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_VALID_BITS_DST_IPV6 = SAI_ACL_TABLE_ATTR_FIELD_VALID_BITS_START + 1,
+
+    /**
+     * @brief End of Table Match Field Mask
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_VALID_BITS_END = SAI_ACL_TABLE_ATTR_FIELD_VALID_BITS_DST_IPV6,
 
     /**
      * @brief End of ACL Table attributes
@@ -2938,9 +2994,39 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_SET_FORWARDING_CLASS = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x34,
 
     /**
+     * @brief Enable ARS monitoring for a destination that can be a LAG or nexthopgroup
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP_GROUP
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_ARS_MONITORING = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x35,
+
+    /**
+     * @brief Enable ARS object for a destination that can be a LAG or nexthopgroup
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ARS
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_ARS_OBJECT = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x36,
+
+    /**
+     * @brief Disable ARS forwarding for a destination that can be a LAG or nexthopgroup
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP_GROUP
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_DISABLE_ARS_FORWARDING = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x37,
+
+    /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_FORWARDING_CLASS,
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_DISABLE_ARS_FORWARDING,
 
     /**
      * @brief End of ACL Entry attributes

@@ -97,7 +97,7 @@ class LAGCreateLagMember(SaiHelper):
         self.assertNotEqual(status, SAI_STATUS_SUCCESS)
 
 
-def print_ports_stats(client, ports):
+def print_ports_stats(test_obj, ports):
     '''
     Print ports statistics
 
@@ -107,7 +107,8 @@ def print_ports_stats(client, ports):
     '''
 
     for port in ports:
-        counter_results = sai_thrift_get_port_stats(client, port)
+        counter_results = query_counter(
+                    test_obj, sai_thrift_get_port_stats, port)
 
         print("PORT%d if_in_discards=%d if_out_discards=%d "
               "if_in_ucast_pakts=%d if_out_ucast_pkts=%d" % (
@@ -197,7 +198,7 @@ class LAGDisableIngressLagMember(SaiHelper):
         print("Sending packet on port %d; %s -> %s - will flood"
               % (self.dev_port4, src_mac, dst_mac))
         send_packet(self, self.dev_port4, pkt)
-        print_ports_stats(self.client,
+        print_ports_stats(self,
                           [self.port0,
                            self.port1,
                            self.port2,
