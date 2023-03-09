@@ -2240,6 +2240,39 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_JSON_FORMATTED_DEBUG_DATA,
 
     /**
+     * @brief SAI ECMP hash algorithm which can override
+     * algorithm set by SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_ALGORITHM
+     * for this port
+     *
+     * @type sai_hash_algorithm_t
+     * @flags CREATE_AND_SET
+     * @default SAI_HASH_ALGORITHM_CRC
+     */
+    SAI_PORT_ATTR_ECMP_HASH_ALGORITHM,
+
+    /**
+     * @brief SAI ECMP hash seed which can override
+     * seed set by SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_SEED
+     * for this port
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_ATTR_ECMP_HASH_SEED,
+
+    /**
+     * @brief SAI ECMP hash offset which can override
+     * offset set by SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_OFFSET
+     * for this port
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_ATTR_ECMP_HASH_OFFSET,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
