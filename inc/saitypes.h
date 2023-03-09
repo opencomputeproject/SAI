@@ -1323,6 +1323,12 @@ typedef union _sai_attribute_value_t
      */
     sai_acl_action_data_t aclaction;
 
+    /**
+     * @passparam meta
+     * @validonly meta->isaclmask == true
+     */
+    sai_acl_field_data_mask_t aclmask;
+
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY */
     sai_acl_capability_t aclcapability;
 
