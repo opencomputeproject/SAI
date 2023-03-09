@@ -1429,6 +1429,15 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_AVAILABLE_ACL_COUNTER,
 
     /**
+     * @brief Match type for the table
+     *
+     * @type sai_acl_table_match_type_t
+     * @flags CREATE_ONLY
+     * @default SAI_ACL_TABLE_MATCH_TYPE_TERNARY
+     */
+    SAI_ACL_TABLE_ATTR_ACL_TABLE_MATCH_TYPE,
+
+    /**
      * @brief Start of Table Match valid bits
      *
      * The valid bits specify the bits of match field that should be

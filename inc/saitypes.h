@@ -784,6 +784,19 @@ typedef struct _sai_map_list_t
 } sai_map_list_t;
 
 /**
+ * @brief Attribute data for SAI_ACL_TABLE_ATTR_SUPPORTED_MATCH_TYPE
+ */
+typedef enum _sai_acl_table_supported_match_type_t
+{
+    /** Ternary */
+    SAI_ACL_TABLE_SUPPORTED_MATCH_TYPE_TERNARY,
+
+    /** Exact */
+    SAI_ACL_TABLE_SUPPORTED_MATCH_TYPE_EXACT,
+
+} sai_acl_table_supported_match_type_t;
+
+/**
  * @brief Structure for ACL attributes supported at each stage.
  * action_list alone is added now. Qualifier list can also be added
  * when needed.
@@ -807,6 +820,20 @@ typedef struct _sai_acl_capability_t
      * @passparam &sai_metadata_enum_sai_acl_action_type_t
      */
     sai_s32_list_t action_list;
+
+    /**
+     * @brief Supported match type
+     *
+     * Indicates the match type supported by ACL stage
+     */
+    sai_acl_table_supported_match_type_t supported_match_type;
+
+    /**
+     * @brief Non contiguous bit match supported
+     *
+     * Indicates whether EM can support non contiguous bits matching
+     */
+    bool is_non_contiguous_bits_exact_match_supported;
 
 } sai_acl_capability_t;
 
@@ -859,6 +886,19 @@ typedef enum _sai_acl_bind_point_type_t
     SAI_ACL_BIND_POINT_TYPE_SWITCH
 
 } sai_acl_bind_point_type_t;
+
+/**
+ * @brief Attribute data for SAI_ACL_TABLE_ATTR_MATCH_TYPE
+ */
+typedef enum _sai_acl_table_match_type_t
+{
+    /** Match Type Ternary */
+    SAI_ACL_TABLE_MATCH_TYPE_TERNARY,
+
+    /** Match Type Exact */
+    SAI_ACL_TABLE_MATCH_TYPE_EXACT,
+
+} sai_acl_table_match_type_t;
 
 /**
  * @brief Attribute data for SAI_TAM_TABLE_ATTR_BIND_POINT
