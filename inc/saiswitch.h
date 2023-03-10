@@ -2890,6 +2890,9 @@ typedef enum _sai_switch_stat_t
     /** Discards not counted in other switch stat type [switch | fabric] */
     SAI_SWITCH_STAT_GLOBAL_DROP,
 
+    /** Get integrity discards [fabric] */
+    SAI_SWITCH_STAT_PACKET_INTEGRITY_DROP,
+
     /** Switch stat fabric drop reasons range end */
     SAI_SWITCH_STAT_FABRIC_DROP_REASON_RANGE_END = 0x00003fff,
 
