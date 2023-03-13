@@ -309,7 +309,8 @@ class L2QosMapBaseClass(SaiHelperBase):
         attr = sai_thrift_get_queue_attribute(self.client, queue, index=True)
         self.assertTrue(attr['index'] == index, "Failed to get the queue")
         for q_stat in qstats:
-            stats = sai_thrift_get_queue_stats(self.client, queue)
+            stats = query_counter(
+                    self, sai_thrift_get_queue_stats, queue)
             total_cnt += stats[q_stat]
         return total_cnt
 
@@ -447,7 +448,8 @@ class L3QosMapBaseClass(SaiHelperBase):
         attr = sai_thrift_get_queue_attribute(self.client, queue, index=True)
         self.assertTrue(attr['index'] == index, "Failed to get the queue")
         for q_stat in qstats:
-            stats = sai_thrift_get_queue_stats(self.client, queue)
+            stats = query_counter(
+                    self, sai_thrift_get_queue_stats, queue)
             total_cnt += stats[q_stat]
         return total_cnt
 
@@ -461,7 +463,8 @@ class L3QosMapBaseClass(SaiHelperBase):
         '''
         total_cnt = 0
         for queue_oid in queues:
-            stats = sai_thrift_get_queue_stats(self.client, queue_oid)
+            stats = query_counter(
+                    self, sai_thrift_get_queue_stats, queue_oid)
             for q_stat in qstats:
                 total_cnt += stats[q_stat]
         return total_cnt
@@ -516,8 +519,8 @@ class L3QosMapBaseClass(SaiHelperBase):
         '''
         total_cnt = 0
         for ppg_oid in ppg_oids:
-            stats = sai_thrift_get_ingress_priority_group_stats(
-                self.client, ppg_oid)
+            stats = query_counter(
+                    self, sai_thrift_get_ingress_priority_group_stats, ppg_oid)
             for ppg_stat in ppg_stats:
                 total_cnt += stats[ppg_stat]
         return total_cnt

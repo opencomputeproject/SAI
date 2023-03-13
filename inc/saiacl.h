@@ -1429,6 +1429,53 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_AVAILABLE_ACL_COUNTER,
 
     /**
+     * @brief Match type for the table
+     *
+     * @type sai_acl_table_match_type_t
+     * @flags CREATE_ONLY
+     * @default SAI_ACL_TABLE_MATCH_TYPE_TERNARY
+     */
+    SAI_ACL_TABLE_ATTR_ACL_TABLE_MATCH_TYPE,
+
+    /**
+     * @brief Start of Table Match valid bits
+     *
+     * The valid bits specify the bits of match field that should be
+     * included in the lookup key. If a match field does not have
+     * valid bits specified, all bits in the field are valid.
+     *
+     * For tables implemented using Exact Match, there is no further
+     * key masking supported in table entries. The mask for such
+     * entries needs to be set to all 1s.
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_VALID_BITS_START = 0x00003000,
+
+    /**
+     * @brief Src IPv6 Valid bits
+     *
+     * @type sai_acl_field_data_mask_t sai_ip6_t
+     * @flags CREATE_ONLY
+     * @default ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+     * @validonly SAI_ACL_TABLE_ATTR_FIELD_SRC_IPV6 == true
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_VALID_BITS_SRC_IPV6 = SAI_ACL_TABLE_ATTR_FIELD_VALID_BITS_START,
+
+    /**
+     * @brief Dst IPv6 Valid bits
+     *
+     * @type sai_acl_field_data_mask_t sai_ip6_t
+     * @flags CREATE_ONLY
+     * @default ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+     * @validonly SAI_ACL_TABLE_ATTR_FIELD_DST_IPV6 == true
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_VALID_BITS_DST_IPV6 = SAI_ACL_TABLE_ATTR_FIELD_VALID_BITS_START + 1,
+
+    /**
+     * @brief End of Table Match Field Mask
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_VALID_BITS_END = SAI_ACL_TABLE_ATTR_FIELD_VALID_BITS_DST_IPV6,
+
+    /**
      * @brief End of ACL Table attributes
      */
     SAI_ACL_TABLE_ATTR_END,

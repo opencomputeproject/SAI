@@ -5,14 +5,26 @@ class IpInIpTnnnelBase(T0TestBase):
     '''
     This class contains base setup for IP in IP tunnel tests
     '''
-    def setUp(self):
-        T0TestBase.setUp(self, is_create_tunnel=True)
+    def setUp(self,
+              ttl_mode=SAI_TUNNEL_TTL_MODE_PIPE_MODEL,
+              peer_mode=SAI_TUNNEL_PEER_MODE_P2MP,
+              packet_loop_action=None,
+              decap_ecn_mode=None,
+              encap_ecn_mode=None):
+        
+        T0TestBase.setUp(self, 
+                         is_create_tunnel= True,
+                         peer_mode= peer_mode,
+                         packet_loop_action=packet_loop_action,
+                         decap_ecn_mode=decap_ecn_mode,
+                         encap_ecn_mode=encap_ecn_mode)
 
         tunnel_config = self.dut.tunnel_list[-1]
+        self.tunnel = tunnel_config
         self.oport_dev = self.dut.port_obj_list[1].dev_port_index
         self.uport_dev = self.dut.port_obj_list[18].dev_port_index
-        self.tun_ip = tunnel_config.tun_ip
-        self.lpb_ip = tunnel_config.lpb_ip
+        self.tun_ip = tunnel_config.tun_ips[0]
+        self.lpb_ip = tunnel_config.lpb_ips[0]
 
         self.recv_dev_port_idxs = self.get_dev_port_indexes(self.servers[11][1].l3_lag_obj.member_port_indexs)
         self.vm_ip = "100.100.1.1"
@@ -177,7 +189,7 @@ class BasicIPInIPTunnelDecapv4Inv4Test(IpInIpTnnnelBase):
             router_interface_id=self.orif, type=SAI_NEXT_HOP_TYPE_IP)
 
         self.customer_route = sai_thrift_route_entry_t(
-            vr_id=self.ovrf,
+            vr_id=self.dut.default_vrf,
             destination=sai_ipprefix(self.customer_ip + '/32'))
 
         sai_thrift_create_route_entry(self.client,
@@ -664,3 +676,162 @@ class SviIPInIPTunnelDecapFloodV6InV4Test(IpInIpTnnnelBase):
             self.ipip_tunnel_decap_svi_flood_test_v6()
         finally:
             pass
+        
+class PeerModeTest(IpInIpTnnnelBase):
+    '''
+    This class test SAI_TUNNEL_PEER_MODE_P2P
+    '''
+    def setUp(self):
+        peer_mode =  SAI_TUNNEL_PEER_MODE_P2P
+        IpInIpTnnnelBase.setUp(self, peer_mode=SAI_TUNNEL_PEER_MODE_P2P)
+
+    def runTest(self):
+        pkt = simple_udp_packet(eth_dst=self.customer_mac,
+                                eth_src=ROUTER_MAC,
+                                ip_dst=self.customer_ip,
+                                ip_src=self.vm_ip,
+                                ip_id=108,
+                                ip_ttl=63)
+        inner_pkt = simple_udp_packet(eth_dst=self.inner_dmac,
+                                      eth_src=ROUTER_MAC,
+                                      ip_dst=self.customer_ip,
+                                      ip_src=self.vm_ip,
+                                      ip_id=108,
+                                      ip_ttl=64)
+
+        ipip_pkt = simple_ipv4ip_packet(eth_dst=ROUTER_MAC,
+                                            eth_src=self.unbor_mac,
+                                            ip_id=0,
+                                            ip_src=self.tun_ip,
+                                            ip_dst=self.lpb_ip,
+                                            inner_frame=inner_pkt['IP'])
+
+        print("Verifying IP4inIP4 decapsulation")
+        send_packet(self, self.uport_dev, ipip_pkt)
+        verify_packet(self, pkt, self.oport_dev)
+        print("\tOK")
+        
+    def tearDown(self):
+        T0TestBase.tearDown(self)
+
+class LoopBackPacketActionTest(IpInIpTnnnelBase):
+    '''
+    This class test SAI_TUNNEL_PEER_MODE_P2P
+    '''
+    def setUp(self):
+        action = SAI_PACKET_ACTION_DROP
+        IpInIpTnnnelBase.setUp(self, packet_loop_action=action)
+
+    def runTest(self):
+        
+        pkt = simple_udp_packet(eth_dst=self.customer_mac,
+                                eth_src=ROUTER_MAC,
+                                ip_dst=self.customer_ip,
+                                ip_src=self.vm_ip,
+                                ip_id=108,
+                                ip_ttl=63)
+        inner_pkt = simple_udp_packet(eth_dst=self.inner_dmac,
+                                      eth_src=ROUTER_MAC,
+                                      ip_dst=self.customer_ip,
+                                      ip_src=self.vm_ip,
+                                      ip_id=108,
+                                      ip_ttl=64)
+
+        ipip_pkt = simple_ipv4ip_packet(eth_dst=ROUTER_MAC,
+                                            eth_src=self.unbor_mac,
+                                            ip_id=0,
+                                            ip_src=self.tun_ip,
+                                            ip_dst=self.lpb_ip,
+                                            inner_frame=inner_pkt['IP'])
+
+        print("Verifying IP4inIP4 decapsulation")
+        send_packet(self, self.uport_dev, ipip_pkt)
+        verify_packet(self, pkt, self.oport_dev)
+        print("\tOK")
+        
+    def tearDown(self):
+        T0TestBase.tearDown(self)
+
+class DecapEcnModeTest(IpInIpTnnnelBase):
+    '''
+    This class test decap_ecn_mode
+    '''
+    def setUp(self):
+        decap_ecn = SAI_TUNNEL_DECAP_ECN_MODE_COPY_FROM_OUTER
+        IpInIpTnnnelBase.setUp(self, decap_ecn_mode=decap_ecn)
+
+    def runTest(self):
+        pkt = simple_udp_packet(eth_dst=self.customer_mac,
+                                eth_src=ROUTER_MAC,
+                                ip_dst=self.customer_ip,
+                                ip_src=self.vm_ip,
+                                ip_id=108,
+                                ip_ttl=63)
+        inner_pkt = simple_udp_packet(eth_dst=self.inner_dmac,
+                                      eth_src=ROUTER_MAC,
+                                      ip_dst=self.customer_ip,
+                                      ip_src=self.vm_ip,
+                                      ip_id=108,
+                                      ip_ttl=64)
+
+        ipip_pkt = simple_ipv4ip_packet(eth_dst=ROUTER_MAC,
+                                            eth_src=self.unbor_mac,
+                                            ip_id=0,
+                                            ip_src=self.tun_ip,
+                                            ip_dst=self.lpb_ip,
+                                            inner_frame=inner_pkt['IP'])
+
+        print("Verifying IP4inIP4 decapsulation")
+        send_packet(self, self.uport_dev, ipip_pkt)
+        verify_packet(self, pkt, self.oport_dev)
+        print("\tOK")
+        
+    def tearDown(self):
+        T0TestBase.tearDown(self)
+
+class EncapEcnModeTest(IpInIpTnnnelBase):
+    '''
+    This class test encap_ecn_mode
+    '''
+    def setUp(self):
+        encap_ecn = SAI_TUNNEL_DECAP_ECN_MODE_COPY_FROM_OUTER
+        IpInIpTnnnelBase.setUp(self, encap_ecn_mode=SAI_TUNNEL_ENCAP_ECN_MODE_STANDARD)
+
+    def runTest(self):
+        pkt = simple_udp_packet(eth_dst=ROUTER_MAC,
+                                eth_src=self.customer_mac,
+                                ip_dst=self.vm_ip,
+                                ip_src=self.customer_ip,
+                                ip_id=108,
+                                ip_ttl=64,
+                                )
+        inner_pkt = simple_udp_packet(eth_dst=self.inner_dmac,
+                                      eth_src=ROUTER_MAC,
+                                      ip_dst=self.vm_ip,
+                                      ip_src=self.customer_ip,
+                                      ip_id=108,
+                                      ip_ttl=63)
+
+
+        ipip_pkt = simple_ipv4ip_packet(eth_dst=self.unbor_mac,
+                                            eth_src=ROUTER_MAC,
+                                            ip_id=0,
+                                            ip_src=self.lpb_ip,
+                                            ip_dst=self.tun_ip,
+                                            ip_ttl= 63,
+                                            inner_frame=inner_pkt['IP'])
+   
+        print("Verifying IP4inIP4 encapsulation")
+        m = Mask(ipip_pkt)
+        m.set_do_not_care_scapy(ptf.packet.IP, "len")
+        m.set_do_not_care_scapy(ptf.packet.IP, "chksum")
+        m.set_do_not_care_scapy(ptf.packet.IP, "flags")
+        
+        self.dataplane.flush()
+        send_packet(self, self.oport_dev, pkt)
+        verify_packet_any_port(self, m, self.recv_dev_port_idxs)
+        
+        print("\tOK")
+        
+    def tearDown(self):
+        T0TestBase.tearDown(self)

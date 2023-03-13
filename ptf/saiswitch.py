@@ -27,6 +27,24 @@ from sai_base_test import * # pylint: disable=wildcard-import; lgtm[py/polluting
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(THIS_DIR, '..'))
 
+CATCH_EXCEPTIONS = True
+# SAI_STATUS_NOT_IMPLEMENTED
+ACCEPTED_ERROR_CODE = [SAI_STATUS_NOT_IMPLEMENTED]
+#SAI_STATUS_ATTR_NOT_IMPLEMENTED
+ACCEPTED_ERROR_CODE += range(SAI_STATUS_ATTR_NOT_IMPLEMENTED_MAX, SAI_STATUS_ATTR_NOT_IMPLEMENTED_0+1)
+#unknow attribute
+ACCEPTED_ERROR_CODE += range(SAI_STATUS_UNKNOWN_ATTRIBUTE_MAX, SAI_STATUS_UNKNOWN_ATTRIBUTE_0+1)
+#SAI_STATUS_ATTR_NOT_SUPPORTED
+ACCEPTED_ERROR_CODE += range(SAI_STATUS_ATTR_NOT_SUPPORTED_MAX, SAI_STATUS_ATTR_NOT_SUPPORTED_0+1)
+
+def set_accepted_exception():
+    """
+    Set accepted exceptions.
+    """
+    adapter.CATCH_EXCEPTIONS = CATCH_EXCEPTIONS
+    adapter.EXPECTED_ERROR_CODE = ACCEPTED_ERROR_CODE
+    print("setting accepted exception")
+
 
 def generate_ip_addr(no_of_addr, ipv6=False):
     '''
@@ -427,7 +445,11 @@ class AvailableFdbEntryTest(PlatformSaiHelper):
 class ReadOnlyAttributesTest(PlatformSaiHelper):
     """
     Verifies get on read only attributes.
-    """    
+    """
+    def setUp(self):
+        set_accepted_exception()
+        super(ReadOnlyAttributesTest, self).setUp()
+
     def readOnlyAttributesTest(self):
         print("\nreadOnlyAttributesTest()")
 
@@ -850,6 +872,10 @@ class RefreshIntervalTest(PlatformSaiHelper):
     Verifies SAI_SWITCH_ATTR_COUNTER_REFRESH_INTERVAL switch attribute
     applied to VLAN and RIF stats
     """
+    def setUp(self):
+        set_accepted_exception()
+        super(RefreshIntervalTest, self).setUp()
+
     def refreshIntervalTest(self):
         print("\nrefreshIntervalTest()")
 
@@ -867,11 +893,12 @@ class RefreshIntervalTest(PlatformSaiHelper):
         test_rif_port = self.dev_port10
         test_interval = 10
 
-        vlan_stats = sai_thrift_get_vlan_stats(self.client, test_vlan)
+        vlan_stats = query_counter(
+                    self, sai_thrift_get_vlan_stats, test_vlan)
         init_vlan_counter = vlan_stats['SAI_VLAN_STAT_IN_PACKETS']
 
-        rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, test_rif)
+        rif_stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, test_rif)
         init_rif_counter = rif_stats['SAI_ROUTER_INTERFACE_STAT_IN_PACKETS']
 
         pkt = simple_udp_packet()
@@ -880,13 +907,15 @@ class RefreshIntervalTest(PlatformSaiHelper):
             print("\nTesting VLAN stats counters refresh time")
             # compensate refresh time shift
             send_packet(self, test_vlan_port, pkt)
-            while sai_thrift_get_vlan_stats(self.client, test_vlan)[
+            while query_counter(
+                    self, sai_thrift_get_vlan_stats, test_vlan)[
                     'SAI_VLAN_STAT_IN_PACKETS'] == init_vlan_counter:
                 time.sleep(0.1)
             init_vlan_counter += 1
 
             send_packet(self, test_vlan_port, pkt)
-            vlan_stats = sai_thrift_get_vlan_stats(self.client, test_vlan)
+            vlan_stats = query_counter(
+                    self, sai_thrift_get_vlan_stats, test_vlan)
             counter = vlan_stats['SAI_VLAN_STAT_IN_PACKETS']
             self.assertEqual(counter, init_vlan_counter)
 
@@ -894,7 +923,8 @@ class RefreshIntervalTest(PlatformSaiHelper):
             timer_start = time.time()
             timer_end = time.time()
             while counter == init_vlan_counter:
-                vlan_stats = sai_thrift_get_vlan_stats(self.client, test_vlan)
+                vlan_stats = query_counter(
+                    self, sai_thrift_get_vlan_stats, test_vlan)
                 counter = vlan_stats['SAI_VLAN_STAT_IN_PACKETS']
                 timer_end = time.time()
             init_vlan_counter += 1
@@ -903,7 +933,8 @@ class RefreshIntervalTest(PlatformSaiHelper):
             print("VLAN stats refreshed after %d sec" % interval)
             self.assertEqual(init_interval, int(round(interval)))
 
-            vlan_stats = sai_thrift_get_vlan_stats(self.client, test_vlan)
+            vlan_stats = query_counter(
+                    self, sai_thrift_get_vlan_stats, test_vlan)
             counter = vlan_stats['SAI_VLAN_STAT_IN_PACKETS']
             self.assertEqual(counter, init_vlan_counter)
 
@@ -919,13 +950,15 @@ class RefreshIntervalTest(PlatformSaiHelper):
 
             # compensate refresh time shift
             send_packet(self, test_vlan_port, pkt)
-            while sai_thrift_get_vlan_stats(self.client, test_vlan)[
+            while query_counter(
+                    self, sai_thrift_get_vlan_stats, test_vlan)[
                     'SAI_VLAN_STAT_IN_PACKETS'] == init_vlan_counter:
                 time.sleep(0.1)
             init_vlan_counter += 1
 
             send_packet(self, test_vlan_port, pkt)
-            vlan_stats = sai_thrift_get_vlan_stats(self.client, test_vlan)
+            vlan_stats = query_counter(
+                    self, sai_thrift_get_vlan_stats, test_vlan)
             counter = vlan_stats['SAI_VLAN_STAT_IN_PACKETS']
             self.assertEqual(counter, init_vlan_counter)
 
@@ -933,7 +966,8 @@ class RefreshIntervalTest(PlatformSaiHelper):
             timer_start = time.time()
             timer_end = time.time()
             while counter == init_vlan_counter:
-                vlan_stats = sai_thrift_get_vlan_stats(self.client, test_vlan)
+                vlan_stats = query_counter(
+                    self, sai_thrift_get_vlan_stats, test_vlan)
                 counter = vlan_stats['SAI_VLAN_STAT_IN_PACKETS']
                 timer_end = time.time()
             init_vlan_counter += 1
@@ -942,7 +976,8 @@ class RefreshIntervalTest(PlatformSaiHelper):
             print("VLAN stats refreshed after %d sec" % interval)
             self.assertEqual(test_interval, interval)
 
-            vlan_stats = sai_thrift_get_vlan_stats(self.client, test_vlan)
+            vlan_stats = query_counter(
+                    self, sai_thrift_get_vlan_stats, test_vlan)
             counter = vlan_stats['SAI_VLAN_STAT_IN_PACKETS']
             self.assertEqual(counter, init_vlan_counter)
 
@@ -954,15 +989,16 @@ class RefreshIntervalTest(PlatformSaiHelper):
             print("\nTesting RIF stats counters refresh time")
             # compensate refresh time shift
             send_packet(self, test_rif_port, pkt)
-            while sai_thrift_get_router_interface_stats(self.client, test_rif)[
+            while query_counter(
+                    self, sai_thrift_get_router_interface_stats, test_rif)[
                     'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'] == \
                     init_rif_counter:
                 time.sleep(0.1)
             init_rif_counter += 1
 
             send_packet(self, test_rif_port, pkt)
-            rif_stats = sai_thrift_get_router_interface_stats(
-                self.client, test_rif)
+            rif_stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, test_rif)
             counter = rif_stats['SAI_ROUTER_INTERFACE_STAT_IN_PACKETS']
             self.assertEqual(counter, init_rif_counter)
 
@@ -970,8 +1006,8 @@ class RefreshIntervalTest(PlatformSaiHelper):
             timer_start = time.time()
             timer_end = time.time()
             while counter == init_rif_counter:
-                rif_stats = sai_thrift_get_router_interface_stats(
-                    self.client, test_rif)
+                rif_stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, test_rif)
                 counter = rif_stats['SAI_ROUTER_INTERFACE_STAT_IN_PACKETS']
                 timer_end = time.time()
             init_rif_counter += 1
@@ -980,8 +1016,8 @@ class RefreshIntervalTest(PlatformSaiHelper):
             print("RIF stats refreshed after %d sec" % interval)
             self.assertEqual(init_interval, int(round(interval)))
 
-            rif_stats = sai_thrift_get_router_interface_stats(
-                self.client, test_rif)
+            rif_stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, test_rif)
             counter = rif_stats['SAI_ROUTER_INTERFACE_STAT_IN_PACKETS']
             self.assertEqual(counter, init_rif_counter)
 
@@ -997,15 +1033,16 @@ class RefreshIntervalTest(PlatformSaiHelper):
 
             # compensate refresh time shift
             send_packet(self, test_rif_port, pkt)
-            while sai_thrift_get_router_interface_stats(self.client, test_rif)[
+            while query_counter(
+                    self, sai_thrift_get_router_interface_stats, test_rif)[
                     'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'] == \
                     init_rif_counter:
                 time.sleep(0.1)
             init_rif_counter += 1
 
             send_packet(self, test_rif_port, pkt)
-            rif_stats = sai_thrift_get_router_interface_stats(
-                self.client, test_rif)
+            rif_stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, test_rif)
             counter = rif_stats['SAI_ROUTER_INTERFACE_STAT_IN_PACKETS']
             self.assertEqual(counter, init_rif_counter)
 
@@ -1013,8 +1050,8 @@ class RefreshIntervalTest(PlatformSaiHelper):
             timer_start = time.time()
             timer_end = time.time()
             while counter == init_rif_counter:
-                rif_stats = sai_thrift_get_router_interface_stats(
-                    self.client, test_rif)
+                rif_stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, test_rif)
                 counter = rif_stats['SAI_ROUTER_INTERFACE_STAT_IN_PACKETS']
                 timer_end = time.time()
             init_rif_counter += 1
@@ -1023,8 +1060,8 @@ class RefreshIntervalTest(PlatformSaiHelper):
             print("RIF stats refreshed after %d sec" % interval)
             self.assertEqual(test_interval, interval)
 
-            rif_stats = sai_thrift_get_router_interface_stats(
-                self.client, test_rif)
+            rif_stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, test_rif)
             counter = rif_stats['SAI_VLAN_STAT_IN_PACKETS']
             self.assertEqual(counter, init_vlan_counter)
 
@@ -1371,6 +1408,82 @@ class AvailableAclTableTest(PlatformSaiHelper):
             for acl_table_list in acl_table_list_list:
                 for acl_table in acl_table_list:
                     sai_thrift_remove_acl_table(self.client, acl_table)
+
+class AvailableAclTableGroupTest(PlatformSaiHelper):
+    """
+    Verifies creation of maximum number of acl table groups.
+    """
+    def runTest(self):
+        print("\AvailableAclTableGroupTest()")
+
+        print("Get max_number_of_temp_sensors")
+        temp_list=sai_thrift_s32_list_t(
+                            count=100, int32list=[])
+        attr = sai_thrift_get_switch_attribute(
+            self.client, max_number_of_temp_sensors=True,
+            temp_list=temp_list)
+
+        print("Get max_number_of_temp_sensors: {}, temp_list:{}".format(
+                attr['max_number_of_temp_sensors'], attr['temp_list'].int32list))
+        acl_resource = sai_thrift_acl_resource_t(
+            stage=SAI_SWITCH_ATTR_ACL_STAGE_INGRESS)
+        attr = sai_thrift_get_switch_attribute(
+            self.client, available_acl_table_group=acl_resource)
+        available_acl_table_groups = attr["available_acl_table_group"]
+
+        
+        resource_list = available_acl_table_groups.resourcelist
+        try:
+            acl_table_group_list_list = []
+            for resource in resource_list:
+                stage = resource.stage
+                bind_point = resource.bind_point
+                avail_num = resource.avail_num
+                print("Available tables on stage %d, bind_point %d: %d"
+                      % (stage, bind_point, avail_num))
+
+                acl_table_group_list = []
+                for counter in range(1, avail_num + 1):
+                    acl_table_group = sai_thrift_create_acl_table_group(
+                        self.client,
+                        acl_stage=stage,
+                        acl_bind_point_type_list=sai_thrift_s32_list_t(
+                            count=1, int32list=[bind_point]))
+                    self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+
+                    acl_table_group_list.append(acl_table_group)
+
+                    # check remained entries
+                    attr = sai_thrift_get_switch_attribute(
+                        self.client, available_acl_table_group=acl_resource)
+
+                    for res in attr["available_acl_table_group"].resourcelist:
+                        if res.stage == stage and res.bind_point == bind_point:
+                            # Acl table counter wasn't right on Broadcom
+                            self.assertEqual(res.avail_num, avail_num - counter)
+                            break
+
+                # try to create one more table group- should not be possible
+                try:
+                    acl_table_group = sai_thrift_create_acl_table_group(
+                        self.client,
+                        acl_stage=stage,
+                        acl_bind_point_type_list=sai_thrift_s32_list_t(
+                            count=1, int32list=[bind_point]))
+                    self.assertEqual(acl_table_group, SAI_NULL_OBJECT_ID)
+                except AssertionError:
+                    sai_thrift_remove_acl_table_group(self.client, acl_table_group)
+                    self.fail("Number of available ACL table group entries "
+                              "may be exceeded")
+
+                print("Required number of ACL tables created")
+
+                acl_table_group_list_list.append(acl_table_group_list)
+
+        finally:
+            for acl_table_group_list in acl_table_group_list_list:
+                for acl_table_group in acl_table_group_list:
+                    sai_thrift_remove_acl_table_group(self.client, acl_table_group)
 
 
 class AvailableIPv4NexthopEntryTest(PlatformSaiHelper):
@@ -1956,11 +2069,12 @@ class SwitchAttrTest(SaiHelper):
         test_rif_port = self.dev_port10
         test_interval = 10
 
-        vlan_stats = sai_thrift_get_vlan_stats(self.client, test_vlan)
+        vlan_stats = query_counter(
+                    self, sai_thrift_get_vlan_stats, test_vlan)
         init_vlan_counter = vlan_stats['SAI_VLAN_STAT_IN_PACKETS']
 
-        rif_stats = sai_thrift_get_router_interface_stats(
-            self.client, test_rif)
+        rif_stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, test_rif)
         init_rif_counter = rif_stats['SAI_ROUTER_INTERFACE_STAT_IN_PACKETS']
 
         pkt = simple_udp_packet()
@@ -1969,13 +2083,15 @@ class SwitchAttrTest(SaiHelper):
             print("\nTesting VLAN stats counters refresh time")
             # compensate refresh time shift
             send_packet(self, test_vlan_port, pkt)
-            while sai_thrift_get_vlan_stats(self.client, test_vlan)[
+            while query_counter(
+                    self, sai_thrift_get_vlan_stats, test_vlan)[
                     'SAI_VLAN_STAT_IN_PACKETS'] == init_vlan_counter:
                 time.sleep(0.1)
             init_vlan_counter += 1
 
             send_packet(self, test_vlan_port, pkt)
-            vlan_stats = sai_thrift_get_vlan_stats(self.client, test_vlan)
+            vlan_stats = query_counter(
+                    self, sai_thrift_get_vlan_stats, test_vlan)
             counter = vlan_stats['SAI_VLAN_STAT_IN_PACKETS']
             self.assertEqual(counter, init_vlan_counter)
 
@@ -1983,7 +2099,8 @@ class SwitchAttrTest(SaiHelper):
             timer_start = time.time()
             timer_end = time.time()
             while counter == init_vlan_counter:
-                vlan_stats = sai_thrift_get_vlan_stats(self.client, test_vlan)
+                vlan_stats = query_counter(
+                    self, sai_thrift_get_vlan_stats, test_vlan)
                 counter = vlan_stats['SAI_VLAN_STAT_IN_PACKETS']
                 timer_end = time.time()
             init_vlan_counter += 1
@@ -1992,7 +2109,8 @@ class SwitchAttrTest(SaiHelper):
             print("VLAN stats refreshed after %d sec" % interval)
             self.assertEqual(init_interval, int(round(interval)))
 
-            vlan_stats = sai_thrift_get_vlan_stats(self.client, test_vlan)
+            vlan_stats = query_counter(
+                    self, sai_thrift_get_vlan_stats, test_vlan)
             counter = vlan_stats['SAI_VLAN_STAT_IN_PACKETS']
             self.assertEqual(counter, init_vlan_counter)
 
@@ -2008,13 +2126,15 @@ class SwitchAttrTest(SaiHelper):
 
             # compensate refresh time shift
             send_packet(self, test_vlan_port, pkt)
-            while sai_thrift_get_vlan_stats(self.client, test_vlan)[
+            while query_counter(
+                    self, sai_thrift_get_vlan_stats, test_vlan)[
                     'SAI_VLAN_STAT_IN_PACKETS'] == init_vlan_counter:
                 time.sleep(0.1)
             init_vlan_counter += 1
 
             send_packet(self, test_vlan_port, pkt)
-            vlan_stats = sai_thrift_get_vlan_stats(self.client, test_vlan)
+            vlan_stats = query_counter(
+                    self, sai_thrift_get_vlan_stats, test_vlan)
             counter = vlan_stats['SAI_VLAN_STAT_IN_PACKETS']
             self.assertEqual(counter, init_vlan_counter)
 
@@ -2022,7 +2142,8 @@ class SwitchAttrTest(SaiHelper):
             timer_start = time.time()
             timer_end = time.time()
             while counter == init_vlan_counter:
-                vlan_stats = sai_thrift_get_vlan_stats(self.client, test_vlan)
+                vlan_stats = query_counter(
+                    self, sai_thrift_get_vlan_stats, test_vlan)
                 counter = vlan_stats['SAI_VLAN_STAT_IN_PACKETS']
                 timer_end = time.time()
             init_vlan_counter += 1
@@ -2031,7 +2152,8 @@ class SwitchAttrTest(SaiHelper):
             print("VLAN stats refreshed after %d sec" % interval)
             self.assertEqual(test_interval, interval)
 
-            vlan_stats = sai_thrift_get_vlan_stats(self.client, test_vlan)
+            vlan_stats = query_counter(
+                    self, sai_thrift_get_vlan_stats, test_vlan)
             counter = vlan_stats['SAI_VLAN_STAT_IN_PACKETS']
             self.assertEqual(counter, init_vlan_counter)
 
@@ -2043,15 +2165,16 @@ class SwitchAttrTest(SaiHelper):
             print("\nTesting RIF stats counters refresh time")
             # compensate refresh time shift
             send_packet(self, test_rif_port, pkt)
-            while sai_thrift_get_router_interface_stats(self.client, test_rif)[
+            while query_counter(
+                    self, sai_thrift_get_router_interface_stats, test_rif)[
                     'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'] == \
                     init_rif_counter:
                 time.sleep(0.1)
             init_rif_counter += 1
 
             send_packet(self, test_rif_port, pkt)
-            rif_stats = sai_thrift_get_router_interface_stats(
-                self.client, test_rif)
+            rif_stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, test_rif)
             counter = rif_stats['SAI_ROUTER_INTERFACE_STAT_IN_PACKETS']
             self.assertEqual(counter, init_rif_counter)
 
@@ -2059,8 +2182,8 @@ class SwitchAttrTest(SaiHelper):
             timer_start = time.time()
             timer_end = time.time()
             while counter == init_rif_counter:
-                rif_stats = sai_thrift_get_router_interface_stats(
-                    self.client, test_rif)
+                rif_stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, test_rif)
                 counter = rif_stats['SAI_ROUTER_INTERFACE_STAT_IN_PACKETS']
                 timer_end = time.time()
             init_rif_counter += 1
@@ -2069,8 +2192,8 @@ class SwitchAttrTest(SaiHelper):
             print("RIF stats refreshed after %d sec" % interval)
             self.assertEqual(init_interval, int(round(interval)))
 
-            rif_stats = sai_thrift_get_router_interface_stats(
-                self.client, test_rif)
+            rif_stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, test_rif)
             counter = rif_stats['SAI_ROUTER_INTERFACE_STAT_IN_PACKETS']
             self.assertEqual(counter, init_rif_counter)
 
@@ -2086,15 +2209,16 @@ class SwitchAttrTest(SaiHelper):
 
             # compensate refresh time shift
             send_packet(self, test_rif_port, pkt)
-            while sai_thrift_get_router_interface_stats(self.client, test_rif)[
+            while query_counter(
+                    self, sai_thrift_get_router_interface_stats, test_rif)[
                     'SAI_ROUTER_INTERFACE_STAT_IN_PACKETS'] == \
                     init_rif_counter:
                 time.sleep(0.1)
             init_rif_counter += 1
 
             send_packet(self, test_rif_port, pkt)
-            rif_stats = sai_thrift_get_router_interface_stats(
-                self.client, test_rif)
+            rif_stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, test_rif)
             counter = rif_stats['SAI_ROUTER_INTERFACE_STAT_IN_PACKETS']
             self.assertEqual(counter, init_rif_counter)
 
@@ -2102,8 +2226,8 @@ class SwitchAttrTest(SaiHelper):
             timer_start = time.time()
             timer_end = time.time()
             while counter == init_rif_counter:
-                rif_stats = sai_thrift_get_router_interface_stats(
-                    self.client, test_rif)
+                rif_stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, test_rif)
                 counter = rif_stats['SAI_ROUTER_INTERFACE_STAT_IN_PACKETS']
                 timer_end = time.time()
             init_rif_counter += 1
@@ -2112,8 +2236,8 @@ class SwitchAttrTest(SaiHelper):
             print("RIF stats refreshed after %d sec" % interval)
             self.assertEqual(test_interval, interval)
 
-            rif_stats = sai_thrift_get_router_interface_stats(
-                self.client, test_rif)
+            rif_stats = query_counter(
+                    self, sai_thrift_get_router_interface_stats, test_rif)
             counter = rif_stats['SAI_VLAN_STAT_IN_PACKETS']
             self.assertEqual(counter, init_vlan_counter)
 

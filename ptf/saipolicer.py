@@ -414,7 +414,8 @@ class BindPolicerToAclEntry(MinimalPortVlanConfig):
         self.assertLess(rx_cnt, tx_cnt * 2)
         verify_no_other_packets(self)
 
-        stats = sai_thrift_get_policer_stats(self.client, self.pol_id)
+        stats = query_counter(
+                    self, sai_thrift_get_policer_stats, self.pol_id)
         # Remove entry which is not a statistic.
         del stats["SAI_POLICER_STAT_CUSTOM_RANGE_BASE"]
         for stat, value in stats.items():
@@ -500,7 +501,8 @@ class NoIncrementAfterUnbind(PolicerTrafficTests):
     def runTest(self):
         print()
 
-        pre_stats = sai_thrift_get_queue_stats(self.client, self.cpu_queue2)
+        pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue2)
         tx_cnt = 5
         for i in range(tx_cnt):
             print("Sending ARP packet", i)
@@ -511,13 +513,15 @@ class NoIncrementAfterUnbind(PolicerTrafficTests):
         time.sleep(4)
         print("Check SAI_POLICER_STAT_PACKETS incremented by {}".format(
             tx_cnt))
-        stats = sai_thrift_get_policer_stats(self.client, self.pol_id)
+        stats = query_counter(
+                    self, sai_thrift_get_policer_stats, self.pol_id)
         self.assertEqual(tx_cnt, stats["SAI_POLICER_STAT_PACKETS"])
         print("Check SAI_QUEUE_STAT_PACKETS incremented by {}".format(tx_cnt))
         print("Check number of packets that ingressed on CPU port "
               "equals number of green packets ({})".format(
                   stats["SAI_POLICER_STAT_GREEN_PACKETS"]))
-        post_stats = sai_thrift_get_queue_stats(self.client, self.cpu_queue2)
+        post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue2)
         self.assertEqual(
             post_stats["SAI_QUEUE_STAT_PACKETS"],
             pre_stats["SAI_QUEUE_STAT_PACKETS"] +
@@ -532,7 +536,8 @@ class NoIncrementAfterUnbind(PolicerTrafficTests):
             self.client, self.arp_trap_group, policer=True)
         self.assertEqual(0, attr["policer"])
 
-        pre_stats = sai_thrift_get_queue_stats(self.client, self.cpu_queue2)
+        pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue2)
         print("Send traffic again, policer counters shall not change\n")
         for i in range(tx_cnt):
             print("Sending ARP packet", i)
@@ -541,14 +546,16 @@ class NoIncrementAfterUnbind(PolicerTrafficTests):
         print()
 
         print("Check policer counters didn\"t change")
-        stats_new = sai_thrift_get_policer_stats(self.client, self.pol_id)
+        stats_new = query_counter(
+                    self, sai_thrift_get_policer_stats, self.pol_id)
         # Remove entry which is not a statistic.
         del stats["SAI_POLICER_STAT_CUSTOM_RANGE_BASE"]
         del stats_new["SAI_POLICER_STAT_CUSTOM_RANGE_BASE"]
         self.assertEqual(stats_new, stats)
 
         time.sleep(4)
-        post_stats = sai_thrift_get_queue_stats(self.client, self.cpu_queue2)
+        post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue2)
         self.assertEqual(
             post_stats["SAI_QUEUE_STAT_PACKETS"],
             pre_stats["SAI_QUEUE_STAT_PACKETS"] + tx_cnt)
@@ -575,8 +582,10 @@ class Overflow1Policer2TrapGroups(PolicerTrafficTests):
             self.client, self.lldp_trap_group, policer=self.pol_id)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
-        q2_pre_stat = sai_thrift_get_queue_stats(self.client, self.cpu_queue2)
-        q4_pre_stat = sai_thrift_get_queue_stats(self.client, self.cpu_queue4)
+        q2_pre_stat = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue2)
+        q4_pre_stat = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
 
         tx_cnt = 5
         for i in range(tx_cnt):
@@ -615,13 +624,16 @@ class Overflow1Policer2TrapGroups(PolicerTrafficTests):
         time.sleep(4)
         print("Check SAI_POLICER_STAT_PACKETS incremented by {}".format(
             tx_cnt * 3))
-        stats = sai_thrift_get_policer_stats(self.client, self.pol_id)
+        stats = query_counter(
+                    self, sai_thrift_get_policer_stats, self.pol_id)
         self.assertEqual(tx_cnt * 3, stats["SAI_POLICER_STAT_PACKETS"])
 
         rx_cnt_cpu = stats["SAI_POLICER_STAT_GREEN_PACKETS"]
 
-        q2_post_stat = sai_thrift_get_queue_stats(self.client, self.cpu_queue2)
-        q4_post_stat = sai_thrift_get_queue_stats(self.client, self.cpu_queue4)
+        q2_post_stat = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue2)
+        q4_post_stat = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
         t = "SAI_QUEUE_STAT_PACKETS"
         q_stats = (q4_post_stat[t] - q4_pre_stat[t]) + \
             (q2_post_stat[t] - q2_pre_stat[t])
@@ -653,8 +665,10 @@ class Underflow1Policer2TrapGroups(PolicerTrafficTests):
             self.client, self.lldp_trap_group, policer=self.pol_id)
         self.assertEqual(status, SAI_STATUS_SUCCESS)
 
-        q2_pre_stat = sai_thrift_get_queue_stats(self.client, self.cpu_queue2)
-        q4_pre_stat = sai_thrift_get_queue_stats(self.client, self.cpu_queue4)
+        q2_pre_stat = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue2)
+        q4_pre_stat = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
 
         tx_cnt = 5
         for i in range(tx_cnt):
@@ -678,7 +692,8 @@ class Underflow1Policer2TrapGroups(PolicerTrafficTests):
             self.client, self.arp_trap_group, policer=True)
         self.assertEqual(0, get_attr["policer"])
 
-        stats_unbind = sai_thrift_get_policer_stats(self.client, self.pol_id)
+        stats_unbind = query_counter(
+                    self, sai_thrift_get_policer_stats, self.pol_id)
 
         for i in range(tx_cnt):
             print("Sending ARP packet", i)
@@ -688,7 +703,8 @@ class Underflow1Policer2TrapGroups(PolicerTrafficTests):
 
         self.assertEqual(
             stats_unbind,
-            sai_thrift_get_policer_stats(self.client, self.pol_id))
+            query_counter(
+                    self, sai_thrift_get_policer_stats, self.pol_id))
 
         for i in range(tx_cnt):
             print("Sending LLDP packet", i)
@@ -696,15 +712,18 @@ class Underflow1Policer2TrapGroups(PolicerTrafficTests):
             time.sleep(0.1)
         print()
 
-        stats = sai_thrift_get_policer_stats(self.client, self.pol_id)
+        stats = query_counter(
+                    self, sai_thrift_get_policer_stats, self.pol_id)
 
         print("Check SAI_POLICER_STAT_PACKETS incremented by", tx_cnt * 3)
         self.assertEqual(tx_cnt * 3, stats["SAI_POLICER_STAT_PACKETS"])
 
         rx_cnt_cpu = stats["SAI_POLICER_STAT_GREEN_PACKETS"]
 
-        q2_post_stat = sai_thrift_get_queue_stats(self.client, self.cpu_queue2)
-        q4_post_stat = sai_thrift_get_queue_stats(self.client, self.cpu_queue4)
+        q2_post_stat = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue2)
+        q4_post_stat = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
         t = "SAI_QUEUE_STAT_PACKETS"
         q_stats = (q4_post_stat[t] - q4_pre_stat[t]) + \
             (q2_post_stat[t] - q2_pre_stat[t])
@@ -798,7 +817,8 @@ class StormControlTests(MinimalPortVlanConfig):
             self, pkt, [self.dev_port1, self.dev_port2])
         verify_no_other_packets(self)
 
-        stats = sai_thrift_get_policer_stats(self.client, pol_id)
+        stats = query_counter(
+                    self, sai_thrift_get_policer_stats, pol_id)
 
         print("Packets flooded to ports 1 and 2:", rx_cnt)
         print("SAI_POLICER_STAT_PACKETS:",
@@ -888,7 +908,8 @@ class VerifyColors(MinimalPortVlanConfig):
         print()
 
         time.sleep(2.0)
-        stats = sai_thrift_get_policer_stats(self.client, self.pol_id)
+        stats = query_counter(
+                    self, sai_thrift_get_policer_stats, self.pol_id)
         print("SAI_POLICER_STAT_GREEN_PACKETS:",
               stats["SAI_POLICER_STAT_GREEN_PACKETS"])
         print("SAI_POLICER_STAT_YELLOW_PACKETS:",

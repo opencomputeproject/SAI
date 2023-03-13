@@ -390,6 +390,9 @@ typedef enum _sai_queue_stat_t
     /** Get watermark queue occupancy percentage [uint64_t] */
     SAI_QUEUE_STAT_WATERMARK_LEVEL = 0x00000025,
 
+    /** Get packets deleted when the credit watch dog expires for VOQ System [uint64_t] */
+    SAI_QUEUE_STAT_CREDIT_WD_DELETED_PACKETS = 0x00000026,
+
     /** Custom range base value */
     SAI_QUEUE_STAT_CUSTOM_RANGE_BASE = 0x10000000
 

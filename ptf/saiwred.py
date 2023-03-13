@@ -408,9 +408,11 @@ class _WredIPv4NonECNTest(WredTestHelper):
     def runTest(self):
         print("\n\n_WredIPv4NonECNTest()")
         print("---------------------")
-        i_port_stats = sai_thrift_get_port_stats(self.client,
+        i_port_stats = query_counter(
+                    self, sai_thrift_get_port_stats,
                                                  self.port11)
-        i_queue_stats = sai_thrift_get_queue_stats(self.client,
+        i_queue_stats = query_counter(
+                    self, sai_thrift_get_queue_stats,
                                                    self.queues11[0])
         try:
             pkt1 = simple_tcp_packet(
@@ -438,9 +440,11 @@ class _WredIPv4NonECNTest(WredTestHelper):
             send_packet(self, self.dev_port10, pkt1)
             verify_packet(self, exp_pkt1, self.dev_port11)
             time.sleep(2)
-            e_port_stats = sai_thrift_get_port_stats(self.client,
+            e_port_stats = query_counter(
+                    self, sai_thrift_get_port_stats,
                                                      self.port11)
-            e_queue_stats = sai_thrift_get_queue_stats(self.client,
+            e_queue_stats = query_counter(
+                    self, sai_thrift_get_queue_stats,
                                                        self.queues11[0])
 
             # Verify stats
