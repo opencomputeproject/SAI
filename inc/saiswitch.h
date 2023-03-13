@@ -2820,6 +2820,21 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_CREDIT_WD_TIMER,
 
     /**
+     * @brief Fabric chassis isolation setting.
+     *
+     * true: Trigger the switch isolate process
+     * false: Undo the isolation operation.
+     * This attribute is for Fabric Chassis only
+     * If this attribute is set to true, it overrides port level isolation setting.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_FABRIC
+     */
+    SAI_SWITCH_ATTR_SWITCH_ISOLATE,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
