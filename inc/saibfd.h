@@ -88,6 +88,11 @@ typedef enum _sai_bfd_encapsulation_type_t
      */
     SAI_BFD_ENCAPSULATION_TYPE_NONE,
 
+    /**
+     * @brief SRV6 Tunnel Encapsulation | L2 Ethernet header | IPV6 Header | SRV6 Header | Inner IP header | Original BFD packet
+     */
+    SAI_BFD_ENCAPSULATION_TYPE_SRV6,
+
 } sai_bfd_encapsulation_type_t;
 
 /**
@@ -312,7 +317,7 @@ typedef enum _sai_bfd_session_attr_t
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 0
-     * @validonly SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_IP_IN_IP
+     * @validonly SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_IP_IN_IP or SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_SRV6
      */
     SAI_BFD_SESSION_ATTR_TUNNEL_TOS,
 
@@ -322,7 +327,7 @@ typedef enum _sai_bfd_session_attr_t
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 255
-     * @validonly SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_IP_IN_IP
+     * @validonly SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_IP_IN_IP or SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_SRV6
      */
     SAI_BFD_SESSION_ATTR_TUNNEL_TTL,
 
@@ -331,7 +336,7 @@ typedef enum _sai_bfd_session_attr_t
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_IP_IN_IP
+     * @condition SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_IP_IN_IP or SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_SRV6
      */
     SAI_BFD_SESSION_ATTR_TUNNEL_SRC_IP_ADDRESS,
 
@@ -485,6 +490,16 @@ typedef enum _sai_bfd_session_attr_t
      * @flags READ_ONLY
      */
     SAI_BFD_SESSION_ATTR_REMOTE_MULTIPLIER,
+
+    /**
+     * @brief SID List with Endpoint for SRV6 Encap
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_SRV6_SIDLIST
+     * @condition SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_SRV6
+     */
+    SAI_BFD_SESSION_ATTR_SRV6_SIDLIST_ID,
 
     /**
      * @brief End of attributes
