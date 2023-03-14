@@ -3840,6 +3840,14 @@ void check_objects_for_loops_recursive(
 
         /* skip known loops */
 
+        if (m->objecttype == SAI_OBJECT_TYPE_SRV6_SIDLIST)
+        {
+            if (m->attrid == SAI_SRV6_SIDLIST_ATTR_NEXT_HOP_ID)
+            {
+                continue;
+            }
+        }
+
         if (m->objecttype == SAI_OBJECT_TYPE_PORT)
         {
             if (m->attrid == SAI_PORT_ATTR_EGRESS_MIRROR_SESSION ||
