@@ -5,6 +5,41 @@ The Switch Abstraction Interface(SAI) defines the APIs to provide a vendor-indep
 This document explains the new SAI features as well as the enhancements and the bug fixes on existing features. 
 
 
+### List of enhancements added in this release: 
+
+SAI GPE header files [PR#1585](https://github.com/opencomputeproject/SAI/pull/1585) <br> 
+SAI Generic Programmable Extensions proposal [PR#1551](https://github.com/opencomputeproject/SAI/pull/1551) <br> 
+Allow for CREATE_ONLY attributes in non objects [PR#1616](https://github.com/opencomputeproject/SAI/pull/1616) <br> 
+
+Bulk API for setting Port Attributes [PR#1460](https://github.com/opencomputeproject/SAI/pull/1460) <br> 
+Bulk API support for Neighbor entries [PR#1504](https://github.com/opencomputeproject/SAI/pull/1504) <br> 
+Add bulk create and remove for tunnel [PR#1462](https://github.com/opencomputeproject/SAI/pull/1462) <br> 
+
+Add hostif traps for p4runtime and gNMI protocols [PR#1436](https://github.com/opencomputeproject/SAI/pull/1436) <br> 
+Add hostif trap for NTP [PR#1453](https://github.com/opencomputeproject/SAI/pull/1453) <br> 
+ECMP Member Capability and Configuration [PR#1461](https://github.com/opencomputeproject/SAI/pull/1461) <br> 
+Add DONOTDROP packet action. [PR#1349](https://github.com/opencomputeproject/SAI/pull/1349) <br> 
+Support counters on IP MC route entries. [PR#1497](https://github.com/opencomputeproject/SAI/pull/1497) <br> 
+Tunnel UDP SRC PORT security [PR#1455](https://github.com/opencomputeproject/SAI/pull/1455) <br> 
+
+saiport: add support for link training ability query [PR#1434](https://github.com/opencomputeproject/SAI/pull/1434) <br> 
+Add port FEC histogram counter support. [PR#1617](https://github.com/opencomputeproject/SAI/pull/1617) <br> 
+Add fabric port isolation attribute [PR#1498](https://github.com/opencomputeproject/SAI/pull/1498) <br> 
+Add switch api for clause 22 mdio access [PR#1507](https://github.com/opencomputeproject/SAI/pull/1507) <br>  
+
+Update saitam.h [PR#1496](https://github.com/opencomputeproject/SAI/pull/1496) <br> 
+Distributed HW resource management infrastructure [PR#1528](https://github.com/opencomputeproject/SAI/pull/1528) <br> 
+ 
+Changes for supporting some PHY Diagnostics [PR#1527](https://github.com/opencomputeproject/SAI/pull/1527) <br> 
+
+SAI metadata enhancements <br> 
+[meta] Add enum for global apis [PR#1456](https://github.com/opencomputeproject/SAI/pull/1456) <br> 
+[meta] Add test to verify if vendor implemented all global apis [PR#1542](https://github.com/opencomputeproject/SAI/pull/1542) <br> 
+[meta] Disable doxygen TCL_SUBST and COLS_IN_ALPHA_INDEX [PR#1457](https://github.com/opencomputeproject/SAI/pull/1457) <br> 
+[meta] Add sai_status_t to ancestry check [PR#1501](https://github.com/opencomputeproject/SAI/pull/1501) <br> 
+ <br> 
+
+
 ### SAI Generic Programmable Extensions header
 
 This feature adds the header files and relevant meta code changes to SAI. 
