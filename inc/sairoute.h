@@ -129,6 +129,20 @@ typedef enum _sai_route_entry_attr_t
     SAI_ROUTE_ENTRY_ATTR_COUNTER_ID,
 
     /**
+     * @brief Route Prefix Aggregation ID
+     *
+     * Prefix aggregation ID is used for SRV6 VPN cases. When multiple prefixes
+     * use the same set of remote SRV6 Endpoint(s) but with different VPN SID
+     * values, prefix aggregation id allows SAI to derive different VPN SID while
+     * keeping using single destination (NH or Next hop group)
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ROUTE_ENTRY_ATTR_PREFIX_AGG_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_ROUTE_ENTRY_ATTR_END,
