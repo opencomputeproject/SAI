@@ -16,6 +16,7 @@ Thrift SAI interface NextHopGroup tests
 """
 
 import binascii
+import random
 
 from sai_thrift.sai_headers import *
 
@@ -218,7 +219,7 @@ class L3IPv4EcmpHostHelper(PlatformSaiHelper):
         # create route entries
         self.route0 = sai_thrift_route_entry_t(
             switch_id=self.switch_id,
-            destination=sai_ipprefix('10.10.10.1/16'),
+            destination=sai_ipprefix('10.10.0.0/16'),
             vr_id=self.default_vrf)
         status = sai_thrift_create_route_entry(
             self.client, self.route0, next_hop_id=self.nhop_group1)
@@ -248,18 +249,18 @@ class L3IPv4EcmpHostHelper(PlatformSaiHelper):
             super(L3IPv4EcmpHostHelper, self).tearDown()
 
 
-class l3SaiNhgSetGetTest(L3IPv4EcmpHostHelper):
+class L3SaiNhgSetGetTest(L3IPv4EcmpHostHelper):
     """
     Checks SAI switch ECMP attributes and validates
     get and set attributes
     """
     def setUp(self):
-        super(l3SaiNhgSetGetTest, self).setUp()
+        super(L3SaiNhgSetGetTest, self).setUp()
 
     def runTest(self):
-        print("l3SaiNhgSetGetTest")
+        print("L3SaiNhgSetGetTest")
         try:
-            # predefined NHG self.nhop_group1 with 2 memners
+            # predefined NHG self.nhop_group1 with 2 members
             nhg1_size = 2
             attr_list = sai_thrift_get_switch_attribute(
                 self.client,
@@ -399,21 +400,27 @@ class l3SaiNhgSetGetTest(L3IPv4EcmpHostHelper):
                 self.nhop2)
 
     def tearDown(self):
-        super(l3SaiNhgSetGetTest, self).tearDown()
+        super(L3SaiNhgSetGetTest, self).tearDown()
 
 
-class l3IPv4EcmpHostTest(L3IPv4EcmpHostHelper):
+class L3IPv4EcmpHostTest(L3IPv4EcmpHostHelper):
     """
     IPv4 ECMP tests with all members which are port RIFs
     """
     def setUp(self):
-        super(l3IPv4EcmpHostTest, self).setUp()
+        super(L3IPv4EcmpHostTest, self).setUp()
 
     def runTest(self):
-        print("l3IPv4EcmpHostTest")
-        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+        print("L3IPv4EcmpHostTest")
+        pkt1 = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                 eth_src='00:22:22:22:22:22',
                                 ip_dst='10.10.10.1',
+                                ip_src='192.168.0.1',
+                                ip_id=106,
+                                ip_ttl=64)
+        pkt2 = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                eth_src='00:22:22:22:22:22',
+                                ip_dst='10.10.10.2',
                                 ip_src='192.168.0.1',
                                 ip_id=106,
                                 ip_ttl=64)
@@ -431,13 +438,27 @@ class l3IPv4EcmpHostTest(L3IPv4EcmpHostHelper):
                                      ip_id=106,
                                      # ip_tos=3,
                                      ip_ttl=63)
-        print("Sending packet port %d -> port [%d,%d]"
-              "(192.168.100.3 -> 10.10.10.[1,2] [id = 101])" % (
-                  self.dev_port13, self.dev_port11, self.dev_port12))
-        send_packet(self, self.dev_port13, pkt)
-        verify_any_packet_any_port(
-            self, [exp_pkt1, exp_pkt2], [self.dev_port11, self.dev_port12])
-        pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+        print("Sending packet port %d -> port %d"
+              "(192.168.0.1 -> 10.10.10.1 [id = 101])" % (
+                  self.dev_port13, self.dev_port11))
+        send_packet(self, self.dev_port13, pkt1)
+        verify_packet(
+            self, exp_pkt1, self.dev_port11)
+
+        print("Sending packet port %d -> port %d"
+              "(192.168.0.1 -> 10.10.10.2 [id = 101])" % (
+                  self.dev_port13, self.dev_port12))
+        send_packet(self, self.dev_port13, pkt2)
+        verify_packet(
+            self, exp_pkt2, self.dev_port12)
+
+        pkt1 = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                eth_src='00:22:22:22:22:22',
+                                ip_dst='10.10.10.1',
+                                ip_src='192.168.100.3',
+                                ip_id=106,
+                                ip_ttl=64)
+        pkt2 = simple_tcp_packet(eth_dst=ROUTER_MAC,
                                 eth_src='00:22:22:22:22:22',
                                 ip_dst='10.10.10.2',
                                 ip_src='192.168.100.3',
@@ -457,23 +478,74 @@ class l3IPv4EcmpHostTest(L3IPv4EcmpHostHelper):
                                      ip_id=106,
                                      # ip_tos=3,
                                      ip_ttl=63)
-        print("Sending packet port %d -> port [%d,%d]"
-              "(192.168.100.3 -> 10.10.10.[1,2] [id = 101])" % (
-                  self.dev_port13, self.dev_port11, self.dev_port12))
-        send_packet(self, self.dev_port13, pkt)
-        verify_any_packet_any_port(
-            self, [exp_pkt2, exp_pkt1], [self.dev_port11, self.dev_port12])
+        print("Sending packet port %d -> port %d"
+              "(192.168.100.3 -> 10.10.10.1 [id = 101])" % (
+                  self.dev_port13, self.dev_port11))
+        send_packet(self, self.dev_port13, pkt1)
+        verify_packet(
+            self, exp_pkt1, self.dev_port11)
+
+        print("Sending packet port %d -> port %d"
+              "(192.168.100.3 -> 10.10.10.2 [id = 101])" % (
+                  self.dev_port13, self.dev_port12))
+        send_packet(self, self.dev_port13, pkt2)
+        verify_packet(
+            self, exp_pkt2, self.dev_port12)
 
     def tearDown(self):
-        super(l3IPv4EcmpHostTest, self).tearDown()
+        super(L3IPv4EcmpHostTest, self).tearDown()
 
-class L3ipv6EcmpHostHelper(PlatformSaiHelper):
+
+class L3IPv4EcmpRoutingTest(L3IPv4EcmpHostHelper):
+    """
+    IPv4 ECMP routing test with random host
+    """
+    def setUp(self):
+        super(L3IPv4EcmpRoutingTest, self).setUp()
+
+    def runTest(self):
+        print("L3IPv4EcmpRoutingTest")
+        for n_packet in range(4):
+            host_ip = '10.10.{}.{}'.format(random.randint(2, 255), random.randint(3, 255))
+
+            pkt = simple_tcp_packet(eth_dst=ROUTER_MAC,
+                                    eth_src='00:22:22:22:22:22',
+                                    ip_dst=host_ip,
+                                    ip_src='192.168.0.1',
+                                    ip_id=106,
+                                    ip_ttl=64)
+            exp_pkt1 = simple_tcp_packet(eth_dst='00:11:22:33:44:55',
+                                        eth_src=ROUTER_MAC,
+                                        ip_dst=host_ip,
+                                        ip_src='192.168.0.1',
+                                        ip_id=106,
+                                        # ip_tos=3,
+                                        ip_ttl=63)
+            exp_pkt2 = simple_tcp_packet(eth_dst='00:11:22:33:44:56',
+                                        eth_src=ROUTER_MAC,
+                                        ip_dst=host_ip,
+                                        ip_src='192.168.0.1',
+                                        ip_id=106,
+                                        # ip_tos=3,
+                                        ip_ttl=63)
+            print("Sending packet port %d -> port [%d,%d]"
+                "(192.168.0.1 -> %s [id = 101])" % (
+                    self.dev_port13, self.dev_port11, self.dev_port12, host_ip))
+            send_packet(self, self.dev_port13, pkt)
+            verify_any_packet_any_port(
+                self, [exp_pkt1, exp_pkt2], [self.dev_port11, self.dev_port12])
+
+    def tearDown(self):
+        super(L3IPv4EcmpRoutingTest, self).tearDown()
+
+
+class L3IPv6EcmpHostHelper(PlatformSaiHelper):
     """
     Basic ECMP tests for IPv6 and regular L3 port RIFs
     """
     def setUp(self):
 
-        super(L3ipv6EcmpHostHelper, self).setUp()
+        super(L3IPv6EcmpHostHelper, self).setUp()
 
         ip_addr1 = '5000:1:1:0:0:0:0:1'
         ip_addr2 = '5000:1:1:0:0:0:0:2'
@@ -506,7 +578,7 @@ class L3ipv6EcmpHostHelper(PlatformSaiHelper):
             self.client,
             type=SAI_NEXT_HOP_TYPE_IP,
             router_interface_id=self.port12_rif,
-            ip=sai_ipaddress(ip_addr1))
+            ip=sai_ipaddress(ip_addr2))
         self.nhop_group1 = sai_thrift_create_next_hop_group(
             self.client, type=SAI_NEXT_HOP_GROUP_TYPE_ECMP)
         self.nh_group_member1 = sai_thrift_create_next_hop_group_member(
@@ -520,7 +592,7 @@ class L3ipv6EcmpHostHelper(PlatformSaiHelper):
         # create route entries
         self.route0 = sai_thrift_route_entry_t(
             switch_id=self.switch_id,
-            destination=sai_ipprefix(ip_addr1),
+            destination=sai_ipprefix(f'{ip_addr1}/64'),
             vr_id=self.default_vrf)
         status = sai_thrift_create_route_entry(
             self.client, self.route0, next_hop_id=self.nhop_group1)
@@ -544,22 +616,28 @@ class L3ipv6EcmpHostHelper(PlatformSaiHelper):
         self.assertEqual(True, self.verifyNumberOfAvaiableResources(self.switch_resources))
         release_hash(self, self.ipv4_hash_id, self.ipv6_hash_id)
 
-        super(L3ipv6EcmpHostHelper, self).tearDown()
+        super(L3IPv6EcmpHostHelper, self).tearDown()
 
 
-class saiL3ipv6EcmpHostTest(L3ipv6EcmpHostHelper):
+class L3IPv6EcmpHostTest(L3IPv6EcmpHostHelper):
     """
     IPv6 ECMP tests with all members as regular L3 port RIFs
     """
     def setUp(self):
-        super(saiL3ipv6EcmpHostTest, self).setUp()
+        super(L3IPv6EcmpHostTest, self).setUp()
 
     def runTest(self):
-        print("saiL3ipv6EcmpHostTest")
+        print("L3IPv6EcmpHostTest")
         # send the test packet(s)
-        pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
+        pkt1 = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
                                   eth_src='00:22:22:22:22:22',
                                   ipv6_dst='5000:1:1:0:0:0:0:1',
+                                  ipv6_src='2000:1:1:0:0:0:0:1',
+                                  tcp_sport=0x1234,
+                                  ipv6_hlim=64)
+        pkt2 = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
+                                  eth_src='00:22:22:22:22:22',
+                                  ipv6_dst='5000:1:1:0:0:0:0:2',
                                   ipv6_src='2000:1:1:0:0:0:0:1',
                                   tcp_sport=0x1234,
                                   ipv6_hlim=64)
@@ -571,16 +649,26 @@ class saiL3ipv6EcmpHostTest(L3ipv6EcmpHostHelper):
                                        ipv6_hlim=63)
         exp_pkt2 = simple_tcpv6_packet(eth_dst='00:11:22:33:44:56',
                                        eth_src=ROUTER_MAC,
-                                       ipv6_dst='5000:1:1:0:0:0:0:1',
+                                       ipv6_dst='5000:1:1:0:0:0:0:2',
                                        ipv6_src='2000:1:1:0:0:0:0:1',
                                        tcp_sport=0x1234,
                                        ipv6_hlim=63)
-        send_packet(self, self.dev_port13, pkt)
-        verify_any_packet_any_port(
-            self, [exp_pkt2, exp_pkt1], [self.dev_port11, self.dev_port12])
-        pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
+        send_packet(self, self.dev_port13, pkt1)
+        verify_packet(
+            self, exp_pkt1, self.dev_port11)
+
+        send_packet(self, self.dev_port13, pkt2)
+        verify_packet(
+            self, exp_pkt2, self.dev_port12)
+        pkt1 = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
                                   eth_src='00:22:22:22:22:45',
                                   ipv6_dst='5000:1:1:0:0:0:0:1',
+                                  ipv6_src='2000:1:1:0:0:0:0:1',
+                                  tcp_sport=0x1248,
+                                  ipv6_hlim=64)
+        pkt2 = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
+                                  eth_src='00:22:22:22:22:45',
+                                  ipv6_dst='5000:1:1:0:0:0:0:2',
                                   ipv6_src='2000:1:1:0:0:0:0:1',
                                   tcp_sport=0x1248,
                                   ipv6_hlim=64)
@@ -592,16 +680,60 @@ class saiL3ipv6EcmpHostTest(L3ipv6EcmpHostHelper):
                                        ipv6_hlim=63)
         exp_pkt2 = simple_tcpv6_packet(eth_dst='00:11:22:33:44:56',
                                        eth_src=ROUTER_MAC,
-                                       ipv6_dst='5000:1:1:0:0:0:0:1',
+                                       ipv6_dst='5000:1:1:0:0:0:0:2',
                                        ipv6_src='2000:1:1:0:0:0:0:1',
                                        tcp_sport=0x1248,
                                        ipv6_hlim=63)
-        send_packet(self, self.dev_port13, pkt)
-        verify_any_packet_any_port(
-            self, [exp_pkt2, exp_pkt1], [self.dev_port11, self.dev_port12])
+        send_packet(self, self.dev_port13, pkt1)
+        verify_packet(
+            self, exp_pkt1, self.dev_port11)
+
+        send_packet(self, self.dev_port13, pkt2)
+        verify_packet(
+            self, exp_pkt2, self.dev_port12)
 
     def tearDown(self):
-        super(saiL3ipv6EcmpHostTest, self).tearDown()
+        super(L3IPv6EcmpHostTest, self).tearDown()
+
+
+class L3IPv6EcmpRoutingTest(L3IPv6EcmpHostHelper):
+    """
+    IPv6 ECMP routing test with random host
+    """
+    def setUp(self):
+        super(L3IPv6EcmpRoutingTest, self).setUp()
+
+    def runTest(self):
+        print("L3IPv6EcmpRoutingTest")
+        for n_packet in range(4):
+            host_ip = f'5000:1:1:0:0:0:0:{random.randint(3, 1000)}'
+            pkt = simple_tcpv6_packet(eth_dst=ROUTER_MAC,
+                                        eth_src='00:22:22:22:22:22',
+                                        ipv6_dst=host_ip,
+                                        ipv6_src='2000:1:1:0:0:0:0:1',
+                                        tcp_sport=0x1234,
+                                        ipv6_hlim=64)
+            exp_pkt1 = simple_tcpv6_packet(eth_dst='00:11:22:33:44:55',
+                                            eth_src=ROUTER_MAC,
+                                            ipv6_dst=host_ip,
+                                            ipv6_src='2000:1:1:0:0:0:0:1',
+                                            tcp_sport=0x1234,
+                                            ipv6_hlim=63)
+            exp_pkt2 = simple_tcpv6_packet(eth_dst='00:11:22:33:44:56',
+                                            eth_src=ROUTER_MAC,
+                                            ipv6_dst=host_ip,
+                                            ipv6_src='2000:1:1:0:0:0:0:1',
+                                            tcp_sport=0x1234,
+                                            ipv6_hlim=63)
+            print("Sending packet port %d -> port [%d,%d]"
+              "(2000:1:1:0:0:0:0:1 -> %s [id = 101])" % (
+                  self.dev_port13, self.dev_port11, self.dev_port12, host_ip))
+            send_packet(self, self.dev_port13, pkt)
+            verify_any_packet_any_port(
+                self, [exp_pkt1, exp_pkt2], [self.dev_port11, self.dev_port12])
+
+    def tearDown(self):
+        super(L3IPv6EcmpRoutingTest, self).tearDown()
 
 
 class L3IPv4EcmpLpmTestHelper(PlatformSaiHelper):

@@ -172,6 +172,11 @@ class Dut(object):
         Device active ports.
         """
 
+        self.system_port_no = 0
+        """
+        Device system ports.
+        """
+
         self.active_port_obj_list: List['Port'] = []
         """
         Device active port obj list.

@@ -3065,15 +3065,15 @@ class FdbMissTest(SaiHelper):
                              SAI_PACKET_ACTION_COPY)
 
             time.sleep(4)
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             print("Sending packet on port %d, %s -> %s - will be copied to "
                   "CPU" % (self.send_port, self.src_mac, self.dst_mac))
             send_packet(self, self.send_port, self.ucast_pkt)
             verify_packets(self, self.ucast_pkt, self.flood_ports)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"] -
                 pre_stats["SAI_QUEUE_STAT_PACKETS"],
@@ -3120,14 +3120,14 @@ class FdbMissTest(SaiHelper):
                              SAI_PACKET_ACTION_TRAP)
 
             time.sleep(4)
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             print("Sending packet on port %d, %s -> %s - will be redirected "
                   "to CPU" % (self.send_port, self.src_mac, self.dst_mac))
             send_packet(self, self.send_port, self.ucast_pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"] -
                 pre_stats["SAI_QUEUE_STAT_PACKETS"],
@@ -3181,16 +3181,16 @@ class FdbMissTest(SaiHelper):
             print("\tOK")
 
             time.sleep(4)
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             print("Checking if LLDP packes are still forwarded to CPU")
             print("Sending multicast LLDP packet on port %d, %s -> %s - will "
                   "be redirected to CPU" % (self.send_port, self.src_mac,
                                             self.lldp_mac))
             send_packet(self, self.send_port, self.lldp_pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"] -
                 pre_stats["SAI_QUEUE_STAT_PACKETS"],
@@ -3237,16 +3237,16 @@ class FdbMissTest(SaiHelper):
                              SAI_PACKET_ACTION_COPY)
 
             time.sleep(4)
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             print("Sending multicast packet on port %d, %s -> %s - will be "
                   "copied to CPU" % (self.send_port, self.src_mac,
                                      self.mcast_mac))
             send_packet(self, self.send_port, self.mcast_pkt)
             verify_packets(self, self.mcast_pkt, self.flood_ports)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"] -
                 pre_stats["SAI_QUEUE_STAT_PACKETS"],
@@ -3254,16 +3254,16 @@ class FdbMissTest(SaiHelper):
             print("\tOK")
 
             time.sleep(4)
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             print("Checking if LLDP packes are still forwarded to CPU")
             print("Sending multicast LLDP packet on port %d, %s -> %s - will "
                   "be redirected to CPU" % (self.send_port, self.src_mac,
                                             self.lldp_mac))
             send_packet(self, self.send_port, self.lldp_pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"] -
                 pre_stats["SAI_QUEUE_STAT_PACKETS"],
@@ -3311,15 +3311,15 @@ class FdbMissTest(SaiHelper):
                              SAI_PACKET_ACTION_TRAP)
 
             time.sleep(4)
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             print("Sending multicast packet on port %d, %s -> %s - will be "
                   "redirected to CPU" % (self.send_port, self.src_mac,
                                          self.mcast_mac))
             send_packet(self, self.send_port, self.mcast_pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"] -
                 pre_stats["SAI_QUEUE_STAT_PACKETS"],
@@ -3327,16 +3327,16 @@ class FdbMissTest(SaiHelper):
             print("\tOK")
 
             time.sleep(4)
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             print("Checking if LLDP packes are still forwarded to CPU")
             print("Sending multicast LLDP packet on port %d, %s -> %s - will "
                   "be redirected to CPU" % (self.send_port, self.src_mac,
                                             self.lldp_mac))
             send_packet(self, self.send_port, self.lldp_pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"] -
                 pre_stats["SAI_QUEUE_STAT_PACKETS"],
@@ -3390,15 +3390,15 @@ class FdbMissTest(SaiHelper):
             print("\tOK")
 
             time.sleep(4)
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             print("Checking if ARP packes are still forwarded to CPU")
             print("Sending ARP packet on port %d - will be redirected to CPU" %
                   (self.send_port))
             send_packet(self, self.send_port, self.arp_pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"] -
                 pre_stats["SAI_QUEUE_STAT_PACKETS"],
@@ -3445,16 +3445,16 @@ class FdbMissTest(SaiHelper):
                              SAI_PACKET_ACTION_COPY)
 
             time.sleep(4)
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             print("Sending broadcast packet on port %d, %s -> %s - will be "
                   "copied to CPU" % (self.send_port, self.src_mac,
                                      self.bcast_mac))
             send_packet(self, self.send_port, self.bcast_pkt)
             verify_packets(self, self.bcast_pkt, self.flood_ports)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"] -
                 pre_stats["SAI_QUEUE_STAT_PACKETS"],
@@ -3462,15 +3462,15 @@ class FdbMissTest(SaiHelper):
             print("\tOK")
 
             time.sleep(4)
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             print("Checking if ARP packes are still forwarded to CPU")
             print("Sending ARP packet on port %d - will be redirected to CPU" %
                   (self.send_port))
             send_packet(self, self.send_port, self.arp_pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"] -
                 pre_stats["SAI_QUEUE_STAT_PACKETS"],
@@ -3518,15 +3518,15 @@ class FdbMissTest(SaiHelper):
                              SAI_PACKET_ACTION_TRAP)
 
             time.sleep(4)
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             print("Sending broadcast packet on port %d, %s -> %s - will be "
                   "redirected to CPU" % (self.send_port, self.src_mac,
                                          self.bcast_mac))
             send_packet(self, self.send_port, self.bcast_pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"] -
                 pre_stats["SAI_QUEUE_STAT_PACKETS"],
@@ -3534,15 +3534,15 @@ class FdbMissTest(SaiHelper):
             print("\tOK")
 
             time.sleep(4)
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             print("Checking if ARP packes are still forwarded to CPU")
             print("Sending ARP packet on port %d - will be redirected to CPU" %
                   (self.send_port))
             send_packet(self, self.send_port, self.arp_pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"] -
                 pre_stats["SAI_QUEUE_STAT_PACKETS"],

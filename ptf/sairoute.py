@@ -134,13 +134,13 @@ class dropRouteTest(PlatformSaiHelper):
             ip_id=105,
             ip_ttl=64)
         try:
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             print("Sending packet on port %d, forward" % self.dev_port11)
             send_packet(self, self.dev_port11, pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
@@ -243,13 +243,13 @@ class routeUpdateTest(PlatformSaiHelper):
             sai_thrift_set_route_entry_attribute(
                 self.client, route_entry, packet_action=SAI_PACKET_ACTION_TRAP)
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             print("Sending packet on port %d, forward" % self.dev_port11)
             send_packet(self, self.dev_port11, pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
@@ -567,14 +567,14 @@ class cpuForwardTest(PlatformSaiHelper):
                 trap_group=trap_group, trap_type=SAI_HOSTIF_TRAP_TYPE_IP2ME,
                 packet_action=SAI_PACKET_ACTION_TRAP)
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             print("Sending packet on port %d, forward to CPU" %
                   self.dev_port10)
             send_packet(self, self.dev_port10, pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue4)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue4)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
@@ -586,6 +586,104 @@ class cpuForwardTest(PlatformSaiHelper):
 
     def tearDown(self):
         super(cpuForwardTest, self).tearDown()
+
+class RemoveAddNeighborTest(PlatformSaiHelper):
+    """
+    Verifies if IPv4 host route is not created according to
+    SAI_NEIGHBOR_ENTRY_ATTR_NO_HOST_ROUTE attribute value
+    """
+
+    def setUp(self):
+        """
+        Set up test.
+        """
+        super(RemoveAddNeighborTest, self).setUp()
+        self.ipv4_addr = "10.1.1.10"
+        self.mac_addr = "00:10:10:10:10:10"
+
+        self.lag_dev_ports = [self.dev_port17,self.dev_port18,self.dev_port19]
+
+        self.nbr_entry_v4 = sai_thrift_neighbor_entry_t(
+            rif_id=self.lag4_rif,
+            ip_address=sai_ipaddress(self.ipv4_addr))
+        status = sai_thrift_create_neighbor_entry(
+            self.client,
+            self.nbr_entry_v4,
+            dst_mac_address=self.mac_addr)
+        self.assertEqual(status, SAI_STATUS_SUCCESS)        
+
+        self.net_route = sai_thrift_route_entry_t(
+            vr_id=self.default_vrf, destination=sai_ipprefix(self.ipv4_addr+'/32'))
+        sai_thrift_create_route_entry(
+            self.client, self.net_route, next_hop_id=self.lag4_rif)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+
+    def RemoveAddNeighborTestV4(self):
+        '''
+        Check the config, make sure the CPU queue0 is created and neighbor(NO_HOST_ROUTE=True) for LAGs already created
+        Create route interface for LAG1:rifx
+        Create a route for DIP:10.1.1.10/32 through the new rifx
+        Send packet for DIP:10.1.1.10 DMAC: SWITCH_MAC on port5
+        verify packet received with SMAC: SWITCH_MAC SIP 192.168.0.1 DIP:10.1.1.10 on one of LAG1 member
+        Delete the neighbor for IP:10.1.1.10
+        Send packet for DIP:10.1.1.10 DMAC: SWITCH_MAC on port5
+        Verify no packet on any port
+        Verify the CPU queue0 get one more item
+        Add the neighbor for IP:10.1.1.10 on LAG1 again
+        Send packet for DIP:10.1.1.10 DMAC: SWITCH_MAC on port5
+        verify packet received with SMAC: SWITCH_MAC SIP 192.168.0.1 DIP:10.1.1.10 on one of LAG1 member
+        '''
+        print("\nRemoveAddNeighborTest()")
+
+        print("Sending IPv4 packet when host route not exists")
+
+        pkt = simple_udp_packet(eth_dst=ROUTER_MAC,
+                                ip_dst=self.ipv4_addr,
+                                ip_ttl=64)
+
+        exp_pkt = simple_udp_packet(eth_dst=self.mac_addr,
+                                    eth_src=ROUTER_MAC,
+                                    ip_dst=self.ipv4_addr,
+                                    ip_ttl=63)
+
+        send_packet(self, self.dev_port10, pkt)
+        verify_packet_any_port(self, exp_pkt, self.lag_dev_ports)
+
+        sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_v4)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        pre_cpu_queue_state = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)[
+            "SAI_QUEUE_STAT_PACKETS"]
+        send_packet(self, self.dev_port10, pkt)
+        verify_no_other_packets(self)
+        print("Packet dropped")
+        post_cpu_queue_state = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)[
+            "SAI_QUEUE_STAT_PACKETS"]
+        self.assertEqual(post_cpu_queue_state - pre_cpu_queue_state, 1)
+        # bug 15205360 above check 
+        print(str(post_cpu_queue_state - pre_cpu_queue_state))
+        sai_thrift_create_neighbor_entry(
+            self.client,
+            self.nbr_entry_v4,
+            dst_mac_address=self.mac_addr)
+        self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
+        send_packet(self, self.dev_port10, pkt)
+        verify_packet_any_port(self, exp_pkt, self.lag_dev_ports)
+
+    def runTest(self):
+        try:
+            self.RemoveAddNeighborTestV4()
+        finally:
+            pass
+
+    def tearDown(self):
+        """
+        TearDown process
+        """
+        sai_thrift_remove_route_entry(self.client, self.net_route)
+        sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_v4)
+        super().tearDown()
 
 
 class routeNbrColisionTest(PlatformSaiHelper):
@@ -676,13 +774,13 @@ class routeNbrColisionTest(PlatformSaiHelper):
             print("Removes neighbor")
             sai_thrift_remove_neighbor_entry(self.client, nbr_entry)
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             print("Sending packet on port %d, glean to cpu" % self.dev_port11)
             send_packet(self, self.dev_port11, pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
@@ -716,13 +814,13 @@ class routeNbrColisionTest(PlatformSaiHelper):
             sai_thrift_create_route_entry(self.client, route_entry,
                                           next_hop_id=self.port10_rif)
 
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             print("Sending packet on port %d, glean to cpu" % self.dev_port11)
             send_packet(self, self.dev_port11, pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
@@ -844,13 +942,13 @@ class L3DirBcastRouteTestHelper(PlatformSaiHelper):
                                     ip_src=pkt_ip_src,
                                     ip_id=105,
                                     ip_ttl=64)
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             print("Sending packet on port %d, glean to cpu" % self.dev_port10)
             send_packet(self, self.dev_port10, pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
@@ -861,13 +959,13 @@ class L3DirBcastRouteTestHelper(PlatformSaiHelper):
                                     ip_src=pkt_ip_src,
                                     ip_id=105,
                                     ip_ttl=64)
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             print("Sending packet on port %d, glean to cpu" % self.dev_port24)
             send_packet(self, self.dev_port24, pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
@@ -888,13 +986,13 @@ class L3DirBcastRouteTestHelper(PlatformSaiHelper):
                                     ip_src=pkt_ip_src,
                                     ip_id=105,
                                     ip_ttl=64)
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             print("Sending packet on port %d, glean to cpu" % self.dev_port10)
             send_packet(self, self.dev_port10, pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)
@@ -906,13 +1004,13 @@ class L3DirBcastRouteTestHelper(PlatformSaiHelper):
                                     ip_src=pkt_ip_src,
                                     ip_id=105,
                                     ip_ttl=64)
-            pre_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            pre_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             print("Sending packet on port %d, glean to cpu" % self.dev_port24)
             send_packet(self, self.dev_port24, pkt)
             time.sleep(4)
-            post_stats = sai_thrift_get_queue_stats(
-                self.client, self.cpu_queue0)
+            post_stats = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)
             self.assertEqual(
                 post_stats["SAI_QUEUE_STAT_PACKETS"],
                 pre_stats["SAI_QUEUE_STAT_PACKETS"] + 1)

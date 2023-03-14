@@ -21,7 +21,7 @@ from sai_base_test import *
 
 
 @group("draft")
-class WredBaseTest(SaiHelper):
+class WredBaseTest(PlatformSaiHelper):
     """
     WRED base test
     """
@@ -251,7 +251,7 @@ class WredBaseTest(SaiHelper):
 
 
 @group("draft")
-class WredTest(WredBaseTest):
+class WredTestHelper(WredBaseTest):
     """
     Test WRED interface, also with traffic not affected by WRED
     """
@@ -260,21 +260,23 @@ class WredTest(WredBaseTest):
         print("WRED tests")
         print("==========\n")
 
-        super(WredTest, self).setUp()
+        super(WredTestHelper, self).setUp()
+
+    def tearDown(self):
+        super(WredTestHelper, self).tearDown()
+
+class _WredBindProfileTest(WredTestHelper):
+    """
+    wred.1 - Verify wred profile bind to a queue with no prior WRED profile
+      1. Add the WRED profile to all queues of a single port.
+    Cleanup:
+      1. Detach all WRED profiles
+    """
+
+    def setUp(self):
+        super(_WredBindProfileTest, self).setUp()
 
     def runTest(self):
-        self._WredBindProfileTest()
-        self._WredReplaceProfileTest()
-        self._WredBindProfileMultipleQueuesTest()
-        self._WredIPv4NonECNTest()
-
-    def _WredBindProfileTest(self):
-        """
-        wred.1 - Verify wred profile bind to a queue with no prior WRED profile
-          1. Add the WRED profile to all queues of a single port.
-        Cleanup:
-          1. Detach all WRED profiles
-        """
         print("\n\n_WredBindProfileTest()")
         print("----------------------")
         try:
@@ -291,15 +293,23 @@ class WredTest(WredBaseTest):
                                                         wred_profile_id=0)
                 self.assertEqual(status, SAI_STATUS_SUCCESS)
 
-    def _WredReplaceProfileTest(self):
-        """
-        wred.2 - Verify WRED profile bind to a queue with an existing
-                 WRED profile
-          1. Add the WRED profile to all queues of a single port.
-          2. Add the another WRED profile to all off them.
-        Cleanup:
-          1. Detach all WRED profiles
-        """
+    def tearDown(self):
+        super(_WredBindProfileTest, self).tearDown()
+
+
+class _WredReplaceProfileTest(WredTestHelper):
+    """
+    wred.2 - Verify WRED profile bind to a queue with an existing
+             WRED profile
+      1. Add the WRED profile to all queues of a single port.
+      2. Add the another WRED profile to all off them.
+    Cleanup:
+      1. Detach all WRED profiles
+    """
+    def setUp(self):
+        super(_WredReplaceProfileTest, self).setUp()
+
+    def runTest(self):
         print("\n\n_WredReplaceProfileTest()")
         print("-------------------------")
         try:
@@ -322,15 +332,23 @@ class WredTest(WredBaseTest):
                     self.client, queue, wred_profile_id=0)
                 self.assertEqual(status, SAI_STATUS_SUCCESS)
 
-    def _WredBindProfileMultipleQueuesTest(self):
-        """
-        wred.3 - Verify WRED profile can be bound to multiple queues
-          1. Add the WRED profile to all queues of a single port.
-          2. Add the same WRED profile to all queues of a another port.
-          3. Add the same WRED profile to all queues of a another port.
-        Cleanup:
-          1. Detach all WRED profiles (of all three ports)
-        """
+    def tearDown(self):
+        super(_WredReplaceProfileTest, self).tearDown()
+
+
+class _WredBindProfileMultipleQueuesTest(WredTestHelper):
+    """
+    wred.3 - Verify WRED profile can be bound to multiple queues
+      1. Add the WRED profile to all queues of a single port.
+      2. Add the same WRED profile to all queues of a another port.
+      3. Add the same WRED profile to all queues of a another port.
+    Cleanup:
+      1. Detach all WRED profiles (of all three ports)
+    """
+    def setUp(self):
+        super(_WredBindProfileMultipleQueuesTest, self).setUp()
+
+    def runTest(self):
         print("\n\n_WredBindProfileMultipleQueuesTest()")
         print("------------------------------------")
         try:
@@ -370,21 +388,31 @@ class WredTest(WredBaseTest):
                                                         wred_profile_id=0)
                 self.assertEqual(status, SAI_STATUS_SUCCESS)
 
-    def _WredIPv4NonECNTest(self):
-        """
-        wred.4 - Verify non-ECN traffic is unaffected by WRED profile
-                 on a queue
-          1. Add the WRED (ECN) profile to the queue of a single port.
-          2. Send a non-ECN packet. Verify, that the packet was not affected
-             by ECN profile
-        Cleanup:
-          1. Detach the WRED profile
-        """
+    def tearDown(self):
+        super(_WredBindProfileMultipleQueuesTest, self).tearDown()
+
+
+class _WredIPv4NonECNTest(WredTestHelper):
+    """
+    wred.4 - Verify non-ECN traffic is unaffected by WRED profile
+             on a queue
+      1. Add the WRED (ECN) profile to the queue of a single port.
+      2. Send a non-ECN packet. Verify, that the packet was not affected
+         by ECN profile
+    Cleanup:
+      1. Detach the WRED profile
+    """
+    def setUp(self):
+        super(_WredIPv4NonECNTest, self).setUp()
+
+    def runTest(self):
         print("\n\n_WredIPv4NonECNTest()")
         print("---------------------")
-        i_port_stats = sai_thrift_get_port_stats(self.client,
+        i_port_stats = query_counter(
+                    self, sai_thrift_get_port_stats,
                                                  self.port11)
-        i_queue_stats = sai_thrift_get_queue_stats(self.client,
+        i_queue_stats = query_counter(
+                    self, sai_thrift_get_queue_stats,
                                                    self.queues11[0])
         try:
             pkt1 = simple_tcp_packet(
@@ -412,9 +440,11 @@ class WredTest(WredBaseTest):
             send_packet(self, self.dev_port10, pkt1)
             verify_packet(self, exp_pkt1, self.dev_port11)
             time.sleep(2)
-            e_port_stats = sai_thrift_get_port_stats(self.client,
+            e_port_stats = query_counter(
+                    self, sai_thrift_get_port_stats,
                                                      self.port11)
-            e_queue_stats = sai_thrift_get_queue_stats(self.client,
+            e_queue_stats = query_counter(
+                    self, sai_thrift_get_queue_stats,
                                                        self.queues11[0])
 
             # Verify stats
@@ -429,3 +459,23 @@ class WredTest(WredBaseTest):
                                                     self.queues11[0],
                                                     wred_profile_id=0)
             self.assertEqual(status, SAI_STATUS_SUCCESS)
+
+    def tearDown(self):
+        super(_WredIPv4NonECNTest, self).tearDown()
+
+
+class _WredAttributeCheckTest(WredTestHelper):
+    def setUp(self):
+        super(_WredAttributeCheckTest, self).setUp()
+
+    def runTest(self):
+        # Check weight attribute
+        wred_attr = sai_thrift_get_wred_attribute(
+            self.client,
+            self.wred_ecn,
+            weight=True)
+        wred_weight = wred_attr['weight']
+        self.assertTrue(wred_weight == 0)
+
+    def tearDown(self):
+        super(_WredAttributeCheckTest, self).tearDown()

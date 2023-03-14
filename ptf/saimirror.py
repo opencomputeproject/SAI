@@ -1212,15 +1212,18 @@ class MirrorConfigData(SaiHelper):
                                     ip_ttl=64)
         try:
             print("\tSending packet PORT26 -> PORT25")
-            sai_thrift_clear_queue_stats(self.client, queue_id)
-            stats = sai_thrift_get_queue_stats(self.client, queue_id)
+            clear_counter(
+                    self, sai_thrift_clear_queue_stats, queue_id)
+            stats = query_counter(
+                    self, sai_thrift_get_queue_stats, queue_id)
             pkt_cnt_before = stats["SAI_QUEUE_STAT_PACKETS"]
 
             send_packet(self, self.dev_port26, pkt)
             verify_packets(self,
                            exp_pkt,
                            ports=[self.dev_port24, self.dev_port25])
-            stats = sai_thrift_get_queue_stats(self.client, queue_id)
+            stats = query_counter(
+                    self, sai_thrift_get_queue_stats, queue_id)
             pkt_cnt_after = stats["SAI_QUEUE_STAT_PACKETS"]
             assert(pkt_cnt_after == pkt_cnt_before + 1), ("Mirrored packet "
                                                           "does not get to the"
@@ -2133,8 +2136,10 @@ class MirrorConfigData(SaiHelper):
                                                     "unknown2")
         try:
             print("\tSending packet PORT13 -> PORT12")
-            sai_thrift_clear_queue_stats(self.client, queue_id)
-            stats = sai_thrift_get_queue_stats(self.client, queue_id)
+            clear_counter(
+                    self, sai_thrift_clear_queue_stats, queue_id)
+            stats = query_counter(
+                    self, sai_thrift_get_queue_stats, queue_id)
             pkt_cnt_before = stats["SAI_QUEUE_STAT_PACKETS"]
             send_packet(self, self.dev_port13, pkt)
             verify_packet(self, exp_pkt, self.dev_port12)
@@ -2142,7 +2147,8 @@ class MirrorConfigData(SaiHelper):
             verify_packet(self, exp_mask_mirrored_pkt, self.dev_port28)
             print("\tPacket mirrored on port 28")
             verify_no_other_packets(self, timeout=1)
-            stats = sai_thrift_get_queue_stats(self.client, queue_id)
+            stats = query_counter(
+                    self, sai_thrift_get_queue_stats, queue_id)
             pkt_cnt_after = stats["SAI_QUEUE_STAT_PACKETS"]
             assert(pkt_cnt_after == pkt_cnt_before + 1), ("Mirrored packet "
                                                           "does not get to the"
@@ -2310,7 +2316,8 @@ class MirrorConfigData(SaiHelper):
                                     pktlen=1000)
 
         try:
-            stats = sai_thrift_get_policer_stats(self.client, self.pol_id)
+            stats = query_counter(
+                    self, sai_thrift_get_policer_stats, self.pol_id)
             g_pkts0 = stats["SAI_POLICER_STAT_GREEN_PACKETS"]
             r_pkts0 = stats["SAI_POLICER_STAT_RED_PACKETS"]
             pkt_cnt = 10
@@ -2336,7 +2343,8 @@ class MirrorConfigData(SaiHelper):
             print("\tReceived packet number is correct")
 
             print("\tChecking policer statistics...")
-            stats = sai_thrift_get_policer_stats(self.client, self.pol_id)
+            stats = query_counter(
+                    self, sai_thrift_get_policer_stats, self.pol_id)
             g_pkts1 = stats["SAI_POLICER_STAT_GREEN_PACKETS"]
             r_pkts1 = stats["SAI_POLICER_STAT_RED_PACKETS"]
             # Only green packets are mirrored that is why total mirrored
@@ -2394,7 +2402,8 @@ class MirrorConfigData(SaiHelper):
                                     pktlen=1000)
 
         try:
-            stats = sai_thrift_get_policer_stats(self.client, self.pol_id)
+            stats = query_counter(
+                    self, sai_thrift_get_policer_stats, self.pol_id)
             g_pkts0 = stats["SAI_POLICER_STAT_GREEN_PACKETS"]
             r_pkts0 = stats["SAI_POLICER_STAT_RED_PACKETS"]
             pkt_cnt = 10
@@ -2420,7 +2429,8 @@ class MirrorConfigData(SaiHelper):
             print("\tReceived packet number is correct")
 
             print("\tChecking policer statistics...")
-            stats = sai_thrift_get_policer_stats(self.client, self.pol_id)
+            stats = query_counter(
+                    self, sai_thrift_get_policer_stats, self.pol_id)
             g_pkts1 = stats["SAI_POLICER_STAT_GREEN_PACKETS"]
             r_pkts1 = stats["SAI_POLICER_STAT_RED_PACKETS"]
             # Only green packets are mirrored that is why total mirrored
@@ -2534,7 +2544,8 @@ class MirrorConfigData(SaiHelper):
                                                     "unknown2")
 
         try:
-            stats = sai_thrift_get_policer_stats(self.client, self.pol_id)
+            stats = query_counter(
+                    self, sai_thrift_get_policer_stats, self.pol_id)
             g_pkts0 = stats["SAI_POLICER_STAT_GREEN_PACKETS"]
             r_pkts0 = stats["SAI_POLICER_STAT_RED_PACKETS"]
             pkt_cnt = 10
@@ -2560,7 +2571,8 @@ class MirrorConfigData(SaiHelper):
             print("\tReceived packet number is correct")
 
             print("\tChecking policer statistics...")
-            stats = sai_thrift_get_policer_stats(self.client, self.pol_id)
+            stats = query_counter(
+                    self, sai_thrift_get_policer_stats, self.pol_id)
             g_pkts1 = stats["SAI_POLICER_STAT_GREEN_PACKETS"]
             r_pkts1 = stats["SAI_POLICER_STAT_RED_PACKETS"]
             # Only green packets are mirrored that is why total mirrored
@@ -2668,7 +2680,8 @@ class MirrorConfigData(SaiHelper):
                                                     "unknown2")
 
         try:
-            stats = sai_thrift_get_policer_stats(self.client, self.pol_id)
+            stats = query_counter(
+                    self, sai_thrift_get_policer_stats, self.pol_id)
             g_pkts0 = stats["SAI_POLICER_STAT_GREEN_PACKETS"]
             r_pkts0 = stats["SAI_POLICER_STAT_RED_PACKETS"]
             pkt_cnt = 10
@@ -2694,7 +2707,8 @@ class MirrorConfigData(SaiHelper):
             print("\tReceived packet number is correct")
 
             print("\tChecking policer statistics...")
-            stats = sai_thrift_get_policer_stats(self.client, self.pol_id)
+            stats = query_counter(
+                    self, sai_thrift_get_policer_stats, self.pol_id)
             g_pkts1 = stats["SAI_POLICER_STAT_GREEN_PACKETS"]
             r_pkts1 = stats["SAI_POLICER_STAT_RED_PACKETS"]
             # Only green packets are mirrored that is why total mirrored

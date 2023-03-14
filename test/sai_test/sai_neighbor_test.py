@@ -288,15 +288,16 @@ class RemoveAddNeighborTestIPV4(T0TestBase):
 
         sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_v4)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        pre_cpu_queue_state = sai_thrift_get_queue_stats(self.client, self.cpu_queue0)[
+        pre_cpu_queue_state = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)[
             "SAI_QUEUE_STAT_PACKETS"]
         send_packet(self, self.dev_port1, pkt)
         verify_no_other_packets(self)
         print("Packet dropped")
-        post_cpu_queue_state = sai_thrift_get_queue_stats(
-            self.client, self.cpu_queue0)["SAI_QUEUE_STAT_PACKETS"]
-        #self.assertEqual(post_cpu_queue_state - pre_cpu_queue_state, 1)
-        # Disable above check beacuse of bug 15205360
+        post_cpu_queue_state = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)["SAI_QUEUE_STAT_PACKETS"]
+        self.assertEqual(post_cpu_queue_state - pre_cpu_queue_state, 1)
+        # bug 15205360 above check 
         print(str(post_cpu_queue_state - pre_cpu_queue_state))
         sai_thrift_create_neighbor_entry(
             self.client,
@@ -383,15 +384,16 @@ class RemoveAddNeighborTestIPV6(T0TestBase):
 
         sai_thrift_remove_neighbor_entry(self.client, self.nbr_entry_v6)
         self.assertEqual(self.status(), SAI_STATUS_SUCCESS)
-        pre_cpu_queue_state = sai_thrift_get_queue_stats(self.client, self.cpu_queue0)[
+        pre_cpu_queue_state = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)[
             "SAI_QUEUE_STAT_PACKETS"]
         send_packet(self, self.dev_port1, pkt_v6)
         verify_no_other_packets(self)
         print("Packet dropped")
-        post_cpu_queue_state = sai_thrift_get_queue_stats(
-            self.client, self.cpu_queue0)["SAI_QUEUE_STAT_PACKETS"]
-        #self.assertEqual(post_cpu_queue_state - pre_cpu_queue_state, 1)
-        # Disable above check beacuse of bug 15205360
+        post_cpu_queue_state = query_counter(
+                    self, sai_thrift_get_queue_stats, self.cpu_queue0)["SAI_QUEUE_STAT_PACKETS"]
+        self.assertEqual(post_cpu_queue_state - pre_cpu_queue_state, 1)
+        # bug 15205360 above check 
         print(str(post_cpu_queue_state - pre_cpu_queue_state))
         sai_thrift_create_neighbor_entry(
             self.client,

@@ -5,6 +5,7 @@ AN - Association Number
 AN - Auto Negotiation
 API - Application Program Interface
 ARP - Address Resolution Protocol
+ARS - Adaptiver Routing and Switching
 ASIC - Application Specific Integrated Circuit
 BFD - Bidirectional Forwarding Detection
 BFDV6 - Bidirectional Forwarding Detection for IPv6
@@ -40,6 +41,7 @@ EEE - Electrical and Electronics Engineering
 EEPROM - Electrically erasable programmable read-only memory
 ERSPAN - Encapsulated Remote SPAN
 ESN - Extended Sequence Number
+EWMA - Exponentially Weighted Moving Average
 FCS - Frame Check Sequence
 FD - File Descriptor
 FDB - Forwarding Data Base
@@ -151,6 +153,7 @@ USXGMII - Universal Serial 10 Gigabit Media Independent Interface
 VNI - Virtual Network Interface
 VNID - Virtual Network Identifier
 VOQ - Virtual Output Queue
+VPN - Virtual Private Network
 VR - Virtual Router
 VRF - Virtual Route Forwarding
 VRRP - Virtual Router Redundancy Protocol
