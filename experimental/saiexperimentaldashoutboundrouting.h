@@ -178,25 +178,24 @@ typedef enum _sai_outbound_routing_entry_attr_t
     SAI_OUTBOUND_ROUTING_ENTRY_ATTR_UNDERLAY_SIP,
 
     /**
-     * @brief Action route_service_tunnel parameter ENCAP_TYPE
+     * @brief Action route_service_tunnel parameter DASH_ENCAPSULATION
      *
-     * @type sai_uint16_t
+     * @type sai_dash_encapsulation_t
      * @flags CREATE_AND_SET
-     * @isvlan false
-     * @default 0
+     * @default SAI_DASH_ENCAPSULATION_VXLAN
      * @validonly SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_SERVICE_TUNNEL
      */
-    SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ENCAP_TYPE,
+    SAI_OUTBOUND_ROUTING_ENTRY_ATTR_DASH_ENCAPSULATION,
 
     /**
-     * @brief Action route_service_tunnel parameter TUNNEL_ID
+     * @brief Action route_service_tunnel parameter TUNNEL_KEY
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 0
      * @validonly SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_SERVICE_TUNNEL
      */
-    SAI_OUTBOUND_ROUTING_ENTRY_ATTR_TUNNEL_ID,
+    SAI_OUTBOUND_ROUTING_ENTRY_ATTR_TUNNEL_KEY,
 
     /**
      * @brief Attach a counter

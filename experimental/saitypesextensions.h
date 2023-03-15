@@ -70,5 +70,25 @@ typedef enum _sai_object_type_extensions_t
 
 } sai_object_type_extensions_t;
 
+typedef enum _sai_dash_direction_t
+{
+    SAI_DASH_DIRECTION_INVALID,
+
+    SAI_DASH_DIRECTION_OUTBOUND,
+
+    SAI_DASH_DIRECTION_INBOUND,
+
+} sai_dash_direction_t;
+
+typedef enum _sai_dash_encapsulation_t
+{
+    SAI_DASH_ENCAPSULATION_INVALID,
+
+    SAI_DASH_ENCAPSULATION_VXLAN,
+
+    SAI_DASH_ENCAPSULATION_NVGRE,
+
+} sai_dash_encapsulation_t;
+
 #endif /* __SAITYPESEXTENSIONS_H_ */
 
