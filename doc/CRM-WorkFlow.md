@@ -22,12 +22,15 @@ API Signature
             _In_ const sai_attribute_t *attr_list,
             _Out_ uint64_t *count);
 ```
-__sai_object_type_get_availability()__ API can be used using single parameter object_type or a combination of attributes to create a granular query.
+__sai_object_type_get_availability()__ API can be used using single a parameter object_type or a combination of attributes to create a granular query.
 
-One of the challenges with this API is when the HW resource is shared between more then one such granular query for e.g. Nexthop Group HW table is shared for different types of next hop groups, v4/v6/mpls table is a flexible shared ressource and so on.
-This document is not trying to address shared HW resource but is mainly trying to create a well know workflow.
+One of the challenges with this API is when the HW resource is shared between more then one such granular query for e.g. Nexthop Group HW table is shared for different types of next hop groups, v4/v6/mpls table and so on, there is no clean way to get available resources as shared. One of the ways can be that NOS makes a query for each resource and if it observes a decremented value not just for the queried resource attribute but others as well then should interpret it as a shared resource for multiple attributes. 
 
-Also there are legacy read only attributes and can be queried using object specific GET API or can also use the get_availability() API. Recommendation is to migrate NOS to use get_availability() API for consistency reasons. Till then SAI Adapter must support both methods.
+For e.g. Let's say NHG is a shared HW resource for ordered and unordered groups. In such cases after allocating 1 NHG for ordered groups, there will be reduction in query for unordered groups as well.
+
+This document is not trying to address shared HW resources issue but is mainly trying to create a well known workflow for generic CRM query.
+
+Currently SAI spec also have legacy read only attributes and can be queried using object specific GET API or can also use the get_availability() API. Recommendation is to migrate NOS to use get_availability() API for consistency reasons. Till then SAI Adapter must support both methods.
 
 # Table of contents
 1. [Query Available System Ports](#introduction)
@@ -57,8 +60,8 @@ For cases where HW has two different physical tables, one to host Tunnel+IP over
 
 Once NOS has determined the HW architecture it can make following queries to determine the available NHG and NHG member entries.
 
-![](./figures/HECMP.png "Figure 1: Hierarchical ECMP")
-__Figure 1: Hierarchical ECMP__
+![](../figures/HECMP.png "Figure 1: Hierarchihcal ECMP")
+__Figure 1: Hierarchihcal ECMP__
 
 
 ### Query Available Overlay (IP+Tunnel) Nexthopgroups <a name="sub-introduction1"></a>
