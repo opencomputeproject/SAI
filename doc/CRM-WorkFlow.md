@@ -60,7 +60,7 @@ For cases where HW has two different physical tables, one to host Tunnel+IP over
 
 Once NOS has determined the HW architecture it can make following queries to determine the available NHG and NHG member entries.
 
-![](../figures/HECMP.png "Figure 1: Hierarchihcal ECMP")
+![](./figures/HECMP.png "Figure 1: Hierarchihcal ECMP")
 __Figure 1: Hierarchihcal ECMP__
 
 
