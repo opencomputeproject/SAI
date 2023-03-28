@@ -292,6 +292,7 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_GENERIC_PROGRAMMABLE     = 102,
     SAI_OBJECT_TYPE_ARS_PROFILE              = 103,
     SAI_OBJECT_TYPE_ARS                      = 104,
+    SAI_OBJECT_TYPE_ACL_TABLE_CHAIN_GROUP    = 105,
     SAI_OBJECT_TYPE_MAX,  /* Must remain in last position */
 } sai_object_type_t;
 
