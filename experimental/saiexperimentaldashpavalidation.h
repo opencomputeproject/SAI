@@ -88,6 +88,15 @@ typedef enum _sai_pa_validation_entry_attr_t
     SAI_PA_VALIDATION_ENTRY_ATTR_ACTION = SAI_PA_VALIDATION_ENTRY_ATTR_START,
 
     /**
+     * @brief IP address family for resource accounting
+     *
+     * @type sai_ip_addr_family_t
+     * @flags READ_ONLY
+     * @isresourcetype true
+     */
+    SAI_PA_VALIDATION_ENTRY_ATTR_IP_ADDR_FAMILY,
+
+    /**
      * @brief End of attributes
      */
     SAI_PA_VALIDATION_ENTRY_ATTR_END,

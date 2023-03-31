@@ -110,6 +110,15 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_COUNTER_ID,
 
     /**
+     * @brief IP address family for resource accounting
+     *
+     * @type sai_ip_addr_family_t
+     * @flags READ_ONLY
+     * @isresourcetype true
+     */
+    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_IP_ADDR_FAMILY,
+
+    /**
      * @brief End of attributes
      */
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_END,
