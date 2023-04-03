@@ -301,24 +301,6 @@ typedef enum _sai_acl_table_chain_group_type_t
 } sai_acl_table_chain_group_type_t;
 
 /**
- * @brief Attribute data for SAI_ACL_TABLE_CHAIN_GROUP_ATTR_STAGE
- */
-typedef enum _sai_acl_table_chain_group_stage_t
-{
-    /** Stage 0 */
-    SAI_ACL_TABLE_CHAIN_GROUP_STAGE_0,
-
-    /** Stage 1 */
-    SAI_ACL_TABLE_CHAIN_GROUP_STAGE_1,
-
-    /** Stage 2 */
-    SAI_ACL_TABLE_CHAIN_GROUP_STAGE_2,
-
-    /** Stage 3 */
-    SAI_ACL_TABLE_CHAIN_GROUP_STAGE_3,
-} sai_acl_table_chain_group_stage_t;
-
-/**
  * @brief Attribute data for SAI_ACL_TABLE_GROUP_ATTR_TYPE
  */
 typedef enum _sai_acl_table_group_type_t
