@@ -286,6 +286,8 @@ typedef enum _sai_acl_action_type_t
     /** Disable ARS forwarding */
     SAI_ACL_ACTION_TYPE_DISABLE_ARS_FORWARDING = 0x00000037,
 
+    /** Next Chain Group */
+    SAI_ACL_ACTION_TYPE_CHAIN_REDIRECT = 0x00000038,
 } sai_acl_action_type_t;
 
 /**
@@ -2561,7 +2563,7 @@ typedef enum _sai_acl_entry_attr_t
      *
      * @type sai_acl_action_data_t sai_object_id_t
      * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_SYSTEM_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP, SAI_OBJECT_TYPE_BRIDGE_PORT, SAI_OBJECT_TYPE_L2MC_GROUP, SAI_OBJECT_TYPE_IPMC_GROUP, SAI_OBJECT_TYPE_ACL_TABLE_CHAIN_GROUP
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_SYSTEM_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP, SAI_OBJECT_TYPE_NEXT_HOP_GROUP, SAI_OBJECT_TYPE_BRIDGE_PORT, SAI_OBJECT_TYPE_L2MC_GROUP, SAI_OBJECT_TYPE_IPMC_GROUP
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT = SAI_ACL_ENTRY_ATTR_ACTION_START,
@@ -3120,9 +3122,19 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_DISABLE_ARS_FORWARDING = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x37,
 
     /**
+     * @brief Redirect Packet to a next chain table group object for chained lookup
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE_CHAIN_GROUP
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_CHAIN_REDIRECT = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x38,
+
+    /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_DISABLE_ARS_FORWARDING,
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_CHAIN_REDIRECT,
 
     /**
      * @brief End of ACL Entry attributes

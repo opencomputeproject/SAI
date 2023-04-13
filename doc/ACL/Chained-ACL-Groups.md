@@ -14,11 +14,11 @@
 2. [Motivation](#introduction1)
 3. [Chained Table Groups](#introduction2)
 4. [SAI Spec Changes](#introduction3)
-    4.1 [Chain Table Group Object and Binding](#introduction3.1)
-    4.2 [Chain Table Group Attributes](#introduction3.2)
+    1. [Chain Table Group Object and Binding](#introduction3.1)
+    2. [Chain Table Group Attributes](#introduction3.2)
 5. [Capability Query](#introduction4)
-   5.1 [Query for Chain Group support](#introduction4.1)
-   5.2 [Query for Chain Group stages](#introduction4.2)
+    1. [Query for Chain Group support](#introduction4.1)
+    2. [Query for Chain Group stages](#introduction4.2)
 6. [Warmboot Implications](#introduction5)
 7. [Sample Workflow](#introduction6)
 
@@ -162,6 +162,22 @@ This object is referenced by the table group member object.  Note that SAI_ACL_T
  } sai_acl_table_chain_group_stage_t;
 ```
 &nbsp;
+**Chain table group action pointing to another chain table group in the chain**
+> SAI_ACL_ENTRY_ATTR_ACTION_CHAIN_REDIRECT helps to set a redirect action to another chain table group object that is  not the immediate next chain table group in the order. 
+> For example: Let's say there are 3 chain table groups: CTG1, CTG2, and CTG3. It's quite possible that some ACL table entry in CTG1 needs to point to CTG3 for a subsequent lookup. This is achieved using the following attribute.
+```
+    /**
+     * @brief Redirect Packet to a next chain table group object for chained lookup
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE_CHAIN_GROUP
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_CHAIN_REDIRECT = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x38,
+```
+
+&nbsp;
 **Chain table group attribute enum**
 ```
  /**
@@ -229,16 +245,21 @@ NOS can  query SAI to find out if hardware supports the concept of chain ACL gro
 &nbsp;
 ### 5.1. Query for Chain Group support <a name="introduction4.1"></a>
 **Hardware can be queried using the following query API. SAI adapter will return the sai_attr_capability_t structure with create/get/set capabilities.**
-```
-sai_query_attribute_capability(switch_id, 
-                               SAI_OBJECT_TYPE_ACL_TABLE_CHAIN_GROUP,
-                               SAI_ACL_TABLE_GROUP_MEMBER_ATTR_ACL_TABLE_CHAIN_GROUP_ID, 
-                               attr_cap)
-```
+
+> sai_query_attribute_capability(switch_id, 
+>  &emsp;  &emsp;                           SAI_OBJECT_TYPE_ACL_TABLE_CHAIN_GROUP,
+>  &emsp;  &emsp;                           SAI_ACL_TABLE_GROUP_MEMBER_ATTR_ACL_TABLE_CHAIN_GROUP_ID, 
+>  &emsp;    &emsp;                         attr_cap)
+
 &nbsp;
 ### 5.2. Query for Chain Group stages <a name="introduction4.2"></a>
 **sai_acl_capability_t is enhanced with following fields**
 acl_chain_list will return **count** as the number of stages in the ACL stage and **list** will consist of **chain_group_stage** and **supported_match_type** for each stage.
+
+> sai_query_attribute_capability(switch_id, 
+> &emsp;   &emsp;                           SAI_OBJECT_TYPE_SWITCH,
+>  &emsp;  &emsp;                           SAI_SWITCH_ATTR_ACL_STAGE_INGRESS, 
+>  &emsp;  &emsp;                           attr_cap)
 ```
 /**
   * @brief Structure for ACL chain stage and corresponding table type
@@ -289,15 +310,22 @@ Subsequently a new table and corresponding chain group object is created. This i
 ## 7. Sample Workflow <a name="introduction6"></a>
 
 **Bind Point**: Port
+
 **ACL Stage**: Ingress
+
 **Table Group**: acl_grp_id, Lookup:Sequential
-**Chain Table Group**: acl_chain_grp_id1, sequential, stage 0 and acl_chain_grp_id1, parallel, stage 1
+
+**Chain Table Group**: [acl_chain_grp_id1, sequential, stage 0], [acl_chain_grp_id2, parallel, stage 1]
+
 **Table**: acl_table_id1, acl_table_id2
+
 **Table Group Member**:acl_grp_mem1, acl_grp_mem2
 
 **Relationship**
-acl_grp_id -> [acl_chain_grp_id1, sequential, stage0], [acl_chain_grp_id1, parallel, stage1]
+acl_grp_id -> [acl_chain_grp_id1, sequential, stage 0], [acl_chain_grp_id2, parallel, stage 1]
+
 acl_chain_grp_id1 -> [acl_table_id1, exact match]
+
 acl_chain_grp_id2 -> acl_table_id2, ternary]
 
 Step 0:
