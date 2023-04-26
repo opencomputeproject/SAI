@@ -48,6 +48,7 @@ FDB - Forwarding Data Base
 FEC - Forward Error Correction
 FPGA - Field Programmable Gate Array
 FW  - Firmware
+GB - Giga Byte
 GCM - Galois Counter Mode
 GMII - Gigabit Media-Independent Interface
 GNMI - gRPC Network Management Interface
