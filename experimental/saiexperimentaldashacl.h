@@ -64,6 +64,7 @@ typedef enum _sai_dash_acl_group_attr_t
      * @type sai_ip_addr_family_t
      * @flags CREATE_AND_SET
      * @default SAI_IP_ADDR_FAMILY_IPV4
+     * @isresourcetype true
      */
     SAI_DASH_ACL_GROUP_ATTR_IP_ADDR_FAMILY = SAI_DASH_ACL_GROUP_ATTR_START,
 
@@ -105,6 +106,7 @@ typedef enum _sai_dash_acl_rule_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_DASH_ACL_GROUP
+     * @isresourcetype true
      */
     SAI_DASH_ACL_RULE_ATTR_DASH_ACL_GROUP_ID,
 
@@ -168,6 +170,15 @@ typedef enum _sai_dash_acl_rule_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_DASH_ACL_RULE_ATTR_PRIORITY,
+
+    /**
+     * @brief IP address family for resource accounting
+     *
+     * @type sai_ip_addr_family_t
+     * @flags READ_ONLY
+     * @isresourcetype true
+     */
+    SAI_DASH_ACL_RULE_ATTR_IP_ADDR_FAMILY,
 
     /**
      * @brief End of attributes
