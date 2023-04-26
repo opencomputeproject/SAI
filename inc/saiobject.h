@@ -44,6 +44,7 @@
 #include <saiexperimentaldashoutboundcatopa.h>
 #include <saiexperimentaldashinboundrouting.h>
 #include <saiexperimentaldasheni.h>
+#include <saiexperimentaldashtag.h>
 #include <saiexperimentaldashdirectionlookup.h>
 #include <saiexperimentaldashacl.h>
 #include <saiexperimentalbmtor.h>
@@ -95,6 +96,12 @@ typedef union _sai_object_key_entry_t
 
     /** @validonly object_type == SAI_OBJECT_TYPE_DIRECTION_LOOKUP_ENTRY */
     sai_direction_lookup_entry_t direction_lookup_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_DST_TAG_ENTRY */
+    sai_dst_tag_entry_t dst_tag_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_SRC_TAG_ENTRY */
+    sai_src_tag_entry_t src_tag_entry;
 
     /** @validonly object_type == SAI_OBJECT_TYPE_ENI_ETHER_ADDRESS_MAP_ENTRY */
     sai_eni_ether_address_map_entry_t eni_ether_address_map_entry;

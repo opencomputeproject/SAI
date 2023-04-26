@@ -111,6 +111,38 @@ typedef enum _sai_dash_acl_rule_attr_t
     SAI_DASH_ACL_RULE_ATTR_DASH_ACL_GROUP_ID,
 
     /**
+     * @brief Ternary matched key dst_tag
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_DASH_ACL_RULE_ATTR_DST_TAG,
+
+    /**
+     * @brief Ternary matched mask dst_tag
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_DASH_ACL_RULE_ATTR_DST_TAG_MASK,
+
+    /**
+     * @brief Ternary matched key src_tag
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_DASH_ACL_RULE_ATTR_SRC_TAG,
+
+    /**
+     * @brief Ternary matched mask src_tag
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_DASH_ACL_RULE_ATTR_SRC_TAG_MASK,
+
+    /**
      * @brief List matched key dip
      *
      * @type sai_ip_prefix_list_t

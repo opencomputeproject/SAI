@@ -39,6 +39,7 @@
 #include "saiexperimentaldashoutboundcatopa.h"
 #include "saiexperimentaldashinboundrouting.h"
 #include "saiexperimentaldasheni.h"
+#include "saiexperimentaldashtag.h"
 #include "saiexperimentaldashdirectionlookup.h"
 #include "saiexperimentaldashacl.h"
 #include "saiexperimentalbmtor.h"
@@ -57,6 +58,8 @@ typedef enum _sai_api_extensions_t
     SAI_API_DASH_ACL,
 
     SAI_API_DASH_DIRECTION_LOOKUP,
+
+    SAI_API_DASH_TAG,
 
     SAI_API_DASH_ENI,
 
