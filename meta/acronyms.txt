@@ -55,6 +55,8 @@ GPB - Google Protocol Buffers
 GPE - Generic Programmable Extensions
 GRE - Generic Routing Encapsulation
 GRPC - GRPC Remote Procedure Call
+HTTPCLIENT - Hyper Text Transfer Protocol Client
+HTTPSERVER - Hyper Text Transfer Protocol Server
 HW - Hardware
 I2C - Inter Integrated Circuit
 ICMP - Internet Control Message Protocol
