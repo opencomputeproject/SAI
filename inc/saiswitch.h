@@ -2851,13 +2851,13 @@ typedef enum _sai_switch_attr_t
      *
      * true: Trigger the switch isolate process
      * false: Undo the isolation operation.
-     * This attribute is for Fabric Chassis only
+     * This attribute is for Fabric or VOQ Chassis only
      * If this attribute is set to true, it overrides port level isolation setting.
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
-     * @validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_FABRIC
+     * @validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_FABRIC or SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_VOQ
      */
     SAI_SWITCH_ATTR_SWITCH_ISOLATE,
 
