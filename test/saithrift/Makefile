@@ -88,7 +88,7 @@ $(PY_SOURCES): src/switch_sai.thrift
 	$(THRIFT) -o $(SRC) --gen py -r $(SRC)/switch_sai.thrift
 
 $(SAI_PY_HEADERS): $(SAI_HEADERS)
-	$(CTYPESGEN) -I/usr/include -I$(SAI_HEADER_DIR) --include /usr/include/linux/limits.h $^ -o $@
+	$(CTYPESGEN) -I/usr/include -I$(SAI_HEADER_DIR) -I../../experimental --include /usr/include/linux/limits.h $^ -o $@
 
 clientlib: $(PY_SOURCES) $(SAI_PY_HEADERS)
 	python setup.py sdist
