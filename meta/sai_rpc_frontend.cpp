@@ -256,7 +256,17 @@ void convert_attr_thrift_to_sai(const sai_object_type_t sai_ot,
       sai_attr->value.s32range.min = thrift_attr.value.s32range.min;
       sai_attr->value.s32range.max = thrift_attr.value.s32range.max;
       break;
-
+    case SAI_ATTR_VALUE_TYPE_UINT16_RANGE_LIST: {
+      sai_attr->value.u16rangelist.list =
+      (sai_u16_range_t *)malloc(sizeof(sai_u16_range_t) * thrift_attr.value.u16rangelist.count);
+      int i = 0;
+      for (auto range : thrift_attr.value.u16rangelist.rangelist)
+      {
+        sai_attr->value.u16rangelist.list[i].min = range.min;
+        sai_attr->value.u16rangelist.list[i++].max = range.max;
+      }
+      sai_attr->value.u16rangelist.count = thrift_attr.value.u16rangelist.count;
+      } break;
     case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_BOOL:
       sai_attr->value.aclfield.enable = thrift_attr.value.aclfield.enable;
       sai_attr->value.aclfield.data.booldata =
@@ -452,6 +462,16 @@ void convert_attr_thrift_to_sai(const sai_object_type_t sai_ot,
                                       &sai_attr->value.ipaddrlist.list[i++]);
       }
       sai_attr->value.ipaddrlist.count = thrift_attr.value.ipaddrlist.count;
+    } break;
+    case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST: {
+      sai_attr->value.ipprefixlist.list = (sai_ip_prefix_t *)malloc(
+          sizeof(sai_ip_prefix_t) * thrift_attr.value.ipprefixlist.count);
+      int i = 0;
+      for (auto address : thrift_attr.value.ipprefixlist.prefixlist) {
+        sai_thrift_ip_prefix_t_parse(address,
+                                      &sai_attr->value.ipprefixlist.list[i++]);
+      }
+      sai_attr->value.ipprefixlist.count = thrift_attr.value.ipprefixlist.count;
     } break;
     case SAI_ATTR_VALUE_TYPE_MAP_LIST:
     case SAI_ATTR_VALUE_TYPE_VLAN_LIST:
@@ -680,6 +700,16 @@ void convert_attr_sai_to_thrift(const sai_object_type_t sai_ot,
       thrift_attr.value.s32range.min = sai_attr.value.s32range.min;
       thrift_attr.value.s32range.max = sai_attr.value.s32range.max;
       break;
+    case SAI_ATTR_VALUE_TYPE_UINT16_RANGE_LIST: {
+      for (unsigned int i = 0; i < sai_attr.value.u16rangelist.count; i++) {
+        sai_thrift_u16_range_t range;
+        range.min = sai_attr.value.u16rangelist.list[i].min;
+        range.max = sai_attr.value.u16rangelist.list[i].max;
+        thrift_attr.value.u16rangelist.rangelist.push_back(range);
+      }
+      thrift_attr.value.u16rangelist.count = sai_attr.value.u16rangelist.count;
+      free(sai_attr.value.u16rangelist.list);
+    } break;
 
     case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_BOOL:
     case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8:
@@ -741,6 +771,16 @@ void convert_attr_sai_to_thrift(const sai_object_type_t sai_ot,
       }
       thrift_attr.value.ipaddrlist.count = sai_attr.value.ipaddrlist.count;
       free(sai_attr.value.ipaddrlist.list);
+    } break;
+    case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST: {
+      sai_attr->value.ipprefixlist.list = (sai_ip_prefix_t *)malloc(
+          sizeof(sai_ip_prefix_t) * thrift_attr.value.ipprefixlist.count);
+      int i = 0;
+      for (auto address : thrift_attr.value.ipprefixlist.prefixlist) {
+        sai_thrift_ip_prefix_t_parse(address,
+                                      &sai_attr->value.ipprefixlist.list[i++]);
+      }
+      sai_attr->value.ipprefixlist.count = thrift_attr.value.ipprefixlist.count;
     } break;
     case SAI_ATTR_VALUE_TYPE_MAP_LIST:
     case SAI_ATTR_VALUE_TYPE_VLAN_LIST:
