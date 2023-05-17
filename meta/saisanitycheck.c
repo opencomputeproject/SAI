@@ -1179,7 +1179,7 @@ void check_attr_default_value_type(
                 case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
                 case SAI_ATTR_VALUE_TYPE_PORT_LANE_LATCH_STATUS_LIST:
                 case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
-				case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
+                case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
                     break;
 
                 default:
