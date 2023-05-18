@@ -2852,6 +2852,7 @@ typedef enum _sai_switch_attr_t
      * true: Trigger the switch isolate process
      * false: Undo the isolation operation.
      * This attribute is for Fabric or VOQ Chassis only
+     * Setting this flag to true will stop data traffic from flowing on local fabric ports. Fabric control traffic like credit grants and control messages will still continue to flow. Setting this flag to false will (re)enable data traffic on fabric ports.
      * If this attribute is set to true, it overrides port level isolation setting.
      *
      * @type bool
