@@ -286,7 +286,21 @@ typedef enum _sai_acl_action_type_t
     /** Disable ARS forwarding */
     SAI_ACL_ACTION_TYPE_DISABLE_ARS_FORWARDING = 0x00000037,
 
+    /** Next Chain Group */
+    SAI_ACL_ACTION_TYPE_CHAIN_REDIRECT = 0x00000038,
 } sai_acl_action_type_t;
+
+/**
+ * @brief Attribute data for SAI_ACL_TABLE_CHAIN_GROUP_ATTR_TYPE
+ */
+typedef enum _sai_acl_table_chain_group_type_t
+{
+    /** SEQUENTIAL */
+    SAI_ACL_TABLE_CHAIN_GROUP_TYPE_SEQUENTIAL,
+
+    /** PARALLEL */
+    SAI_ACL_TABLE_CHAIN_GROUP_TYPE_PARALLEL,
+} sai_acl_table_chain_group_type_t;
 
 /**
  * @brief Attribute data for SAI_ACL_TABLE_GROUP_ATTR_TYPE
@@ -364,6 +378,15 @@ typedef enum _sai_acl_table_group_attr_t
     SAI_ACL_TABLE_GROUP_ATTR_MEMBER_LIST,
 
     /**
+     * @brief ACL table sub groups associated with this group.
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE_CHAIN_GROUP
+     */
+    SAI_ACL_TABLE_GROUP_ATTR_CHAIN_GROUP_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_ACL_TABLE_GROUP_ATTR_END,
@@ -379,6 +402,65 @@ typedef enum _sai_acl_table_group_attr_t
     SAI_ACL_TABLE_GROUP_ATTR_CUSTOM_RANGE_END
 
 } sai_acl_table_group_attr_t;
+
+/**
+ * @brief Attribute Id for acl_table_chain_group
+ */
+typedef enum _sai_acl_table_chain_group_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_ACL_TABLE_CHAIN_GROUP_ATTR_START,
+
+    /**
+     * @brief ACL table sub group type
+     *
+     * ACL table group type represents the way various ACL tables within this
+     * ACL table group perform their lookups. There are two optional values:
+     * Sequential - All the ACL tables are looked up in a sequential order,
+     * which is based on the ACL table priorities and only one ACL entry is matched
+     * with its corresponding ACL entry action applied. In case two ACL tables
+     * have the same priority they are looked up on a first come basis.
+     * Parallel - All the ACL tables within the ACL table groups are looked up
+     * in parallel and non-conflicting actions are resolved and applied from
+     * multiple matched ACL entries (each from different ACL tables of this group).
+     * Conflicting actions are resolved based on the ACL table priorities.
+     *
+     * @type sai_acl_table_chain_group_type_t
+     * @flags CREATE_ONLY
+     * @default SAI_ACL_TABLE_CHAIN_GROUP_TYPE_SEQUENTIAL
+     */
+    SAI_ACL_TABLE_CHAIN_GROUP_ATTR_TYPE = SAI_ACL_TABLE_CHAIN_GROUP_ATTR_START,
+
+    /**
+     * @brief ACL table sub group stage
+     *
+     * ACL table sub group stage represents the cascading stage in the pipeline.
+     * Lower numbered stage comes before the higher numbered stage.
+     *
+     * @type sai_acl_table_chain_group_stage_t
+     * @flags CREATE_ONLY
+     * @default SAI_ACL_TABLE_CHAIN_GROUP_STAGE_0
+     */
+    SAI_ACL_TABLE_CHAIN_GROUP_ATTR_STAGE,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_ACL_TABLE_CHAIN_GROUP_ATTR_END,
+
+    /**
+     * @brief Custom range base value start
+     */
+    SAI_ACL_TABLE_CHAIN_GROUP_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /**
+     * @brief End of Custom range base
+     */
+    SAI_ACL_TABLE_CHAIN_GROUP_ATTR_CUSTOM_RANGE_END
+
+} sai_acl_table_chain_group_attr_t;
 
 /**
  * @brief Attribute Id for acl_table_group_member
@@ -432,6 +514,22 @@ typedef enum _sai_acl_table_group_member_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_ACL_TABLE_GROUP_MEMBER_ATTR_PRIORITY,
+
+    /**
+     * @brief ACL table chain group id
+     *
+     * This attribute is required to associate or attach a member object (acl_table_id)
+     * to a ACL table chain group id allocated during create ACL table chain group API.
+     *
+     * The ACL Table lookup could be done serially or in parallel within the chain group.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE_CHAIN_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ACL_TABLE_GROUP_MEMBER_ATTR_ACL_TABLE_CHAIN_GROUP_ID,
 
     /**
      * @brief End of attributes
@@ -3024,9 +3122,19 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_DISABLE_ARS_FORWARDING = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x37,
 
     /**
+     * @brief Redirect Packet to a next chain table group object for chained lookup
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE_CHAIN_GROUP
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_CHAIN_REDIRECT = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x38,
+
+    /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_DISABLE_ARS_FORWARDING,
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_CHAIN_REDIRECT,
 
     /**
      * @brief End of ACL Entry attributes
@@ -3507,6 +3615,58 @@ typedef sai_status_t (*sai_get_acl_table_group_member_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
+ * @brief Create an ACL Table Chain Group
+ *
+ * @param[out] acl_table_chain_group_id The ACL sub group id
+ * @param[in] switch_id Switch ID
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_create_acl_table_chain_group_fn)(
+        _Out_ sai_object_id_t *acl_table_chain_group_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Delete an ACL Table Chain Group
+ *
+ * @param[in] acl_table_chain_group_id The ACL chain_group id
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_remove_acl_table_chain_group_fn)(
+        _In_ sai_object_id_t acl_table_chain_group_id);
+
+/**
+ * @brief Set ACL table chain group attribute
+ *
+ * @param[in] acl_table_chain_group_id The ACL table chain_group id
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_set_acl_table_chain_group_attribute_fn)(
+        _In_ sai_object_id_t acl_table_chain_group_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Get ACL table chain group attribute
+ *
+ * @param[in] acl_table_chain_group_id ACL table chain_group id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_acl_table_chain_group_attribute_fn)(
+        _In_ sai_object_id_t acl_table_chain_group_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+/**
  * @brief Port methods table retrieved with sai_api_query()
  */
 typedef struct _sai_acl_api_t
@@ -3535,6 +3695,10 @@ typedef struct _sai_acl_api_t
     sai_remove_acl_table_group_member_fn        remove_acl_table_group_member;
     sai_set_acl_table_group_member_attribute_fn set_acl_table_group_member_attribute;
     sai_get_acl_table_group_member_attribute_fn get_acl_table_group_member_attribute;
+    sai_create_acl_table_chain_group_fn         create_acl_table_chain_group;
+    sai_remove_acl_table_chain_group_fn         remove_acl_table_chain_group;
+    sai_set_acl_table_chain_group_attribute_fn  set_acl_table_chain_group_attribute;
+    sai_get_acl_table_chain_group_attribute_fn  get_acl_table_chain_group_attribute;
 } sai_acl_api_t;
 
 /**
