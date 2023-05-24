@@ -292,6 +292,7 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_GENERIC_PROGRAMMABLE     = 102,
     SAI_OBJECT_TYPE_ARS_PROFILE              = 103,
     SAI_OBJECT_TYPE_ARS                      = 104,
+    SAI_OBJECT_TYPE_ACL_TABLE_CHAIN_GROUP    = 105,
     SAI_OBJECT_TYPE_MAX,  /* Must remain in last position */
 } sai_object_type_t;
 
@@ -797,6 +798,47 @@ typedef enum _sai_acl_table_supported_match_type_t
 } sai_acl_table_supported_match_type_t;
 
 /**
+ * @brief Attribute data for SAI_ACL_TABLE_CHAIN_GROUP_ATTR_STAGE
+ */
+typedef enum _sai_acl_table_chain_group_stage_t
+{
+    /** Stage 0 */
+    SAI_ACL_TABLE_CHAIN_GROUP_STAGE_0,
+
+    /** Stage 0 */
+    SAI_ACL_TABLE_CHAIN_GROUP_STAGE_1,
+
+    /** Stage 1 */
+    SAI_ACL_TABLE_CHAIN_GROUP_STAGE_2,
+
+    /** Stage 2 */
+    SAI_ACL_TABLE_CHAIN_GROUP_STAGE_3,
+
+} sai_acl_table_chain_group_stage_t;
+
+/**
+ * @brief Structure for ACL chain stage and corresponding table type
+ */
+typedef struct _sai_acl_chain_t
+{
+    /** ACL table chain stage */
+    sai_acl_table_chain_group_stage_t chain_group_stage;
+
+    /** Table type supported for this stage */
+    sai_acl_table_supported_match_type_t supported_match_type;
+} sai_acl_chain_t;
+
+typedef struct _sai_acl_chain_list_t
+{
+    /** Number of stages in the chain */
+    uint32_t count;
+
+    /** Chain list */
+    sai_acl_chain_t *list;
+
+} sai_acl_chain_list_t;
+
+/**
  * @brief Structure for ACL attributes supported at each stage.
  * action_list alone is added now. Qualifier list can also be added
  * when needed.
@@ -834,6 +876,11 @@ typedef struct _sai_acl_capability_t
      * Indicates whether EM can support non contiguous bits matching
      */
     bool is_non_contiguous_bits_exact_match_supported;
+
+    /**
+     * @brief Number of chained stages and types supported for a given ACL stage.
+     */
+    sai_acl_chain_list_t acl_chain_list;
 
 } sai_acl_capability_t;
 
