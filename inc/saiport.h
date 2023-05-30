@@ -2273,6 +2273,18 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_ECMP_HASH_OFFSET,
 
     /**
+     * @brief Operational FEC mode
+     *
+     * If port is down or auto negotiation is in progress, the returned value should be SAI_PORT_FEC_MODE_NONE.
+     * If auto negotiation is on, the returned value should be the negotiated FEC.
+     * If auto negotiation is off, the returned value should be the set value.
+     *
+     * @type sai_port_fec_mode_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_OPER_PORT_FEC_MODE,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
