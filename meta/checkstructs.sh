@@ -111,6 +111,7 @@ function check_structs_history()
 
 # BEGIN_COMMIT is the commit from we want structs to be backward compatible
 
+# currently set to v1.12.0
 BEGIN_COMMIT=aed34c8
 END_COMMIT=HEAD
 
