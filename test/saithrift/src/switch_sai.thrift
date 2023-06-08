@@ -393,6 +393,9 @@ service switch_sai_rpc {
     list<i64> sai_thrift_get_buffer_pool_stats(
                         1: sai_thrift_object_id_t buffer_pool_id,
                         2: list<sai_thrift_buffer_pool_stat_counter_t> counter_ids);
+    sai_thrift_status_t sai_thrift_clear_buffer_pool_stats(
+                        1: sai_thrift_object_id_t buffer_pool_id,
+                        2: list<sai_thrift_buffer_pool_stat_counter_t> counter_ids);
     sai_thrift_status_t sai_thrift_set_priority_group_attribute(1: sai_thrift_object_id_t pg_id,
                                                                 2: sai_thrift_attribute_t thrift_attr)
     list<i64> sai_thrift_get_pg_stats(
