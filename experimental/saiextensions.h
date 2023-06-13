@@ -25,6 +25,7 @@
 #ifndef __SAIEXTENSIONS_H_
 #define __SAIEXTENSIONS_H_
 
+#include <sai.h>
 #include <saitypes.h>
 
 /* existing enum extensions */
