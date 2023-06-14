@@ -2211,8 +2211,8 @@ typedef enum _sai_port_attr_t
      *
      * @type bool
      * @flags CREATE_AND_SET
-     * @validonly SAI_PORT_ATTR_FEC_MODE_EXTENDED == SAI_PORT_FEC_MODE_EXTENDED_NONE
      * @default false
+     * @validonly SAI_PORT_ATTR_FEC_MODE_EXTENDED == SAI_PORT_FEC_MODE_EXTENDED_NONE
      */
     SAI_PORT_ATTR_PCS_IEEE_DATAPATH_ENABLE,
 
