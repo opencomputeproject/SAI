@@ -2056,6 +2056,8 @@ sub ProcessIsAclField
 
     return "true" if $attr =~ /^SAI_ACL_ENTRY_ATTR_(USER_DEFINED_)?FIELD_\w+$/;
 
+    return "true" if $attr =~ /^SAI_UDF_MATCH_ATTR_\w+_TYPE$/;
+
     return "false";
 }
 

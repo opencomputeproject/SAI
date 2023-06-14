@@ -1532,6 +1532,190 @@ void test_deserialize_pointer()
 #endif
 }
 
+void test_serialize_enum_list()
+{
+    int res;
+    char buf[PRIMITIVE_BUFFER_SIZE];
+    sai_s32_list_t list;
+
+    sai_object_type_t ot[2] = {SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG};
+    list.count = 2;
+    list.list = (int32_t *)&ot[0];
+
+    res = sai_serialize_enum_list(buf, &sai_metadata_enum_sai_object_type_t, &list);
+
+    ASSERT_STR_EQ(buf, "{\"count\":2,\"list\":[\"SAI_OBJECT_TYPE_PORT\",\"SAI_OBJECT_TYPE_LAG\"]}", res);
+
+    ot[1] = -1;
+    res = sai_serialize_enum_list(buf, &sai_metadata_enum_sai_object_type_t, &list);
+
+    ASSERT_STR_EQ(buf, "{\"count\":2,\"list\":[\"SAI_OBJECT_TYPE_PORT\",\"-1\"]}", res);
+
+    ot[1] = 128;
+
+    res = sai_serialize_enum_list(buf, &sai_metadata_enum_sai_object_type_t, &list);
+    ASSERT_STR_EQ(buf, "{\"count\":2,\"list\":[\"SAI_OBJECT_TYPE_PORT\",\"128\"]}", res);
+
+    ot[1] = SAI_OBJECT_TYPE_LAG;
+    res = sai_serialize_enum_list(buf, NULL, &list);
+    ASSERT_STR_EQ(buf, "{\"count\":2,\"list\":[1,2]}", res);
+
+    list.count = 0;
+    list.list = NULL;
+    res = sai_serialize_enum_list(buf, &sai_metadata_enum_sai_object_type_t, &list);
+    ASSERT_STR_EQ(buf, "{\"count\":0,\"list\":null}", res);
+}
+
+void test_deserialize_enum_list()
+{
+    int res;
+    const char *buf;
+    sai_s32_list_t list = {0};
+
+    buf = "{\"count\":2,\"list\":[\"SAI_OBJECT_TYPE_PORT\",\"SAI_OBJECT_TYPE_LAG\"]}";
+    res = sai_deserialize_enum_list(buf, &sai_metadata_enum_sai_object_type_t, &list);
+    ASSERT_TRUE(res == (int)strlen(buf), "expected true");
+    ASSERT_TRUE(list.count == 2, "expected true");
+    ASSERT_TRUE(list.list[0] == SAI_OBJECT_TYPE_PORT, "expected true");
+    ASSERT_TRUE(list.list[1] == SAI_OBJECT_TYPE_LAG, "expected true");
+    free(list.list);
+    list.list = NULL;
+    list.count = 0;
+
+    buf = "{\"count\":2,\"list\":[\"SAI_OBJECT_TYPE_PORT\",\"-1\"]}";
+    res = sai_deserialize_enum_list(buf, &sai_metadata_enum_sai_object_type_t, &list);
+    ASSERT_TRUE(res == (int)strlen(buf), "expected true");
+    ASSERT_TRUE(list.count == 2, "expected true");
+    ASSERT_TRUE(list.list[0] == SAI_OBJECT_TYPE_PORT, "expected true");
+    ASSERT_TRUE(list.list[1] == -1, "expected true");
+    free(list.list);
+    list.list = NULL;
+    list.count = 0;
+
+    buf = "{\"count\":2,\"list\":[\"SAI_OBJECT_TYPE_PORT\",\"128\"]}";
+    res = sai_deserialize_enum_list(buf, &sai_metadata_enum_sai_object_type_t, &list);
+    ASSERT_TRUE(res == (int)strlen(buf), "expected true");
+    ASSERT_TRUE(list.count == 2, "expected true");
+    ASSERT_TRUE(list.list[0] == SAI_OBJECT_TYPE_PORT, "expected true");
+    ASSERT_TRUE(list.list[1] == 128, "expected true");
+    free(list.list);
+    list.list = NULL;
+    list.count = 0;
+
+    buf = "{\"count\":2,\"list\":[1,2]}";
+    res = sai_deserialize_enum_list(buf, NULL, &list);
+    ASSERT_TRUE(res == (int)strlen(buf), "expected true");
+    ASSERT_TRUE(list.count == 2, "expected true");
+    ASSERT_TRUE(list.list[0] == SAI_OBJECT_TYPE_PORT, "expected true");
+    ASSERT_TRUE(list.list[1] == SAI_OBJECT_TYPE_LAG, "expected true");
+    free(list.list);
+    list.list = NULL;
+    list.count = 0;
+
+    buf = "{\"count\":0,\"list\":null}";
+    res = sai_deserialize_enum_list(buf, &sai_metadata_enum_sai_object_type_t, &list);
+    ASSERT_TRUE(res == (int)strlen(buf), "expected true");
+    ASSERT_TRUE(list.count == 0, "expected true");
+    ASSERT_TRUE(list.list == NULL, "expected true");
+
+    buf = "{\"count\":0,\"list\":}";
+    res = sai_deserialize_enum_list(buf, &sai_metadata_enum_sai_object_type_t, &list);
+    ASSERT_TRUE(res == -1, "expected true");
+}
+
+void test_serialize_attr_id()
+{
+    int res;
+    char buf[PRIMITIVE_BUFFER_SIZE];
+    sai_attr_id_t attr_id;
+
+    attr_id = SAI_SWITCH_ATTR_NUMBER_OF_ACTIVE_PORTS;
+
+    res = sai_serialize_attr_id(buf, NULL, attr_id);
+
+    ASSERT_TRUE(res < 0, "expected negative");
+
+    /* test all ids */
+
+    size_t i = 0;
+
+    for (; i < sai_metadata_attr_sorted_by_id_name_count; ++i)
+    {
+        const sai_attr_metadata_t* amd = sai_metadata_attr_sorted_by_id_name[i];
+
+        res = sai_serialize_attr_id(buf, amd, amd->attrid);
+
+        ASSERT_STR_EQ(buf, amd->attridname, res);
+    }
+}
+
+void test_deserialize_attr_id()
+{
+    int res;
+    sai_attr_id_t attr_id;
+
+    res = sai_deserialize_attr_id("100", &attr_id);
+    ASSERT_TRUE(res < 0, "expected negative");
+
+    res = sai_deserialize_attr_id("-1", &attr_id);
+    ASSERT_TRUE(res < 0, "expected negative");
+
+    /* test all enums */
+
+    size_t i = 0;
+
+    for (; i < sai_metadata_attr_sorted_by_id_name_count; ++i)
+    {
+        const sai_attr_metadata_t* amd = sai_metadata_attr_sorted_by_id_name[i];
+
+        res = sai_deserialize_attr_id(amd->attridname, &attr_id);
+
+        ASSERT_TRUE(res == (int)strlen(amd->attridname), "expected true");
+
+        ASSERT_TRUE(attr_id == amd->attrid, "expected true");
+    }
+}
+
+void test_serialize_attribute()
+{
+    int res;
+    char buf[PRIMITIVE_BUFFER_SIZE * 2];
+    sai_attribute_t attribute = {0};
+    const sai_attr_metadata_t* amd;
+
+    amd = sai_metadata_attr_by_object_type[SAI_OBJECT_TYPE_SWITCH][0];
+    attribute.id = SAI_SWITCH_ATTR_NUMBER_OF_ACTIVE_PORTS;
+    attribute.value.u32 = 3;
+
+    res = sai_serialize_attribute(buf, amd, &attribute);
+
+    ASSERT_STR_EQ(buf, "{\"id\":\"SAI_SWITCH_ATTR_NUMBER_OF_ACTIVE_PORTS\",\"value\":{\"u32\":3}}", res);
+
+    attribute.id = 99999;
+    memset(&attribute.value, 0x55, sizeof(attribute.value));
+
+    res = sai_serialize_attribute(buf, NULL, &attribute);
+
+    ASSERT_TRUE(res < 0, "expected negative");
+}
+
+void test_deserialize_attribute()
+{
+    int res;
+    const char *buf;
+    sai_attribute_t attribute = {0};
+
+    buf = "{\"id\":\"SAI_SWITCH_ATTR_NUMBER_OF_ACTIVE_PORTS\",\"value\":{\"u32\":3}}";
+    res = sai_deserialize_attribute(buf, &attribute);
+    ASSERT_TRUE(res == (int)strlen(buf), "expected true");
+    ASSERT_TRUE(attribute.id == SAI_SWITCH_ATTR_NUMBER_OF_ACTIVE_PORTS, "expected true");
+    ASSERT_TRUE(attribute.value.u32 == 3, "expected true");
+
+    buf = "{\"id\":\"99999\",\"value\":{85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85,85}}";
+    res = sai_deserialize_attribute(buf, &attribute);
+    ASSERT_TRUE(res < 0, "expected negative");
+}
+
 int main()
 {
 
@@ -1605,6 +1789,13 @@ int main()
     test_deserialize_macsec_auth_key();
     test_serialize_macsec_salt();
     test_deserialize_macsec_salt();
+
+    test_serialize_enum_list();
+    test_deserialize_enum_list();
+    test_serialize_attr_id();
+    test_deserialize_attr_id();
+    test_serialize_attribute();
+    test_deserialize_attribute();
 
     return 0;
 }
