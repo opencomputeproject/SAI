@@ -210,7 +210,7 @@ typedef enum _sai_port_cable_type_t
     SAI_PORT_CABLE_TYPE_CAT6A,
 
     /**  Cable type CAT7 */
-    SAI_PORT_CABLE_TYPE_CAT7,
+    SAI_PORT_CABLE_TYPE_CAT7
 } sai_port_cable_type_t;
 
 /**
@@ -856,34 +856,6 @@ typedef enum _sai_port_attr_t
      * @default SAI_PORT_MEDIA_TYPE_NOT_PRESENT
      */
     SAI_PORT_ATTR_MEDIA_TYPE,
-
-    /**
-     * @brief Read cable pair state.
-     * Returns pair states sequentially from list index 0 to n (n = number of pairs - 1)
-     *
-     * @type sai_s32_list_t sai_port_cable_pair_state_t
-     * @flags READ_ONLY
-     */
-    SAI_PORT_ATTR_CABLE_PAIR_STATE,
-
-    /**
-     * @brief Get cable pair length
-     * Returns cable pair length sequentially from list index 0 to n (n = number of pairs - 1)
-     *
-     * @type sai_s32_list_t
-     * @flags READ_ONLY
-     */
-    SAI_PORT_ATTR_CABLE_PAIR_LENGTH,
-
-    /**
-     * @brief Configure cable type to check the cable status
-     *
-     * @type sai_port_cable_type_t
-     * @flags CREATE_AND_SET
-     * @default SAI_PORT_CABLE_TYPE_UNKNOWN
-     * @validonly SAI_PORT_ATTR_MEDIA_TYPE == SAI_PORT_MEDIA_TYPE_COPPER
-     */
-    SAI_PORT_ATTR_CABLE_TYPE,
 
     /**
      * @brief Query/Configure list of Advertised port speed (Full-Duplex) in Mbps
@@ -2200,23 +2172,6 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_RX_LOCK_STATUS,
 
     /**
-     * @brief Port's PCS DATA PATH Enable
-     *
-     * true: If NO FEC is selected and PCS data path is enabled,
-     * the packet is checked for lane alignment marker and it aligns recovered data in receive direction.
-     * PCS RX link status is set if the packet is properly aligned.
-     * false: Default pass-through data path is used where packet is passed
-     * without any processing.
-     * This attribute is valid only if NO-FEC is selected.
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     * @validonly SAI_PORT_ATTR_FEC_MODE_EXTENDED == SAI_PORT_FEC_MODE_EXTENDED_NONE
-     */
-    SAI_PORT_ATTR_PCS_IEEE_DATAPATH_ENABLE,
-
-    /**
      * @brief Port's PCS RX Link Status
      *
      * @type sai_latch_status_t
@@ -2363,6 +2318,51 @@ typedef enum _sai_port_attr_t
      * @default 0
      */
     SAI_PORT_ATTR_ECMP_HASH_OFFSET,
+
+    /**
+     * @brief Read cable pair state.
+     * Returns pair states sequentially from list index 0 to n (n = number of pairs - 1)
+     *
+     * @type sai_s32_list_t sai_port_cable_pair_state_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_CABLE_PAIR_STATE,
+
+    /**
+     * @brief Get cable pair length
+     * Returns cable pair length sequentially from list index 0 to n (n = number of pairs - 1)
+     *
+     * @type sai_s32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_CABLE_PAIR_LENGTH,
+
+    /**
+     * @brief Configure cable type to check the cable status
+     *
+     * @type sai_port_cable_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_CABLE_TYPE_UNKNOWN
+     * @validonly SAI_PORT_ATTR_MEDIA_TYPE == SAI_PORT_MEDIA_TYPE_COPPER
+     */
+    SAI_PORT_ATTR_CABLE_TYPE,
+
+	/**
+     * @brief Port's PCS DATA PATH Enable
+     *
+     * true: If NO FEC is selected and PCS data path is enabled,
+     * the packet is checked for lane alignment marker and it aligns recovered data in receive direction.
+     * PCS RX link status is set if the packet is properly aligned.
+     * false: Default pass-through data path is used where packet is passed
+     * without any processing.
+     * This attribute is valid only if NO-FEC is selected.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_PORT_ATTR_FEC_MODE_EXTENDED == SAI_PORT_FEC_MODE_EXTENDED_NONE
+     */
+    SAI_PORT_ATTR_PCS_IEEE_DATAPATH_ENABLE,
 
     /**
      * @brief End of attributes
