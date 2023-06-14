@@ -167,6 +167,53 @@ typedef enum _sai_port_media_type_t
 } sai_port_media_type_t;
 
 /**
+ * @brief Attribute data for #SAI_PORT_ATTR_CABLE_PAIR_STATE
+ * Copper cable pair states
+ */
+typedef enum _sai_port_cable_pair_state_t
+{
+    /**  Cable state no faults */
+    SAI_PORT_CABLE_PAIR_STATE_OK,
+
+    /**  Cable state open */
+    SAI_PORT_CABLE_PAIR_STATE_OPEN,
+
+    /**  Cable state short */
+    SAI_PORT_CABLE_PAIR_STATE_SHORT,
+
+    /**  Cable state cross talk */
+    SAI_PORT_CABLE_PAIR_STATE_CROSSTALK,
+
+    /**  Cable state unknown */
+    SAI_PORT_CABLE_PAIR_STATE_UNKNOWN
+} sai_port_cable_pair_state_t;
+
+/**
+ * @brief Attribute data for #SAI_PORT_ATTR_CABLE_TYPE
+ * Copper cable types
+ */
+typedef enum _sai_port_cable_type_t
+{
+    /**  Cable type Unknown */
+    SAI_PORT_CABLE_TYPE_UNKNOWN,
+
+    /**  Cable type CAT5 */
+    SAI_PORT_CABLE_TYPE_CAT5,
+
+    /**  Cable type CAT5E */
+    SAI_PORT_CABLE_TYPE_CAT5E,
+
+    /**  Cable type CAT6 */
+    SAI_PORT_CABLE_TYPE_CAT6,
+
+    /**  Cable type CAT6A */
+    SAI_PORT_CABLE_TYPE_CAT6A,
+
+    /**  Cable type CAT7 */
+    SAI_PORT_CABLE_TYPE_CAT7,
+} sai_port_cable_type_t;
+
+/**
  * @brief Breakout Mode types based on number
  * of SerDes lanes used in a port
  */
@@ -809,6 +856,34 @@ typedef enum _sai_port_attr_t
      * @default SAI_PORT_MEDIA_TYPE_NOT_PRESENT
      */
     SAI_PORT_ATTR_MEDIA_TYPE,
+
+    /**
+     * @brief Read cable pair state.
+     * Returns pair states sequentially from list index 0 to n (n = number of pairs - 1)
+     *
+     * @type sai_s32_list_t sai_port_cable_pair_state_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_CABLE_PAIR_STATE,
+
+    /**
+     * @brief Get cable pair length
+     * Returns cable pair length sequentially from list index 0 to n (n = number of pairs - 1)
+     *
+     * @type sai_s32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_CABLE_PAIR_LENGTH,
+
+    /**
+     * @brief Configure cable type to check the cable status
+     *
+     * @type sai_port_cable_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_CABLE_TYPE_UNKNOWN
+     * @validonly SAI_PORT_ATTR_MEDIA_TYPE == SAI_PORT_MEDIA_TYPE_COPPER
+     */
+    SAI_PORT_ATTR_CABLE_TYPE,
 
     /**
      * @brief Query/Configure list of Advertised port speed (Full-Duplex) in Mbps
@@ -2123,6 +2198,23 @@ typedef enum _sai_port_attr_t
      * @flags READ_ONLY
      */
     SAI_PORT_ATTR_RX_LOCK_STATUS,
+
+    /**
+     * @brief Port's PCS DATAPATH Enable
+     *
+     * true: If NO FEC is selected and PCS datapath is enabled,
+     * the packet is checked for lane alignment marker and it aligns recovered data in receive direction.
+     * PCS RX link status is set if the packet is properly aligned.
+     * false: Default retimer pass-through datapath is used where packet is passed
+     * without any processing.
+     * This attribute is valid only if NO-FEC is selected.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @validonly SAI_PORT_ATTR_FEC_MODE_EXTENDED == SAI_PORT_FEC_MODE_EXTENDED_NONE
+     * @default false
+     */
+    SAI_PORT_ATTR_PCS_IEEE_DATAPATH_ENABLE,
 
     /**
      * @brief Port's PCS RX Link Status
