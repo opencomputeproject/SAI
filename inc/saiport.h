@@ -2200,12 +2200,12 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_RX_LOCK_STATUS,
 
     /**
-     * @brief Port's PCS DATAPATH Enable
+     * @brief Port's PCS DATA PATH Enable
      *
-     * true: If NO FEC is selected and PCS datapath is enabled,
+     * true: If NO FEC is selected and PCS data path is enabled,
      * the packet is checked for lane alignment marker and it aligns recovered data in receive direction.
      * PCS RX link status is set if the packet is properly aligned.
-     * false: Default retimer pass-through datapath is used where packet is passed
+     * false: Default pass-through data path is used where packet is passed
      * without any processing.
      * This attribute is valid only if NO-FEC is selected.
      *
