@@ -2355,12 +2355,12 @@ typedef enum _sai_port_attr_t
      * PCS RX link status is set if the packet is properly aligned.
      * false: Default pass-through data path is used where packet is passed
      * without any processing.
-     * This attribute is valid only if NO-FEC is selected.
+     * This attribute is valid only if SAI_PORT_ATTR_FEC_MODE_EXTENDED is selected as SAI_PORT_FEC_MODE_EXTENDED_NONE.
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
-     * @validonly SAI_PORT_ATTR_USE_EXTENDED_FEC == true && SAI_PORT_ATTR_FEC_MODE_EXTENDED == SAI_PORT_FEC_MODE_EXTENDED_NONE
+     * @validonly SAI_PORT_ATTR_USE_EXTENDED_FEC == true
      */
     SAI_PORT_ATTR_PCS_IEEE_DATAPATH_ENABLE,
 
