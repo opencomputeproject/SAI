@@ -2347,7 +2347,7 @@ typedef enum _sai_port_attr_t
      */
     SAI_PORT_ATTR_CABLE_TYPE,
 
-	/**
+    /**
      * @brief Port's PCS DATA PATH Enable
      *
      * true: If NO FEC is selected and PCS data path is enabled,
