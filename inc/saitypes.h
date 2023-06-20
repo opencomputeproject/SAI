@@ -1666,6 +1666,19 @@ typedef enum _sai_object_stage_t
 
 } sai_object_stage_t;
 
+typedef enum _sai_health_data_type_t
+{
+    /** General health data type */
+    SAI_HEALTH_DATA_TYPE_GENERAL
+} sai_health_data_type_t;
+
+typedef struct _sai_switch_health_data_t
+{
+    /** Type of switch health data */
+    sai_health_data_type_t data_type;
+
+} sai_switch_health_data_t;
+
 /**
  * @}
  */
