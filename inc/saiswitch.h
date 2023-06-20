@@ -2874,6 +2874,50 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_HOSTIF_OPER_STATUS_UPDATE_MODE,
 
     /**
+     * @brief Health notification callback function passed to the adapter.
+     *
+     * Use sai_switch_asic_sdk_health_event_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_switch_asic_sdk_health_event_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_SWITCH_ASIC_SDK_HEALTH_EVENT_NOTIFY,
+
+    /**
+     * @brief Registration for health fatal categories.
+     *
+     * For specifying categories of causes for severity fatal events
+     *
+     * @type sai_s32_list_t sai_switch_asic_sdk_health_category_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_REG_FATAL_SWITCH_ASIC_SDK_HEALTH_CATEGORY,
+
+    /**
+     * @brief Registration for health warning categories.
+     *
+     * For specifying categories of causes for severity warning events
+     *
+     * @type sai_s32_list_t sai_switch_asic_sdk_health_category_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_REG_WARNING_SWITCH_ASIC_SDK_HEALTH_CATEGORY,
+
+    /**
+     * @brief Registration for health notice categories.
+     *
+     * For specifying categories of causes for severity notice events
+     *
+     * @type sai_s32_list_t sai_switch_asic_sdk_health_category_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_REG_NOTICE_SWITCH_ASIC_SDK_HEALTH_CATEGORY,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
@@ -2885,6 +2929,41 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_CUSTOM_RANGE_END
 
 } sai_switch_attr_t;
+
+/**
+ * @brief Switch health event severity
+ */
+typedef enum _sai_switch_asic_sdk_health_severity_t
+{
+    /** Switch event severity fatal */
+    SAI_SWITCH_ASIC_SDK_HEALTH_SEVERITY_FATAL,
+
+    /** Switch event severity warning */
+    SAI_SWITCH_ASIC_SDK_HEALTH_SEVERITY_WARNING,
+
+    /** Switch event severity notice */
+    SAI_SWITCH_ASIC_SDK_HEALTH_SEVERITY_NOTICE
+
+} sai_switch_asic_sdk_health_severity_t;
+
+/**
+ * @brief Switch health categories
+ */
+typedef enum _sai_switch_asic_sdk_health_category_t
+{
+    /** Switch health software category */
+    SAI_SWITCH_ASIC_SDK_HEALTH_CATEGORY_SW,
+
+    /** Switch health firmware category */
+    SAI_SWITCH_ASIC_SDK_HEALTH_CATEGORY_FW,
+
+    /** Switch health cpu hardware category */
+    SAI_SWITCH_ASIC_SDK_HEALTH_CATEGORY_CPU_HW,
+
+    /** Switch health ASIC hardware category */
+    SAI_SWITCH_ASIC_SDK_HEALTH_CATEGORY_ASIC_HW
+
+} sai_switch_asic_sdk_health_category_t;
 
 /**
  * @brief Switch counter IDs in sai_get_switch_stats() call
@@ -3084,6 +3163,40 @@ typedef enum _sai_switch_stat_t
  * the transceiver type plugged in to the port
  */
 #define SAI_KEY_HW_PORT_PROFILE_ID_CONFIG_FILE    "SAI_HW_PORT_PROFILE_ID_CONFIG_FILE"
+
+/**
+ * @brief Switch health event callback
+ *
+ * @objects switch_id SAI_OBJECT_TYPE_SWITCH
+ *
+ * @param[in] switch_id Switch Id
+ * @param[in] severity Health event severity
+ * @param[in] timestamp Time and date of receiving the SDK Health event
+ * @param[in] category Category of cause
+ * @param[in] data Data of switch health
+ * @param[in] description JSON-encoded description string with information delivered from SDK event/trap
+ * Example of a possible description:
+ * {
+ *    "switch_id": "0x00000000000000AB",
+ *    "severity": "2",
+ *    "timestamp": {
+ *        "tv_sec": "22429",
+ *        "tv_nsec": "3428724"
+ *    },
+ *    "category": "3",
+ *    "data": {
+ *        data_type: "0"
+ *    },
+ *    "additional_data": "Some additional information"
+ * }
+ */
+typedef void (*sai_switch_asic_sdk_health_event_notification_fn)(
+        _In_ sai_object_id_t switch_id,
+        _In_ sai_switch_asic_sdk_health_severity_t severity,
+        _In_ sai_timespec_t timestamp,
+        _In_ sai_switch_asic_sdk_health_category_t category,
+        _In_ sai_switch_health_data_t data,
+        _In_ const sai_u8_list_t description);
 
 /**
  * @brief Switch shutdown request callback.
