@@ -700,6 +700,7 @@ sub CheckInOutParams
     return if $line =~ /_Inout_ \w+ \*\w+/ and $const eq ""; # non const types with pointer should be Inout
     return if $line =~ /_Out_ \w+ \*\w+/ and $const eq "";   # non const types with pointer should be Out
     return if $line =~ /_In_ const \w+ \*\*?\w+/;            # const types with pointer should be In
+    return if $line =~ /_In_ const \w+ \w+/;                 # const types without pointer
 
     return if $line =~ /_Out_ const char \*\*\w+/;
     return if $line =~ /_Out_ void \*\*\w+/;
