@@ -298,11 +298,15 @@ typedef sai_status_t (*sai_get_next_hop_attribute_fn)(
  */
 typedef struct _sai_next_hop_api_t
 {
-    sai_create_next_hop_fn        create_next_hop;
-    sai_remove_next_hop_fn        remove_next_hop;
-    sai_set_next_hop_attribute_fn set_next_hop_attribute;
-    sai_get_next_hop_attribute_fn get_next_hop_attribute;
+    sai_create_next_hop_fn             create_next_hop;
+    sai_remove_next_hop_fn             remove_next_hop;
+    sai_set_next_hop_attribute_fn      set_next_hop_attribute;
+    sai_get_next_hop_attribute_fn      get_next_hop_attribute;
 
+    sai_bulk_object_create_fn          create_next_hops;
+    sai_bulk_object_remove_fn          remove_next_hops;
+    sai_bulk_object_set_attribute_fn   set_next_hops_attribute;
+    sai_bulk_object_get_attribute_fn   get_next_hops_attribute;
 } sai_next_hop_api_t;
 
 /**
