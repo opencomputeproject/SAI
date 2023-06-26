@@ -710,6 +710,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_FABRIC_PORT_REACHABILITY:
         case SAI_ATTR_VALUE_TYPE_PORT_ERR_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
+        case SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST:
 
             if (md->allowedobjecttypes != NULL)
             {
@@ -971,6 +972,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_PORT_LANE_LATCH_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
+        case SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST:
 
             if (((md->objecttype == SAI_OBJECT_TYPE_PORT) || (md->objecttype == SAI_OBJECT_TYPE_PORT_SERDES))
                  && md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL)
@@ -1180,6 +1182,7 @@ void check_attr_default_value_type(
                 case SAI_ATTR_VALUE_TYPE_PORT_LANE_LATCH_STATUS_LIST:
                 case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
                 case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
+                case SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST:
                     break;
 
                 default:
@@ -1784,6 +1787,7 @@ void check_attr_allow_flags(
             case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
             case SAI_ATTR_VALUE_TYPE_PORT_ERR_STATUS_LIST:
             case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
+            case SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST:
                 break;
 
             default:
@@ -2286,6 +2290,21 @@ void check_attr_acl_capability(
     }
 }
 
+void check_attr_acl_chain_list(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    if (md->attrvaluetype != SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST)
+    {
+        return;
+    }
+
+    if (md->flags != SAI_ATTR_FLAGS_READ_ONLY)
+    {
+        META_MD_ASSERT_FAIL(md, "attribute marked as acl chain list should be READ_ONLY");
+    }
+}
 void define_attr(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -2633,6 +2652,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_PORT_LANE_LATCH_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_JSON:
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
+        case SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST:
 
             if (md->isprimitive)
             {
@@ -3318,6 +3338,7 @@ void check_single_attribute(
     check_attr_vlan(md);
     check_attr_object_id_allownull(md);
     check_attr_acl_capability(md);
+    check_attr_acl_chain_list(md);
     check_attr_reverse_graph(md);
     check_attr_acl_conditions(md);
     check_attr_acl_field_or_action(md);
