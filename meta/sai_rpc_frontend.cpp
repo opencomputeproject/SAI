@@ -773,14 +773,13 @@ void convert_attr_sai_to_thrift(const sai_object_type_t sai_ot,
       free(sai_attr.value.ipaddrlist.list);
     } break;
     case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST: {
-      sai_attr->value.ipprefixlist.list = (sai_ip_prefix_t *)malloc(
-          sizeof(sai_ip_prefix_t) * thrift_attr.value.ipprefixlist.count);
-      int i = 0;
-      for (auto address : thrift_attr.value.ipprefixlist.prefixlist) {
-        sai_thrift_ip_prefix_t_parse(address,
-                                      &sai_attr->value.ipprefixlist.list[i++]);
+      for (unsigned int i = 0; i < sai_attr.value.ipprefixlist.count; i++) {
+        sai_thrift_ip_prefix_t thrift_ip;
+        sai_ip_prefix_t_to_thrift(thrift_ip, sai_attr.value.ipprefix);
+        thrift_attr.value.ipprefixlist.prefixlist.push_back(thrift_ip);
       }
-      sai_attr->value.ipprefixlist.count = thrift_attr.value.ipprefixlist.count;
+      thrift_attr.value.ipprefixlist.count = sai_attr.value.ipprefixlist.count;
+      free(sai_attr.value.ipprefixlist.list);
     } break;
     case SAI_ATTR_VALUE_TYPE_MAP_LIST:
     case SAI_ATTR_VALUE_TYPE_VLAN_LIST:
