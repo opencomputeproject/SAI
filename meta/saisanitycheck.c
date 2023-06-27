@@ -2290,21 +2290,6 @@ void check_attr_acl_capability(
     }
 }
 
-void check_attr_acl_chain_list(
-        _In_ const sai_attr_metadata_t* md)
-{
-    META_LOG_ENTER();
-
-    if (md->attrvaluetype != SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST)
-    {
-        return;
-    }
-
-    if (md->flags != SAI_ATTR_FLAGS_READ_ONLY)
-    {
-        META_MD_ASSERT_FAIL(md, "attribute marked as acl chain list should be READ_ONLY");
-    }
-}
 void define_attr(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -3338,7 +3323,6 @@ void check_single_attribute(
     check_attr_vlan(md);
     check_attr_object_id_allownull(md);
     check_attr_acl_capability(md);
-    check_attr_acl_chain_list(md);
     check_attr_reverse_graph(md);
     check_attr_acl_conditions(md);
     check_attr_acl_field_or_action(md);
