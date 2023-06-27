@@ -24,6 +24,7 @@ from os.path import exists
 from typing import TYPE_CHECKING
 from typing import List, Dict
 from data_module.data_obj import auto_str
+from data_module.port_config import PortConfig
 
 DEFAULT_CONFIG_DB = "../resources/port_config.ini"
 

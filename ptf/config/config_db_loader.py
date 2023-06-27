@@ -86,9 +86,12 @@ class ConfigDBLoader():
         for index, key in enumerate(port_conf):
             portConfig = PortConfig()
             portConfig.name = key
-            portConfig.alias = port_conf[key]['alias']
-            portConfig.index = int(port_conf[key]['index'])
-            portConfig.lanes = [int(i) for i in port_conf[key]['lanes'].split(',')]
+            if 'alias' in port_conf[key].keys():
+                portConfig.alias = port_conf[key]['alias']
+            if 'index' in port_conf[key].keys():
+                portConfig.index = int(port_conf[key]['index'])
+            if 'lanes' in port_conf[key].keys():
+                portConfig.lanes = [int(i) for i in port_conf[key]['lanes'].split(',')]
             portConfig.mtu = 0 if not 'mtu' in  port_conf[key] else int(port_conf[key]['mtu'])
             portConfig.pfc_asym = None \
                 if not 'pfc_asym' in  port_conf[key] else port_conf[key]['pfc_asym']
