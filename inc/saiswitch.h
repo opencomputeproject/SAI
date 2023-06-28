@@ -2918,6 +2918,14 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_REG_NOTICE_SWITCH_ASIC_SDK_HEALTH_CATEGORY,
 
     /**
+     * @brief ACL chain capabilities supported by the NPU
+     *
+     * @type sai_acl_chain_list_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_ACL_CHAIN_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,

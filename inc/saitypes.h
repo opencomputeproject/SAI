@@ -877,11 +877,6 @@ typedef struct _sai_acl_capability_t
      */
     bool is_non_contiguous_bits_exact_match_supported;
 
-    /**
-     * @brief Number of chained stages and types supported for a given ACL stage.
-     */
-    sai_acl_chain_list_t acl_chain_list;
-
 } sai_acl_capability_t;
 
 /**
@@ -1475,6 +1470,9 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST */
     sai_ip_prefix_list_t ipprefixlist;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST */
+    sai_acl_chain_list_t aclchainlist;
 } sai_attribute_value_t;
 
 /**
