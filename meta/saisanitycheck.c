@@ -5492,7 +5492,7 @@ void check_struct_and_union_size()
     /* structs */
 
     CHECK_STRUCT_SIZE(sai_acl_action_data_t, 32);
-    CHECK_STRUCT_SIZE(sai_acl_capability_t, 48);
+    CHECK_STRUCT_SIZE(sai_acl_capability_t, 32);
     CHECK_STRUCT_SIZE(sai_acl_chain_list_t, 16);
     CHECK_STRUCT_SIZE(sai_acl_chain_t, 8);
     CHECK_STRUCT_SIZE(sai_acl_field_data_t, 40);
