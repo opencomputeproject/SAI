@@ -5484,7 +5484,7 @@ void check_struct_and_union_size()
     CHECK_STRUCT_SIZE(sai_acl_action_parameter_t, 24);
     CHECK_STRUCT_SIZE(sai_acl_field_data_data_t, 16);
     CHECK_STRUCT_SIZE(sai_acl_field_data_mask_t, 16);
-    CHECK_STRUCT_SIZE(sai_attribute_value_t, 48);
+    CHECK_STRUCT_SIZE(sai_attribute_value_t, 40);
     CHECK_STRUCT_SIZE(sai_ip_addr_t, 16);
     CHECK_STRUCT_SIZE(sai_object_key_entry_t, 64);
     CHECK_STRUCT_SIZE(sai_tlv_entry_t, 36);
@@ -5499,7 +5499,7 @@ void check_struct_and_union_size()
     CHECK_STRUCT_SIZE(sai_acl_resource_list_t, 16);
     CHECK_STRUCT_SIZE(sai_acl_resource_t, 12);
     CHECK_STRUCT_SIZE(sai_attr_capability_t, 3);
-    CHECK_STRUCT_SIZE(sai_attribute_t, 56);
+    CHECK_STRUCT_SIZE(sai_attribute_t, 48);
     CHECK_STRUCT_SIZE(sai_bfd_session_state_notification_t, 16);
     CHECK_STRUCT_SIZE(sai_fabric_port_reachability_t, 8);
     CHECK_STRUCT_SIZE(sai_fdb_entry_t, 24);
