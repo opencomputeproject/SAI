@@ -8,6 +8,7 @@ apache
 api
 APIs
 Args
+armhf
 attr
 attrid
 attrs
@@ -68,6 +69,7 @@ HQoS
 HQOS
 http
 idriver
+ifdef
 INET
 ingressing
 inout

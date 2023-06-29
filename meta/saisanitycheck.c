@@ -5444,6 +5444,129 @@ void check_global_apis()
     META_ASSERT_TRUE(sizeof(type) >= sizeof(int32_t), "apis type should be at least int32");
 }
 
+/* will check single struct size, as well as array alignment and packing */
+
+#define CHECK_STRUCT_SIZE(name,size) \
+    META_ASSERT_TRUE(sizeof(name) == (size), "wrong size of " #name ", expected %d, got %zu", (size), sizeof(name)); \
+    META_ASSERT_TRUE(sizeof(name[3]) == (3*(size)), "wrong size of " #name "[3], expected %d, got %zu", (3*size), sizeof(name[3]));
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-attribute=noreturn"
+void check_struct_and_union_size()
+{
+    META_LOG_ENTER();
+
+    /*
+     * At this point we want to be binary backward compatible, which means that
+     * each union and struct must have the same size (since structs and unions
+     * are used in arrays for example sai_attibute_t* when creating object).
+     *
+     * Also in structs we must check if order of members did not changed. This
+     * is done via external automated script.
+     *
+     * WARNING: !!! DO NOT CHANGE NUMERICAL VALUES !!!
+     *
+     * Since this is manual size check, then this list may need to be updated
+     * in the future when new unions or structures are added. Experimental
+     * headers are and should not be checked here since they can disappear.
+     * Also *_api_t structures should not be changed since they are subject to
+     * be expanded.
+     *
+     * Those struct sizes may change on non x86_64 architecture, for example
+     * armhf, which is 32 bit. Then please add ifdef statement here and provide
+     * corresponding values.
+     *
+     * NOTE: at some point, it may be required to modify some structures for
+     * some objects, and this should be permitted after consulting with SAI
+     * community, to allow binary compatibility break. When this happens, a
+     * specific comment should be added here why that struct change happened.
+     *
+     * TODO: We need to figure out to do this automatically.
+     */
+
+    /* unions */
+
+    CHECK_STRUCT_SIZE(sai_acl_action_parameter_t, 24);
+    CHECK_STRUCT_SIZE(sai_acl_field_data_data_t, 16);
+    CHECK_STRUCT_SIZE(sai_acl_field_data_mask_t, 16);
+    CHECK_STRUCT_SIZE(sai_attribute_value_t, 40);
+    CHECK_STRUCT_SIZE(sai_ip_addr_t, 16);
+    CHECK_STRUCT_SIZE(sai_object_key_entry_t, 64);
+    CHECK_STRUCT_SIZE(sai_tlv_entry_t, 36);
+
+    /* structs */
+
+    CHECK_STRUCT_SIZE(sai_acl_action_data_t, 32);
+    CHECK_STRUCT_SIZE(sai_acl_capability_t, 32);
+    CHECK_STRUCT_SIZE(sai_acl_chain_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_acl_chain_t, 8);
+    CHECK_STRUCT_SIZE(sai_acl_field_data_t, 40);
+    CHECK_STRUCT_SIZE(sai_acl_resource_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_acl_resource_t, 12);
+    CHECK_STRUCT_SIZE(sai_attr_capability_t, 3);
+    CHECK_STRUCT_SIZE(sai_attribute_t, 48);
+    CHECK_STRUCT_SIZE(sai_bfd_session_state_notification_t, 16);
+    CHECK_STRUCT_SIZE(sai_fabric_port_reachability_t, 8);
+    CHECK_STRUCT_SIZE(sai_fdb_entry_t, 24);
+    CHECK_STRUCT_SIZE(sai_fdb_event_notification_data_t, 48);
+    CHECK_STRUCT_SIZE(sai_hmac_t, 36);
+    CHECK_STRUCT_SIZE(sai_inseg_entry_t, 16);
+    CHECK_STRUCT_SIZE(sai_ip_address_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_ip_address_t, 20);
+    CHECK_STRUCT_SIZE(sai_ipmc_entry_t, 64);
+    CHECK_STRUCT_SIZE(sai_ip_prefix_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_ip_prefix_t, 36);
+    CHECK_STRUCT_SIZE(sai_ipsec_sa_status_notification_t, 16);
+    CHECK_STRUCT_SIZE(sai_json_t, 16);
+    CHECK_STRUCT_SIZE(sai_l2mc_entry_t, 64);
+    CHECK_STRUCT_SIZE(sai_latch_status_t, 2);
+    CHECK_STRUCT_SIZE(sai_map_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_map_t, 8);
+    CHECK_STRUCT_SIZE(sai_mcast_fdb_entry_t, 24);
+    CHECK_STRUCT_SIZE(sai_my_sid_entry_t, 40);
+    CHECK_STRUCT_SIZE(sai_nat_entry_data_t, 32);
+    CHECK_STRUCT_SIZE(sai_nat_entry_key_t, 16);
+    CHECK_STRUCT_SIZE(sai_nat_entry_mask_t, 16);
+    CHECK_STRUCT_SIZE(sai_nat_entry_t, 56);
+    CHECK_STRUCT_SIZE(sai_nat_event_notification_data_t, 64);
+    CHECK_STRUCT_SIZE(sai_neighbor_entry_t, 40);
+    CHECK_STRUCT_SIZE(sai_object_key_t, 64);
+    CHECK_STRUCT_SIZE(sai_object_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_port_err_status_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_port_eye_values_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_port_lane_eye_values_t, 20);
+    CHECK_STRUCT_SIZE(sai_port_lane_latch_status_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_port_lane_latch_status_t, 8);
+    CHECK_STRUCT_SIZE(sai_port_oper_status_notification_t, 16);
+    CHECK_STRUCT_SIZE(sai_prbs_rx_state_t, 8);
+    CHECK_STRUCT_SIZE(sai_qos_map_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_qos_map_params_t, 16);
+    CHECK_STRUCT_SIZE(sai_qos_map_t, 32);
+    CHECK_STRUCT_SIZE(sai_queue_deadlock_notification_data_t, 16);
+    CHECK_STRUCT_SIZE(sai_route_entry_t, 56);
+    CHECK_STRUCT_SIZE(sai_s16_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_s32_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_s32_range_t, 8);
+    CHECK_STRUCT_SIZE(sai_s8_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_segment_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_service_method_table_t, 16);
+    CHECK_STRUCT_SIZE(sai_stat_capability_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_stat_capability_t, 8);
+    CHECK_STRUCT_SIZE(sai_system_port_config_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_system_port_config_t, 24);
+    CHECK_STRUCT_SIZE(sai_timespec_t, 16);
+    CHECK_STRUCT_SIZE(sai_tlv_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_tlv_t, 40);
+    CHECK_STRUCT_SIZE(sai_u16_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_u16_range_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_u16_range_t, 4);
+    CHECK_STRUCT_SIZE(sai_u32_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_u32_range_t, 8);
+    CHECK_STRUCT_SIZE(sai_u8_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_vlan_list_t, 16);
+}
+#pragma GCC diagnostic pop
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -5488,6 +5611,7 @@ int main(int argc, char **argv)
     check_max_conditions_len();
     check_object_type_extension_max_value();
     check_global_apis();
+    check_struct_and_union_size();
 
     SAI_META_LOG_DEBUG("log test");
 
