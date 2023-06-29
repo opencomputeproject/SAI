@@ -111,8 +111,7 @@ function check_structs_history()
 
 # BEGIN_COMMIT is the commit from we want structs to be backward compatible
 
-# currently set to v1.12.0
-BEGIN_COMMIT=fdaf928
+BEGIN_COMMIT=97a1e02 # v1.11.0
 END_COMMIT=HEAD
 
 clean_temp_dir
