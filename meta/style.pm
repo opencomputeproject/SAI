@@ -682,6 +682,7 @@ sub CheckMetadataSourceFiles
         next if $file eq "saimetadata.h";
         next if $file eq "saimetadata.c";
         next if $file eq "saimetadatatest.c";
+        next if $file eq "saimetadatasize.h";
 
         next if $file =~ /swig|wrap/;
 
@@ -901,6 +902,7 @@ sub CheckHeadersStyle
     for my $header (@headers)
     {
         next if $header eq "saimetadata.h"; # skip auto generated header
+        next if $header eq "saimetadatasize.h"; # skip auto generated header
 
         my $data = ReadHeaderFile($header);
 
