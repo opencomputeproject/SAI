@@ -390,7 +390,7 @@ sub ExitOnErrors
 {
     return if $errors == 0;
 
-    LogError "please corret all $errors error(s) before continue";
+    LogError "please correct all $errors error(s) before continue";
 
     exit 1;
 }
@@ -399,7 +399,7 @@ sub ExitOnErrorsOrWarnings
 {
     return if $errors == 0 and $warnings == 0;
 
-    LogError "please corret all $errors error(s) and all $warnings warnings before continue";
+    LogError "please correct all $errors error(s) and all $warnings warnings before continue";
 
     exit 1;
 }
