@@ -449,6 +449,19 @@ bool sai_metadata_is_acl_field_or_action(
         }
     }
 
+    if (metadata->objecttype == SAI_OBJECT_TYPE_UDF_MATCH)
+    {
+        if (metadata->attrid <= SAI_UDF_MATCH_ATTR_GRE_TYPE)
+        {
+            return true;
+        }
+
+        if (metadata->attrid == SAI_UDF_MATCH_ATTR_L4_DST_PORT_TYPE)
+        {
+            return true;
+        }
+    }
+
     return false;
 }
 
@@ -2328,7 +2341,7 @@ void check_attr_acl_field_or_action(
         META_ASSERT_FALSE(md->defaultvalue->aclaction.enable, "enable should be false");
     }
 
-    if (md->objecttype != SAI_OBJECT_TYPE_ACL_ENTRY)
+    if (md->objecttype != SAI_OBJECT_TYPE_ACL_ENTRY && md->objecttype != SAI_OBJECT_TYPE_UDF_MATCH)
     {
         META_ASSERT_FALSE(md->isaclfield, "field should be not marked as acl field");
         META_ASSERT_FALSE(md->isaclaction, "field should be not marked as acl action");
@@ -2336,18 +2349,36 @@ void check_attr_acl_field_or_action(
         return;
     }
 
-    if (md->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_START &&
-            md->attrid <= SAI_ACL_ENTRY_ATTR_FIELD_END)
+    if (md->objecttype == SAI_OBJECT_TYPE_ACL_ENTRY)
     {
-        META_ASSERT_TRUE(md->isaclfield, "field should be marked as acl field");
-        META_ASSERT_FALSE(md->isaclaction, "field should be not marked as acl action");
+        if (md->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_START &&
+                md->attrid <= SAI_ACL_ENTRY_ATTR_FIELD_END)
+        {
+            META_ASSERT_TRUE(md->isaclfield, "field should be marked as acl field");
+            META_ASSERT_FALSE(md->isaclaction, "field should be not marked as acl action");
+        }
+
+        if (md->attrid >= SAI_ACL_ENTRY_ATTR_ACTION_START &&
+                md->attrid <= SAI_ACL_ENTRY_ATTR_ACTION_END)
+        {
+            META_ASSERT_FALSE(md->isaclfield, "field should not be marked as acl field");
+            META_ASSERT_TRUE(md->isaclaction, "field should be marked as acl action");
+        }
     }
 
-    if (md->attrid >= SAI_ACL_ENTRY_ATTR_ACTION_START &&
-            md->attrid <= SAI_ACL_ENTRY_ATTR_ACTION_END)
+    if (md->objecttype == SAI_OBJECT_TYPE_UDF_MATCH)
     {
-        META_ASSERT_FALSE(md->isaclfield, "field should not be marked as acl field");
-        META_ASSERT_TRUE(md->isaclaction, "field should be marked as acl action");
+        if (md->attrid <= SAI_UDF_MATCH_ATTR_GRE_TYPE)
+        {
+            META_ASSERT_TRUE(md->isaclfield, "field should be marked as acl field");
+            META_ASSERT_FALSE(md->isaclaction, "field should be not marked as acl action");
+        }
+
+        if (md->attrid == SAI_UDF_MATCH_ATTR_L4_DST_PORT_TYPE)
+        {
+            META_ASSERT_TRUE(md->isaclfield, "field should be marked as acl field");
+            META_ASSERT_FALSE(md->isaclaction, "field should be not marked as acl action");
+        }
     }
 }
 
@@ -3760,6 +3791,13 @@ void check_attr_sorted_by_id_name()
         META_ASSERT_NOT_NULL(found);
 
         META_ASSERT_TRUE(strcmp(found->attridname, am->attridname) == 0, "search attr by id name failed to find");
+
+        const sai_attr_metadata_t *found_ext = sai_metadata_get_attr_metadata_by_attr_id_name_ext(am->attridname);
+
+        META_ASSERT_NOT_NULL(found_ext);
+
+        META_ASSERT_TRUE(strcmp(found_ext->attridname, am->attridname) == 0, "search attr by id name ext failed to find");
+
     }
 
     META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name(NULL));     /* null pointer */
@@ -3768,6 +3806,13 @@ void check_attr_sorted_by_id_name()
     META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name("SAI_P"));  /* in the middle of attr names */
     META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name("SAI_W"));  /* in the middle of attr names */
     META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name("ZZZ"));    /* after all attr names */
+
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name_ext(NULL));     /* null pointer */
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name_ext("AAA"));    /* before all attr names */
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name_ext("SAI_B"));  /* in the middle of attr names */
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name_ext("SAI_P"));  /* in the middle of attr names */
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name_ext("SAI_W"));  /* in the middle of attr names */
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name_ext("ZZZ"));    /* after all attr names */
 }
 
 void list_loop(

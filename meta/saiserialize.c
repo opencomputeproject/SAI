@@ -30,6 +30,7 @@
 #include <limits.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <sai.h>
 #include "saimetadatautils.h"
 #include "saimetadata.h"
@@ -37,6 +38,24 @@
 
 #define PRIMITIVE_BUFFER_SIZE 128
 #define MAX_CHARS_PRINT 25
+
+/* Expect macros */
+
+#define EXPECT(x) { \
+    if (strncmp(buf, x, sizeof(x) - 1) == 0) { buf += sizeof(x) - 1; } \
+    else { \
+        SAI_META_LOG_WARN("expected '%s' but got '%.*s...'", x, (int)sizeof(x), buf); \
+        return SAI_SERIALIZE_ERROR; } }
+#define EXPECT_KEY(k)    EXPECT("\"" k "\":")
+#define EXPECT_NEXT_KEY(k) { EXPECT(","); EXPECT_KEY(k); }
+#define EXPECT_CHECK(expr, suffix) {                                 \
+    ret = (expr);                                                  \
+    if (ret < 0) {                                                 \
+        SAI_META_LOG_WARN("failed to deserialize " #suffix "");      \
+        return SAI_SERIALIZE_ERROR; }                              \
+    buf += ret; }
+#define EXPECT_QUOTE_CHECK(expr, suffix) {\
+    EXPECT("\""); EXPECT_CHECK(expr, suffix); EXPECT("\""); }
 
 bool sai_serialize_is_char_allowed(
         _In_ char c)
@@ -1154,8 +1173,8 @@ int sai_serialize_enum_list(
                 SAI_META_LOG_WARN("failed to serialize enum_list");
                 return SAI_SERIALIZE_ERROR;
             }
-            buf += ret;
 
+            buf += ret;
             buf += sprintf(buf, "\"");
         }
 
@@ -1172,8 +1191,51 @@ int sai_deserialize_enum_list(
         _In_ const sai_enum_metadata_t *meta,
         _Out_ sai_s32_list_t *list)
 {
-    SAI_META_LOG_WARN("not implemented");
-    return SAI_SERIALIZE_ERROR;
+    if (meta == NULL)
+    {
+        return sai_deserialize_s32_list(buffer, list);
+    }
+
+    const char *buf = buffer;
+    int ret;
+    uint32_t idx;
+
+    EXPECT("{");
+
+    EXPECT_KEY("count");
+
+    EXPECT_CHECK(sai_deserialize_uint32(buf, &list->count), uint32);
+
+    EXPECT_NEXT_KEY("list");
+
+    if (strncmp(buf, "null", 4) == 0)
+    {
+        list->list = NULL;
+
+        buf += 4;
+    }
+    else
+    {
+        list->list = calloc((list->count), sizeof(uint32_t));
+
+        EXPECT("[");
+
+        for (idx = 0; idx < list->count; idx++)
+        {
+            if (idx != 0)
+            {
+                EXPECT(",");
+            }
+
+            EXPECT_QUOTE_CHECK(sai_deserialize_enum(buf, meta, &list->list[idx]), enum);
+        }
+
+        EXPECT("]");
+    }
+
+    EXPECT("}");
+
+    return (int)(buf - buffer);
 }
 
 int sai_serialize_attr_id(
@@ -1181,16 +1243,31 @@ int sai_serialize_attr_id(
         _In_ const sai_attr_metadata_t *meta,
         _In_ sai_attr_id_t attr_id)
 {
-    strcpy(buf, meta->attridname);
+    if (meta != NULL)
+    {
+        strcpy(buf, meta->attridname);
+        return (int)strlen(buf);
+    }
 
-    return (int)strlen(buf);
+    SAI_META_LOG_WARN("failed to serialize attr_id");
+    return SAI_SERIALIZE_ERROR;
 }
 
 int sai_deserialize_attr_id(
         _In_ const char *buffer,
         _Out_ sai_attr_id_t *attr_id)
 {
-    SAI_META_LOG_WARN("not implemented");
+    const sai_attr_metadata_t *meta;
+
+    meta = sai_metadata_get_attr_metadata_by_attr_id_name_ext(buffer);
+
+    if (meta != NULL)
+    {
+        *attr_id = meta->attrid;
+        return (int)strlen(meta->attridname);
+    }
+
+    SAI_META_LOG_WARN("failed to deserialize attr_id");
     return SAI_SERIALIZE_ERROR;
 }
 
@@ -1243,6 +1320,38 @@ int sai_deserialize_attribute(
         _In_ const char *buffer,
         _Out_ sai_attribute_t *attribute)
 {
-    SAI_META_LOG_WARN("not implemented");
-    return SAI_SERIALIZE_ERROR;
+    const char *buf = buffer;
+    const sai_attr_metadata_t *meta;
+    size_t len;
+    int ret;
+
+    EXPECT("{");
+
+    EXPECT_KEY("id");
+
+    EXPECT("\"");
+
+    meta = sai_metadata_get_attr_metadata_by_attr_id_name_ext(buf);
+
+    if (meta != NULL)
+    {
+        len = strlen(meta->attridname);
+        attribute->id = meta->attrid;
+        buf += len;
+    }
+    else
+    {
+        SAI_META_LOG_WARN("Failed deserialize attribute id");
+        return SAI_SERIALIZE_ERROR;
+    }
+
+    EXPECT("\"");
+
+    EXPECT_NEXT_KEY("value");
+
+    EXPECT_CHECK(sai_deserialize_attribute_value(buf, meta, &attribute->value), "attr_value");
+
+    EXPECT("}");
+
+    return (int)(buf - buffer);
 }
