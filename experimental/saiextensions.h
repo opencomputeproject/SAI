@@ -38,6 +38,7 @@
 #include "saiexperimentaldashvnet.h"
 #include "saiexperimentaldashoutboundrouting.h"
 #include "saiexperimentaldashoutboundcatopa.h"
+#include "saiexperimentaldashmeter.h"
 #include "saiexperimentaldashinboundrouting.h"
 #include "saiexperimentaldasheni.h"
 #include "saiexperimentaldashdirectionlookup.h"
@@ -62,6 +63,8 @@ typedef enum _sai_api_extensions_t
     SAI_API_DASH_ENI,
 
     SAI_API_DASH_INBOUND_ROUTING,
+
+    SAI_API_DASH_METER,
 
     SAI_API_DASH_OUTBOUND_CA_TO_PA,
 
