@@ -1685,13 +1685,29 @@ public:
           port_lane_list_attribute.value.u32list.count = 8;
           port_api->get_port_attribute(port_list_object_attribute.value.objlist.list[i], 1, &port_lane_list_attribute);
 
-          std::set<int> port_lanes;
           uint32_t laneCnt = port_lane_list_attribute.value.u32list.count;
-          for (int j=0 ; j<laneCnt; j++){
-              port_lanes.insert(port_lane_list_attribute.value.u32list.list[j]);
+          uint32_t laneMatchCount = 0;
+
+          for (gPortMapIt = gPortMap.begin(); gPortMapIt != gPortMap.end(); gPortMapIt++)
+          {
+              laneMatchCount = 0;
+              for (int j=0; j<laneCnt; j++)
+              {
+                  if (gPortMapIt->first.count(port_lane_list_attribute.value.u32list.list[j]))
+                  {
+                      laneMatchCount++;
+                  }
+                  else
+                  {
+                      break;
+                  }
+              }
+              if (laneMatchCount == laneCnt)
+              {
+                  break;
+              }
           }
 
-          gPortMapIt = gPortMap.find(port_lanes);
           if (gPortMapIt != gPortMap.end()){
               std::string front_port_alias = gPortMapIt->second.c_str();
               std::string front_port_number;
@@ -1774,13 +1790,20 @@ public:
           port_lane_list_attribute.value.u32list.count = 8;
           port_api->get_port_attribute(port_list_object_attribute.value.objlist.list[i], 1, &port_lane_list_attribute);
 
-          std::set<int> port_lanes;
           uint32_t laneCnt = port_lane_list_attribute.value.u32list.count;
-          for (int j=0 ; j<laneCnt; j++){
-              port_lanes.insert(port_lane_list_attribute.value.u32list.list[j]);
+          uint32_t laneMatchCount = 0;
+          for (int j=0 ; j<laneCnt; j++)
+          {
+             if (lane_set.count(port_lane_list_attribute.value.u32list.list[j]))
+             {
+                 laneMatchCount++;
+             }
+             else
+             {
+                 break;
+             }
           }
-
-          if (port_lanes == lane_set){
+          if (laneCnt == laneMatchCount){
               port_id = (sai_thrift_object_id_t) port_list_object_attribute.value.objlist.list[i];
               free(port_list_object_attribute.value.objlist.list);
               free(port_lane_list_attribute.value.u32list.list);
