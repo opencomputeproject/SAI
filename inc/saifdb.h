@@ -97,7 +97,7 @@ typedef enum _sai_fdb_entry_attr_t
     /**
      * @brief Start of attributes
      */
-    SAI_FDB_ENTRY_ATTR_START,
+    SAI_FDB_ENTRY_ATTR_START = 0x00000000,
 
     /**
      * @brief FDB entry type
@@ -114,7 +114,7 @@ typedef enum _sai_fdb_entry_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_PACKET_ACTION_FORWARD
      */
-    SAI_FDB_ENTRY_ATTR_PACKET_ACTION,
+    SAI_FDB_ENTRY_ATTR_PACKET_ACTION = SAI_FDB_ENTRY_ATTR_START + 0x1,
 
     /**
      * @brief Generate User Defined Trap ID for trap/log actions
@@ -127,7 +127,7 @@ typedef enum _sai_fdb_entry_attr_t
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
-    SAI_FDB_ENTRY_ATTR_USER_TRAP_ID,
+    SAI_FDB_ENTRY_ATTR_USER_TRAP_ID = SAI_FDB_ENTRY_ATTR_START + 0x2,
 
     /**
      * @brief FDB entry bridge port id
@@ -143,10 +143,10 @@ typedef enum _sai_fdb_entry_attr_t
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
-    SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID,
+    SAI_FDB_ENTRY_ATTR_BRIDGE_PORT_ID = SAI_FDB_ENTRY_ATTR_START + 0x3,
 
     /**
-     * @brief User based Meta Data
+     * @brief Src User based Meta Data
      *
      * Value Range #SAI_SWITCH_ATTR_FDB_DST_USER_META_DATA_RANGE
      *
@@ -154,7 +154,21 @@ typedef enum _sai_fdb_entry_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_FDB_ENTRY_ATTR_META_DATA,
+    SAI_FDB_ENTRY_ATTR_SRC_META_DATA = SAI_FDB_ENTRY_ATTR_START + 0x8,
+
+    /**
+     * @brief Dst User based Meta Data
+     *
+     * Value Range #SAI_SWITCH_ATTR_FDB_DST_USER_META_DATA_RANGE
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_FDB_ENTRY_ATTR_DST_META_DATA = SAI_FDB_ENTRY_ATTR_START + 0x4,
+
+    /** @ignore - for backward compatibility */
+    SAI_FDB_ENTRY_ATTR_META_DATA = SAI_FDB_ENTRY_ATTR_DST_META_DATA,
 
     /**
      * @brief Tunnel Endpoint IP. valid for SAI_BRIDGE_PORT_TYPE_TUNNEL
@@ -163,7 +177,7 @@ typedef enum _sai_fdb_entry_attr_t
      * @flags CREATE_AND_SET
      * @default 0.0.0.0
      */
-    SAI_FDB_ENTRY_ATTR_ENDPOINT_IP,
+    SAI_FDB_ENTRY_ATTR_ENDPOINT_IP = SAI_FDB_ENTRY_ATTR_START + 0x5,
 
     /**
      * @brief Attach a counter
@@ -176,7 +190,7 @@ typedef enum _sai_fdb_entry_attr_t
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
-    SAI_FDB_ENTRY_ATTR_COUNTER_ID,
+    SAI_FDB_ENTRY_ATTR_COUNTER_ID = SAI_FDB_ENTRY_ATTR_START + 0x6,
 
     /**
      * @brief Specifies whether a MAC move is allowed
@@ -188,12 +202,12 @@ typedef enum _sai_fdb_entry_attr_t
      * @default false
      * @validonly SAI_FDB_ENTRY_ATTR_TYPE == SAI_FDB_ENTRY_TYPE_STATIC
      */
-    SAI_FDB_ENTRY_ATTR_ALLOW_MAC_MOVE,
+    SAI_FDB_ENTRY_ATTR_ALLOW_MAC_MOVE = SAI_FDB_ENTRY_ATTR_START + 0x7,
 
     /**
      * @brief End of attributes
      */
-    SAI_FDB_ENTRY_ATTR_END,
+    SAI_FDB_ENTRY_ATTR_END = SAI_FDB_ENTRY_ATTR_ALLOW_MAC_MOVE,
 
     /** Start of custom range base value */
     SAI_FDB_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
