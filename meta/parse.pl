@@ -2579,30 +2579,32 @@ sub ProcessStructValueType
 {
     my $type = shift;
 
-    return "SAI_ATTR_VALUE_TYPE_OBJECT_ID"      if $type eq "sai_object_id_t";
-    return "SAI_ATTR_VALUE_TYPE_MAC"            if $type eq "sai_mac_t";
-    return "SAI_ATTR_VALUE_TYPE_IP_ADDRESS"     if $type eq "sai_ip_address_t";
-    return "SAI_ATTR_VALUE_TYPE_IP_PREFIX"      if $type eq "sai_ip_prefix_t";
-    return "SAI_ATTR_VALUE_TYPE_PRBS_RX_STATE"  if $type eq "sai_prbs_rx_state_t";
-    return "SAI_ATTR_VALUE_TYPE_UINT16"         if $type eq "sai_vlan_id_t";
-    return "SAI_ATTR_VALUE_TYPE_UINT32"         if $type eq "sai_label_id_t";
-    return "SAI_ATTR_VALUE_TYPE_UINT32"         if $type eq "uint32_t";
-    return "SAI_ATTR_VALUE_TYPE_UINT32"         if $type eq "sai_uint32_t";
-    return "SAI_ATTR_VALUE_TYPE_INT32"          if $type =~ /^sai_\w+_type_t$/; # enum
-    return "SAI_ATTR_VALUE_TYPE_NAT_ENTRY_DATA" if $type eq "sai_nat_entry_data_t";
-    return "SAI_ATTR_VALUE_TYPE_ENCRYPT_KEY"    if $type eq "sai_encrypt_key_t";
-    return "SAI_ATTR_VALUE_TYPE_AUTH_KEY"       if $type eq "sai_auth_key_t";
-    return "SAI_ATTR_VALUE_TYPE_MACSEC_SAK"     if $type eq "sai_macsec_sak_t";
-    return "SAI_ATTR_VALUE_TYPE_MACSEC_AUTH_KEY" if $type eq "sai_macsec_auth_key_t";
-    return "SAI_ATTR_VALUE_TYPE_MACSEC_SALT"    if $type eq "sai_macsec_salt_t";
-    return "SAI_ATTR_VALUE_TYPE_BOOL"           if $type eq "bool";
-    return "SAI_ATTR_VALUE_TYPE_IPV6"           if $type eq "sai_ip6_t";
-    return "SAI_ATTR_VALUE_TYPE_UINT8"          if $type eq "sai_uint8_t";
-    return "SAI_ATTR_VALUE_TYPE_INT32"          if defined $SAI_ENUMS{$type}; # enum
+    return "SAI_ATTR_VALUE_TYPE_OBJECT_ID"        if $type eq "sai_object_id_t";
+    return "SAI_ATTR_VALUE_TYPE_MAC"              if $type eq "sai_mac_t";
+    return "SAI_ATTR_VALUE_TYPE_IP_ADDRESS"       if $type eq "sai_ip_address_t";
+    return "SAI_ATTR_VALUE_TYPE_IP_PREFIX"        if $type eq "sai_ip_prefix_t";
+    return "SAI_ATTR_VALUE_TYPE_PRBS_RX_STATE"    if $type eq "sai_prbs_rx_state_t";
+    return "SAI_ATTR_VALUE_TYPE_UINT16"           if $type eq "sai_vlan_id_t";
+    return "SAI_ATTR_VALUE_TYPE_UINT32"           if $type eq "sai_label_id_t";
+    return "SAI_ATTR_VALUE_TYPE_UINT32"           if $type eq "uint32_t";
+    return "SAI_ATTR_VALUE_TYPE_UINT32"           if $type eq "sai_uint32_t";
+    return "SAI_ATTR_VALUE_TYPE_INT32"            if $type =~ /^sai_\w+_type_t$/; # enum
+    return "SAI_ATTR_VALUE_TYPE_NAT_ENTRY_DATA"   if $type eq "sai_nat_entry_data_t";
+    return "SAI_ATTR_VALUE_TYPE_ENCRYPT_KEY"      if $type eq "sai_encrypt_key_t";
+    return "SAI_ATTR_VALUE_TYPE_AUTH_KEY"         if $type eq "sai_auth_key_t";
+    return "SAI_ATTR_VALUE_TYPE_MACSEC_SAK"       if $type eq "sai_macsec_sak_t";
+    return "SAI_ATTR_VALUE_TYPE_MACSEC_AUTH_KEY"  if $type eq "sai_macsec_auth_key_t";
+    return "SAI_ATTR_VALUE_TYPE_MACSEC_SALT"      if $type eq "sai_macsec_salt_t";
+    return "SAI_ATTR_VALUE_TYPE_BOOL"             if $type eq "bool";
+    return "SAI_ATTR_VALUE_TYPE_IPV6"             if $type eq "sai_ip6_t";
+    return "SAI_ATTR_VALUE_TYPE_UINT8"            if $type eq "sai_uint8_t";
+    return "SAI_ATTR_VALUE_TYPE_UINT64"           if $type eq "uint64_t";
+    return "SAI_ATTR_VALUE_TYPE_TWAMP_STATS_DATA" if $type eq "sai_twamp_session_stats_data_t";
+    return "SAI_ATTR_VALUE_TYPE_INT32"            if defined $SAI_ENUMS{$type}; # enum
 
-    return "-1"                                 if $type eq "sai_fdb_entry_t";
-    return "-1"                                 if $type eq "sai_nat_entry_t";
-    return "-1"                                 if $type eq "sai_attribute_t*";
+    return "-1"                                   if $type eq "sai_fdb_entry_t";
+    return "-1"                                   if $type eq "sai_nat_entry_t";
+    return "-1"                                   if $type eq "sai_attribute_t*";
 
     LogError "invalid struct member value type $type";
 
@@ -5188,6 +5190,7 @@ sub ProcessNotificationStruct
         next if defined $SAI_ENUMS{$type};          # type is enum !
         next if $type =~ /^sai_\w+_entry_t/;        # non object id struct
         next if $type =~ /^(uint32_t|bool)$/;
+        next if $type =~ /^(sai_twamp_session_stats_data_t)$/;
 
         if ($type =~ /^(sai_object_id_t|sai_attribute_t\*)$/)
         {
