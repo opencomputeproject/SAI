@@ -2562,7 +2562,7 @@ typedef enum _sai_acl_entry_attr_t
     /**
      * @brief Inner Dst MAC Address
      *
-     * @type sai_acl_field_data_t sai_mac_T
+     * @type sai_acl_field_data_t sai_mac_t
      * @flags CREATE_AND_SET
      * @default disabled
      */
