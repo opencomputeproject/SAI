@@ -1497,6 +1497,24 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_TAM_INT_TYPE = SAI_ACL_TABLE_ATTR_FIELD_START + 0x152,
 
     /**
+     * @brief Inner Src MAC Address
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_INNER_SRC_MAC = SAI_ACL_TABLE_ATTR_FIELD_START + 0x50,
+
+    /**
+     * @brief Inner Dst MAC Address
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_INNER_DST_MAC = SAI_ACL_TABLE_ATTR_FIELD_START + 0x51,
+
+    /**
      * @brief End of ACL Table Match Field
      */
     SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_DST_IPV6_WORD0,
@@ -2531,6 +2549,24 @@ typedef enum _sai_acl_entry_attr_t
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_FIELD_TAM_INT_TYPE = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x152,
+
+    /**
+     * @brief Inner Src MAC Address
+     *
+     * @type sai_acl_field_data_t sai_mac_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_INNER_SRC_MAC = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x50,
+
+    /**
+     * @brief Inner Dst MAC Address
+     *
+     * @type sai_acl_field_data_t sai_mac_T
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_INNER_DST_MAC = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x51,
 
     /**
      * @brief End of Rule Match Fields
