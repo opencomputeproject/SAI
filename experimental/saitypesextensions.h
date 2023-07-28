@@ -70,6 +70,10 @@ typedef enum _sai_object_type_extensions_t
 
     SAI_OBJECT_TYPE_VIP_ENTRY,
 
+    SAI_OBJECT_TYPE_DST_TAG_ENTRY,
+
+    SAI_OBJECT_TYPE_SRC_TAG_ENTRY,
+
     /* Add new experimental object types above this line */
 
     SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END

@@ -46,6 +46,7 @@
 #include <saiexperimentaldasheni.h>
 #include <saiexperimentaldashdirectionlookup.h>
 #include <saiexperimentaldashacl.h>
+#include <saiexperimentaldashtag.h>
 #include <saiexperimentalbmtor.h>
 
 /**
@@ -113,6 +114,12 @@ typedef union _sai_object_key_entry_t
 
     /** @validonly object_type == SAI_OBJECT_TYPE_VIP_ENTRY */
     sai_vip_entry_t vip_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_DST_TAG_ENTRY */
+    sai_dst_tag_entry_t dst_tag_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_SRC_TAG_ENTRY */
+    sai_src_tag_entry_t src_tag_entry;
 
     /* Add new experimental entries above this line */
 
