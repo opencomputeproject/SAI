@@ -5612,6 +5612,17 @@ void check_struct_and_union_size()
 }
 #pragma GCC diagnostic pop
 
+#define _ENTRY(X,x) META_LOG_DEBUG("%s: %d, %s: %zu", #X, SAI_OBJECT_TYPE_ ## X, # x, sizeof(sai_ ## x ## _t));
+#define _BULK_ENTRY(X,x) META_LOG_DEBUG("%s: %d, %s: %zu", #X, SAI_OBJECT_TYPE_ ## X, # x, sizeof(sai_ ## x ## _t));
+
+void check_declare_entry_macro()
+{
+    SAI_META_LOG_ENTER();
+
+    SAI_METADATA_DECLARE_EVERY_ENTRY(_ENTRY);
+    SAI_METADATA_DECLARE_EVERY_BULK_ENTRY(_BULK_ENTRY);
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -5657,6 +5668,7 @@ int main(int argc, char **argv)
     check_object_type_extension_max_value();
     check_global_apis();
     check_struct_and_union_size();
+    check_declare_entry_macro();
 
     SAI_META_LOG_DEBUG("log test");
 
