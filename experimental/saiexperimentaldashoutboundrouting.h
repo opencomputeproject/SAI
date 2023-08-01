@@ -108,6 +108,27 @@ typedef enum _sai_outbound_routing_entry_attr_t
     SAI_OUTBOUND_ROUTING_ENTRY_ATTR_DST_VNET_ID,
 
     /**
+     * @brief Action route_vnet, route_vnet_direct, route_direct, route_service_tunnel parameter METER_POLICY_EN
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_VNET or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_VNET_DIRECT or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_DIRECT or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_SERVICE_TUNNEL
+     */
+    SAI_OUTBOUND_ROUTING_ENTRY_ATTR_METER_POLICY_EN,
+
+    /**
+     * @brief Action route_vnet, route_vnet_direct, route_direct, route_service_tunnel parameter METER_CLASS
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     * @validonly SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_VNET or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_VNET_DIRECT or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_DIRECT or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_SERVICE_TUNNEL
+     */
+    SAI_OUTBOUND_ROUTING_ENTRY_ATTR_METER_CLASS,
+
+    /**
      * @brief Action route_vnet_direct parameter OVERLAY_IP
      *
      * @type sai_ip_address_t
@@ -182,7 +203,7 @@ typedef enum _sai_outbound_routing_entry_attr_t
      *
      * @type sai_dash_encapsulation_t
      * @flags CREATE_AND_SET
-     * @default SAI_DASH_ENCAPSULATION_VXLAN
+     * @default SAI_DASH_ENCAPSULATION_INVALID
      * @validonly SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_SERVICE_TUNNEL
      */
     SAI_OUTBOUND_ROUTING_ENTRY_ATTR_DASH_ENCAPSULATION,
@@ -209,6 +230,15 @@ typedef enum _sai_outbound_routing_entry_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_OUTBOUND_ROUTING_ENTRY_ATTR_COUNTER_ID,
+
+    /**
+     * @brief IP address family for resource accounting
+     *
+     * @type sai_ip_addr_family_t
+     * @flags READ_ONLY
+     * @isresourcetype true
+     */
+    SAI_OUTBOUND_ROUTING_ENTRY_ATTR_IP_ADDR_FAMILY,
 
     /**
      * @brief End of attributes
