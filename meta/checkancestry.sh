@@ -55,6 +55,12 @@
 
 set -e
 
+if ! git rev-parse --git-dir > /dev/null 2>&1; then
+
+    echo "WARNING: this is not git repository, will skip ancestry check"
+    exit
+fi
+
 # 1. get all necessary data to temp directory for future processing
 # 2. pass all interesting commits to processor to build history
 
