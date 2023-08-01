@@ -1290,6 +1290,37 @@ sub CreateSourcePragmaPush
     WriteSource "#pragma GCC diagnostic ignored \"-Wenum-conversion\"";
 }
 
+sub CreateDeclareEveryEntryMacro
+{
+    WriteSectionComment "Every entry macros";
+
+    WriteHeader "#define SAI_METADATA_DECLARE_EVERY_ENTRY(SAI_USER_X_ENTRY_MACRO) \\";
+
+    my @rawnames = GetNonObjectIdStructNames();
+
+    for my $name (sort @rawnames)
+    {
+        my $uc = uc($name);
+
+        WriteHeader "    SAI_USER_X_ENTRY_MACRO($uc,$name) \\";
+    }
+
+    WriteHeader "";
+
+    WriteHeader "#define SAI_METADATA_DECLARE_EVERY_BULK_ENTRY(SAI_USER_X_BULK_ENTRY_MACRO) \\";
+
+    @rawnames = GetNonObjectIdStructNamesWithBulkApi();
+
+    for my $name (sort @rawnames)
+    {
+        my $uc = uc($name);
+
+        WriteHeader "    SAI_USER_X_BULK_ENTRY_MACRO($uc,$name) \\";
+    }
+
+    WriteHeader "";
+}
+
 sub CreateMetadataHeaderAndSource
 {
     WriteSectionComment "Enums metadata";
@@ -4782,6 +4813,8 @@ ProcessExtraRangeDefines();
 CreateSourceIncludes();
 
 CreateSourcePragmaPush();
+
+CreateDeclareEveryEntryMacro();
 
 CreateMetadataHeaderAndSource();
 
