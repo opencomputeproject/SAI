@@ -25,6 +25,13 @@
 
 set -e
 
+if ! git rev-parse --git-dir > /dev/null 2>&1; then
+
+    echo "WARNING: this is not git repository, will skip generating saimetadatasize.h and skip struct size check"
+    touch saimetadatasize.h
+    exit
+fi
+
 TEMP_DIR="tmp"
 
 COMMIT=origin/master # should be corresponding branch HEAD
