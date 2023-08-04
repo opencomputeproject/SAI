@@ -249,6 +249,7 @@ ALIASES                += "ignore       =@par Ignored:\n                @xmlonly
 ALIASES                += "isvlan       =@par IsVlan:\n                 @xmlonly @@isvlan        @endxmlonly"
 ALIASES                += "count        =@par Count:\n                  @xmlonly @@count         @endxmlonly"
 ALIASES                += "range        =@par Range:\n                  @xmlonly @@range         @endxmlonly"
+ALIASES                += "warning      =@par Warning\n                 @xmlonly @@warning       @endxmlonly"
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
 # A mapping has the form "name=value". For example adding "class=itcl::class"
