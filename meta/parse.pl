@@ -3424,6 +3424,130 @@ sub CreateGenericQuadApi
     WriteSource "}";
 }
 
+sub ProcessGenericStatsApi
+{
+    my $name = shift;
+    my $suffix= shift;
+    my $params = shift;
+
+    WriteSource "switch((int)meta_key->objecttype)";
+    WriteSource "{";
+
+    WriteSource "case SAI_OBJECT_TYPE_NULL:";
+    WriteSource "    return SAI_STATUS_NOT_SUPPORTED;";
+
+    my @objects = @{ $SAI_ENUMS{sai_object_type_t}{values} };
+
+    for my $ot (@objects)
+    {
+        if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
+        {
+            LogError "invalid obejct type '$ot'";
+            next;
+        }
+
+        next if $1 eq "NULL" or $1 eq "MAX";
+
+        if (not defined $OBJTOAPIMAP{$ot})
+        {
+            LogError "$ot is not defined in OBJTOAPIMAP, missing sai_XXX_api_t declaration?";
+            next;
+        }
+
+        my $struct = $NON_OBJECT_ID_STRUCTS{$ot};
+
+        my $small = lc($1) if $ot =~ /SAI_OBJECT_TYPE_(\w+)/;
+
+        my $api = $OBJTOAPIMAP{$ot};
+
+        if (IsSpecialObject($ot) or not defined $OBJECT_TYPE_TO_STATS_MAP{$small})
+        {
+            WriteSource "case $ot:";
+            WriteSource "    return SAI_STATUS_NOT_SUPPORTED;";
+        }
+        elsif (not defined $struct)
+        {
+            WriteSource "case $ot:";
+            WriteSource "    return (apis->${api}_api && apis->${api}_api->${name}_${small}_stats${suffix})";
+            WriteSource "        ? apis->${api}_api->${name}_${small}_stats${suffix}(meta_key->objectkey.key.object_id, ${params})";
+            WriteSource "        : SAI_STATUS_NOT_IMPLEMENTED;";
+        }
+        else
+        {
+            WriteSource "case $ot:";
+            WriteSource "    return (apis->${api}_api && apis->${api}_api->${name}_${small}_stats${suffix})";
+            WriteSource "        ? apis->${api}_api->${name}_${small}_stats${suffix}(&meta_key->objectkey.key.$small, ${params})";
+            WriteSource "        : SAI_STATUS_NOT_IMPLEMENTED;";
+        }
+    }
+
+    WriteSource "default:";
+    WriteSource "    SAI_META_LOG_NOTICE(\"object type %d not implemented\", meta_key->objecttype);";
+    WriteSource "    return SAI_STATUS_NOT_IMPLEMENTED;";
+    WriteSource "}";
+}
+
+sub CreateGenericStatsApi
+{
+    WriteSectionComment "Generic Stats API";
+
+    WriteHeader "sai_status_t sai_metadata_generic_get_stats(";
+    WriteHeader "    _In_ const sai_apis_t* apis,";
+    WriteHeader "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteHeader "    _In_ uint32_t number_of_counters,";
+    WriteHeader "    _In_ const sai_stat_id_t *counter_ids,";
+    WriteHeader "    _Out_ uint64_t *counters);";
+    WriteHeader "";
+
+    WriteHeader "sai_status_t sai_metadata_generic_get_stats_ext(";
+    WriteHeader "    _In_ const sai_apis_t* apis,";
+    WriteHeader "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteHeader "    _In_ uint32_t number_of_counters,";
+    WriteHeader "    _In_ const sai_stat_id_t *counter_ids,";
+    WriteHeader "    _In_ sai_stats_mode_t mode,";
+    WriteHeader "    _Out_ uint64_t *counters);";
+    WriteHeader "";
+
+    WriteHeader "sai_status_t sai_metadata_generic_clear_stats(";
+    WriteHeader "    _In_ const sai_apis_t* apis,";
+    WriteHeader "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteHeader "    _In_ uint32_t number_of_counters,";
+    WriteHeader "    _In_ const sai_stat_id_t *counter_ids);";
+    WriteHeader "";
+
+    # actual implementation
+
+    WriteSource "sai_status_t sai_metadata_generic_get_stats(";
+    WriteSource "    _In_ const sai_apis_t* apis,";
+    WriteSource "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteSource "    _In_ uint32_t number_of_counters,";
+    WriteSource "    _In_ const sai_stat_id_t *counter_ids,";
+    WriteSource "    _Out_ uint64_t *counters)";
+    WriteSource "{";
+    ProcessGenericStatsApi("get", "", "number_of_counters, counter_ids, counters");
+    WriteSource "}";
+
+    WriteSource "sai_status_t sai_metadata_generic_get_stats_ext(";
+    WriteSource "    _In_ const sai_apis_t* apis,";
+    WriteSource "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteSource "    _In_ uint32_t number_of_counters,";
+    WriteSource "    _In_ const sai_stat_id_t *counter_ids,";
+    WriteSource "    _In_ sai_stats_mode_t mode,";
+    WriteSource "    _Out_ uint64_t *counters)";
+    WriteSource "{";
+    ProcessGenericStatsApi("get", "_ext", "number_of_counters, counter_ids, mode, counters");
+    WriteSource "}";
+
+    WriteSource "sai_status_t sai_metadata_generic_clear_stats(";
+    WriteSource "    _In_ const sai_apis_t* apis,";
+    WriteSource "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteSource "    _In_ uint32_t number_of_counters,";
+    WriteSource "    _In_ const sai_stat_id_t *counter_ids)";
+    WriteSource "{";
+    ProcessGenericStatsApi("clear", "", "number_of_counters, counter_ids");
+    WriteSource "}";
+}
+
 sub CreateApisQuery
 {
     WriteSectionComment "SAI API query";
@@ -5032,6 +5156,8 @@ CreateGlobalApis();
 CreateGlobalFunctions();
 
 CreateGenericQuadApi();
+
+CreateGenericStatsApi();
 
 CreateApisQuery();
 
