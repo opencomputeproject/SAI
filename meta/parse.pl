@@ -3475,6 +3475,56 @@ sub CreateApisQuery
     WriteHeader "_Inout_ sai_apis_t *apis);";
 }
 
+sub CreateGlobalApisQuery
+{
+    WriteSectionComment "SAI global API query";
+
+    WriteHeader "typedef void* (*sai_dlsym_fn) (void * handle, const char* name);";
+    WriteHeader "typedef char* (*sai_dlerror_fn) (void);";
+
+    # TODO we could not pass handle and functions, but load functions internally
+    # and just return void* as handle
+
+    WriteHeader "extern sai_status_t sai_metadata_global_apis_query(";
+    WriteHeader "    _Inout_ sai_global_apis_t* global_apis,";
+    WriteHeader "    _In_ void* handle,";
+    WriteHeader "    _In_ const sai_dlsym_fn sym,";
+    WriteHeader "    _In_ const sai_dlerror_fn error);";
+
+    WriteSource "int sai_metadata_global_apis_query(";
+    WriteSource "    _Inout_ sai_global_apis_t* global_apis,";
+    WriteSource "    _In_ void* handle,";
+    WriteSource "    _In_ const sai_dlsym_fn dlsym,";
+    WriteSource "    _In_ const sai_dlerror_fn dlerror)";
+    WriteSource "{";
+
+    WriteSource "char* error;";
+    WriteSource "dlerror();";
+
+    for my $name (sort keys %GLOBAL_APIS)
+    {
+        my $short = $1 if $name =~ /^sai_(\w+)/;
+
+        WriteSource "global_apis->$short = 0;";
+    }
+
+    for my $name (sort keys %GLOBAL_APIS)
+    {
+        my $short = $1 if $name =~ /^sai_(\w+)/;
+
+        WriteSource "*(void **) (&global_apis->$short) = dlsym(handle, \"sai_${short}\");";
+
+        WriteSource "if ((error = dlerror()) != NULL)";
+        WriteSource "{";
+        WriteSource "SAI_META_LOG_NOTICE(\"dlsym failed on sai_$short: %s\", error);";
+        WriteSource "}";
+    }
+
+    WriteSource "return SAI_STATUS_SUCCESS;";
+
+    WriteSource "}";
+}
+
 sub ProcessIsExperimental
 {
     my $ot = shift;
@@ -4984,6 +5034,8 @@ CreateGlobalFunctions();
 CreateGenericQuadApi();
 
 CreateApisQuery();
+
+CreateGlobalApisQuery();
 
 CreateObjectInfo();
 
