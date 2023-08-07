@@ -3283,6 +3283,147 @@ sub CreateGlobalFunctions
     CreateEnumHelperMethod($typename);
 }
 
+sub ProcessGenericQuadApi
+{
+    my $name = shift;
+    my $params = shift;
+
+    WriteSource "switch((int)meta_key->objecttype)";
+    WriteSource "{";
+
+    WriteSource "case SAI_OBJECT_TYPE_NULL:";
+    WriteSource "    return SAI_STATUS_NOT_SUPPORTED;";
+
+    my @objects = @{ $SAI_ENUMS{sai_object_type_t}{values} };
+
+    for my $ot (@objects)
+    {
+        if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
+        {
+            LogError "invalid obejct type '$ot'";
+            next;
+        }
+
+        next if $1 eq "NULL" or $1 eq "MAX";
+
+        if (not defined $OBJTOAPIMAP{$ot})
+        {
+            LogError "$ot is not defined in OBJTOAPIMAP, missing sai_XXX_api_t declaration?";
+            next;
+        }
+
+        my $struct = $NON_OBJECT_ID_STRUCTS{$ot};
+
+        my $small = lc($1) if $ot =~ /SAI_OBJECT_TYPE_(\w+)/;
+
+        my $api = $OBJTOAPIMAP{$ot};
+
+        my $amp = ($name eq "create") ? "&" : "";
+
+        my $attr = ($name eq "set" or $name eq "get") ? "_attribute" : "";
+
+        if (IsSpecialObject($ot))
+        {
+            WriteSource "case $ot:";
+            WriteSource "    return SAI_STATUS_NOT_SUPPORTED;";
+        }
+        elsif (not defined $struct)
+        {
+            my $param = $params;
+
+            $param =~ s/switch_id,// if $small eq "switch";
+
+            WriteSource "case $ot:";
+            WriteSource "    return (apis->${api}_api && apis->${api}_api->${name}_${small}${attr})";
+            WriteSource "        ? apis->${api}_api->${name}_${small}${attr}(${amp}meta_key->objectkey.key.object_id${param})";
+            WriteSource "        : SAI_STATUS_NOT_IMPLEMENTED;";
+        }
+        else
+        {
+            my $param = $params;
+
+            $param =~ s/switch_id,//;
+
+            WriteSource "case $ot:";
+            WriteSource "    return (apis->${api}_api && apis->${api}_api->${name}_${small}${attr})";
+            WriteSource "        ? apis->${api}_api->${name}_${small}${attr}(&meta_key->objectkey.key.$small${param})";
+            WriteSource "        : SAI_STATUS_NOT_IMPLEMENTED;";
+        }
+    }
+
+    WriteSource "default:";
+    WriteSource "    SAI_META_LOG_NOTICE(\"object type %d not implemented\", meta_key->objecttype);";
+    WriteSource "    return SAI_STATUS_NOT_IMPLEMENTED;";
+    WriteSource "}";
+}
+
+sub CreateGenericQuadApi
+{
+    WriteSectionComment "Generic Quad API";
+
+    WriteHeader "sai_status_t sai_metadata_generic_create(";
+    WriteHeader "    _In_ const sai_apis_t* apis,";
+    WriteHeader "    _Inout_ sai_object_meta_key_t *meta_key,";
+    WriteHeader "    _In_ sai_object_id_t switch_id,";
+    WriteHeader "    _In_ uint32_t attr_count,";
+    WriteHeader "    _In_ const sai_attribute_t *attr_list);";
+    WriteHeader "";
+
+    WriteHeader "sai_status_t sai_metadata_generic_remove(";
+    WriteHeader "    _In_ const sai_apis_t* apis,";
+    WriteHeader "    _In_ const sai_object_meta_key_t *meta_key);";
+    WriteHeader "";
+
+    WriteHeader "sai_status_t sai_metadata_generic_set(";
+    WriteHeader "    _In_ const sai_apis_t* apis,";
+    WriteHeader "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteHeader "    _In_ const sai_attribute_t *attr);";
+    WriteHeader "";
+
+    WriteHeader "sai_status_t sai_metadata_generic_get(";
+    WriteHeader "    _In_ const sai_apis_t* apis,";
+    WriteHeader "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteHeader "    _In_ uint32_t attr_count,";
+    WriteHeader "    _Inout_ sai_attribute_t *attr_list);";
+    WriteHeader "";
+
+    # actual implementation
+
+    WriteSource "sai_status_t sai_metadata_generic_create(";
+    WriteSource "    _In_ const sai_apis_t* apis,";
+    WriteSource "    _Inout_ sai_object_meta_key_t *meta_key,";
+    WriteSource "    _In_ sai_object_id_t switch_id,";
+    WriteSource "    _In_ uint32_t attr_count,";
+    WriteSource "    _In_ const sai_attribute_t *attr_list)";
+    WriteSource "{";
+    ProcessGenericQuadApi("create", ", switch_id, attr_count, attr_list");
+    WriteSource "}";
+
+    WriteSource "sai_status_t sai_metadata_generic_remove(";
+    WriteSource "    _In_ const sai_apis_t* apis,";
+    WriteSource "    _In_ const sai_object_meta_key_t *meta_key)";
+    WriteSource "{";
+    ProcessGenericQuadApi("remove","");
+    WriteSource "}";
+
+    WriteSource "sai_status_t sai_metadata_generic_set(";
+    WriteSource "    _In_ const sai_apis_t* apis,";
+    WriteSource "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteSource "    _In_ const sai_attribute_t *attr)";
+    WriteSource "{";
+    ProcessGenericQuadApi("set", ", attr");
+    WriteSource "}";
+
+    WriteSource "sai_status_t sai_metadata_generic_get(";
+    WriteSource "    _In_ const sai_apis_t* apis,";
+    WriteSource "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteSource "    _In_ uint32_t attr_count,";
+    WriteSource "    _Inout_ sai_attribute_t *attr_list)";
+    WriteSource "{";
+    ProcessGenericQuadApi("get", ", attr_count, attr_list");
+    WriteSource "}";
+}
+
 sub CreateApisQuery
 {
     WriteSectionComment "SAI API query";
@@ -4839,6 +4980,8 @@ CreateApisStruct();
 CreateGlobalApis();
 
 CreateGlobalFunctions();
+
+CreateGenericQuadApi();
 
 CreateApisQuery();
 
