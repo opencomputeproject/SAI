@@ -2355,7 +2355,7 @@ typedef enum _sai_port_attr_t
      * @default SAI_PORT_PATH_TRACING_TIMESTAMP_TEMPLATE_8_15
      */
     SAI_PORT_ATTR_PATH_TRACING_TIMESTAMP_TEMPLATE,
-    
+
     /**
      * @brief End of attributes
      */
