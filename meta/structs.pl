@@ -130,6 +130,13 @@ sub BuildCommitHistory
     {
         LogDebug $structTypeName;
 
+        if ($structTypeName eq "sai_object_key_entry_t")
+        {
+            # skip this union, since it contain experimental entries
+            # and it can be modified time to time
+            next;
+        }
+
         my $arr_ref = $SAI_STRUCTS{$structTypeName}->{fields};
         my $type = $SAI_STRUCTS{$structTypeName}->{type};
 
