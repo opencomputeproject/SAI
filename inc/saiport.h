@@ -2335,7 +2335,7 @@ typedef enum _sai_port_attr_t
      */
     SAI_PORT_ATTR_HOST_TX_READY_STATUS,
 
-   /**
+    /**
      * @brief Configure 12b path tracing interface id
      *
      * Set interface id = 0 to disable path tracing on port.
