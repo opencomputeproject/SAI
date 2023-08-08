@@ -504,7 +504,7 @@ typedef enum _sai_port_host_tx_ready_status_t
 /**
  * @brief Attribute data for #SAI_PORT_ATTR_PATH_TRACING_TIMESTAMP_TEMPLATE
  */
-typedef enum _sai_port_pt_timestamp_template_type
+typedef enum _sai_port_pt_timestamp_template_type_t
 {
     /** Timestamp nanosecond bits [8:15] */
     SAI_PORT_PATH_TRACING_TIMESTAMP_TEMPLATE_8_15,
