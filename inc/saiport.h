@@ -2343,6 +2343,7 @@ typedef enum _sai_port_attr_t
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan false
      * @default 0
      */
     SAI_PORT_ATTR_PATH_TRACING_INTF,
@@ -2352,7 +2353,6 @@ typedef enum _sai_port_attr_t
      *
      * @type sai_port_pt_timestamp_template_type
      * @flags CREATE_AND_SET
-     * @default SAI_PORT_PATH_TRACING_TIMESTAMP_TEMPLATE_8_15
      */
     SAI_PORT_ATTR_PATH_TRACING_TIMESTAMP_TEMPLATE,
 
