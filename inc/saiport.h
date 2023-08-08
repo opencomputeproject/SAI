@@ -502,23 +502,23 @@ typedef enum _sai_port_host_tx_ready_status_t
 } sai_port_host_tx_ready_status_t;
 
 /**
- * @brief Attribute data for #SAI_PORT_ATTR_PATH_TRACING_TIMESTAMP_TEMPLATE
+ * @brief Attribute data for #SAI_PORT_ATTR_PATH_TRACING_TIMESTAMP_TYPE
  */
-typedef enum _sai_port_pt_timestamp_template_type_t
+typedef enum _sai_port_path_tracing_timestamp_type_t
 {
     /** Timestamp nanosecond bits [8:15] */
-    SAI_PORT_PATH_TRACING_TIMESTAMP_TEMPLATE_8_15,
+    SAI_PORT_PATH_TRACING_TIMESTAMP_TYPE_8_15;
 
     /** Timestamp nanosecond bits [12:19] */
-    SAI_PORT_PATH_TRACING_TIMESTAMP_TEMPLATE_12_19,
+    SAI_PORT_PATH_TRACING_TIMESTAMP_TYPE_12_19,
 
     /** Timestamp nanosecond bits [16:23] */
-    SAI_PORT_PATH_TRACING_TIMESTAMP_TEMPLATE_16_23,
+    SAI_PORT_PATH_TRACING_TIMESTAMP_TYPE_16_23,
 
     /** Timestamp nanosecond bits [20:27] */
-    SAI_PORT_PATH_TRACING_TIMESTAMP_TEMPLATE_20_27,
+    SAI_PORT_PATH_TRACING_TIMESTAMP_TYPE_20_27,
 
-} sai_port_pt_timestamp_template_type_t;
+} sai_port_path_tracing_timestamp_type_t;
 
 /**
  * @brief Attribute Id in sai_set_port_attribute() and
@@ -2351,10 +2351,10 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Configure path tracing timestamp template
      *
-     * @type sai_port_pt_timestamp_template_type_t
+     * @type sai_port_path_tracing_timestamp_type_t
      * @flags CREATE_AND_SET
      */
-    SAI_PORT_ATTR_PATH_TRACING_TIMESTAMP_TEMPLATE,
+    SAI_PORT_ATTR_PATH_TRACING_TIMESTAMP_TYPE,
 
     /**
      * @brief End of attributes
