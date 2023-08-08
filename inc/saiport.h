@@ -518,7 +518,7 @@ typedef enum _sai_port_pt_timestamp_template_type
     /** Timestamp nanosecond bits [20:27] */
     SAI_PORT_PATH_TRACING_TIMESTAMP_TEMPLATE_20_27,
 
-} sai_port_pt_timestamp_template_type;
+} sai_port_pt_timestamp_template_type_t;
 
 /**
  * @brief Attribute Id in sai_set_port_attribute() and
@@ -2351,7 +2351,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Configure path tracing timestamp template
      *
-     * @type sai_port_pt_timestamp_template_type
+     * @type sai_port_pt_timestamp_template_type_t
      * @flags CREATE_AND_SET
      */
     SAI_PORT_ATTR_PATH_TRACING_TIMESTAMP_TEMPLATE,
