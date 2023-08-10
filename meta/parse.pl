@@ -67,6 +67,7 @@ our %PRIMITIVE_TYPES = ();
 our %FUNCTION_DEF = ();
 our @ALL_ENUMS = ();
 our %GLOBAL_APIS = ();
+our %OBJECT_TYPE_BULK_MAP = ();
 
 my $FLAGS = "MANDATORY_ON_CREATE|CREATE_ONLY|CREATE_AND_SET|READ_ONLY|KEY";
 my $ENUM_FLAGS_TYPES = "(none|strict|mixed|ranges|free)";
@@ -1288,6 +1289,37 @@ sub CreateSourcePragmaPush
     WriteSource "#pragma GCC diagnostic push";
     WriteSource "#pragma GCC diagnostic ignored \"-Wpragmas\"";
     WriteSource "#pragma GCC diagnostic ignored \"-Wenum-conversion\"";
+}
+
+sub CreateDeclareEveryEntryMacro
+{
+    WriteSectionComment "Every entry macros";
+
+    WriteHeader "#define SAI_METADATA_DECLARE_EVERY_ENTRY(SAI_USER_X_ENTRY_MACRO) \\";
+
+    my @rawnames = GetNonObjectIdStructNames();
+
+    for my $name (sort @rawnames)
+    {
+        my $uc = uc($name);
+
+        WriteHeader "    SAI_USER_X_ENTRY_MACRO($uc,$name) \\";
+    }
+
+    WriteHeader "";
+
+    WriteHeader "#define SAI_METADATA_DECLARE_EVERY_BULK_ENTRY(SAI_USER_X_BULK_ENTRY_MACRO) \\";
+
+    @rawnames = GetNonObjectIdStructNamesWithBulkApi();
+
+    for my $name (sort @rawnames)
+    {
+        my $uc = uc($name);
+
+        WriteHeader "    SAI_USER_X_BULK_ENTRY_MACRO($uc,$name) \\";
+    }
+
+    WriteHeader "";
 }
 
 sub CreateMetadataHeaderAndSource
@@ -3252,6 +3284,480 @@ sub CreateGlobalFunctions
     CreateEnumHelperMethod($typename);
 }
 
+sub ProcessGenericQuadApi
+{
+    my $name = shift;
+    my $params = shift;
+
+    WriteSource "switch((int)meta_key->objecttype)";
+    WriteSource "{";
+
+    WriteSource "case SAI_OBJECT_TYPE_NULL:";
+    WriteSource "    return SAI_STATUS_NOT_SUPPORTED;";
+
+    my @objects = @{ $SAI_ENUMS{sai_object_type_t}{values} };
+
+    for my $ot (@objects)
+    {
+        if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
+        {
+            LogError "invalid obejct type '$ot'";
+            next;
+        }
+
+        next if $1 eq "NULL" or $1 eq "MAX";
+
+        if (not defined $OBJTOAPIMAP{$ot})
+        {
+            LogError "$ot is not defined in OBJTOAPIMAP, missing sai_XXX_api_t declaration?";
+            next;
+        }
+
+        my $struct = $NON_OBJECT_ID_STRUCTS{$ot};
+
+        my $small = lc($1) if $ot =~ /SAI_OBJECT_TYPE_(\w+)/;
+
+        my $api = $OBJTOAPIMAP{$ot};
+
+        my $amp = ($name eq "create") ? "&" : "";
+
+        my $attr = ($name eq "set" or $name eq "get") ? "_attribute" : "";
+
+        if (IsSpecialObject($ot))
+        {
+            WriteSource "case $ot:";
+            WriteSource "    return SAI_STATUS_NOT_SUPPORTED;";
+        }
+        elsif (not defined $struct)
+        {
+            my $param = $params;
+
+            $param =~ s/switch_id,// if $small eq "switch";
+
+            WriteSource "case $ot:";
+            WriteSource "    return (apis->${api}_api && apis->${api}_api->${name}_${small}${attr})";
+            WriteSource "        ? apis->${api}_api->${name}_${small}${attr}(${amp}meta_key->objectkey.key.object_id${param})";
+            WriteSource "        : SAI_STATUS_NOT_IMPLEMENTED;";
+        }
+        else
+        {
+            my $param = $params;
+
+            $param =~ s/switch_id,//;
+
+            WriteSource "case $ot:";
+            WriteSource "    return (apis->${api}_api && apis->${api}_api->${name}_${small}${attr})";
+            WriteSource "        ? apis->${api}_api->${name}_${small}${attr}(&meta_key->objectkey.key.$small${param})";
+            WriteSource "        : SAI_STATUS_NOT_IMPLEMENTED;";
+        }
+    }
+
+    WriteSource "default:";
+    WriteSource "    SAI_META_LOG_NOTICE(\"object type %d not implemented\", meta_key->objecttype);";
+    WriteSource "    return SAI_STATUS_NOT_IMPLEMENTED;";
+    WriteSource "}";
+}
+
+sub CreateGenericQuadApi
+{
+    WriteSectionComment "Generic Quad API";
+
+    WriteHeader "sai_status_t sai_metadata_generic_create(";
+    WriteHeader "    _In_ const sai_apis_t* apis,";
+    WriteHeader "    _Inout_ sai_object_meta_key_t *meta_key,";
+    WriteHeader "    _In_ sai_object_id_t switch_id,";
+    WriteHeader "    _In_ uint32_t attr_count,";
+    WriteHeader "    _In_ const sai_attribute_t *attr_list);";
+    WriteHeader "";
+
+    WriteHeader "sai_status_t sai_metadata_generic_remove(";
+    WriteHeader "    _In_ const sai_apis_t* apis,";
+    WriteHeader "    _In_ const sai_object_meta_key_t *meta_key);";
+    WriteHeader "";
+
+    WriteHeader "sai_status_t sai_metadata_generic_set(";
+    WriteHeader "    _In_ const sai_apis_t* apis,";
+    WriteHeader "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteHeader "    _In_ const sai_attribute_t *attr);";
+    WriteHeader "";
+
+    WriteHeader "sai_status_t sai_metadata_generic_get(";
+    WriteHeader "    _In_ const sai_apis_t* apis,";
+    WriteHeader "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteHeader "    _In_ uint32_t attr_count,";
+    WriteHeader "    _Inout_ sai_attribute_t *attr_list);";
+    WriteHeader "";
+
+    # actual implementation
+
+    WriteSource "sai_status_t sai_metadata_generic_create(";
+    WriteSource "    _In_ const sai_apis_t* apis,";
+    WriteSource "    _Inout_ sai_object_meta_key_t *meta_key,";
+    WriteSource "    _In_ sai_object_id_t switch_id,";
+    WriteSource "    _In_ uint32_t attr_count,";
+    WriteSource "    _In_ const sai_attribute_t *attr_list)";
+    WriteSource "{";
+    ProcessGenericQuadApi("create", ", switch_id, attr_count, attr_list");
+    WriteSource "}";
+
+    WriteSource "sai_status_t sai_metadata_generic_remove(";
+    WriteSource "    _In_ const sai_apis_t* apis,";
+    WriteSource "    _In_ const sai_object_meta_key_t *meta_key)";
+    WriteSource "{";
+    ProcessGenericQuadApi("remove","");
+    WriteSource "}";
+
+    WriteSource "sai_status_t sai_metadata_generic_set(";
+    WriteSource "    _In_ const sai_apis_t* apis,";
+    WriteSource "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteSource "    _In_ const sai_attribute_t *attr)";
+    WriteSource "{";
+    ProcessGenericQuadApi("set", ", attr");
+    WriteSource "}";
+
+    WriteSource "sai_status_t sai_metadata_generic_get(";
+    WriteSource "    _In_ const sai_apis_t* apis,";
+    WriteSource "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteSource "    _In_ uint32_t attr_count,";
+    WriteSource "    _Inout_ sai_attribute_t *attr_list)";
+    WriteSource "{";
+    ProcessGenericQuadApi("get", ", attr_count, attr_list");
+    WriteSource "}";
+}
+
+sub ProcessGenericStatsApi
+{
+    my $name = shift;
+    my $suffix= shift;
+    my $params = shift;
+
+    WriteSource "switch((int)meta_key->objecttype)";
+    WriteSource "{";
+
+    WriteSource "case SAI_OBJECT_TYPE_NULL:";
+    WriteSource "    return SAI_STATUS_NOT_SUPPORTED;";
+
+    my @objects = @{ $SAI_ENUMS{sai_object_type_t}{values} };
+
+    for my $ot (@objects)
+    {
+        if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
+        {
+            LogError "invalid obejct type '$ot'";
+            next;
+        }
+
+        next if $1 eq "NULL" or $1 eq "MAX";
+
+        if (not defined $OBJTOAPIMAP{$ot})
+        {
+            LogError "$ot is not defined in OBJTOAPIMAP, missing sai_XXX_api_t declaration?";
+            next;
+        }
+
+        my $struct = $NON_OBJECT_ID_STRUCTS{$ot};
+
+        my $small = lc($1) if $ot =~ /SAI_OBJECT_TYPE_(\w+)/;
+
+        my $api = $OBJTOAPIMAP{$ot};
+
+        if (IsSpecialObject($ot) or not defined $OBJECT_TYPE_TO_STATS_MAP{$small})
+        {
+            WriteSource "case $ot:";
+            WriteSource "    return SAI_STATUS_NOT_SUPPORTED;";
+        }
+        elsif (not defined $struct)
+        {
+            WriteSource "case $ot:";
+            WriteSource "    return (apis->${api}_api && apis->${api}_api->${name}_${small}_stats${suffix})";
+            WriteSource "        ? apis->${api}_api->${name}_${small}_stats${suffix}(meta_key->objectkey.key.object_id, ${params})";
+            WriteSource "        : SAI_STATUS_NOT_IMPLEMENTED;";
+        }
+        else
+        {
+            WriteSource "case $ot:";
+            WriteSource "    return (apis->${api}_api && apis->${api}_api->${name}_${small}_stats${suffix})";
+            WriteSource "        ? apis->${api}_api->${name}_${small}_stats${suffix}(&meta_key->objectkey.key.$small, ${params})";
+            WriteSource "        : SAI_STATUS_NOT_IMPLEMENTED;";
+        }
+    }
+
+    WriteSource "default:";
+    WriteSource "    SAI_META_LOG_NOTICE(\"object type %d not implemented\", meta_key->objecttype);";
+    WriteSource "    return SAI_STATUS_NOT_IMPLEMENTED;";
+    WriteSource "}";
+}
+
+sub CreateGenericStatsApi
+{
+    WriteSectionComment "Generic Stats API";
+
+    WriteHeader "sai_status_t sai_metadata_generic_get_stats(";
+    WriteHeader "    _In_ const sai_apis_t* apis,";
+    WriteHeader "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteHeader "    _In_ uint32_t number_of_counters,";
+    WriteHeader "    _In_ const sai_stat_id_t *counter_ids,";
+    WriteHeader "    _Out_ uint64_t *counters);";
+    WriteHeader "";
+
+    WriteHeader "sai_status_t sai_metadata_generic_get_stats_ext(";
+    WriteHeader "    _In_ const sai_apis_t* apis,";
+    WriteHeader "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteHeader "    _In_ uint32_t number_of_counters,";
+    WriteHeader "    _In_ const sai_stat_id_t *counter_ids,";
+    WriteHeader "    _In_ sai_stats_mode_t mode,";
+    WriteHeader "    _Out_ uint64_t *counters);";
+    WriteHeader "";
+
+    WriteHeader "sai_status_t sai_metadata_generic_clear_stats(";
+    WriteHeader "    _In_ const sai_apis_t* apis,";
+    WriteHeader "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteHeader "    _In_ uint32_t number_of_counters,";
+    WriteHeader "    _In_ const sai_stat_id_t *counter_ids);";
+    WriteHeader "";
+
+    # actual implementation
+
+    WriteSource "sai_status_t sai_metadata_generic_get_stats(";
+    WriteSource "    _In_ const sai_apis_t* apis,";
+    WriteSource "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteSource "    _In_ uint32_t number_of_counters,";
+    WriteSource "    _In_ const sai_stat_id_t *counter_ids,";
+    WriteSource "    _Out_ uint64_t *counters)";
+    WriteSource "{";
+    ProcessGenericStatsApi("get", "", "number_of_counters, counter_ids, counters");
+    WriteSource "}";
+
+    WriteSource "sai_status_t sai_metadata_generic_get_stats_ext(";
+    WriteSource "    _In_ const sai_apis_t* apis,";
+    WriteSource "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteSource "    _In_ uint32_t number_of_counters,";
+    WriteSource "    _In_ const sai_stat_id_t *counter_ids,";
+    WriteSource "    _In_ sai_stats_mode_t mode,";
+    WriteSource "    _Out_ uint64_t *counters)";
+    WriteSource "{";
+    ProcessGenericStatsApi("get", "_ext", "number_of_counters, counter_ids, mode, counters");
+    WriteSource "}";
+
+    WriteSource "sai_status_t sai_metadata_generic_clear_stats(";
+    WriteSource "    _In_ const sai_apis_t* apis,";
+    WriteSource "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteSource "    _In_ uint32_t number_of_counters,";
+    WriteSource "    _In_ const sai_stat_id_t *counter_ids)";
+    WriteSource "{";
+    ProcessGenericStatsApi("clear", "", "number_of_counters, counter_ids");
+    WriteSource "}";
+}
+
+sub ProcessGenericQuadBulkApi
+{
+    my $name = shift;
+    my $params = shift;
+
+    WriteSource "switch((int)meta_key->objecttype)";
+    WriteSource "{";
+
+    WriteSource "case SAI_OBJECT_TYPE_NULL:";
+    WriteSource "    return SAI_STATUS_NOT_SUPPORTED;";
+
+    my @objects = @{ $SAI_ENUMS{sai_object_type_t}{values} };
+
+    for my $ot (@objects)
+    {
+        if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
+        {
+            LogError "invalid obejct type '$ot'";
+            next;
+        }
+
+        next if $1 eq "NULL" or $1 eq "MAX";
+
+        if (not defined $OBJTOAPIMAP{$ot})
+        {
+            LogError "$ot is not defined in OBJTOAPIMAP, missing sai_XXX_api_t declaration?";
+            next;
+        }
+
+        if (not defined $OBJECT_TYPE_BULK_MAP{$ot} or not defined $OBJECT_TYPE_BULK_MAP{$ot}{$name})
+        {
+            WriteSource "case $ot:";
+            WriteSource "    return SAI_STATUS_NOT_SUPPORTED;";
+            next;
+        }
+
+        my $struct = $NON_OBJECT_ID_STRUCTS{$ot};
+
+        my $small = lc($1) if $ot =~ /SAI_OBJECT_TYPE_(\w+)/;
+
+        my $api = $OBJTOAPIMAP{$ot};
+
+        if (IsSpecialObject($ot))
+        {
+            WriteSource "case $ot:";
+            WriteSource "    return SAI_STATUS_NOT_SUPPORTED;";
+        }
+        elsif (not defined $struct)
+        {
+            WriteSource "case $ot:";
+            WriteSource "{";
+
+            WriteSource "sai_object_id_t* objects = calloc(object_count, sizeof(sai_object_id_t));";
+            WriteSource "uint32_t i;";
+            WriteSource "sai_status_t status = SAI_STATUS_NOT_IMPLEMENTED;";
+
+            WriteSource "for (i = 0; i < object_count; i++)";
+            WriteSource "{";
+            WriteSource "objects[i] = meta_key[i].objectkey.key.object_id;";
+            WriteSource "}";
+
+            my $f = ($name =~ /set|get/) ? "${name}_${small}s_attribute" : "${name}_${small}s";
+
+            my $p = ($name eq "create") ? "switch_id, object_count, attr_count, attr_list, mode, objects, object_statuses" : $params;
+
+            WriteSource "status = (apis->${api}_api && apis->${api}_api->${f})";
+            WriteSource "    ? apis->${api}_api->${f}($p)";
+            WriteSource "    : SAI_STATUS_NOT_IMPLEMENTED;";
+
+            if ($name eq "create")
+            {
+                WriteSource "for (i = 0; i < object_count; i++)";
+                WriteSource "{";
+                WriteSource "meta_key[i].objectkey.key.object_id = objects[i];";
+                WriteSource "}";
+            }
+
+            WriteSource "free(objects);";
+            WriteSource "return status;";
+            WriteSource "}";
+        }
+        else
+        {
+            WriteSource "case $ot:";
+            WriteSource "{";
+            WriteSource "sai_${small}_t* objects = calloc(object_count, sizeof(sai_${small}_t));";
+            WriteSource "uint32_t i;";
+            WriteSource "sai_status_t status = SAI_STATUS_NOT_IMPLEMENTED;";
+
+            WriteSource "for (i = 0; i < object_count; i++)";
+            WriteSource "{";
+            WriteSource "objects[i] = meta_key[i].objectkey.key.${small};";
+            WriteSource "}";
+
+            my $f = ($name =~ /set|get/) ? "${name}_${small}s_attribute" : "${name}_${small}s";
+
+            $f =~ s/entrys/entries/;
+
+            my $p = $params;
+
+            $p =~ s/switch_id,// if $name eq "create";
+
+            WriteSource "status = (apis->${api}_api && apis->${api}_api->${f})";
+            WriteSource "    ? apis->${api}_api->${f}($p)";
+            WriteSource "    : SAI_STATUS_NOT_IMPLEMENTED;";
+
+            WriteSource "free(objects);";
+            WriteSource "return status;";
+            WriteSource "}";
+        }
+    }
+
+    WriteSource "default:";
+    WriteSource "    SAI_META_LOG_NOTICE(\"object type %d not implemented\", meta_key->objecttype);";
+    WriteSource "    return SAI_STATUS_NOT_IMPLEMENTED;";
+    WriteSource "}";
+}
+
+sub CreateGenericQuadBulkApi
+{
+    WriteSectionComment "Generic Quad Bulk API";
+
+    WriteHeader "sai_status_t sai_metadata_generic_bulk_create(";
+    WriteHeader "    _In_ const sai_apis_t* apis,";
+    WriteHeader "    _In_ sai_object_id_t switch_id,";
+    WriteHeader "    _In_ uint32_t object_count,";
+    WriteHeader "    _Inout_ sai_object_meta_key_t *meta_key,";
+    WriteHeader "    _In_ const uint32_t *attr_count,";
+    WriteHeader "    _In_ const sai_attribute_t **attr_list,";
+    WriteHeader "    _In_ sai_bulk_op_error_mode_t mode,";
+    WriteHeader "    _Out_ sai_status_t *object_statuses);";
+    WriteHeader "";
+
+    WriteHeader "sai_status_t sai_metadata_generic_bulk_remove(";
+    WriteHeader "    _In_ const sai_apis_t* apis,";
+    WriteHeader "    _In_ uint32_t object_count,";
+    WriteHeader "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteHeader "    _In_ sai_bulk_op_error_mode_t mode,";
+    WriteHeader "    _Out_ sai_status_t *object_statuses);";
+    WriteHeader "";
+
+    WriteHeader "sai_status_t sai_metadata_generic_bulk_set(";
+    WriteHeader "    _In_ const sai_apis_t* apis,";
+    WriteHeader "    _In_ uint32_t object_count,";
+    WriteHeader "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteHeader "    _In_ const sai_attribute_t *attr_list,";
+    WriteHeader "    _In_ sai_bulk_op_error_mode_t mode,";
+    WriteHeader "    _Out_ sai_status_t *object_statuses);";
+    WriteHeader "";
+
+    WriteHeader "sai_status_t sai_metadata_genecic_bulk_get(";
+    WriteHeader "    _In_ const sai_apis_t* apis,";
+    WriteHeader "    _In_ uint32_t object_count,";
+    WriteHeader "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteHeader "    _In_ const uint32_t *attr_count,";
+    WriteHeader "    _Inout_ sai_attribute_t **attr_list,";
+    WriteHeader "    _In_ sai_bulk_op_error_mode_t mode,";
+    WriteHeader "    _Out_ sai_status_t *object_statuses);";
+    WriteHeader "";
+
+    # actual implementation
+
+    WriteSource "sai_status_t sai_metadata_generic_bulk_create(";
+    WriteSource "    _In_ const sai_apis_t* apis,";
+    WriteSource "    _In_ sai_object_id_t switch_id,";
+    WriteSource "    _In_ uint32_t object_count,";
+    WriteSource "    _Inout_ sai_object_meta_key_t *meta_key,";
+    WriteSource "    _In_ const uint32_t *attr_count,";
+    WriteSource "    _In_ const sai_attribute_t **attr_list,";
+    WriteSource "    _In_ sai_bulk_op_error_mode_t mode,";
+    WriteSource "    _Out_ sai_status_t *object_statuses)";
+    WriteSource "{";
+    ProcessGenericQuadBulkApi("create", "switch_id, object_count, objects, attr_count, attr_list, mode, object_statuses");
+    WriteSource "}";
+
+    WriteSource "sai_status_t sai_metadata_generic_bulk_remove(";
+    WriteSource "    _In_ const sai_apis_t* apis,";
+    WriteSource "    _In_ uint32_t object_count,";
+    WriteSource "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteSource "    _In_ sai_bulk_op_error_mode_t mode,";
+    WriteSource "    _Out_ sai_status_t *object_statuses)";
+    WriteSource "{";
+    ProcessGenericQuadBulkApi("remove", "object_count, objects, mode, object_statuses");
+    WriteSource "}";
+
+    WriteSource "sai_status_t sai_metadata_generic_bulk_set(";
+    WriteSource "    _In_ const sai_apis_t* apis,";
+    WriteSource "    _In_ uint32_t object_count,";
+    WriteSource "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteSource "    _In_ const sai_attribute_t *attr_list,";
+    WriteSource "    _In_ sai_bulk_op_error_mode_t mode,";
+    WriteSource "    _Out_ sai_status_t *object_statuses)";
+    WriteSource "{";
+    ProcessGenericQuadBulkApi("set", "object_count, objects, attr_list, mode, object_statuses");
+    WriteSource "}";
+
+    WriteSource "sai_status_t sai_metadata_genecic_bulk_get(";
+    WriteSource "    _In_ const sai_apis_t* apis,";
+    WriteSource "    _In_ uint32_t object_count,";
+    WriteSource "    _In_ const sai_object_meta_key_t *meta_key,";
+    WriteSource "    _In_ const uint32_t *attr_count,";
+    WriteSource "    _Inout_ sai_attribute_t **attr_list,";
+    WriteSource "    _In_ sai_bulk_op_error_mode_t mode,";
+    WriteSource "    _Out_ sai_status_t *object_statuses)";
+    WriteSource "{";
+    ProcessGenericQuadBulkApi("get", "object_count, objects, attr_count, attr_list, mode, object_statuses");
+    WriteSource "}";
+}
+
 sub CreateApisQuery
 {
     WriteSectionComment "SAI API query";
@@ -3301,6 +3807,56 @@ sub CreateApisQuery
     WriteHeader "extern int sai_metadata_apis_query(";
     WriteHeader "_In_ const sai_api_query_fn api_query,";
     WriteHeader "_Inout_ sai_apis_t *apis);";
+}
+
+sub CreateGlobalApisQuery
+{
+    WriteSectionComment "SAI global API query";
+
+    WriteHeader "typedef void* (*sai_dlsym_fn) (void * handle, const char* name);";
+    WriteHeader "typedef char* (*sai_dlerror_fn) (void);";
+
+    # TODO we could not pass handle and functions, but load functions internally
+    # and just return void* as handle
+
+    WriteHeader "extern sai_status_t sai_metadata_global_apis_query(";
+    WriteHeader "    _Inout_ sai_global_apis_t* global_apis,";
+    WriteHeader "    _In_ void* handle,";
+    WriteHeader "    _In_ const sai_dlsym_fn sym,";
+    WriteHeader "    _In_ const sai_dlerror_fn error);";
+
+    WriteSource "int sai_metadata_global_apis_query(";
+    WriteSource "    _Inout_ sai_global_apis_t* global_apis,";
+    WriteSource "    _In_ void* handle,";
+    WriteSource "    _In_ const sai_dlsym_fn dlsym,";
+    WriteSource "    _In_ const sai_dlerror_fn dlerror)";
+    WriteSource "{";
+
+    WriteSource "char* error;";
+    WriteSource "dlerror();";
+
+    for my $name (sort keys %GLOBAL_APIS)
+    {
+        my $short = $1 if $name =~ /^sai_(\w+)/;
+
+        WriteSource "global_apis->$short = 0;";
+    }
+
+    for my $name (sort keys %GLOBAL_APIS)
+    {
+        my $short = $1 if $name =~ /^sai_(\w+)/;
+
+        WriteSource "*(void **) (&global_apis->$short) = dlsym(handle, \"sai_${short}\");";
+
+        WriteSource "if ((error = dlerror()) != NULL)";
+        WriteSource "{";
+        WriteSource "SAI_META_LOG_NOTICE(\"dlsym failed on sai_$short: %s\", error);";
+        WriteSource "}";
+    }
+
+    WriteSource "return SAI_STATUS_SUCCESS;";
+
+    WriteSource "}";
 }
 
 sub ProcessIsExperimental
@@ -3723,6 +4279,66 @@ sub ExtractStatsFunctionMap
     }
 
     %OBJECT_TYPE_TO_STATS_MAP = %otmap;
+}
+
+sub ExtractObjectTypeBulkMap
+{
+    #
+    # Purpose is to get object types that have bulk API present
+    # Note: not all objects have all 4 apis defined
+    #
+
+    my @headers = GetHeaderFiles();
+    my @exheaders = GetExperimentalHeaderFiles();
+
+    my @merged = (@headers, @exheaders);
+
+    my %otmap = ();
+
+    for my $header (@merged)
+    {
+        my $data = ReadHeaderFile($header);
+
+        next if not $data =~ m!(sai_\w+_api_t)(.+?)\1;!igs;
+
+        my $apis = $2;
+
+        my @fns = $apis =~ /(sai_bulk_(?:\w+)_fn\s+(?:\w+))/g;
+
+        for my $fn (@fns)
+        {
+            my $name;
+            my $ot;
+
+            if ($fn =~ /^sai_bulk_object_(create|remove|set|get)(?:_attribute)?_fn\s+(?:create|remove|set|get)_(\w+?)s(_attribute)?$/)
+            {
+                $name = $1;
+                $ot = $2;
+            }
+            elsif ($fn =~ /^sai_bulk_(create|remove|set|get)_(\w+?)(?:_attribute)?_fn\s+(?:create|remove|set|get)_\w+?s(?:_attribute)?$/)
+            {
+                $name = $1;
+                $ot = $2;
+            }
+            else
+            {
+                LogError "unrecognized bulk pattern: $fn";
+                next;
+            }
+
+            my $OT = "SAI_OBJECT_TYPE_" . uc($ot);
+
+            if (not defined $OBJECT_TYPE_MAP{$OT})
+            {
+                LogError "invalid object type $OT extracted from bulk definition: $fn";
+                next;
+            }
+
+            $otmap{$OT}{$name} = 1;
+        }
+    }
+
+    %OBJECT_TYPE_BULK_MAP = %otmap;
 }
 
 sub CheckObjectTypeStatitics
@@ -4773,6 +5389,8 @@ MergeExtensionsEnums();
 
 CreateObjectTypeMap();
 
+ExtractObjectTypeBulkMap();
+
 WriteHeaderHeader();
 
 ProcessSaiStatus();
@@ -4782,6 +5400,8 @@ ProcessExtraRangeDefines();
 CreateSourceIncludes();
 
 CreateSourcePragmaPush();
+
+CreateDeclareEveryEntryMacro();
 
 CreateMetadataHeaderAndSource();
 
@@ -4807,7 +5427,15 @@ CreateGlobalApis();
 
 CreateGlobalFunctions();
 
+CreateGenericQuadApi();
+
+CreateGenericStatsApi();
+
+CreateGenericQuadBulkApi();
+
 CreateApisQuery();
+
+CreateGlobalApisQuery();
 
 CreateObjectInfo();
 
