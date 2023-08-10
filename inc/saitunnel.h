@@ -1030,6 +1030,21 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_IPSEC_VERIFIED,
 
     /**
+     * @brief Priority
+     *
+     * Value must be in the range defined in
+     * \[#SAI_SWITCH_ATTR_TUNNEL_TERM_TABLE_ENTRY_MINIMUM_PRIORITY,
+     * #SAI_SWITCH_ATTR_TUNNEL_TERM_TABLE_ENTRY_MAXIMUM_PRIORITY\]
+     * (default = #SAI_SWITCH_ATTR_TUNNEL_TERM_TABLE_ENTRY_MINIMUM_PRIORITY)
+     * higher value in priority equals higher priority
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_PRIORITY,
+
+    /**
      * @brief End of attributes
      */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_END,
