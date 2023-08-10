@@ -17,6 +17,7 @@ meta/saimetadatatest.c
 meta/saisanitycheck
 meta/saiserializetest
 meta/saiswig.i
+meta/saimetadatasize.h
 
 # temporary files
 **/*~

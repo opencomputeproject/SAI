@@ -25,6 +25,12 @@
 
 set -e
 
+if ! git rev-parse --git-dir > /dev/null 2>&1; then
+
+    echo "WARNING: this is not git repository, will skip check enum lock"
+    exit
+fi
+
 rm -rf temp
 
 sairepo=`git remote get-url origin`
