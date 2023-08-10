@@ -2930,6 +2930,22 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_ACL_CHAIN_LIST,
 
     /**
+     * @brief Minimum priority for Tunnel Term table
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_TUNNEL_TERM_TABLE_ENTRY_MINIMUM_PRIORITY,
+
+    /**
+     * @brief Maximum priority for Tunnel Term table
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_TUNNEL_TERM_TABLE_ENTRY_MAXIMUM_PRIORITY,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
