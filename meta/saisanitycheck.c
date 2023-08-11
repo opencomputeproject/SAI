@@ -643,6 +643,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_INT8_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT8_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT16_LIST:
+        case SAI_ATTR_VALUE_TYPE_INT16_LIST:
         case SAI_ATTR_VALUE_TYPE_INT32_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT8:
         case SAI_ATTR_VALUE_TYPE_UINT16:
@@ -2624,6 +2625,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT8_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT16_LIST:
+        case SAI_ATTR_VALUE_TYPE_INT16_LIST:
         case SAI_ATTR_VALUE_TYPE_VLAN_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY:
         case SAI_ATTR_VALUE_TYPE_ACL_RESOURCE_LIST:

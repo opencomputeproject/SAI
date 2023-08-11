@@ -2285,6 +2285,25 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_OPER_PORT_FEC_MODE,
 
     /**
+     * @brief List of per lane RX Frequency PPM for a port
+     *
+     * @type sai_s16_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_RX_FREQUENCY_PPM,
+
+    /**
+     * @brief List of per lane RX SNR for a port
+     *
+     * Each value in the list is encoded as U16 in units of 1/256 dB.
+     * For example, a value of 5248 represents a SNR of 20.5 dB
+     *
+     * @type sai_u16_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_RX_SNR,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
@@ -2952,6 +2971,9 @@ typedef enum _sai_port_stat_t
 
     /** Count of FEC codewords with 16 symbol errors. */
     SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S16,
+
+    /** Count of total bits corrected by FEC. Reported as a monotonically incrementing counter. */
+    SAI_PORT_STAT_IF_IN_FEC_CORRECTED_BITS,
 
     /** Port stat in drop reasons range start */
     SAI_PORT_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,
