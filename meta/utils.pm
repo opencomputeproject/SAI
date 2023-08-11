@@ -291,6 +291,29 @@ sub GetNonObjectIdStructNames
     return sort values %structs;
 }
 
+sub GetNonObjectIdStructNamesWithBulkApi
+{
+    my %structs;
+
+    my @headers = (GetHeaderFiles(), GetExperimentalHeaderFiles());
+
+    for my $header (@headers)
+    {
+        my $data = ReadHeaderFile($header);
+
+        # TODO there should be better way to extract those
+
+        while ($data =~ /sai_bulk_(?:create|remove|set|get)_(\w+_entry)_fn/gm)
+        {
+            my $name = $1;
+
+            $structs{$name} = $name;
+        }
+    }
+
+    return sort values %structs;
+}
+
 sub GetStructLists
 {
     my $data = ReadHeaderFile("$main::INCLUDE_DIR/saitypes.h");
@@ -390,7 +413,7 @@ sub ExitOnErrors
 {
     return if $errors == 0;
 
-    LogError "please corret all $errors error(s) before continue";
+    LogError "please correct all $errors error(s) before continue";
 
     exit 1;
 }
@@ -399,7 +422,7 @@ sub ExitOnErrorsOrWarnings
 {
     return if $errors == 0 and $warnings == 0;
 
-    LogError "please corret all $errors error(s) and all $warnings warnings before continue";
+    LogError "please correct all $errors error(s) and all $warnings warnings before continue";
 
     exit 1;
 }
@@ -591,7 +614,7 @@ BEGIN
     our @EXPORT = qw/
     LogDebug LogInfo LogWarning LogError
     WriteFile GetHeaderFiles GetMetaHeaderFiles GetExperimentalHeaderFiles GetMetadataSourceFiles ReadHeaderFile GetMetaSourceFiles
-    GetNonObjectIdStructNames IsSpecialObject GetStructLists GetStructKeysInOrder
+    GetNonObjectIdStructNames GetNonObjectIdStructNamesWithBulkApi IsSpecialObject GetStructLists GetStructKeysInOrder
     Trim ExitOnErrors ExitOnErrorsOrWarnings ProcessEnumInitializers
     WriteHeader WriteSource WriteTest WriteSwig WriteMetaDataFiles WriteSectionComment WriteSourceSectionComment
     $errors $warnings $NUMBER_REGEX

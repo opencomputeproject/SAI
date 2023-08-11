@@ -97,6 +97,25 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_USE_DST_VNET_VNI,
 
     /**
+     * @brief Action set_tunnel_mapping parameter METER_CLASS
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     */
+    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_METER_CLASS,
+
+    /**
+     * @brief Action set_tunnel_mapping parameter METER_CLASS_OVERRIDE
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_METER_CLASS_OVERRIDE,
+
+    /**
      * @brief Attach a counter
      *
      * When it is empty, then packet hits won't be counted

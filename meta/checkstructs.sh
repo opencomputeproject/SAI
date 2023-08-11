@@ -18,14 +18,14 @@
 #    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
 #    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
 #
-# @file    checkancestry.sh
+# @file    checkstructs.sh
 #
-# @brief   This module defines ancestry script
+# @brief   This module defines check structs script
 #
 
 
 # To list git ancestry all comitts (even if there is a tree not single line)
-# this can be usefull to build histroy of enums from root (enum lock) to the
+# this can be usefull to build histroy of structs from root (struct lock) to the
 # current origin/master and current commit - and it will be possible to fix
 # mistakes.
 
@@ -34,30 +34,30 @@
 # git rev-list --ancestry-path  c388490^..0b90765
 
 # If we will have our base commit, we will assume that each previous commit
-# followed metadata check, and then we can use naive approach for parsing enum
+# followed metadata check, and then we can use naive approach for parsing struct
 # values instead of doing gcc compile whch can take long time. With this
 # approach we should be able to build entire history from base commit throug
 # all commits up to the current PR. This will sure that there will be no
-# abnormalities if some enums will be removed and then added again with
+# abnormalities if some structs will be removed and then added again with
 # different value. This will also help to track the issue if two PRs will pass
-# validation but after they will be merged they could potentially cause enum
+# validation but after they will be merged they could potentially cause struct
 # value issue and this approach will catch that.
 #
 # Working throug 25 commits takes about 0.4 seconds + parsing so it seems like
 # not a hudge time to make sure all commits are safe and even if we get at some
 # point that this will be "too slow", having all history, we can sometimes
-# produce "known" history with enum values and keep that file as a reference
+# produce "known" history with structs values and keep that file as a reference
 # and load it at begin, and start checking commits from one of the future
 # commits, basicially reducing processing time to zero.
 
-# Just for sanity we can also keep headers check to 1 commit back and alse
+# Just for sanity we can also keep headers check to 1 commit back and also
 # maybe we can add one gcc check current to history,
 
 set -e
 
 if ! git rev-parse --git-dir > /dev/null 2>&1; then
 
-    echo "WARNING: this is not git repository, will skip ancestry check"
+    echo "WARNING: this is not git repository, will skip structs check"
     exit
 fi
 
@@ -97,6 +97,8 @@ function create_commit_list()
 
     echo "ancestry graph"
 
+    # NOTE: origin/master should be changed if this file is on different branch
+
     git --no-pager log --graph --oneline --ancestry-path  origin/master^..HEAD
 
     echo "git rev list from $begin to $end"
@@ -104,22 +106,22 @@ function create_commit_list()
     LIST=$(git rev-list --ancestry-path ${begin}^..${end} | xargs -n 1 git rev-parse --short | tac)
 }
 
-function check_enum_history()
+function check_structs_history()
 {
-    perl ancestry.pl $LIST
+    perl structs.pl $LIST
 }
 
 #
 # MAIN
 #
 
-# BEGIN_COMMIT is the commit from we want enums to be backward compatible
+# BEGIN_COMMIT is the commit from we want structs to be backward compatible
 
-BEGIN_COMMIT=3132018
+BEGIN_COMMIT=97a1e02 # v1.11.0
 END_COMMIT=HEAD
 
 clean_temp_dir
 create_temp_dir
 create_commit_list $BEGIN_COMMIT $END_COMMIT
 checkout_inc_directories
-check_enum_history
+check_structs_history

@@ -162,6 +162,28 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_VNET_ID,
 
     /**
+     * @brief Action set_eni_attrs parameter V4_METER_POLICY_ID
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_METER_POLICY
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ENI_ATTR_V4_METER_POLICY_ID,
+
+    /**
+     * @brief Action set_eni_attrs parameter V6_METER_POLICY_ID
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_METER_POLICY
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ENI_ATTR_V6_METER_POLICY_ID,
+
+    /**
      * @brief Action set_eni_attrs parameter INBOUND_V4_STAGE1_DASH_ACL_GROUP_ID
      *
      * @type sai_object_id_t

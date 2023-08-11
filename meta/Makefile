@@ -83,8 +83,10 @@ SYMBOLS = $(OBJ:=.symbols)
 
 all: toolsversions saisanitycheck saimetadatatest saiserializetest saidepgraph.svg $(SYMBOLS)
 	./checkheaders.pl ../inc ../inc
+	./aspellcheck.pl
 	./checkenumlock.sh
 	./checkancestry.sh
+	./checkstructs.sh
 	./saimetadatatest >/dev/null
 	./saiserializetest >/dev/null
 	./saisanitycheck
@@ -117,13 +119,16 @@ xml: $(DEPS) Doxyfile Doxyfile.compat $(CONSTHEADERS)
 
 EXTRA = acronyms.txt aspell.en.pws *.pm *.cap
 
+saimetadatasize.h: $(DEPS)
+	./size.sh
+
 saimetadatatest.c saimetadata.c saimetadata.h: xml $(XMLDEPS) parse.pl $(CONSTHEADERS) $(EXTRA)
 	perl -I. parse.pl
 
 rpc sai.thrift sai_rpc_server.cpp sai_adapter.py: xml $(XMLDEPS) gensairpc.pl
 	perl -Irpc gensairpc.pl $(GEN_SAIRPC_OPTS)
 
-HEADERS = saimetadata.h $(CONSTHEADERS)
+HEADERS = saimetadata.h saimetadatasize.h $(CONSTHEADERS)
 
 %.o: %.c $(HEADERS)
 	$(CC) -c -o $@ $< $(CFLAGS)
@@ -156,7 +161,7 @@ saidepgraph.svg: saidepgraph.gv
 
 clean:
 	rm -f *.o *~ .*~ *.tmp .*.swp .*.swo *.bak sai*.gv sai*.svg *.o.symbols doxygen*.db
-	rm -f saimetadata.h saimetadata.c saimetadatatest.c
+	rm -f saimetadata.h saimetadatasize.h saimetadata.c saimetadatatest.c
 	rm -f saisanitycheck saimetadatatest saiserializetest saidepgraphgen
 	rm -f sai.thrift sai_rpc_server.cpp sai_adapter.py
 	rm -rf xml html dist temp generated

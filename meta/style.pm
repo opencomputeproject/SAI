@@ -503,6 +503,55 @@ sub CheckQuadApi
 
     my @fns = $apis =~ /sai_(\w+)_fn/g;
 
+    # this function forces order of existing and new added apis in api struct
+
+    my $order = "";
+
+    for my $function (@fns)
+    {
+        my $f = $function;
+
+        $f =~ s/remove_all_neighbor_entries/X/;
+        $f =~ s/clear_port_all_stats/X/;
+
+        $f =~ s/^create_\w+/c/;
+        $f =~ s/^remove_\w+/r/;
+        $f =~ s/^set_\w+_attribute/s/;
+        $f =~ s/^get_\w+_attribute/g/;
+
+        $f =~ s/^get_\w+_stats$/0/;
+        $f =~ s/^get_\w+_stats_ext/1/;
+        $f =~ s/^clear_\w+_stats/2/;
+
+        $f =~ s/^bulk_object_create/C/;
+        $f =~ s/^bulk_object_remove/R/;
+        $f =~ s/^bulk_object_set_attribute/S/;
+        $f =~ s/^bulk_object_get_attribute/G/;
+
+        $f =~ s/^bulk_create_\w+/C/;
+        $f =~ s/^bulk_remove_\w+/R/;
+        $f =~ s/^bulk_set_\w+_attribute/S/;
+        $f =~ s/^bulk_get_\w+_attribute/G/;
+
+        $f = "X" if length $f != 1;
+
+        $order .= $f;
+    }
+
+    $order =~ s/crsg012/t/g;    # order should be: create,remove,set,get,get_stats,get_stats_ext,clear_stats
+    $order =~ s/crsg/q/g;       # order should be: create,remove,set,get
+    $order =~ s/CRSG/Q/g;       # order should be: bulk_create,bulk_remove,bulk_set,bulk_get
+    $order =~ s/012/s/g;        # order should be: get_stats,get_stats_ext,clear_stats
+    $order =~ s/CR/E/g;         # order should be: bulk_create,bulk_remove
+    $order =~ s/SG/T/g;         # order should be: bulk_set,bulk_get
+    $order =~ s/X+/X/g;         # order should be: any non quad and non stats api
+
+    if (not $order =~ /^[tqQsETX]*$/)
+    {
+        LogWarning "Wrong api order: $order";
+        LogWarning "$apis";
+    }
+
     my $fn = join" ",@fns;
 
     my @quad = split/\bcreate_/,$fn;
@@ -633,6 +682,7 @@ sub CheckMetadataSourceFiles
         next if $file eq "saimetadata.h";
         next if $file eq "saimetadata.c";
         next if $file eq "saimetadatatest.c";
+        next if $file eq "saimetadatasize.h";
 
         next if $file =~ /swig|wrap/;
 
@@ -852,6 +902,7 @@ sub CheckHeadersStyle
     for my $header (@headers)
     {
         next if $header eq "saimetadata.h"; # skip auto generated header
+        next if $header eq "saimetadatasize.h"; # skip auto generated header
 
         my $data = ReadHeaderFile($header);
 
@@ -1221,7 +1272,7 @@ BEGIN
 {
     our @ISA    = qw(Exporter);
     our @EXPORT = qw/
-    CheckHeadersStyle
+    CheckHeadersStyle GetAcronyms
     /;
 }
 

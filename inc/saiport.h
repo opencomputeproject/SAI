@@ -490,6 +490,18 @@ typedef enum _sai_port_dual_media_t
 } sai_port_dual_media_t;
 
 /**
+ * @brief Attribute data for #SAI_PORT_ATTR_HOST_TX_READY_STATUS
+ */
+typedef enum _sai_port_host_tx_ready_status_t
+{
+    /** Host TX ready status not_ready */
+    SAI_PORT_HOST_TX_READY_STATUS_NOT_READY,
+
+    /** Host TX ready status ready */
+    SAI_PORT_HOST_TX_READY_STATUS_READY
+} sai_port_host_tx_ready_status_t;
+
+/**
  * @brief Attribute Id in sai_set_port_attribute() and
  * sai_get_port_attribute() calls
  */
@@ -2285,6 +2297,26 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_OPER_PORT_FEC_MODE,
 
     /**
+     * @brief Enable host_tx_signal (high-speed signal from ASIC to module) required
+     * to start the CMIS module initialization
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     */
+    SAI_PORT_ATTR_HOST_TX_SIGNAL_ENABLE,
+   
+    /**
+     * @brief Host tx ready status
+     *
+     * It will be used for query and capability query of "host_tx_ready" signal
+     *
+     * @type sai_port_host_tx_ready_status_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_HOST_TX_READY_STATUS,
+    
+    /**
      * @brief List of per lane RX Frequency PPM for a port
      *
      * @type sai_s16_list_t
@@ -3162,6 +3194,23 @@ typedef void (*sai_port_state_change_notification_fn)(
         _In_ const sai_port_oper_status_notification_t *data);
 
 /**
+ * @brief Port host tx ready notification
+ *
+ * Passed as a parameter into sai_initialize_switch()
+ *
+ * @objects switch_id SAI_OBJECT_TYPE_SWITCH
+ * @objects port_id SAI_OBJECT_TYPE_PORT
+ *
+ * @param[in] switch_id Switch Id
+ * @param[in] port_id Port Id
+ * @param[in] host_tx_ready_status New tx ready status
+ */
+typedef void (*sai_port_host_tx_ready_notification_fn)(
+        _In_ sai_object_id_t switch_id,
+        _In_ sai_object_id_t port_id,
+        _In_ sai_port_host_tx_ready_status_t host_tx_ready_status);
+
+/**
  * @brief List of Port buffer pool attributes
  */
 typedef enum _sai_port_pool_attr_t
@@ -3556,6 +3605,84 @@ typedef enum _sai_port_serdes_attr_t
     SAI_PORT_SERDES_ATTR_TX_FIR_ATTN,
 
     /**
+     * @brief Port serdes control TX PAM4 ratio
+     *
+     * Ratio between the central eye to the upper and lower eyes (for PAM4 only)
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_PAM4_RATIO,
+
+    /**
+     * @brief Port serdes control TX OUT common mode
+     *
+     * Output common mode
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_OUT_COMMON_MODE,
+
+    /**
+     * @brief Port serdes control TX PMOS common mode
+     *
+     * Output buffers input to Common mode PMOS side
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_PMOS_COMMON_MODE,
+
+    /**
+     * @brief Port serdes control TX NMOS common mode
+     *
+     * Output buffers input to Common mode NMOS side
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_NMOS_COMMON_MODE,
+
+    /**
+     * @brief Port serdes control TX PMOS voltage regulator
+     *
+     * Voltage regulator to pre output buffer PMOS side
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_PMOS_VLTG_REG,
+
+    /**
+     * @brief Port serdes control TX NMOS voltage regulator
+     *
+     * Voltage regulator to pre output buffer NMOS side
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_NMOS_VLTG_REG,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_SERDES_ATTR_END,
@@ -3777,6 +3904,10 @@ typedef struct _sai_port_api_t
     sai_bulk_object_remove_fn              remove_ports;
     sai_bulk_object_set_attribute_fn       set_ports_attribute;
     sai_bulk_object_get_attribute_fn       get_ports_attribute;
+    sai_bulk_object_create_fn              create_port_serdess;
+    sai_bulk_object_remove_fn              remove_port_serdess;
+    sai_bulk_object_set_attribute_fn       set_port_serdess_attribute;
+    sai_bulk_object_get_attribute_fn       get_port_serdess_attribute;
 } sai_port_api_t;
 
 /**

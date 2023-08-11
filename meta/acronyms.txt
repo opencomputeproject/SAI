@@ -19,6 +19,7 @@ CCITT - Comite Consultatif International de Telegraphique et Telephonique
 CFI - Canonical Format Indicator
 CIDR - Classless Inter Domain Routing
 CIR - Committed Information Rate
+CMIS - Common Management Interface Specification
 CPLD - Complex programmable logic device
 CPU - Central Processing Unit
 CRC - Cyclic Redundancy Code
@@ -88,6 +89,7 @@ MPLS - Multi Protocol Label Switching
 MTU - Maximum Transmission Unit
 NAPT - Network Address Port Translation
 NHLFE - Next Hop Label Forwarding Entry
+NMOS - N-channel Metal Oxide Semiconductor
 NPU - Numeric Processing Unit
 NRZ - Non Return to Zero
 NTPCLIENT - Network Time Protocol Client
@@ -104,6 +106,7 @@ PFC - Priority Flow Control
 PHP - Penultimate Hop Pop
 PIR - Peak Information Rate
 PMD - Physical Medium Dependent
+PMOS - P-channel Metal Oxide Semiconductor
 PN - Packet Number
 PRBS - Pseudorandom binary sequence
 PSC - PHB Scheduling Class

@@ -488,6 +488,7 @@ sub EmitSerializeFooter
         WriteSource "{";
         WriteSource "SAI_META_LOG_WARN(\"nothing was serialized for '$name', bad condition?\");";
         # WriteSource "return SAI_SERIALIZE_ERROR;";
+        WriteSource "return SAI_SERIALIZE_ERROR;" if $name eq "sai_attribute_value_t";
         WriteSource "}\n";
     }
 
@@ -1093,6 +1094,7 @@ sub EmitDeserializeFooter
         WriteSource "{";
         WriteSource "SAI_META_LOG_WARN(\"nothing was deserialized for '$name', bad condition?\");";
         # WriteSource "return SAI_SERIALIZE_ERROR;";
+        WriteSource "return SAI_SERIALIZE_ERROR;" if $name eq "sai_attribute_value_t";
         WriteSource "}\n";
     }
 

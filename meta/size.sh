@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright (c) 2014 Microsoft Open Technologies, Inc.
+# Copyright (c) 2023 Microsoft Open Technologies, Inc.
 #
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
@@ -18,27 +18,32 @@
 #    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
 #    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
 #
-# @file    checkenumlock.sh
+# @file    size.sh
 #
-# @brief   This module defines SAI enum values integration check for 2 header directories
+# @brief   This module generates saimetadatasize.h with struct/union sizes
 #
 
 set -e
 
 if ! git rev-parse --git-dir > /dev/null 2>&1; then
 
-    echo "WARNING: this is not git repository, will skip check enum lock"
+    echo "WARNING: this is not git repository, will skip generating saimetadatasize.h and skip struct size check"
+    touch saimetadatasize.h
     exit
 fi
 
-rm -rf temp
+TEMP_DIR="tmp"
 
-sairepo=`git remote get-url origin`
+COMMIT=origin/master # should be corresponding branch HEAD
 
-git clone $sairepo temp
+rm -rf $TEMP_DIR
 
-echo "Checking for possible enum values shift (current branch vs origin/master) ..."
+mkdir $TEMP_DIR
 
-./checkheaders.pl -s ../inc/ temp/inc/
+echo "git checkout dir inc and experimental on commit: $COMMIT"
 
-rm -rf temp
+git --work-tree=$TEMP_DIR/ checkout $COMMIT inc experimental 2>/dev/null
+
+perl size.pl $TEMP_DIR
+
+rm -rf $TEMP_DIR
