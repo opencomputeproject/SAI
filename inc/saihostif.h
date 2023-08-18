@@ -251,7 +251,7 @@ typedef enum _sai_hostif_trap_type_t
      */
     SAI_HOSTIF_TRAP_TYPE_DHCPV6_L2 = 0x00000013,
 
-     /** Default action is drop */
+    /** Default action is drop */
     SAI_HOSTIF_TRAP_TYPE_MSTP = 0x00000014,
 
     /** Switch traps custom range start */
