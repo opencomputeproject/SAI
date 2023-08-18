@@ -86,6 +86,7 @@ MDIO - Management Data Input/Output
 MDIX - Medium Dependent Interface Crossover
 MMU - Memory Management Unit
 MPLS - Multi Protocol Label Switching
+MSTP - Multiple Spanning Tree Protocol
 MTU - Maximum Transmission Unit
 NAPT - Network Address Port Translation
 NHLFE - Next Hop Label Forwarding Entry
