@@ -2336,10 +2336,7 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_HOST_TX_READY_STATUS,
 
     /**
-     * @brief Configure 12b path tracing interface id
-     *
-     * Set interface id = 0 to disable path tracing on port.
-     * Valid values for interface id are 0 - 4095.
+     * @brief Configure path tracing interface id
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
@@ -2353,7 +2350,7 @@ typedef enum _sai_port_attr_t
      *
      * @type sai_port_path_tracing_timestamp_type_t
      * @flags CREATE_AND_SET
-     * @default SAI_PORT_PATH_TRACING_TIMESTAMP_TYPE_8_15
+     * @default SAI_PORT_PATH_TRACING_TIMESTAMP_TYPE_16_23
      */
     SAI_PORT_ATTR_PATH_TRACING_TIMESTAMP_TYPE,
 
