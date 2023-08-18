@@ -480,7 +480,7 @@ typedef enum _sai_tam_int_type_t
      * @brief INT type Path Tracing
      */
     SAI_TAM_INT_TYPE_PATH_TRACING,
-    
+
 } sai_tam_int_type_t;
 
 /**
