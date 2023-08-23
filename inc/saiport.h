@@ -502,6 +502,25 @@ typedef enum _sai_port_host_tx_ready_status_t
 } sai_port_host_tx_ready_status_t;
 
 /**
+ * @brief Attribute data for #SAI_PORT_ATTR_PATH_TRACING_TIMESTAMP_TYPE
+ */
+typedef enum _sai_port_path_tracing_timestamp_type_t
+{
+    /** Timestamp nanosecond bits [8:15] */
+    SAI_PORT_PATH_TRACING_TIMESTAMP_TYPE_8_15,
+
+    /** Timestamp nanosecond bits [12:19] */
+    SAI_PORT_PATH_TRACING_TIMESTAMP_TYPE_12_19,
+
+    /** Timestamp nanosecond bits [16:23] */
+    SAI_PORT_PATH_TRACING_TIMESTAMP_TYPE_16_23,
+
+    /** Timestamp nanosecond bits [20:27] */
+    SAI_PORT_PATH_TRACING_TIMESTAMP_TYPE_20_27,
+
+} sai_port_path_tracing_timestamp_type_t;
+
+/**
  * @brief Attribute Id in sai_set_port_attribute() and
  * sai_get_port_attribute() calls
  */
@@ -2315,6 +2334,25 @@ typedef enum _sai_port_attr_t
      * @flags READ_ONLY
      */
     SAI_PORT_ATTR_HOST_TX_READY_STATUS,
+
+    /**
+     * @brief Configure path tracing interface id
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     */
+    SAI_PORT_ATTR_PATH_TRACING_INTF,
+
+    /**
+     * @brief Configure path tracing timestamp template
+     *
+     * @type sai_port_path_tracing_timestamp_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_PATH_TRACING_TIMESTAMP_TYPE_16_23
+     */
+    SAI_PORT_ATTR_PATH_TRACING_TIMESTAMP_TYPE,
 
     /**
      * @brief End of attributes
