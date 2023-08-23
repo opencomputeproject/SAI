@@ -476,6 +476,11 @@ typedef enum _sai_tam_int_type_t
      */
     SAI_TAM_INT_TYPE_IFA1_TAILSTAMP,
 
+    /**
+     * @brief INT type Path Tracing
+     */
+    SAI_TAM_INT_TYPE_PATH_TRACING,
+
 } sai_tam_int_type_t;
 
 /**
