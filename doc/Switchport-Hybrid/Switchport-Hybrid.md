@@ -11,17 +11,17 @@ Created  | 08/24/2023
 
 **Background:**
 ============
-This document provides an enhancement in an existing HLD#912
+This document provides an enhancement in an existing [HLD#912](https://github.com/sonic-net/SONiC/pull/912)
 
 
-**Introduction:**
+**Introduction**
 ============
 
 
 A hybrid switchport is a versatile port that can handle both tagged and untagged traffic in both ingress and egress directions. For incoming traffic, it can receive packets with VLAN tags (tagged) or without VLAN tags (untagged) from various VLANs. For outgoing traffic, it can forward packets with the appropriate VLAN tags based on the VLAN tag information in the packet or add VLAN tags to untagged packets before sending them out to the appropriate VLANs.
 
 
-***Functional Requirement:***
+***Functional Requirement***
 -------------------------
 
 
@@ -41,16 +41,17 @@ A hybrid switchport is a versatile port that can handle both tagged and untagged
 
 
 
-***Sample Topology:***
+***Sample Topology***
 -------------------------
 
+![Hybrid-port](https://github.com/ridahanif96/SAI/assets/61490193/9ed501fc-9604-4974-ba62-11021b2758fe)
 
 
 
-****SAI Changes ****
+***SAI Changes***
 -------------------------
 
-****Option 1****: 
+****Option 1**** 
 
 
 We can add switchport mode hybrid in SONiC using PVID Concept.The PVID of a port is the VLAN id that will be assigned to any untagged frames entering the switch on that port. A Port can have only one PVID. Currently, untagged vlan is considered as PVID. 
@@ -64,14 +65,14 @@ Ideally this is the most apporperiate one.
 
 
 
-****Option 2****: 
+****Option 2****
 
 
 We can add Hybrid port mode by introducing concept of PVID in SAI. Currently, a port can have one PVID which is Vlan Id of untagged member port.  When there are multiple untagged members, we might need to add multiple PVID configuration as well. Currently there is no concepts of PVID in SAI and ASIC SDK as far as our understanding. Need guidance from SAI members for this. 
 
 
 
-****Option 3****: 
+****Option 3****
 
 We propose a new attribute in saibridge.h to support hybrid port as follows: 
 
