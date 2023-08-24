@@ -2355,6 +2355,22 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PATH_TRACING_TIMESTAMP_TYPE,
 
     /**
+     * @brief List of per lane RX Frequency PPM for a port
+     *
+     * @type sai_port_frequency_offset_ppm_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_RX_FREQUENCY_OFFSET_PPM,
+
+    /**
+     * @brief List of per lane RX SNR for a port
+     *
+     * @type sai_port_snr_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_RX_SNR,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
@@ -3022,6 +3038,9 @@ typedef enum _sai_port_stat_t
 
     /** Count of FEC codewords with 16 symbol errors. */
     SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S16,
+
+    /** Count of total bits corrected by FEC. Counter will increment monotonically. */
+    SAI_PORT_STAT_IF_IN_FEC_CORRECTED_BITS,
 
     /** Port stat in drop reasons range start */
     SAI_PORT_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,
