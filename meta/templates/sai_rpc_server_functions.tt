@@ -61,12 +61,12 @@ if ([% api %]_api->[% name = function.name; GET methods.$name %] == (void *)0) {
 [%- BLOCK check_switch_id -%]
 
     // need to check if the switch exist
-    if (switch_id != NULL) {
+    if (switch_id != SAI_NULL_OBJECT_ID) {
         return switch_id;
     }
 
     //check if the switch created in syncd
-    if (gSwitchId != NULL) {
+    if (gSwitchId != SAI_NULL_OBJECT_ID) {
       switch_id = gSwitchId;
       return switch_id;
     }
