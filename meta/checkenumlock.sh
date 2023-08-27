@@ -31,14 +31,16 @@ if ! git rev-parse --git-dir > /dev/null 2>&1; then
     exit
 fi
 
-rm -rf temp
+TEMP_DIR=temp
 
-sairepo=`git remote get-url origin`
+rm -rf $TEMP_DIR
 
-git clone $sairepo temp
+mkdir $TEMP_DIR
+
+git --work-tree=$TEMP_DIR/ checkout origin/master inc experimental
 
 echo "Checking for possible enum values shift (current branch vs origin/master) ..."
 
-./checkheaders.pl -s ../inc/ temp/inc/
+./checkheaders.pl -s ../inc/ $TEMP_DIR/inc/
 
-rm -rf temp
+rm -rf $TEMP_DIR
