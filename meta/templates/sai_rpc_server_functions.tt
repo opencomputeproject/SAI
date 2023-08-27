@@ -76,7 +76,7 @@ if ([% api %]_api->[% name = function.name; GET methods.$name %] == (void *)0) {
 [%- BLOCK empty_switch_id -%]
 
     // reset the switch id
-    switch_id = NULL;
+    switch_id = SAI_NULL_OBJECT_ID;
    
 [%- END -%]
 
