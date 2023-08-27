@@ -125,7 +125,7 @@ saimetadatasize.h: $(DEPS)
 saimetadatatest.c saimetadata.c saimetadata.h: xml $(XMLDEPS) parse.pl $(CONSTHEADERS) $(EXTRA)
 	perl -I. parse.pl
 
-sai.thrift sai_rpc_server.cpp sai_adapter.py: xml $(XMLDEPS) gensairpc.pl
+sai.thrift sai_rpc_server.cpp sai_adapter.py: xml $(XMLDEPS) gensairpc.pl templates/*.tt
 	perl -Irpc gensairpc.pl $(GEN_SAIRPC_OPTS)
 
 rpc: sai.thrift sai_rpc_server.cpp sai_adapter.py
