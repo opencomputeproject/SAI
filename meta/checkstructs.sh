@@ -125,3 +125,4 @@ create_temp_dir
 create_commit_list $BEGIN_COMMIT $END_COMMIT
 checkout_inc_directories
 check_structs_history
+clean_temp_dir
