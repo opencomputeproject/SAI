@@ -679,6 +679,8 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_FREQUENCY_OFFSET_PPM_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST:
         case SAI_ATTR_VALUE_TYPE_LATCH_STATUS:
         case SAI_ATTR_VALUE_TYPE_PORT_LANE_LATCH_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_TIMESPEC:
@@ -982,6 +984,8 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_FREQUENCY_OFFSET_PPM_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_LANE_LATCH_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
@@ -1192,6 +1196,8 @@ void check_attr_default_value_type(
                 case SAI_ATTR_VALUE_TYPE_MAP_LIST:
                 case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
                 case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
+                case SAI_ATTR_VALUE_TYPE_PORT_FREQUENCY_OFFSET_PPM_LIST:
+                case SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST:
                 case SAI_ATTR_VALUE_TYPE_PORT_LANE_LATCH_STATUS_LIST:
                 case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
                 case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
@@ -1795,6 +1801,8 @@ void check_attr_allow_flags(
             case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
             case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
             case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
+            case SAI_ATTR_VALUE_TYPE_PORT_FREQUENCY_OFFSET_PPM_LIST:
+            case SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST:
             case SAI_ATTR_VALUE_TYPE_PORT_LANE_LATCH_STATUS_LIST:
             case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST:
             case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
@@ -2662,6 +2670,8 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_FREQUENCY_OFFSET_PPM_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST:
         case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_ERR_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT16_RANGE_LIST:
@@ -5582,6 +5592,10 @@ void check_struct_and_union_size()
     CHECK_STRUCT_SIZE(sai_port_lane_eye_values_t, 20);
     CHECK_STRUCT_SIZE(sai_port_lane_latch_status_list_t, 16);
     CHECK_STRUCT_SIZE(sai_port_lane_latch_status_t, 8);
+    CHECK_STRUCT_SIZE(sai_port_frequency_offset_ppm_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_port_frequency_offset_ppm_values_t, 8);
+    CHECK_STRUCT_SIZE(sai_port_snr_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_port_snr_values_t, 8);
     CHECK_STRUCT_SIZE(sai_port_oper_status_notification_t, 16);
     CHECK_STRUCT_SIZE(sai_prbs_rx_state_t, 8);
     CHECK_STRUCT_SIZE(sai_qos_map_list_t, 16);
