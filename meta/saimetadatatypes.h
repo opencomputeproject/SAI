@@ -475,6 +475,16 @@ typedef enum _sai_attr_value_type_t
      * @brief Attribute value is IP prefix list.
      */
     SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST,
+
+    /**
+     * @brief Attribute value is frequency offset ppm list.
+     */
+    SAI_ATTR_VALUE_TYPE_PORT_FREQUENCY_OFFSET_PPM_LIST,
+
+    /**
+     * @brief Attribute value is SNR list.
+     */
+    SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST,
 } sai_attr_value_type_t;
 
 /**
