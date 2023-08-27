@@ -125,8 +125,10 @@ saimetadatasize.h: $(DEPS)
 saimetadatatest.c saimetadata.c saimetadata.h: xml $(XMLDEPS) parse.pl $(CONSTHEADERS) $(EXTRA)
 	perl -I. parse.pl
 
-rpc sai.thrift sai_rpc_server.cpp sai_adapter.py: xml $(XMLDEPS) gensairpc.pl
+sai.thrift sai_rpc_server.cpp sai_adapter.py: xml $(XMLDEPS) gensairpc.pl
 	perl -Irpc gensairpc.pl $(GEN_SAIRPC_OPTS)
+
+rpc: sai.thrift sai_rpc_server.cpp sai_adapter.py
 
 HEADERS = saimetadata.h saimetadatasize.h $(CONSTHEADERS)
 
@@ -157,11 +159,12 @@ saidepgraph.gv: saidepgraphgen
 saidepgraph.svg: saidepgraph.gv
 	dot -Tsvg saidepgraph.gv > $@
 
-.PHONY: clean
+.PHONY: clean rpc
 
 clean:
 	rm -f *.o *~ .*~ *.tmp .*.swp .*.swo *.bak sai*.gv sai*.svg *.o.symbols doxygen*.db
-	rm -f saimetadata.h saimetadatasize.h saimetadata.c saimetadatatest.c
+	rm -f saimetadata.h saimetadatasize.h saimetadata.c saimetadatatest.c saiswig.i
 	rm -f saisanitycheck saimetadatatest saiserializetest saidepgraphgen
 	rm -f sai.thrift sai_rpc_server.cpp sai_adapter.py
+	rm -f *.gcda *.gcno *.gcov
 	rm -rf xml html dist temp generated

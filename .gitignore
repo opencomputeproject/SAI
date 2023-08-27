@@ -2,6 +2,7 @@
 meta/xml
 meta/html
 meta/temp
+meta/generated
 
 meta/*.o
 meta/*.lo
@@ -18,6 +19,9 @@ meta/saisanitycheck
 meta/saiserializetest
 meta/saiswig.i
 meta/saimetadatasize.h
+meta/sai.thrift
+meta/sai_adapter.py
+meta/sai_rpc_server.cpp
 
 # temporary files
 **/*~
@@ -40,4 +44,5 @@ test/saithrift/saiserver
 test/saithrift/src/gen-cpp/
 test/saithrift/src/gen-py/
 test/saithrift/src/obj/
+test/saithriftv2/gen-cpp/
 **/*.pyc
