@@ -275,8 +275,21 @@ main(int argc, char* argv[])
     handleProfileMap(options.profileMapFile);
     handlePortMap(options.portMapFile);
 
-    sai_api_initialize(0, &test_services);
-    sai_api_query(SAI_API_SWITCH, (void**)&sai_switch_api);
+    sai_status_t status = sai_api_initialize(0, &test_services);
+
+    if (status != SAI_STATUS_SUCCESS)
+    {
+        printf("Failed to initialize SAI api: %d\n", status);
+        exit(EXIT_FAILURE);
+    }
+
+    status = sai_api_query(SAI_API_SWITCH, (void**)&sai_switch_api);
+
+    if (status != SAI_STATUS_SUCCESS)
+    {
+        printf("Failed to SAI switch api query: %d\n", status);
+        exit(EXIT_FAILURE);
+    }
 
 
     handleInitScript(options.initScript);
