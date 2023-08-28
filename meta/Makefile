@@ -82,6 +82,7 @@ OBJ = saimetadata.o saimetadatautils.o saiserialize.o
 SYMBOLS = $(OBJ:=.symbols)
 
 all: toolsversions saisanitycheck saimetadatatest saiserializetest saidepgraph.svg $(SYMBOLS)
+	./checksymbols.pl *.o.symbols
 	./checkheaders.pl ../inc ../inc
 	./aspellcheck.pl
 	./checkenumlock.sh
@@ -151,7 +152,7 @@ saidepgraphgen: saidepgraphgen.o $(OBJ)
 	$(CXX) -o $@ $^
 
 %.o.symbols: %.o
-	nm $^ | ./checksymbols.pl
+	nm $^ > $@
 
 saidepgraph.gv: saidepgraphgen
 	./saidepgraphgen > $@
