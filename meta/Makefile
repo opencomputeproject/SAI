@@ -126,7 +126,9 @@ saimetadatasize.h: $(DEPS)
 saimetadatatest.c saimetadata.c saimetadata.h: xml $(XMLDEPS) parse.pl $(CONSTHEADERS) $(EXTRA)
 	perl -I. parse.pl
 
-sai.thrift sai_rpc_server.cpp sai_adapter.py: xml $(XMLDEPS) gensairpc.pl templates/*.tt
+RPC_MODULES=$(shell find rpc -type f -name "*.pm")
+
+sai.thrift sai_rpc_server.cpp sai_adapter.py: xml $(XMLDEPS) gensairpc.pl templates/*.tt $(RPC_MODULES)
 	perl -Irpc gensairpc.pl $(GEN_SAIRPC_OPTS)
 
 rpc: sai.thrift sai_rpc_server.cpp sai_adapter.py
