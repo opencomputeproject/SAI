@@ -6,6 +6,7 @@ meta/generated
 
 meta/*.o
 meta/*.lo
+meta/*.o.symbols
 
 meta/doxygen_sqlite3.db
 meta/saidepgraph.gv
