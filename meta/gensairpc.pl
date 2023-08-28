@@ -302,35 +302,46 @@ sub generate_server_template_from_skeleton {
 }
 
 # Find the api name within the header related to the currenct XML file.
-sub get_api_name {
+sub get_api_name
+{
+    # it may happen that metadata is already generated, and SAI direcoty is
+    # mounted in docker, then the location will be invalid inside docker, so
+    # let's use only filename and inc directory
+
     my $location = shift;
-    my $header;
-    my $api;
+
+    $location =~ s!.+/!!; # leave only filename
 
     # The hash should be static - don't open and traverse the header
     # if we already found the API name inside.
-    state %api_names;
+    state %api_names = (
+            "saimetadatalogger.h" => "common",
+            "saimetadatatypes.h" => "common",
+            "sai.h" => "common",
+            "saiobject.h" => "object", # for sai_object_key_entry_t
+            "saitypes.h" => "common" );
+
     return $api_names{$location} if exists $api_names{$location};
 
-    open $header, '<', "$location"
-      or open $header, '<', "$sai_dir/inc/$location";
-    if ( $header->opened() ) {
-        while ( my $line = <$header> ) {
-            if ( $line =~ /_sai_(\w+)_api_t/ ) {
-                $api = $1;
-                last;
-            }
+    my $file = "$sai_dir/inc/$location";
 
+    open(H, '<', $file) or die "Failed to open: $file: $!";
+
+    my @lines = <H>;
+
+    close H or croak;
+
+    for my $line (@lines)
+    {
+        if ($line =~ /^typedef struct _sai_(\w+)_api_t/)
+        {
+            $api_names{$location} = $1;
+
+            return $1;
         }
-        close $header or croak;
     }
 
-    $api //= $1 if $location =~ /inc\/sai(\w+)[.]h$/;
-    $api //= 'common';
-    $api = 'common' if $api eq 'types';
-
-    $api_names{$location} = $api;
-    return $api;
+    die "File $file don't contain api struct!";
 }
 
 # The main function that parses all XML files and creates all
