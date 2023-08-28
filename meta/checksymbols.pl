@@ -29,24 +29,35 @@ use diagnostics;
 
 my $exitcode = 0;
 
-for my $line (<STDIN>)
+push @ARGV,"-" if not scalar @ARGV;
+
+for my $file (@ARGV)
 {
-    chomp $line;
+    print "checking symbols for $file\n";
 
-    next if not $line =~ /\w+ (\w+) (\w+)/;
+    open(H, $file) or die("Could not open $file $! file.");
 
-    my $type = $1;
-    my $name = $2;
+    for my $line (<H>)
+    {
+        chomp $line;
 
-    next if $name =~ /^(sai_(metadata|(de)?serialize)_\w+|__func__)/ and $type =~ /[rRBTtD]/;
+        next if not $line =~ /\w+ (\w+) (\w+)/;
 
-    # metadata log level is exception since it can be changed
+        my $type = $1;
+        my $name = $2;
 
-    next if $1 eq "sai_metadata_log_level";
+        next if $name =~ /^(sai_(metadata|(de)?serialize)_\w+|__func__)/ and $type =~ /[rRBTtD]/;
 
-    print STDERR "ERROR: symbol '$line' is not prefixed 'sai_metadata_' or not in read-only section\n";
+        # metadata log level is exception since it can be changed
 
-    $exitcode = 1;
+        next if $1 eq "sai_metadata_log_level";
+
+        print STDERR "ERROR: symbol '$line' is not prefixed 'sai_metadata_' or not in read-only section\n";
+
+        $exitcode = 1;
+    }
+
+    close H;
 }
 
 exit $exitcode;
