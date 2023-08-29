@@ -184,7 +184,10 @@ $template->process( catfile( $templates_dir, 'sai.thrift.tt' ),
 
 say colored( 'Generating Thrift files...', 'bold blue' );
 chdir $gen_dir;
-system 'thrift -o . --gen cpp -r ../sai.thrift';
+# rm gen-cpp is needed since thrift don't override existing files
+# even if sai.thrift file changed :(
+system("rm -rf gen-cpp");
+system('thrift -o . --gen cpp -r ../sai.thrift') == 0 or die colored("Command failed: $!", "red");
 chdir $run_dir;
 
 say colored( 'Generating sai_rpc_server.cpp.tt...', 'bold blue' );
