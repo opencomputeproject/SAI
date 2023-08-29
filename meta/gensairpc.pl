@@ -304,7 +304,7 @@ sub generate_server_template_from_skeleton {
 # Find the api name within the header related to the currenct XML file.
 sub get_api_name
 {
-    # it may happen that metadata is already generated, and SAI direcoty is
+    # it may happen that metadata is already generated, and SAI directory is
     # mounted in docker, then the location will be invalid inside docker, so
     # let's use only filename and inc directory
 
@@ -341,7 +341,7 @@ sub get_api_name
         }
     }
 
-    die "File $file don't contain api struct!";
+    die "File $file doesn't contain api struct!";
 }
 
 # The main function that parses all XML files and creates all
