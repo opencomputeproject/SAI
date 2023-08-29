@@ -36,8 +36,11 @@ SAIRPC_EXTRA_LIBS?=
 
 .PHONY: test doc clean
 
-doc:
-	doxygen Doxyfile
+doc: meta/xml
+	@echo Documentation is available at ./meta/html/
+
+meta/xml:
+	make -C meta xml
 
 test:
 	make -C test
@@ -49,4 +52,5 @@ saithrift-install: saithrift-build
 	make -C $(SAITHRIFT_PATH) install
 
 clean:
-	make -C test clean    
+	make -C meta clean
+	make -C test clean
