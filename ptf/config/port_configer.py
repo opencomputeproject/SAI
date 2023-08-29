@@ -518,7 +518,7 @@ class PortConfiger(object):
              int: SAI_PORT_FEC_MODE_X
         '''
         fec_change = {
-            None: SAI_PORT_FEC_MODE_NONE,
+            'None': SAI_PORT_FEC_MODE_NONE,
             'rs': SAI_PORT_FEC_MODE_RS,
             'fc': SAI_PORT_FEC_MODE_FC,
         }
