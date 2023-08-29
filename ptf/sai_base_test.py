@@ -51,7 +51,7 @@ THRIFT_PORT = 9092
 SKIP_TEST_NO_RESOURCES_MSG = 'Not enough resources to run test'
 PLATFORM = os.environ.get('PLATFORM')
 platform_map = {'broadcom': 'brcm', 'barefoot': 'bfn',
-                'mellanox': 'mlnx', 'common': 'common'}
+                'mellanox': 'mlnx', 'common': 'common', 'marvell': 'mrvl'}
 
 
 class ThriftInterface(BaseTest):
