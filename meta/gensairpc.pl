@@ -25,6 +25,7 @@
 
 use strict;
 use warnings;
+use diagnostics;
 
 use 5.020;
 
@@ -328,6 +329,8 @@ sub get_api_name
 
     my $file = "$sai_dir/inc/$location";
 
+    $file = "$sai_dir/experimental/$location" if $location =~ /experimental|extension/;
+
     open(H, '<', $file) or die "Failed to open: $file: $!";
 
     my @lines = <H>;
@@ -342,6 +345,13 @@ sub get_api_name
 
             return $1;
         }
+    }
+
+    if ($location =~ /^sai\w*extensions.h$/)
+    {
+        $api_names{$location} = "common";
+
+        return "common";
     }
 
     die "File $file doesn't contain api struct!";
