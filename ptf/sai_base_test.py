@@ -983,9 +983,10 @@ class SaiHelperUtilsMixin:
         # add members
         idx = 0
         for member, tag in members.items():
-            tag = SAI_VLAN_TAGGING_MODE_UNTAGGED
             if tag == 'tagged':
                 tag = SAI_VLAN_TAGGING_MODE_TAGGED
+            else:
+                tag = SAI_VLAN_TAGGING_MODE_UNTAGGED
             vlan_member_id = sai_thrift_create_vlan_member(
                 self.client,
                 vlan_id=vlan_id,
