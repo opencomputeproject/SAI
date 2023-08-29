@@ -1,3 +1,7 @@
+# root directory doxygen artifacts
+xml
+html
+
 # metadata build artifacts
 meta/xml
 meta/html
@@ -46,4 +50,11 @@ test/saithrift/src/gen-cpp/
 test/saithrift/src/gen-py/
 test/saithrift/src/obj/
 test/saithriftv2/gen-cpp/
+test/saithriftv2/gen-py/
+test/saithriftv2/obj/
+test/saithriftv2/dist/
+test/saithriftv2/MANIFEST
+test/saithriftv2/sai_headers.py.bk
+test/saithriftv2/saiserver
+
 **/*.pyc
