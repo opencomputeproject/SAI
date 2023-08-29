@@ -1216,6 +1216,13 @@ sub CheckHeadersStyle
                 }
             }
 
+            if ($line =~ /#include\s*\"sai/ and not $header =~ /^sai(|extensions|metadatautils).h$/)
+            {
+                # TODO we should dedice later whether use <> or "" on all includes to make it consistent
+
+                LogWarning "include should use <> brackets on: $header:$n:$line";
+            }
+
             if ($line =~ /typedef\s*(enum|struct|union).*{/)
             {
                 LogWarning "move '{' to new line in typedef $header $n:$line";
