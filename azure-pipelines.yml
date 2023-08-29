@@ -33,7 +33,19 @@ stages:
       displayName: 'Checkout code'
     - script: |
         set -ex
+        sudo apt-get update
+        sudo apt-get install -y thrift-compiler
+      displayName: "Install thrift compiler"
+    - script: |
+        set -ex
         export ANSI_COLORS_DISABLED=1
         cd meta
         make
       displayName: "Metadata check"
+    - script: |
+        set -ex
+        export ANSI_COLORS_DISABLED=1
+        export GEN_SAIRPC_OPTS="-ve"
+        cd meta
+        make rpc
+      displayName: "Build rpc"
