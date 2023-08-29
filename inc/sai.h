@@ -69,6 +69,7 @@
 #include "saiudf.h"
 #include "saivirtualrouter.h"
 #include "saivlan.h"
+#include "saivlanstack.h"
 #include "saiwred.h"
 #include "saidtel.h"
 #include "saibfd.h"
@@ -144,6 +145,7 @@ typedef enum _sai_api_t
     SAI_API_GENERIC_PROGRAMMABLE = 47, /**<sai_generic_programmable_t */
     SAI_API_ARS              = 48, /**<sai_ars_api_t */
     SAI_API_ARS_PROFILE      = 49, /**<sai_ars_api_profile_t */
+    SAI_API_VLAN_STACK       = 50, /**< sai_vlan_stack_api_t */
     SAI_API_MAX,                   /**< total number of APIs */
 } sai_api_t;
 
