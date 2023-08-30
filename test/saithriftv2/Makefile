@@ -104,7 +104,8 @@ clientlib: $(PY_SOURCES) $(SAI_PY_HEADERS)
 
 saiserver: $(ODIR)/saiserver.o $(ODIR)/librpcserver.a
 	$(CXX) $(LDFLAGS) $(ODIR)/sai_rpc_server.o $(ODIR)/saiserver.o -o $@ \
-		   $(ODIR)/librpcserver.a $(LIBS) $(SAIRPC_EXTRA_LIBS)
+		   $(ODIR)/librpcserver.a ../../meta/saimetadata.o \
+		   ../../meta/saimetadatautils.o $(LIBS) $(SAIRPC_EXTRA_LIBS)
 
 install-lib: $(ODIR)/librpcserver.a
 	$(INSTALL) -D $(ODIR)/librpcserver.a $(DESTDIR)/usr/lib/librpcserver.a
