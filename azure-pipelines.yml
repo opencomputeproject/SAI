@@ -34,7 +34,7 @@ stages:
     - script: |
         set -ex
         sudo apt-get update
-        sudo apt-get install -y thrift-compiler
+        sudo apt-get install -y thrift-compiler libthrift-0.11.0 libthrift-dev
       displayName: "Install thrift compiler"
     - script: |
         set -ex
@@ -48,4 +48,6 @@ stages:
         export GEN_SAIRPC_OPTS="-ve"
         cd meta
         make rpc
+        make sai_rpc_server.skeleton
+        make sai_rpc_frontend
       displayName: "Build rpc"

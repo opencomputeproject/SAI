@@ -73,6 +73,7 @@ CFLAGS += -I../inc -I../experimental -fPIC $(WARNINGS)
 
 CC = $(CROSS_COMPILE)gcc
 CXX = $(CROSS_COMPILE)g++
+LD = $(CROSS_COMPILE)ld
 
 DEPS = $(wildcard ../inc/*.h) $(wildcard ../experimental/*.h)
 XMLDEPS = $(wildcard xml/*.xml)
@@ -162,12 +163,35 @@ saidepgraph.gv: saidepgraphgen
 saidepgraph.svg: saidepgraph.gv
 	dot -Tsvg saidepgraph.gv > $@
 
+libsaimetadata.so: $(OBJ)
+	$(LD) -fPIC -shared -Bsymbolic-functions -z now $^ -o $@
+
+libsai.so: libsai.o
+	$(LD) -fPIC -shared -Bsymbolic-functions -z now $^ -o $@
+
+RPC_SRC=$(wildcard generated/gen-cpp/*.cpp)
+RPC_OBJ=$(RPC_SRC:.cpp=.o)
+
+generated/gen-cpp/%.o: generated/gen-cpp/%.cpp
+	$(CXX) $(CFLAGS) -std=c++11 -Wno-return-type -c $< -o $@
+
+generated/gen-cpp/sai_rpc_server.skeleton: sai.thrift $(RPC_OBJ)
+	$(CXX) $(RPC_OBJ) -o generated/gen-cpp/sai_rpc_server.skeleton -lthrift
+
+sai_rpc_server.skeleton: generated/gen-cpp/sai_rpc_server.skeleton
+
+sai_rpc_frontend: rpc sai_rpc_frontend.cpp sai_rpc_frontend.main.cpp sai_rpc_server.cpp libsaimetadata.so libsai.so
+	$(CXX) $(CFLAGS) -std=c++11 \
+		generated/gen-cpp/sai_rpc.o generated/gen-cpp/sai_types.o generated/gen-cpp/sai_constants.o \
+		sai_rpc_frontend.main.cpp sai_rpc_frontend.cpp \
+		libsaimetadata.so libsai.so -lthrift -lpthread -I generated/gen-cpp -o sai_rpc_frontend
+
 .PHONY: clean rpc
 
 clean:
-	rm -f *.o *~ .*~ *.tmp .*.swp .*.swo *.bak sai*.gv sai*.svg *.o.symbols doxygen*.db
+	rm -f *.o *~ .*~ *.tmp .*.swp .*.swo *.bak sai*.gv sai*.svg *.o.symbols doxygen*.db *.so
 	rm -f saimetadata.h saimetadatasize.h saimetadata.c saimetadatatest.c saiswig.i
-	rm -f saisanitycheck saimetadatatest saiserializetest saidepgraphgen
+	rm -f saisanitycheck saimetadatatest saiserializetest saidepgraphgen sai_rpc_frontend
 	rm -f sai.thrift sai_rpc_server.cpp sai_adapter.py
 	rm -f *.gcda *.gcno *.gcov
 	rm -rf xml html dist temp generated
