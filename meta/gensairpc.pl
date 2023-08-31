@@ -284,6 +284,7 @@ sub generate_server_template_from_skeleton {
                   if $experimental;
                 say {$server_template} '#ifdef __cplusplus';
                 say {$server_template} '}';
+                say {$server_template} '#include <iostream>';
                 say {$server_template} '#endif';
 
                 # Define global variable before "class"

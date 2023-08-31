@@ -11,6 +11,7 @@ meta/generated
 meta/*.o
 meta/*.lo
 meta/*.o.symbols
+meta/*.so
 
 meta/doxygen_sqlite3.db
 meta/saidepgraph.gv
@@ -27,6 +28,7 @@ meta/saimetadatasize.h
 meta/sai.thrift
 meta/sai_adapter.py
 meta/sai_rpc_server.cpp
+meta/sai_rpc_frontend
 
 # temporary files
 **/*~
