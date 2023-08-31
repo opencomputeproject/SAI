@@ -1651,6 +1651,16 @@ void check_attr_validonly(
                  * MPLS out segment attributes are required for ingress node and valid only for MPLS next hop.
                  */
             }
+            else if (md->objecttype == SAI_OBJECT_TYPE_TWAMP_SESSION &&
+                    (md->attrid == SAI_TWAMP_SESSION_ATTR_TX_PKT_CNT || md->attrid == SAI_TWAMP_SESSION_ATTR_TX_PKT_PERIOD ||
+                     md->attrid == SAI_TWAMP_SESSION_ATTR_TUNNEL_OUTER_VLAN_ID || md->attrid == SAI_TWAMP_SESSION_ATTR_TUNNEL_OUTER_VLAN_PRI ||
+                     md->attrid == SAI_TWAMP_SESSION_ATTR_TUNNEL_OUTER_VLAN_CFI || md->attrid == SAI_TWAMP_SESSION_ATTR_VLAN_ID ||
+                     md->attrid == SAI_TWAMP_SESSION_ATTR_VLAN_PRI || md->attrid == SAI_TWAMP_SESSION_ATTR_VLAN_CFI))
+            {
+                /*
+                 * TWAMP packet tx mode attributes are depending on TWAMP_PKT_TX_MODE.
+                 */
+            }
             else
             {
                 META_MD_ASSERT_FAIL(md, "validonly attribute is also validonly attribute, not allowed");
@@ -4794,7 +4804,8 @@ void check_object_ro_list(
             oi->objecttype == SAI_OBJECT_TYPE_DTEL ||
             oi->objecttype == SAI_OBJECT_TYPE_DTEL_QUEUE_REPORT ||
             oi->objecttype == SAI_OBJECT_TYPE_DTEL_EVENT ||
-            oi->objecttype == SAI_OBJECT_TYPE_GENERIC_PROGRAMMABLE)
+            oi->objecttype == SAI_OBJECT_TYPE_GENERIC_PROGRAMMABLE ||
+            oi->objecttype == SAI_OBJECT_TYPE_TWAMP_SESSION)
     {
         /*
          * We skip hostif table entry since there is no 1 object which can

@@ -150,6 +150,7 @@ TLS - Transport Layer Security
 TOS - Type Of Service
 TPID - Tag Protocol Identifier
 TTL - Time to Leave
+TWAMP - Two-Way Active Measurement Protocol
 UDF - User-Defined Field
 UDP - User Datagram Protocol
 USD - Ultimate Segment Decapsulation
