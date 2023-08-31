@@ -2993,7 +2993,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_AVAILABLE_IP_NEXT_HOP_GROUP_MEMBER_ENTRY,
 
     /**
-     * @brief Available VOQs including unicast and multicast VOQs
+     * @brief Available VOQ including unicast and multicast VOQ
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
