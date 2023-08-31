@@ -179,7 +179,7 @@ if ([% api %]_api->[% name = function.name; GET methods.$name %] == (void *)0) {
     [%- # First declare count argument if not declared yet -%]
     [%- fun = function.name; countarg = arg.count.name -%]
     [%- UNLESS count.$fun.$countarg.declared; count.$fun.$countarg.declared = 1 %]
-    [% arg.count.type.name %] [% arg.count.name %] = [% arg.name %][% IF arg.is_attr_list %].attr_list[% END %].size();
+    [% arg.count.type.name %] [% arg.count.name %] = (uint32_t)[% arg.name %][% IF arg.is_attr_list %].attr_list[% END %].size();
 
     [%- END %]
     if ([% arg.count.name %] != 0) {

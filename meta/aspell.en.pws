@@ -59,6 +59,7 @@ fdb
 ffff
 FPGAs
 fprintf
+frontend
 functionalities
 FX
 hitless
@@ -88,6 +89,7 @@ isresourcetype
 isvlan
 json
 LAGs
+libsai
 linklocal
 Linux
 lookup
