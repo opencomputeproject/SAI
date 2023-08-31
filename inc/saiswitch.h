@@ -2958,6 +2958,33 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_TUNNEL_TERM_TABLE_ENTRY_MAXIMUM_PRIORITY,
 
     /**
+     * @brief TWAMP session event notification callback function passed to the adapter.
+     *
+     * Use sai_twamp_session_event_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_twamp_session_event_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_TWAMP_SESSION_EVENT_NOTIFY,
+
+    /**
+     * @brief Number of Two-Way Active Measurement Protocol session
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_TWAMP_SESSION,
+
+    /**
+     * @brief Max number of Two-Way Active Measurement Protocol session supports
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_TWAMP_SESSION,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
