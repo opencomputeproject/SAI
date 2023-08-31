@@ -2985,6 +2985,22 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MAX_TWAMP_SESSION,
 
     /**
+     * @brief Available IP Next hop group member entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_IP_NEXT_HOP_GROUP_MEMBER_ENTRY,
+
+    /**
+     * @brief Available VOQs including unicast and multicast VOQs
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_SYSTEM_VOQS,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
