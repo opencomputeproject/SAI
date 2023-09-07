@@ -80,10 +80,7 @@ void sai_thrift_deparse_[% object %]_attributes(sai_attribute_t *attr_list,
 [%- ######################################################################## -%]
 
 [%- BLOCK deparse_attr_helper_function_body -%]
-  std::vector<sai_thrift_attribute_t>::const_iterator it =
-      thrift_attr_list.begin();
-
-  for (uint32_t i = 0; i < attr_count; i++, it++) {
+  for (uint32_t i = 0; i < attr_count; i++) {
     sai_thrift_attribute_t attribute;
     convert_attr_sai_to_thrift(static_cast<sai_object_type_t>(SAI_OBJECT_TYPE_[% object.upper %]), attr_list[i], attribute);
     thrift_attr_list.push_back(attribute);

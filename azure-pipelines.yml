@@ -51,3 +51,11 @@ stages:
         make sai_rpc_server.skeleton
         make sai_rpc_frontend
       displayName: "Build rpc"
+    - script: |
+        set -ex
+        export ANSI_COLORS_DISABLED=1
+        export GEN_SAIRPC_OPTS="-ve"
+        export SAIRPC_EXTRA_LIBS=-L../../meta
+        cd test/saithriftv2
+        make directories meta obj/librpcserver.a saiserver
+      displayName: "Build saithriftv2 saiserver"
