@@ -164,10 +164,10 @@ saidepgraph.svg: saidepgraph.gv
 	dot -Tsvg saidepgraph.gv > $@
 
 libsaimetadata.so: $(OBJ)
-	$(LD) -fPIC -shared -Bsymbolic-functions -z now $^ -o $@
+	$(CXX) -fPIC -shared -Wl,-Bsymbolic-functions -Wl,-z,relro -Wl,-z,now $^ -o $@
 
 libsai.so: libsai.o
-	$(LD) -fPIC -shared -Bsymbolic-functions -z now $^ -o $@
+	$(CXX) -fPIC -shared -Wl,-Bsymbolic-functions -Wl,-z,relro -Wl,-z,now $^ -o $@
 
 RPC_SRC=$(wildcard generated/gen-cpp/*.cpp)
 RPC_OBJ=$(RPC_SRC:.cpp=.o)
