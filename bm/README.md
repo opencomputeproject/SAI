@@ -1,3 +1,6 @@
+# ** WARNING ** THIS DIRECTORY IS DEPRECATED AND WILL BE REMOVED END OF 2023
+# ** WARNING ** USE tests/saithriftv2 and sonic-net/DASH repo for bvm2/p4 model
+
 # SAI BEHAVIORAL MODEL
 This repository clearly defines widely accepted network switch behaviour.
 The switch behavioral model provides a commom framework for all network vendors and users.
