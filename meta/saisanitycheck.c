@@ -3345,6 +3345,22 @@ void check_attr_extension_flag(
     }
 }
 
+void check_attr_condition_relaxed(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    if (md->isconditionrelaxed && !md->isconditional)
+    {
+        META_MD_ASSERT_FAIL(md, "relaxed flag applied to non conditional attribute");
+    }
+
+    if (md->isconditionrelaxed)
+    {
+        META_LOG_WARN("condition relaxed on: %s", md->attridname);
+    }
+}
+
 void check_single_attribute(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -3390,6 +3406,7 @@ void check_single_attribute(
     check_attr_extension_flag(md);
     check_attr_mixed_condition(md);
     check_attr_mixed_validonly(md);
+    check_attr_condition_relaxed(md);
 
     define_attr(md);
 }

@@ -1270,6 +1270,16 @@ typedef struct _sai_attr_metadata_t
      */
     bool                                        isdeprecated;
 
+    /**
+     * @brief Indicates whether condition is relaxed.
+     *
+     * If attribute is MANDATORY_ON_CREATE and relaxed flag is set to true then
+     * given attribute can be passed to create function even if the condition
+     * is not met. If relaxed flag is set to false, then attribute is forbidden
+     * to be passed to create function is condition is not met.
+     */
+    bool                                        isconditionrelaxed;
+
 } sai_attr_metadata_t;
 
 /*
