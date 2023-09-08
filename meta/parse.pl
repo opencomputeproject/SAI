@@ -87,6 +87,7 @@ my %ATTR_TAGS = (
         "isvlan"         , \&ProcessTagIsVlan,
         "getsave"        , \&ProcessTagGetSave,
         "range"          , \&ProcessTagRange,
+        "relaxed"        , \&ProcessTagRelaxed,
         "isresourcetype" , \&ProcessTagIsRecourceType,
         "deprecated"     , \&ProcessTagDeprecated,
         );
@@ -385,6 +386,16 @@ sub ProcessTagIsVlan
     return undef;
 }
 
+sub ProcessTagRelaxed
+{
+    my ($type, $value, $val) = @_;
+
+    return $val if $val =~ /^(true|false)$/i;
+
+    LogError "relaxed tag value '$val', expected true/false";
+    return undef;
+}
+
 sub ProcessTagIsRecourceType
 {
     my ($type, $value, $val) = @_;
@@ -497,7 +508,7 @@ sub ProcessDescription
 
     return if scalar@order == 0;
 
-    my $rightOrder = 'type:flags(:objects)?(:allownull)?(:allowempty)?(:isvlan)?(:default)?(:range)?(:condition|:validonly)?(:isresourcetype)?(:deprecated)?';
+    my $rightOrder = 'type:flags(:objects)?(:allownull)?(:allowempty)?(:isvlan)?(:default)?(:range)?(:condition|:validonly)?(:relaxed)?(:isresourcetype)?(:deprecated)?';
 
     my $order = join(":",@order);
 
@@ -1556,6 +1567,15 @@ sub ProcessIsDeprecatedType
     return "false";
 }
 
+sub ProcessRelaxedType
+{
+    my ($value, $relaxed) = @_;
+
+    return $relaxed if defined $relaxed;
+
+    return "false";
+}
+
 sub ProcessObjects
 {
     my ($attr, $objects) = @_;
@@ -2325,6 +2345,7 @@ sub ProcessSingleObjectType
         my $isextensionattr = ProcessIsExtensionAttr($attr, $meta{type});
         my $isresourcetype  = ProcessIsResourceType($attr, $meta{isresourcetype});
         my $isdeprecated    = ProcessIsDeprecatedType($attr, $meta{deprecated});
+        my $isrelaxed       = ProcessRelaxedType($attr, $meta{relaxed});
 
         my $ismandatoryoncreate = ($flags =~ /MANDATORY/)       ? "true" : "false";
         my $iscreateonly        = ($flags =~ /CREATE_ONLY/)     ? "true" : "false";
@@ -2381,6 +2402,7 @@ sub ProcessSingleObjectType
         WriteSource ".isextensionattr               = $isextensionattr,";
         WriteSource ".isresourcetype                = $isresourcetype,";
         WriteSource ".isdeprecated                  = $isdeprecated,";
+        WriteSource ".isconditionrelaxed            = $isrelaxed,";
 
         WriteSource "};";
 
