@@ -58,6 +58,9 @@ defined_attr_t* defined_attributes = NULL;
 #define META_ENUM_LOG_WARN(emd, format, ...)\
     META_LOG_WARN("%s: " format, emd->name, ##__VA_ARGS__);
 
+#define META_MD_LOG_DEBUG(md, format, ...)\
+    META_LOG_DEBUG("%s: " format, md->attridname, ##__VA_ARGS__);
+
 #define META_MD_LOG_WARN(md, format, ...)\
     META_LOG_WARN("%s: " format, md->attridname, ##__VA_ARGS__);
 
@@ -1509,7 +1512,7 @@ void check_attr_validonly(
              * but you won't be able to change it anyway.
              */
 
-            META_MD_LOG_WARN(md, "marked as valid only, on flags CREATE_ONLY, default value is present, should this be CREATE_AND_SET?");
+            META_MD_LOG_DEBUG(md, "marked as valid only, on flags CREATE_ONLY, default value is present, should this be CREATE_AND_SET?");
 
             /* intentional fall through */
 
@@ -4849,7 +4852,7 @@ void check_object_ro_list(
 
     if (oi->isexperimental)
     {
-        META_LOG_WARN("experimental object %s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
+        META_LOG_DEBUG("experimental object %s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
         return;
     }
 
