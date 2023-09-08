@@ -48,13 +48,13 @@ unsigned int sai_thrift_mac_t_parse(const std::string s, void *data) {
   for (i = 0; i < s.size(); i++) {
     char let = s.c_str()[i];
     if (let >= '0' && let <= '9') {
-      m[j / 2] = (m[j / 2] << 4) + (let - '0');
+      m[j / 2] = (unsigned char)((m[j / 2] << 4) + (let - '0'));
       j++;
     } else if (let >= 'a' && let <= 'f') {
-      m[j / 2] = (m[j / 2] << 4) + (let - 'a' + 10);
+      m[j / 2] = (unsigned char)((m[j / 2] << 4) + (let - 'a' + 10));
       j++;
     } else if (let >= 'A' && let <= 'F') {
-      m[j / 2] = (m[j / 2] << 4) + (let - 'A' + 10);
+      m[j / 2] = (unsigned char)((m[j / 2] << 4) + (let - 'A' + 10));
       j++;
     }
   }
@@ -71,7 +71,7 @@ void sai_thrift_ip4_t_parse(const std::string s, unsigned int *m) {
   for (i = 0; i < s.size(); i++) {
     char let = s.c_str()[i];
     if (let >= '0' && let <= '9') {
-      r = (r * 10) + (let - '0');
+      r = (unsigned char)((r * 10) + (let - '0'));
     } else {
       *m = (*m << 8) | r;
       r = 0;

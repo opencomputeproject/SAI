@@ -58,6 +58,9 @@ defined_attr_t* defined_attributes = NULL;
 #define META_ENUM_LOG_WARN(emd, format, ...)\
     META_LOG_WARN("%s: " format, emd->name, ##__VA_ARGS__);
 
+#define META_MD_LOG_DEBUG(md, format, ...)\
+    META_LOG_DEBUG("%s: " format, md->attridname, ##__VA_ARGS__);
+
 #define META_MD_LOG_WARN(md, format, ...)\
     META_LOG_WARN("%s: " format, md->attridname, ##__VA_ARGS__);
 
@@ -1509,7 +1512,7 @@ void check_attr_validonly(
              * but you won't be able to change it anyway.
              */
 
-            META_MD_LOG_WARN(md, "marked as valid only, on flags CREATE_ONLY, default value is present, should this be CREATE_AND_SET?");
+            META_MD_LOG_DEBUG(md, "marked as valid only, on flags CREATE_ONLY, default value is present, should this be CREATE_AND_SET?");
 
             /* intentional fall through */
 
@@ -1649,6 +1652,16 @@ void check_attr_validonly(
             {
                 /*
                  * MPLS out segment attributes are required for ingress node and valid only for MPLS next hop.
+                 */
+            }
+            else if (md->objecttype == SAI_OBJECT_TYPE_TWAMP_SESSION &&
+                    (md->attrid == SAI_TWAMP_SESSION_ATTR_TX_PKT_CNT || md->attrid == SAI_TWAMP_SESSION_ATTR_TX_PKT_PERIOD ||
+                     md->attrid == SAI_TWAMP_SESSION_ATTR_TUNNEL_OUTER_VLAN_ID || md->attrid == SAI_TWAMP_SESSION_ATTR_TUNNEL_OUTER_VLAN_PRI ||
+                     md->attrid == SAI_TWAMP_SESSION_ATTR_TUNNEL_OUTER_VLAN_CFI || md->attrid == SAI_TWAMP_SESSION_ATTR_VLAN_ID ||
+                     md->attrid == SAI_TWAMP_SESSION_ATTR_VLAN_PRI || md->attrid == SAI_TWAMP_SESSION_ATTR_VLAN_CFI))
+            {
+                /*
+                 * TWAMP packet tx mode attributes are depending on TWAMP_PKT_TX_MODE.
                  */
             }
             else
@@ -3335,6 +3348,22 @@ void check_attr_extension_flag(
     }
 }
 
+void check_attr_condition_relaxed(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    if (md->isconditionrelaxed && !md->isconditional)
+    {
+        META_MD_ASSERT_FAIL(md, "relaxed flag applied to non conditional attribute");
+    }
+
+    if (md->isconditionrelaxed)
+    {
+        META_LOG_WARN("condition relaxed on: %s", md->attridname);
+    }
+}
+
 void check_single_attribute(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -3380,6 +3409,7 @@ void check_single_attribute(
     check_attr_extension_flag(md);
     check_attr_mixed_condition(md);
     check_attr_mixed_validonly(md);
+    check_attr_condition_relaxed(md);
 
     define_attr(md);
 }
@@ -4794,7 +4824,8 @@ void check_object_ro_list(
             oi->objecttype == SAI_OBJECT_TYPE_DTEL ||
             oi->objecttype == SAI_OBJECT_TYPE_DTEL_QUEUE_REPORT ||
             oi->objecttype == SAI_OBJECT_TYPE_DTEL_EVENT ||
-            oi->objecttype == SAI_OBJECT_TYPE_GENERIC_PROGRAMMABLE)
+            oi->objecttype == SAI_OBJECT_TYPE_GENERIC_PROGRAMMABLE ||
+            oi->objecttype == SAI_OBJECT_TYPE_TWAMP_SESSION)
     {
         /*
          * We skip hostif table entry since there is no 1 object which can
@@ -4838,7 +4869,7 @@ void check_object_ro_list(
 
     if (oi->isexperimental)
     {
-        META_LOG_WARN("experimental object %s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
+        META_LOG_DEBUG("experimental object %s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
         return;
     }
 

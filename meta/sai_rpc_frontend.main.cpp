@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Microsoft Open Technologies, Inc.
+ * Copyright (c) 2023 Microsoft Open Technologies, Inc.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License"); you may
  *    not use this file except in compliance with the License. You may obtain
@@ -17,32 +17,42 @@
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
  *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
- * @file    saiversion.h
+ * @file    sai_rpc_frontend.main.cpp
  *
- * @brief   Define the current version
+ * @brief   This module contains SAI RPC main function just for linkage test
  */
 
-#if !defined (__SAIVERSION_H_)
-#define __SAIVERSION_H_
+extern "C" {
+#include "sai.h"
+int start_sai_thrift_rpc_server(int port);
+}
 
-#include <saitypes.h>
+#include <unistd.h>
 
-#define SAI_MAJOR 1
-#define SAI_MINOR 13
-#define SAI_REVISION 0
+#include <map>
+#include <set>
+#include <string>
 
-#define SAI_VERSION(major, minor, revision) (10000 * (major) + 100 * (minor) + (revision))
+// this is just dummy frontend main, just to see if sai_rpc_frontend.cpp will
+// compile and link successfully
 
-#define SAI_API_VERSION SAI_VERSION(SAI_MAJOR, SAI_MINOR, SAI_REVISION)
+#define SWITCH_SAI_THRIFT_RPC_SERVER_PORT 9092
 
-/**
- * @brief Retrieve a SAI API version this implementation is aligned to
- *
- * @param[out] version Version number
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-sai_status_t sai_query_api_version(
-        _Out_ sai_api_version_t *version);
+std::map<std::string, std::string> gProfileMap;
+std::map<std::set<int>, std::string> gPortMap;
 
-#endif /** __SAIVERSION_H_ */
+sai_object_id_t gSwitchId;
+
+int main(int argc, char **argv)
+{
+    sai_api_initialize(0, 0);
+
+    start_sai_thrift_rpc_server(SWITCH_SAI_THRIFT_RPC_SERVER_PORT);
+
+    while (true)
+    {
+        pause();
+    }
+
+    return 0;
+}
