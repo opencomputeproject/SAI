@@ -2,7 +2,7 @@
 
 echo
 echo "** WARNING ** THIS DIRECTORY IS DEPRECATED AND WILL BE REMOVED END OF 2023"
-echo "** WARNING ** USE tests/saithriftv2 and sonic-net/DASH repo for bvm2/p4 model"
+echo "** WARNING ** USE tests/saithriftv2 and sonic-net/DASH repo for bmv2/p4 model"
 echo
 
 sleep 10
