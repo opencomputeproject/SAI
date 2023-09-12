@@ -211,6 +211,13 @@ extern bool sai_metadata_is_validonly_met(
         _In_ const sai_attribute_t *attr_list);
 
 /**
+ * @brief Metadata query API version.
+ *
+ * Will return SAI version which was used to generate metadata.
+ */
+extern sai_api_version_t sai_metadata_query_api_version(void);
+
+/**
  * @}
  */
 #endif /** __SAIMETADATAUTILS_H_ */
