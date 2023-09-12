@@ -881,9 +881,9 @@ class sai_rpcHandlerFrontend:
     int64_t sai_thrift_object_type_get_availability(
             const sai_thrift_object_type_t object_type,
             const sai_thrift_attr_id_t attr_id,
-            const int32_t attr_type)
+            const int32_t attr_type) override
     {
-        sai_attribute_t attr = {};
+        sai_attribute_t attr;
         attr.id = attr_id;
         attr.value.s32 = attr_type;
         uint32_t attr_count = 1;
@@ -897,7 +897,7 @@ class sai_rpcHandlerFrontend:
      * @brief Thrift wrapper for sai_object_type_query() SAI function
      */
     sai_thrift_object_type_t sai_thrift_object_type_query(
-            const sai_thrift_object_id_t object_id)
+            const sai_thrift_object_id_t object_id) override
     {
         return sai_object_type_query(object_id);
     }
@@ -906,7 +906,7 @@ class sai_rpcHandlerFrontend:
      * @brief Thrift wrapper for sai_switch_id_query() SAI function
      */
     sai_thrift_object_id_t sai_thrift_switch_id_query(
-            const sai_thrift_object_id_t object_id)
+            const sai_thrift_object_id_t object_id) override
     {
         return sai_switch_id_query(object_id);
     }
@@ -914,7 +914,7 @@ class sai_rpcHandlerFrontend:
     /**
      * @brief Thrift wrapper for sai_api_uninitialize() SAI function
      */
-    sai_thrift_status_t sai_thrift_api_uninitialize(void)
+    sai_thrift_status_t sai_thrift_api_uninitialize(void) override
     {
         return sai_api_uninitialize();
     }
@@ -927,44 +927,33 @@ class sai_rpcHandlerFrontend:
             std::vector<int32_t> &thrift_enum_caps,
             const sai_thrift_object_type_t object_type,
             const sai_thrift_attr_id_t attr_id,
-            const int32_t caps_count)
+            const int32_t caps_count) override
     {
-        sai_status_t status = SAI_STATUS_SUCCESS;
-        sai_s32_list_t enum_values_capability;
-        int32_t *caps_list = NULL;
-
         if (!caps_count)
         {
             return;
         }
 
-        caps_list = (int32_t *)malloc(sizeof(int32_t) * caps_count);
+        std::vector<int32_t> caps_list(caps_count);
 
-        if (!caps_list)
-        {
-            return;
-        }
+        sai_s32_list_t enum_values_capability;
 
-        enum_values_capability.list = caps_list;
+        enum_values_capability.list = caps_list.data();
         enum_values_capability.count = caps_count;
 
-        status = sai_query_attribute_enum_values_capability(
+        sai_status_t status = sai_query_attribute_enum_values_capability(
                 (sai_object_id_t)switch_id,
                 (sai_object_type_t)object_type,
                 (sai_attr_id_t)attr_id,
                 &enum_values_capability);
 
-        if (SAI_STATUS_SUCCESS != status)
+        if (status == SAI_STATUS_SUCCESS)
         {
-            free(caps_list);
-            return;
+            for (uint32_t i = 0; i < enum_values_capability.count; ++i)
+            {
+                thrift_enum_caps.push_back(enum_values_capability.list[i]);
+            }
         }
-
-        for (uint32_t i = 0; i < enum_values_capability.count; ++i)
-        {
-            thrift_enum_caps.push_back(enum_values_capability.list[i]);
-        }
-        free(caps_list);
     }
 };
 
