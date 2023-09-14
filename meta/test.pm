@@ -330,7 +330,7 @@ sub CreateApiNameTest
 
     WriteTest "    int index = SAI_OBJECT_TYPE_NULL;";
 
-    WriteTest "    for (; index < SAI_OBJECT_TYPE_MAX; ++index)";
+    WriteTest "    for (; index < (int)SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++index)";
     WriteTest "    {";
     WriteTest "        printf(\"checking: %s checked (%d) == index (%d)\\n\",";
     WriteTest "             sai_metadata_enum_sai_object_type_t.valuesnames[index],";
