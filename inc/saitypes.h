@@ -1114,6 +1114,13 @@ typedef struct _sai_json_t
 } sai_json_t;
 
 /**
+ * @brief Defines a Protocol Buffers (protobuf) schema for facilitating data exchanges.
+ */
+typedef struct _sai_protobuf_t {
+    sai_s8_list_t protobuf;
+} sai_protobuf_t;
+
+/**
  * @brief Defines a lane with its eye values with the up and down values
  * being in mV and left and right being in mUI.
  */
