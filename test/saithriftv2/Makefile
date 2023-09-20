@@ -94,9 +94,6 @@ $(SAI_PY_HEADERS): $(SAI_HEADERS)
 $(METADIR)saimetadata.h:
 	make -C $(METADIR) saisanitycheck
 
-$(METADIR)libsaimetadata.so:
-	make -C $(METADIR) libsaimetadata.so
-
 $(ODIR)/%.o: gen-cpp/%.cpp
 	$(CXX) $(CPPFLAGS) -c $< -o $@
 
@@ -116,12 +113,11 @@ dist/saithrift-$(VER).tar.gz: $(PY_SOURCES) $(SAI_PY_HEADERS)
 
 clientlib: dist/saithrift-$(VER).tar.gz
 
-saiserver: $(ODIR)/sai_rpc_server.o $(ODIR)/saiserver.o $(ODIR)/librpcserver.a $(METADIR)libsaimetadata.so
+saiserver: $(ODIR)/sai_rpc_server.o $(ODIR)/saiserver.o $(ODIR)/librpcserver.a
 	$(CXX) $(LDFLAGS) $^ -o $@ $(LIBS) $(SAIRPC_EXTRA_LIBS)
 
 install-lib: $(ODIR)/librpcserver.a saiserver
 	$(INSTALL) -vCD $(ODIR)/librpcserver.a $(DESTDIR)/usr/lib/librpcserver.a
-	$(INSTALL) -vCD $(METADIR)libsaimetadata.so $(DESTDIR)/usr/lib/libsaimetadata.so
 	$(INSTALL) -vCD saiserver $(DESTDIR)/usr/sbin/saiserver
 	$(INSTALL) -vCD ./src/switch_sai_rpc_server.h $(DESTDIR)/usr/include/switch_sai_rpc_server.h
 
