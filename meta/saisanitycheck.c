@@ -58,6 +58,9 @@ defined_attr_t* defined_attributes = NULL;
 #define META_ENUM_LOG_WARN(emd, format, ...)\
     META_LOG_WARN("%s: " format, emd->name, ##__VA_ARGS__);
 
+#define META_MD_LOG_DEBUG(md, format, ...)\
+    META_LOG_DEBUG("%s: " format, md->attridname, ##__VA_ARGS__);
+
 #define META_MD_LOG_WARN(md, format, ...)\
     META_LOG_WARN("%s: " format, md->attridname, ##__VA_ARGS__);
 
@@ -1509,7 +1512,7 @@ void check_attr_validonly(
              * but you won't be able to change it anyway.
              */
 
-            META_MD_LOG_WARN(md, "marked as valid only, on flags CREATE_ONLY, default value is present, should this be CREATE_AND_SET?");
+            META_MD_LOG_DEBUG(md, "marked as valid only, on flags CREATE_ONLY, default value is present, should this be CREATE_AND_SET?");
 
             /* intentional fall through */
 
@@ -3345,6 +3348,22 @@ void check_attr_extension_flag(
     }
 }
 
+void check_attr_condition_relaxed(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    if (md->isconditionrelaxed && !md->isconditional)
+    {
+        META_MD_ASSERT_FAIL(md, "relaxed flag applied to non conditional attribute");
+    }
+
+    if (md->isconditionrelaxed)
+    {
+        META_LOG_WARN("condition relaxed on: %s", md->attridname);
+    }
+}
+
 void check_single_attribute(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -3390,6 +3409,7 @@ void check_single_attribute(
     check_attr_extension_flag(md);
     check_attr_mixed_condition(md);
     check_attr_mixed_validonly(md);
+    check_attr_condition_relaxed(md);
 
     define_attr(md);
 }
@@ -4849,7 +4869,7 @@ void check_object_ro_list(
 
     if (oi->isexperimental)
     {
-        META_LOG_WARN("experimental object %s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
+        META_LOG_DEBUG("experimental object %s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
         return;
     }
 

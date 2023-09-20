@@ -222,6 +222,19 @@ typedef enum _sai_port_fec_mode_extended_t
 } sai_port_fec_mode_extended_t;
 
 /**
+ * @brief Attribute data for #SAI_PORT_ATTR_DATAPATH_ENABLE
+ */
+typedef enum _sai_port_datapath_enable_t
+{
+    /** PASS through data path */
+    SAI_PORT_DATAPATH_ENABLE_PASS_THROUGH_MODE,
+
+    /** PCS IEEE data path */
+    SAI_PORT_DATAPATH_ENABLE_PCS_IEEE_MODE,
+
+} sai_port_datapath_enable_t;
+
+/**
  * @brief Priority flow control mode
  */
 typedef enum _sai_port_priority_flow_control_mode_t
@@ -2369,6 +2382,23 @@ typedef enum _sai_port_attr_t
      * @flags READ_ONLY
      */
     SAI_PORT_ATTR_RX_SNR,
+
+    /**
+     * @brief Port's DATA PATH Enable
+     *
+     * true: If NO FEC is selected and the data path is enabled as PCS,
+     * the packet is checked for lane alignment marker and it aligns recovered data in receive direction.
+     * PCS RX link status is set if the packet is properly aligned.
+     * SAI_PORT_DATAPATH_ENABLE_PASS_THROUGH_MODE: Default pass-through data path is used where packet is passed
+     * without any processing.
+     * This attribute is valid only if SAI_PORT_ATTR_FEC_MODE_EXTENDED is selected as SAI_PORT_FEC_MODE_EXTENDED_NONE.
+     *
+     * @type sai_port_datapath_enable_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_DATAPATH_ENABLE_PASS_THROUGH_MODE
+     * @validonly SAI_PORT_ATTR_USE_EXTENDED_FEC == true
+     */
+    SAI_PORT_ATTR_DATAPATH_ENABLE,
 
     /**
      * @brief End of attributes
