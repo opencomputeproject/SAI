@@ -3718,6 +3718,32 @@ typedef enum _sai_port_serdes_attr_t
     SAI_PORT_SERDES_ATTR_TX_NMOS_VLTG_REG,
 
     /**
+     * @brief Port serdes control TX pre-coding value
+     *
+     * TX pre-coding value (used for PAM4 links)
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_PRECODING,
+
+    /**
+     * @brief Port serdes control RX pre-coding value
+     *
+     * RX pre-coding value (used for PAM4 links)
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_RX_PRECODING,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_SERDES_ATTR_END,
