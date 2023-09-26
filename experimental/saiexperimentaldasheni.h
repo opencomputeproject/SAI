@@ -162,6 +162,33 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_VNET_ID,
 
     /**
+     * @brief Action set_eni_attrs parameter PL_SIP
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     */
+    SAI_ENI_ATTR_PL_SIP,
+
+    /**
+     * @brief Action set_eni_attrs parameter PL_SIP_MASK
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     */
+    SAI_ENI_ATTR_PL_SIP_MASK,
+
+    /**
+     * @brief Action set_eni_attrs parameter PL_UNDERLAY_SIP
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     */
+    SAI_ENI_ATTR_PL_UNDERLAY_SIP,
+
+    /**
      * @brief Action set_eni_attrs parameter V4_METER_POLICY_ID
      *
      * @type sai_object_id_t
