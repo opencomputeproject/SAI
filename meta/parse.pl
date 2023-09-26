@@ -2503,7 +2503,7 @@ sub CreateMetadataForAttributes
 
         if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
         {
-            LogError "invalid obejct type '$ot'";
+            LogError "invalid object type '$ot'";
             next;
         }
 
@@ -2538,7 +2538,7 @@ sub CreateMetadataForAttributes
     {
         if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
         {
-            LogError "invalid obejct type '$ot'";
+            LogError "invalid object type '$ot'";
             next;
         }
 
@@ -2928,7 +2928,7 @@ sub CreateStructNonObjectId
     {
         if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
         {
-            LogError "invalid obejct type '$ot'";
+            LogError "invalid object type '$ot'";
             next;
         }
 
@@ -3325,7 +3325,7 @@ sub ProcessGenericQuadApi
     {
         if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
         {
-            LogError "invalid obejct type '$ot'";
+            LogError "invalid object type '$ot'";
             next;
         }
 
@@ -3467,7 +3467,7 @@ sub ProcessGenericStatsApi
     {
         if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
         {
-            LogError "invalid obejct type '$ot'";
+            LogError "invalid object type '$ot'";
             next;
         }
 
@@ -3590,7 +3590,7 @@ sub ProcessGenericQuadBulkApi
     {
         if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
         {
-            LogError "invalid obejct type '$ot'";
+            LogError "invalid object type '$ot'";
             next;
         }
 
@@ -3915,7 +3915,7 @@ sub CreateObjectInfo
     {
         if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
         {
-            LogError "invalid obejct type '$ot'";
+            LogError "invalid object type '$ot'";
             next;
         }
 
@@ -4002,7 +4002,7 @@ sub CreateObjectInfo
     {
         if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
         {
-            LogError "invalid obejct type '$ot'";
+            LogError "invalid object type '$ot'";
             next;
         }
 
@@ -4369,7 +4369,7 @@ sub CheckObjectTypeStatitics
 {
     #
     # Purpose is to check if each defined statistics for object type has 3 stat
-    # functions defined and if there is corresponding obejct type for stat enum
+    # functions defined and if there is corresponding object type for stat enum
     #
 
     for my $ot (sort keys %OBJECT_TYPE_TO_STATS_MAP)
@@ -4546,7 +4546,7 @@ sub GetReverseDependencyGraph
     {
         if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
         {
-            LogError "invalid obejct type '$ot'";
+            LogError "invalid object type '$ot'";
             next;
         }
 

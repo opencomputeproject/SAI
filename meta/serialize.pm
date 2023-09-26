@@ -336,7 +336,7 @@ sub GetTypeInfoForSerialize
 
         if (scalar@ot != 1)
         {
-            LogWarning "expected only 1 obejct type, but given '@ot'";
+            LogWarning "expected only 1 object type, but given '@ot'";
             return undef;
         }
 
