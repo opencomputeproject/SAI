@@ -775,6 +775,38 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_VXLAN_UDP_SPORT_SECURITY,
 
     /**
+     * @brief Tunnel bind point for ingress ACL object
+     *
+     * Bind (or unbind) an ingress ACL table or ACL group on a tunnel.
+     * Enable/Update ingress ACL table or ACL group filtering by assigning
+     * a valid object id. Disable ingress filtering by assigning
+     * SAI_NULL_OBJECT_ID in the attribute value.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_TUNNEL_ATTR_INGRESS_ACL,
+
+    /**
+     * @brief Tunnel bind point for egress ACL object
+     *
+     * Bind (or unbind) an egress ACL table or ACL group on a tunnel.
+     * Enable/Update egress ACL table or ACL group filtering by assigning
+     * a valid object id. Disable egress filtering by assigning
+     * SAI_NULL_OBJECT_ID in the attribute value.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_ACL_TABLE, SAI_OBJECT_TYPE_ACL_TABLE_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_TUNNEL_ATTR_EGRESS_ACL,
+
+    /**
      * @brief End of attributes
      */
     SAI_TUNNEL_ATTR_END,
