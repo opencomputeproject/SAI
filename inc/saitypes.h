@@ -926,7 +926,10 @@ typedef enum _sai_acl_bind_point_type_t
     SAI_ACL_BIND_POINT_TYPE_ROUTER_INTF = SAI_ACL_BIND_POINT_TYPE_ROUTER_INTERFACE,
 
     /** Bind Point Type Switch */
-    SAI_ACL_BIND_POINT_TYPE_SWITCH
+    SAI_ACL_BIND_POINT_TYPE_SWITCH,
+
+    /** Bind Point Type Tunnel */
+    SAI_ACL_BIND_POINT_TYPE_TUNNEL
 
 } sai_acl_bind_point_type_t;
 
