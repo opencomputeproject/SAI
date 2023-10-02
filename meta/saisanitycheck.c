@@ -5668,6 +5668,13 @@ void check_declare_entry_macro()
     SAI_METADATA_DECLARE_EVERY_BULK_ENTRY(_BULK_ENTRY);
 }
 
+void check_json_type_size()
+{
+    SAI_META_LOG_ENTER();
+
+    META_ASSERT_TRUE(sizeof(sai_s8_list_t) == sizeof(sai_json_t), "json type is expected to have same size as s8 list");
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -5714,6 +5721,7 @@ int main(int argc, char **argv)
     check_global_apis();
     check_struct_and_union_size();
     check_declare_entry_macro();
+    check_json_type_size();
 
     SAI_META_LOG_DEBUG("log test");
 
