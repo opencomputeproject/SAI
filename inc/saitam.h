@@ -2215,6 +2215,18 @@ typedef sai_status_t (*sai_remove_tam_counter_subscription_fn)(
         _In_ sai_object_id_t tam_counter_subscription_id);
 
 /**
+ * @brief Set value for a specified counter subscription object attribute
+ *
+ * @param[in] tam_counter_subscription_id Counter Subscription object id
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_set_tam_counter_subscription_attribute_fn)(
+        _In_ sai_object_id_t tam_counter_subscription_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
  * @brief Get values for specified event object attributes
  *
  * @param[in] tam_counter_subscription_id Counter Subscription object id
@@ -2227,18 +2239,6 @@ typedef sai_status_t (*sai_get_tam_counter_subscription_attribute_fn)(
         _In_ sai_object_id_t tam_counter_subscription_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
-
-/**
- * @brief Set value for a specified counter subscription object attribute
- *
- * @param[in] tam_counter_subscription_id Counter Subscription object id
- * @param[in] attr Attribute
- *
- * @return #SAI_STATUS_SUCCESS on success, failure status code on error
- */
-typedef sai_status_t (*sai_set_tam_counter_subscription_attribute_fn)(
-        _In_ sai_object_id_t tam_counter_subscription_id,
-        _In_ const sai_attribute_t *attr);
 
 /**
  * @brief TAM event callback
