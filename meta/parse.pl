@@ -1446,6 +1446,9 @@ sub ProcessType
 
     if ($type =~ /^sai_acl_field_data_mask_t (bool|sai_\w+_t)$/)
     {
+        # TODO this is temporary solution, since mask should have it's own attribute type
+        # and not reuseing existing ones from aclfield, this provides confusion
+
         my $prefix = "SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA";
 
         return "${prefix}_BOOL" if $1 eq "bool";
@@ -2124,9 +2127,9 @@ sub ProcessIsAclAction
 
 sub ProcessIsAclMask
 {
-    my $attr = shift;
+    my ($attr, $type)= @_;
 
-    return "true" if $attr =~ /^SAI_ACL_TABLE_ATTR_FIELD_DATA_MASK_\w+$/;
+    return "true" if $type =~ /^sai_acl_field_data_mask_t /;
 
     return "false";
 }
@@ -2335,6 +2338,7 @@ sub ProcessSingleObjectType
         my $getsave         = ProcessGetSave($attr, $meta{getsave});
         my $isaclfield      = ProcessIsAclField($attr);
         my $isaclaction     = ProcessIsAclAction($attr);
+        my $isaclmask       = ProcessIsAclMask($attr, $meta{type});
         my $brief           = ProcessBrief($attr, $meta{brief});
         my $isprimitive     = ProcessIsPrimitive($attr, $meta{type});
         my $ntftype         = ProcessNotificationType($attr, $meta{type});
@@ -2388,6 +2392,7 @@ sub ProcessSingleObjectType
         WriteSource ".isvlan                        = $isvlan,";
         WriteSource ".isaclfield                    = $isaclfield,";
         WriteSource ".isaclaction                   = $isaclaction,";
+        WriteSource ".isaclmask                     = $isaclmask,";
         WriteSource ".ismandatoryoncreate           = $ismandatoryoncreate,";
         WriteSource ".iscreateonly                  = $iscreateonly,";
         WriteSource ".iscreateandset                = $iscreateandset,";
@@ -2503,7 +2508,7 @@ sub CreateMetadataForAttributes
 
         if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
         {
-            LogError "invalid obejct type '$ot'";
+            LogError "invalid object type '$ot'";
             next;
         }
 
@@ -2538,7 +2543,7 @@ sub CreateMetadataForAttributes
     {
         if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
         {
-            LogError "invalid obejct type '$ot'";
+            LogError "invalid object type '$ot'";
             next;
         }
 
@@ -2928,7 +2933,7 @@ sub CreateStructNonObjectId
     {
         if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
         {
-            LogError "invalid obejct type '$ot'";
+            LogError "invalid object type '$ot'";
             next;
         }
 
@@ -3325,7 +3330,7 @@ sub ProcessGenericQuadApi
     {
         if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
         {
-            LogError "invalid obejct type '$ot'";
+            LogError "invalid object type '$ot'";
             next;
         }
 
@@ -3467,7 +3472,7 @@ sub ProcessGenericStatsApi
     {
         if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
         {
-            LogError "invalid obejct type '$ot'";
+            LogError "invalid object type '$ot'";
             next;
         }
 
@@ -3590,7 +3595,7 @@ sub ProcessGenericQuadBulkApi
     {
         if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
         {
-            LogError "invalid obejct type '$ot'";
+            LogError "invalid object type '$ot'";
             next;
         }
 
@@ -3915,7 +3920,7 @@ sub CreateObjectInfo
     {
         if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
         {
-            LogError "invalid obejct type '$ot'";
+            LogError "invalid object type '$ot'";
             next;
         }
 
@@ -4002,7 +4007,7 @@ sub CreateObjectInfo
     {
         if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
         {
-            LogError "invalid obejct type '$ot'";
+            LogError "invalid object type '$ot'";
             next;
         }
 
@@ -4369,7 +4374,7 @@ sub CheckObjectTypeStatitics
 {
     #
     # Purpose is to check if each defined statistics for object type has 3 stat
-    # functions defined and if there is corresponding obejct type for stat enum
+    # functions defined and if there is corresponding object type for stat enum
     #
 
     for my $ot (sort keys %OBJECT_TYPE_TO_STATS_MAP)
@@ -4546,7 +4551,7 @@ sub GetReverseDependencyGraph
     {
         if (not $ot =~ /^SAI_OBJECT_TYPE_(\w+)$/)
         {
-            LogError "invalid obejct type '$ot'";
+            LogError "invalid object type '$ot'";
             next;
         }
 

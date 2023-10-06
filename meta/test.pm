@@ -231,7 +231,7 @@ sub CreateApiNameTest
 
         if (IsSpecialObject($ot))
         {
-            # those obejcts are special, just attributes, no APIs
+            # those objects are special, just attributes, no APIs
             WriteTest "    checked[(int)$ot] = $ot;";
             next;
         }
@@ -330,12 +330,12 @@ sub CreateApiNameTest
 
     WriteTest "    int index = SAI_OBJECT_TYPE_NULL;";
 
-    WriteTest "    for (; index < SAI_OBJECT_TYPE_MAX; ++index)";
+    WriteTest "    for (; index < (int)SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++index)";
     WriteTest "    {";
     WriteTest "        printf(\"checking: %s checked (%d) == index (%d)\\n\",";
     WriteTest "             sai_metadata_enum_sai_object_type_t.valuesnames[index],";
     WriteTest "             checked[index],(sai_object_type_t)index);";
-    WriteTest "        TEST_ASSERT_TRUE(checked[index] == (sai_object_type_t)index, \"not all obejcts were processed\");";
+    WriteTest "        TEST_ASSERT_TRUE(checked[index] == (sai_object_type_t)index, \"not all objects were processed\");";
     WriteTest "    }";
 
     WriteTest "    PP(dummy);";

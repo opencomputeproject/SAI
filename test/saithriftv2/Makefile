@@ -40,7 +40,7 @@ endif
 ifeq ($(platform),vs)
 LIBS = -lthrift -lpthread -lsaivs -lsaimeta -lsaimetadata -lzmq
 else
-LIBS = -lthrift -lpthread -lsai
+LIBS = -lthrift -lpthread -lsai -lsaimetadata
 endif
 
 
@@ -113,9 +113,7 @@ dist/saithrift-$(VER).tar.gz: $(PY_SOURCES) $(SAI_PY_HEADERS)
 
 clientlib: dist/saithrift-$(VER).tar.gz
 
-METAOBJS=$(METADIR)/saimetadata.o $(METADIR)/saiserialize.o $(METADIR)/saimetadatautils.o
-
-saiserver: $(ODIR)/sai_rpc_server.o $(ODIR)/saiserver.o $(ODIR)/librpcserver.a $(METAOBJS)
+saiserver: $(ODIR)/sai_rpc_server.o $(ODIR)/saiserver.o $(ODIR)/librpcserver.a
 	$(CXX) $(LDFLAGS) $^ -o $@ $(LIBS) $(SAIRPC_EXTRA_LIBS)
 
 install-lib: $(ODIR)/librpcserver.a saiserver

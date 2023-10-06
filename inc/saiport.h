@@ -172,16 +172,16 @@ typedef enum _sai_port_media_type_t
  */
 typedef enum _sai_port_cable_pair_state_t
 {
-    /**  Cable state no faults */
+    /**  Cable pair state is good */
     SAI_PORT_CABLE_PAIR_STATE_OK,
 
-    /**  Cable state open */
+    /**  The Cable pair state open */
     SAI_PORT_CABLE_PAIR_STATE_OPEN,
 
-    /**  Cable state short */
+    /**  The Cable pair state short (within pair) */
     SAI_PORT_CABLE_PAIR_STATE_SHORT,
 
-    /**  Cable state cross talk */
+    /**  The Cable pair state is shorted with another pair (inter-short) cross talk */
     SAI_PORT_CABLE_PAIR_STATE_CROSSTALK,
 
     /**  Cable state unknown */
