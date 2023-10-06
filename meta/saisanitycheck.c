@@ -2403,6 +2403,30 @@ void check_attr_acl_field_or_action(
     }
 }
 
+void check_attr_acl_mask(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    /*
+     * Field acl mask reuses existing attribute acl field mask key, then we
+     * need to have some conditions. Since acl field have enable mask and data
+     * fields, then this mask alone is not compatible.
+     */
+
+    if (md->isaclmask)
+    {
+        META_ASSERT_FALSE(md->isaclfield, "aclmask can't be mark as alcfield");
+        META_ASSERT_FALSE(md->isaclaction, "aclmask can't be marked as aclaction");
+
+        META_ASSERT_TRUE(md->objecttype == SAI_OBJECT_TYPE_ACL_TABLE, "object type for acl mask must be acl table");
+
+        META_ASSERT_TRUE((md->attrvaluetype >= SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_BOOL &&
+                md->attrvaluetype <= SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST),
+                "aclmask attribute attr id must be in acl field start/end range");
+    }
+}
+
 void check_attr_existing_objects(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -3396,6 +3420,7 @@ void check_single_attribute(
     check_attr_reverse_graph(md);
     check_attr_acl_conditions(md);
     check_attr_acl_field_or_action(md);
+    check_attr_acl_mask(md);
     check_attr_existing_objects(md);
     check_attr_sai_pointer(md);
     check_attr_brief_description(md);
