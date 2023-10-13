@@ -407,7 +407,7 @@ sub GetCounterNameAndType
         my $countMemberName = $refTypeInfo->{constCount};
         my $countType = "uint32_t";
 
-        return ($countMemberName, $countType);
+        return ($countMemberName, $countType, 1);
     }
 
     my $count = $refMembersHash->{$name}{count};
@@ -659,13 +659,20 @@ sub EmitSerializeArray
 {
     my ($refStructInfoEx, $refTypeInfo) = @_;
 
-    my ($countMemberName, $countType) = GetCounterNameAndType($refStructInfoEx, $refTypeInfo);
+    my ($countMemberName, $countType, $staticArray) = GetCounterNameAndType($refStructInfoEx, $refTypeInfo);
 
-    WriteSource "if ($refTypeInfo->{memberName} == NULL || $countMemberName == 0)";
-    WriteSource "{";
-    WriteSource "EMIT(\"null\");";
-    WriteSource "}";
-    WriteSource "else";
+    if (not defined $staticArray)
+    {
+        # if pointer is static array, then this check is not needed, since it
+        # always evaluate to false and gcc 12.2 can detect that and issue warning
+
+        WriteSource "if ($refTypeInfo->{memberName} == NULL || $countMemberName == 0)";
+        WriteSource "{";
+        WriteSource "EMIT(\"null\");";
+        WriteSource "}";
+        WriteSource "else";
+    }
+
     WriteSource "{";
     WriteSource "EMIT(\"[\");\n";
     WriteSource "$countType idx;\n";
