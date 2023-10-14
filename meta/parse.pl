@@ -4758,6 +4758,33 @@ sub CheckStatEnum
     }
 }
 
+sub GetSwitchPointersInOrder
+{
+    my $num = scalar @_;
+
+    my @all = @{ $SAI_ENUMS{sai_switch_attr_t}{values} };
+
+    my @ordered = ();
+
+    my $regex = "(" . join("|",@_) . ")";
+
+    for my $attr (@all)
+    {
+        next if not $METADATA{sai_switch_attr_t}{$attr}{type} =~ /$regex/;
+
+        push@ordered,$1;
+    }
+
+    my $got = scalar @ordered;
+
+    if ($got != $num)
+    {
+        LogError "missing attributes, expected $num, got $got";
+    }
+
+    return @ordered;
+}
+
 sub CreateNotificationStruct
 {
     #
@@ -4769,7 +4796,7 @@ sub CreateNotificationStruct
 
     WriteHeader "typedef struct _sai_switch_notifications_t {";
 
-    for my $name (sort keys %NOTIFICATIONS)
+    for my $name (GetSwitchPointersInOrder(keys %NOTIFICATIONS))
     {
         if (not $name =~ /^sai_(\w+)_notification_fn/)
         {
@@ -4802,7 +4829,7 @@ sub CreateNotificationEnum
 
     my @values = ();
 
-    for my $name (sort keys %NOTIFICATIONS)
+    for my $name (GetSwitchPointersInOrder(keys %NOTIFICATIONS))
     {
         if (not $name =~ /^sai_(\w+)_notification_fn/)
         {
@@ -4838,7 +4865,7 @@ sub CreateNotificationNames
 
     WriteSectionComment "SAI notifications names";
 
-    for my $name (sort keys %NOTIFICATIONS)
+    for my $name (GetSwitchPointersInOrder(keys %NOTIFICATIONS))
     {
         if (not $name =~ /^sai_(\w+)_notification_fn/)
         {
@@ -4865,7 +4892,7 @@ sub CreateSwitchNotificationAttributesList
     WriteHeader "extern const sai_attr_metadata_t* const sai_metadata_switch_notify_attr[];";
     WriteSource "const sai_attr_metadata_t* const sai_metadata_switch_notify_attr[] = {";
 
-    for my $name (sort keys %NOTIFICATIONS)
+    for my $name (GetSwitchPointersInOrder(keys %NOTIFICATIONS))
     {
         next if not $name =~ /^sai_(\w+)_notification_fn/;
 
@@ -4899,7 +4926,7 @@ sub CreateSwitchPointersStruct
     my @pointers = keys %NOTIFICATIONS;
     push @pointers, values %ATTR_TO_CALLBACK;
 
-    for my $name (sort @pointers)
+    for my $name (GetSwitchPointersInOrder(@pointers))
     {
         if (not $name =~ /^sai_(\w+)_fn/)
         {
@@ -4941,7 +4968,7 @@ sub CreateSwitchPointersEnum
     my @pointers = keys %NOTIFICATIONS;
     push @pointers, values %ATTR_TO_CALLBACK;
 
-    for my $name (sort @pointers)
+    for my $name (GetSwitchPointersInOrder(@pointers))
     {
         if (not $name =~ /^sai_(\w+)_fn/)
         {
