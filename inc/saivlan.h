@@ -98,6 +98,19 @@ typedef enum _sai_vlan_flood_control_type_t
 } sai_vlan_flood_control_type_t;
 
 /**
+ * @brief Attribute data for vlan type parameter
+ */
+typedef enum _sai_vlan_type_t
+{
+    SAI_VLAN_TYPE_DATA,
+
+    SAI_VLAN_TYPE_MANAGEMENT,
+
+    SAI_VLAN_TYPE_CONTROL
+
+} sai_vlan_type_t;
+
+/**
  * @brief Attribute Id in sai_set_vlan_attribute() and
  * sai_get_vlan_attribute() calls
  */
@@ -116,6 +129,15 @@ typedef enum _sai_vlan_attr_t
      * @isvlan true
      */
     SAI_VLAN_ATTR_VLAN_ID = SAI_VLAN_ATTR_START,
+
+    /**
+     * @brief Vlan Type
+     *
+     * @type sai_vlan_type_t
+     * @flags CREATE_ONLY
+     * @default SAI_VLAN_TYPE_DATA
+     */
+    SAI_VLAN_ATTR_VLAN_TYPE,
 
     /**
      * @brief List of vlan members in a VLAN
