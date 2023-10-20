@@ -1730,6 +1730,7 @@ typedef enum _sai_port_attr_t
      * @type sai_object_id_t
      * @flags READ_ONLY
      * @objects SAI_OBJECT_TYPE_PORT_SERDES
+     * @allownull true
      * @default internal
      */
     SAI_PORT_ATTR_PORT_SERDES_ID,
