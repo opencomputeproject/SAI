@@ -181,6 +181,9 @@ typedef enum _sai_port_breakout_mode_type_t
     /** 4 lanes breakout Mode */
     SAI_PORT_BREAKOUT_MODE_TYPE_4_LANE = 2,
 
+    /** 8 lanes breakout Mode */
+    SAI_PORT_BREAKOUT_MODE_TYPE_8_LANE = 3,
+
     /** Breakout mode max count */
     SAI_PORT_BREAKOUT_MODE_TYPE_MAX
 } sai_port_breakout_mode_type_t;
