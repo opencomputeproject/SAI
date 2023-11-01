@@ -272,7 +272,7 @@ typedef enum _sai_fdb_flush_attr_t
      *
      * @type sai_fdb_flush_entry_type_t
      * @flags CREATE_ONLY
-     * @default SAI_FDB_FLUSH_ENTRY_TYPE_DYNAMIC
+     * @default SAI_FDB_FLUSH_ENTRY_TYPE_ALL
      */
     SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
 
