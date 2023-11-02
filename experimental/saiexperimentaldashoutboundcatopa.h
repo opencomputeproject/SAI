@@ -34,6 +34,17 @@
  */
 
 /**
+ * @brief Attribute data for #SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION
+ */
+typedef enum _sai_outbound_ca_to_pa_entry_action_t
+{
+    SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_TUNNEL_MAPPING,
+
+    SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_PRIVATE_LINK_MAPPING,
+
+} sai_outbound_ca_to_pa_entry_action_t;
+
+/**
  * @brief Entry for outbound_ca_to_pa_entry
  */
 typedef struct _sai_outbound_ca_to_pa_entry_t
@@ -70,13 +81,23 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_START,
 
     /**
-     * @brief Action set_tunnel_mapping parameter UNDERLAY_DIP
+     * @brief Action
+     *
+     * @type sai_outbound_ca_to_pa_entry_action_t
+     * @flags CREATE_AND_SET
+     * @default SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_TUNNEL_MAPPING
+     */
+    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION = SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_START,
+
+    /**
+     * @brief Action set_tunnel_mapping, set_private_link_mapping parameter UNDERLAY_DIP
      *
      * @type sai_ip_address_t
      * @flags CREATE_AND_SET
      * @default 0.0.0.0
+     * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_TUNNEL_MAPPING or SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_PRIVATE_LINK_MAPPING
      */
-    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_UNDERLAY_DIP = SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_START,
+    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_UNDERLAY_DIP,
 
     /**
      * @brief Action set_tunnel_mapping parameter OVERLAY_DMAC
@@ -84,6 +105,7 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
      * @type sai_mac_t
      * @flags CREATE_AND_SET
      * @default 0:0:0:0:0:0
+     * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_TUNNEL_MAPPING
      */
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_OVERLAY_DMAC,
 
@@ -93,27 +115,70 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
+     * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_TUNNEL_MAPPING
      */
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_USE_DST_VNET_VNI,
 
     /**
-     * @brief Action set_tunnel_mapping parameter METER_CLASS
+     * @brief Action set_tunnel_mapping, set_private_link_mapping parameter METER_CLASS
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
      * @isvlan false
      * @default 0
+     * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_TUNNEL_MAPPING or SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_PRIVATE_LINK_MAPPING
      */
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_METER_CLASS,
 
     /**
-     * @brief Action set_tunnel_mapping parameter METER_CLASS_OVERRIDE
+     * @brief Action set_tunnel_mapping, set_private_link_mapping parameter METER_CLASS_OVERRIDE
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
+     * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_TUNNEL_MAPPING or SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_PRIVATE_LINK_MAPPING
      */
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_METER_CLASS_OVERRIDE,
+
+    /**
+     * @brief Action set_private_link_mapping parameter OVERLAY_SIP
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_PRIVATE_LINK_MAPPING
+     */
+    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_OVERLAY_SIP,
+
+    /**
+     * @brief Action set_private_link_mapping parameter OVERLAY_DIP
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_PRIVATE_LINK_MAPPING
+     */
+    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_OVERLAY_DIP,
+
+    /**
+     * @brief Action set_private_link_mapping parameter DASH_ENCAPSULATION
+     *
+     * @type sai_dash_encapsulation_t
+     * @flags CREATE_AND_SET
+     * @default SAI_DASH_ENCAPSULATION_INVALID
+     * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_PRIVATE_LINK_MAPPING
+     */
+    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_DASH_ENCAPSULATION,
+
+    /**
+     * @brief Action set_private_link_mapping parameter TUNNEL_KEY
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_PRIVATE_LINK_MAPPING
+     */
+    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_TUNNEL_KEY,
 
     /**
      * @brief Attach a counter
