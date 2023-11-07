@@ -313,6 +313,11 @@ sub GetTypeInfoForSerialize
         $TypeInfo{needQuote} = 1;
         $TypeInfo{deamp} = "&";
     }
+    elsif ($type =~ m/^sai_decimal_p2_t$/)
+    {
+        $TypeInfo{suffix} = "decimal_p2";
+        $TypeInfo{deamp} = "&";
+    }
     elsif ($type =~ /^sai_pointer_t$/)
     {
         # need quote since "ptr:" is added on serialize

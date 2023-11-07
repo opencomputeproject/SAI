@@ -72,6 +72,8 @@ our %OBJECT_TYPE_BULK_MAP = ();
 my $FLAGS = "MANDATORY_ON_CREATE|CREATE_ONLY|CREATE_AND_SET|READ_ONLY|KEY";
 my $ENUM_FLAGS_TYPES = "(none|strict|mixed|ranges|free)";
 
+my $DECIMAL_P2_REGEX = '([+-]?([0-9]*[.])?[0-9]{0,2})';
+
 # TAGS HANDLERS
 
 my %ATTR_TAGS = (
@@ -364,6 +366,8 @@ sub ProcessTagDefault
     return $val if $val eq "\"\"";
 
     return $val if $val =~ /^ffff\:ffff\:ffff\:ffff\:ffff\:ffff\:ffff\:ffff$/;
+
+    return $val if $val =~ /^$DECIMAL_P2_REGEX$/;
 
     LogError "invalid default tag value '$val' on $type $value";
     return undef;
@@ -1492,6 +1496,11 @@ sub ProcessType
         return "SAI_ATTR_VALUE_TYPE_INT32_LIST";
     }
 
+    if ($type eq "sai_decimal_p2_t")
+    {
+        return "SAI_ATTR_VALUE_TYPE_DECIMAL_P2";
+    }
+
     if ($type =~ /^(sai_\w+_t)$/)
     {
         my $prefix = "SAI_ATTR_VALUE_TYPE";
@@ -1647,6 +1656,8 @@ sub ProcessDefaultValueType
 
     return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^ffff\:ffff\:ffff\:ffff\:ffff\:ffff\:ffff\:ffff$/;
 
+    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^$DECIMAL_P2_REGEX$/;
+
     LogError "invalid default value type '$default' on $attr";
 
     return "";
@@ -1721,6 +1732,10 @@ sub ProcessDefaultValue
     elsif ($default =~ /^0\:0\:0\:0\:0\:0$/ and $type =~ /^(sai_mac_t)/)
     {
         WriteSource "$val = { .mac = { 0, 0, 0, 0, 0, 0 } };";
+    }
+    elsif ($default =~ /^$DECIMAL_P2_REGEX$/ and $type =~ /^sai_decimal_p2_t/)
+    {
+        WriteSource "$val = { .$VALUE_TYPES{$type} = $default };";
     }
     else
     {
@@ -4662,6 +4677,7 @@ sub ProcessStructItem
     return if $type =~ /^sai_(u?int\d+|ip[46]|mac|cos|vlan_id|queue_index)_t/; # primitives, we could get that from defines
     return if $type =~ /^u?int\d+_t/;
     return if $type =~ /^sai_[su]\d+_list_t/;
+    return if $type =~ /^sai_decimal_p2_t/;
 
     if ($type eq "sai_object_id_t" or $type eq "sai_object_list_t")
     {

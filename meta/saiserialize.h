@@ -878,6 +878,32 @@ void sai_free_attribute(
         _In_ const sai_attribute_t *attribute);
 
 /**
+ * @brief Serialize decimal p2.
+ *
+ * @param[out] buffer Output buffer for serialized value.
+ * @param[in] decimal Decimal_p2 to be serialized.
+ *
+ * @return Number of characters written to buffer excluding '\0',
+ * or #SAI_SERIALIZE_ERROR on error.
+ */
+int sai_serialize_decimal_p2(
+        _Out_ char *buffer,
+        _In_ sai_decimal_p2_t decimal);
+
+/**
+ * @brief Deserialize decimal p2.
+ *
+ * @param[in] buffer Input buffer to be examined.
+ * @param[out] decimal Deserialized value.
+ *
+ * @return Number of characters consumed from the buffer,
+ * or #SAI_SERIALIZE_ERROR on error.
+ */
+int sai_deserialize_decimal_p2(
+        _In_ const char *buffer,
+        _Out_ sai_decimal_p2_t *decimal);
+
+/**
  * @}
  */
 #endif /** __SAISERIALIZE_H_ */

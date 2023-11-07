@@ -665,6 +665,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_VLAN_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT32:
         case SAI_ATTR_VALUE_TYPE_UINT64:
+        case SAI_ATTR_VALUE_TYPE_DECIMAL_P2:
         case SAI_ATTR_VALUE_TYPE_MAC:
         case SAI_ATTR_VALUE_TYPE_POINTER:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
@@ -946,6 +947,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_UINT16:
         case SAI_ATTR_VALUE_TYPE_UINT32:
         case SAI_ATTR_VALUE_TYPE_UINT64:
+        case SAI_ATTR_VALUE_TYPE_DECIMAL_P2:
         case SAI_ATTR_VALUE_TYPE_MAC:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
@@ -1415,6 +1417,7 @@ void check_attr_conditions(
             case SAI_ATTR_VALUE_TYPE_UINT16:
             case SAI_ATTR_VALUE_TYPE_UINT32:
             case SAI_ATTR_VALUE_TYPE_UINT64:
+            case SAI_ATTR_VALUE_TYPE_DECIMAL_P2:
 
                 /* number conditions */
 
@@ -1622,6 +1625,7 @@ void check_attr_validonly(
             case SAI_ATTR_VALUE_TYPE_UINT16:
             case SAI_ATTR_VALUE_TYPE_UINT32:
             case SAI_ATTR_VALUE_TYPE_UINT64:
+            case SAI_ATTR_VALUE_TYPE_DECIMAL_P2:
                 break;
 
             default:
@@ -2517,6 +2521,7 @@ void check_attr_existing_objects(
         case SAI_ATTR_VALUE_TYPE_UINT32:
         case SAI_ATTR_VALUE_TYPE_UINT64:
         case SAI_ATTR_VALUE_TYPE_UINT8:
+        case SAI_ATTR_VALUE_TYPE_DECIMAL_P2:
 
             /*
              * Primitives we can skip for now, just left as was set by user
@@ -2774,6 +2779,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG:
         case SAI_ATTR_VALUE_TYPE_FABRIC_PORT_REACHABILITY:
         case SAI_ATTR_VALUE_TYPE_LATCH_STATUS:
+        case SAI_ATTR_VALUE_TYPE_DECIMAL_P2:
 
             if (!md->isprimitive)
             {

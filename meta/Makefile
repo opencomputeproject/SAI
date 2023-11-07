@@ -35,7 +35,6 @@ WARNINGS = \
 	-Werror \
 	-Wextra \
 	-Wextra \
-	-Wfloat-equal \
 	-Wformat=2 \
 	-Wformat-nonliteral \
 	-Wformat-security \

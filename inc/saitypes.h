@@ -131,6 +131,7 @@ typedef size_t sai_size_t;
 typedef uint64_t sai_object_id_t;
 typedef void *sai_pointer_t;
 typedef uint64_t sai_api_version_t;
+typedef double sai_decimal_p2_t;
 
 typedef struct _sai_timespec_t
 {
@@ -1519,6 +1520,9 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST */
     sai_port_snr_list_t portsnrlist;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_DECIMAL_P2 */
+    sai_decimal_p2_t decimalp2;
 } sai_attribute_value_t;
 
 /**

@@ -112,6 +112,11 @@ typedef enum _sai_attr_value_type_t
     SAI_ATTR_VALUE_TYPE_INT64,
 
     /**
+     * @brief Attribute value is decimal p2.
+     */
+    SAI_ATTR_VALUE_TYPE_DECIMAL_P2,
+
+    /**
      * @brief Attribute value is pointer address.
      */
     SAI_ATTR_VALUE_TYPE_POINTER,

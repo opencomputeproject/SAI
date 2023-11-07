@@ -1355,3 +1355,17 @@ int sai_deserialize_attribute(
 
     return (int)(buf - buffer);
 }
+
+int sai_serialize_decimal_p2(
+        _Out_ char *buffer,
+        _In_ sai_decimal_p2_t decimal)
+{
+    return sprintf(buffer, "%.2lf", decimal);
+}
+
+int sai_deserialize_decimal_p2(
+        _In_ const char *buffer,
+        _Out_ sai_decimal_p2_t *decimal)
+{
+    return sscanf(buffer, "%lf", decimal);
+}
