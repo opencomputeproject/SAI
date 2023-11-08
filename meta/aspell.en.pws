@@ -8,6 +8,7 @@ apache
 api
 APIs
 Args
+armhf
 attr
 attrid
 attrs
@@ -58,6 +59,7 @@ fdb
 ffff
 FPGAs
 fprintf
+frontend
 functionalities
 FX
 hitless
@@ -68,6 +70,7 @@ HQoS
 HQOS
 http
 idriver
+ifdef
 INET
 ingressing
 inout
@@ -86,6 +89,7 @@ isresourcetype
 isvlan
 json
 LAGs
+libsai
 linklocal
 Linux
 lookup

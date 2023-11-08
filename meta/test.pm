@@ -231,7 +231,7 @@ sub CreateApiNameTest
 
         if (IsSpecialObject($ot))
         {
-            # those obejcts are special, just attributes, no APIs
+            # those objects are special, just attributes, no APIs
             WriteTest "    checked[(int)$ot] = $ot;";
             next;
         }
@@ -330,12 +330,12 @@ sub CreateApiNameTest
 
     WriteTest "    int index = SAI_OBJECT_TYPE_NULL;";
 
-    WriteTest "    for (; index < SAI_OBJECT_TYPE_MAX; ++index)";
+    WriteTest "    for (; index < (int)SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++index)";
     WriteTest "    {";
     WriteTest "        printf(\"checking: %s checked (%d) == index (%d)\\n\",";
     WriteTest "             sai_metadata_enum_sai_object_type_t.valuesnames[index],";
     WriteTest "             checked[index],(sai_object_type_t)index);";
-    WriteTest "        TEST_ASSERT_TRUE(checked[index] == (sai_object_type_t)index, \"not all obejcts were processed\");";
+    WriteTest "        TEST_ASSERT_TRUE(checked[index] == (sai_object_type_t)index, \"not all objects were processed\");";
     WriteTest "    }";
 
     WriteTest "    PP(dummy);";
@@ -555,6 +555,50 @@ sub CreateApiImplementedTest
     WriteTest "}";
 }
 
+sub CreateStructUnionSizeCheckTest
+{
+    my @headers = GetHeaderFiles(); # we ignore experimental headers
+
+    my %STRUCTS = ();
+
+    WriteTest "#pragma GCC diagnostic push";
+    WriteTest "#pragma GCC diagnostic ignored \"-Wsuggest-attribute=noreturn\"";
+
+    DefineTestName "struct_union_size";
+
+    WriteTest "{";
+
+    for my $header (@headers)
+    {
+        my $data = ReadHeaderFile($header);
+
+        my @lines = split/\n/,$data;
+
+        for my $line (@lines)
+        {
+            next if not $line =~ /typedef\s+(?:struct|union)\s+_(sai_\w+_t)/;
+
+            my $name = $1;
+
+            $STRUCTS{$name} = $name;
+
+            next if $name =~ /^sai_\w+_api_t$/; # skip api structs
+
+            my $upname = uc($name);
+
+            WriteTest "#ifdef ${upname}_SIZE";
+            WriteTest "    TEST_ASSERT_TRUE_EXT(sizeof($name) == (${upname}_SIZE), \"wrong size of $name, expected %d, got %zu\", ${upname}_SIZE, sizeof($name));";
+            WriteTest "    TEST_ASSERT_TRUE_EXT(sizeof($name [3]) == (3*${upname}_SIZE), \"wrong size of $name [3], expected %d, got %zu\", 3*${upname}_SIZE, 3*sizeof($name));";
+            WriteTest "#else";
+            WriteTest "    fprintf(stderr, \"struct/union $name not defined in base branch, skipping size check\\n\");";
+            WriteTest "#endif";
+        }
+    }
+
+    WriteTest "}";
+    WriteTest "#pragma GCC diagnostic pop";
+}
+
 sub WriteTestHeader
 {
     #
@@ -565,8 +609,10 @@ sub WriteTestHeader
     WriteTest "#include <stdlib.h>";
     WriteTest "#include <string.h>";
     WriteTest "#include \"saimetadata.h\"";
+    WriteTest "#include \"saimetadatasize.h\"";
     WriteTest "#define PP(x) printf(\"%p\\n\", (x));";
     WriteTest "#define TEST_ASSERT_TRUE(x,msg) if (!(x)){ fprintf(stderr, \"ASSERT TRUE FAILED(%d): %s: %s\\n\", __LINE__, #x, msg); exit(1);}";
+    WriteTest "#define TEST_ASSERT_TRUE_EXT(x,format,...) if (!(x)){ fprintf(stderr, \"ASSERT TRUE FAILED(%d): %s: \" format \"\\n\", __LINE__, #x, ##__VA_ARGS__); exit(1);}";
 }
 
 sub WriteTestMain
@@ -644,6 +690,8 @@ sub CreateTests
     CreateStatEnumTest();
 
     CreateApiImplementedTest();
+
+    CreateStructUnionSizeCheckTest();
 
     CreatePragmaPop();
 

@@ -30,21 +30,20 @@
 #include <string.h>
 
 extern "C" {
-#include <sai.h>
 #include "saimetadata.h"
-#include "saimetadatautils.h"
 }
 
 // node name
 #define NN(x) (sai_metadata_enum_sai_object_type_t.valuesshortnames[(x)])
 
-std::set<sai_object_type_t> source;
-std::set<sai_object_type_t> target;
+static std::set<sai_object_type_t> source;
+static std::set<sai_object_type_t> target;
 
-bool show_switch_links = false;
-bool show_read_only_links = false;
+static bool show_switch_links = false;
+static bool show_read_only_links = false;
+static bool show_extensions = false;
 
-void process_object_type_attributes(
+static void process_object_type_attributes(
         _In_ const sai_attr_metadata_t* const* const meta_attr_list,
         _In_ sai_object_type_t current_object_type)
 {
@@ -131,7 +130,7 @@ void process_object_type_attributes(
     }
 }
 
-void process_object_types()
+static void process_object_types()
 {
     for (int i = 0; sai_metadata_attr_by_object_type[i] != NULL; ++i)
     {
@@ -141,7 +140,7 @@ void process_object_types()
     }
 }
 
-void process_colors()
+static void process_colors()
 {
     for (int i = 0; sai_metadata_attr_by_object_type[i] != NULL; ++i)
     {
@@ -168,15 +167,18 @@ void process_colors()
         }
         else
         {
-            if (ot == SAI_OBJECT_TYPE_NULL || ot == SAI_OBJECT_TYPE_MAX)
+            if (ot == SAI_OBJECT_TYPE_NULL)
             {
                 continue;
             }
+
             std::cout << NN(ot) << " [color=coral, shape = note];\n";
         }
     }
 
-    for (size_t i = SAI_OBJECT_TYPE_NULL; i < SAI_OBJECT_TYPE_MAX; ++i)
+    size_t max = show_extensions ? SAI_OBJECT_TYPE_EXTENSIONS_MAX : SAI_OBJECT_TYPE_MAX;
+
+    for (size_t i = SAI_OBJECT_TYPE_NULL; i < max; ++i)
     {
         const sai_object_type_info_t* oi =  sai_metadata_all_object_type_infos[i];
 
@@ -197,11 +199,13 @@ void process_colors()
 #define PRINT_NN(x,y,c)\
     std::cout << NN(SAI_OBJECT_TYPE_ ## x) << " -> " << NN(SAI_OBJECT_TYPE_ ## y) << c;
 
-void process_nonobjectid_connections()
+static void process_nonobjectid_connections()
 {
     const char* c = " [color=\"0.650 0.700 0.700\", style = dashed, penwidth=2];\n";
 
-    for (size_t i = SAI_OBJECT_TYPE_NULL; i < SAI_OBJECT_TYPE_MAX; ++i)
+    size_t max = show_extensions ? SAI_OBJECT_TYPE_EXTENSIONS_MAX : SAI_OBJECT_TYPE_MAX;
+
+    for (size_t i = SAI_OBJECT_TYPE_NULL; i < max; ++i)
     {
         const sai_object_type_info_t* oi =  sai_metadata_all_object_type_infos[i];
 
@@ -251,6 +255,7 @@ int main(int argc, char** argv)
     {
         show_switch_links       |= strcmp(argv[i], "-s") == 0;
         show_read_only_links    |= strcmp(argv[i], "-r") == 0;
+        show_extensions         |= strcmp(argv[i], "-e") == 0;
     }
 
     std::cout << "digraph \"SAI Object Dependency Graph\" {\n";

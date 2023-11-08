@@ -1,10 +1,17 @@
+# root directory doxygen artifacts
+xml
+html
+
 # metadata build artifacts
 meta/xml
 meta/html
 meta/temp
+meta/generated
 
 meta/*.o
 meta/*.lo
+meta/*.o.symbols
+meta/*.so
 
 meta/doxygen_sqlite3.db
 meta/saidepgraph.gv
@@ -17,6 +24,11 @@ meta/saimetadatatest.c
 meta/saisanitycheck
 meta/saiserializetest
 meta/saiswig.i
+meta/saimetadatasize.h
+meta/sai.thrift
+meta/sai_adapter.py
+meta/sai_rpc_server.cpp
+meta/sai_rpc_frontend
 
 # temporary files
 **/*~
@@ -39,4 +51,12 @@ test/saithrift/saiserver
 test/saithrift/src/gen-cpp/
 test/saithrift/src/gen-py/
 test/saithrift/src/obj/
+test/saithriftv2/gen-cpp/
+test/saithriftv2/gen-py/
+test/saithriftv2/obj/
+test/saithriftv2/dist/
+test/saithriftv2/MANIFEST
+test/saithriftv2/sai_headers.py.bk
+test/saithriftv2/saiserver
+
 **/*.pyc

@@ -117,6 +117,15 @@ typedef enum _sai_inbound_routing_entry_attr_t
     SAI_INBOUND_ROUTING_ENTRY_ATTR_SRC_VNET_ID,
 
     /**
+     * @brief IP address family for resource accounting
+     *
+     * @type sai_ip_addr_family_t
+     * @flags READ_ONLY
+     * @isresourcetype true
+     */
+    SAI_INBOUND_ROUTING_ENTRY_ATTR_IP_ADDR_FAMILY,
+
+    /**
      * @brief End of attributes
      */
     SAI_INBOUND_ROUTING_ENTRY_ATTR_END,

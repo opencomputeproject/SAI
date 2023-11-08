@@ -25,14 +25,22 @@
 
 set -e
 
-rm -rf temp
+if ! git rev-parse --git-dir > /dev/null 2>&1; then
 
-sairepo=`git remote get-url origin`
+    echo "WARNING: this is not git repository, will skip check enum lock"
+    exit
+fi
 
-git clone $sairepo temp
+TEMP_DIR=temp
+
+rm -rf $TEMP_DIR
+
+mkdir $TEMP_DIR
+
+git --work-tree=$TEMP_DIR/ checkout origin/master inc experimental
 
 echo "Checking for possible enum values shift (current branch vs origin/master) ..."
 
-./checkheaders.pl -s ../inc/ temp/inc/
+./checkheaders.pl -s ../inc/ $TEMP_DIR/inc/
 
-rm -rf temp
+rm -rf $TEMP_DIR

@@ -58,6 +58,9 @@ defined_attr_t* defined_attributes = NULL;
 #define META_ENUM_LOG_WARN(emd, format, ...)\
     META_LOG_WARN("%s: " format, emd->name, ##__VA_ARGS__);
 
+#define META_MD_LOG_DEBUG(md, format, ...)\
+    META_LOG_DEBUG("%s: " format, md->attridname, ##__VA_ARGS__);
+
 #define META_MD_LOG_WARN(md, format, ...)\
     META_LOG_WARN("%s: " format, md->attridname, ##__VA_ARGS__);
 
@@ -449,6 +452,19 @@ bool sai_metadata_is_acl_field_or_action(
         }
     }
 
+    if (metadata->objecttype == SAI_OBJECT_TYPE_UDF_MATCH)
+    {
+        if (metadata->attrid <= SAI_UDF_MATCH_ATTR_GRE_TYPE)
+        {
+            return true;
+        }
+
+        if (metadata->attrid == SAI_UDF_MATCH_ATTR_L4_DST_PORT_TYPE)
+        {
+            return true;
+        }
+    }
+
     return false;
 }
 
@@ -666,6 +682,8 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_FREQUENCY_OFFSET_PPM_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST:
         case SAI_ATTR_VALUE_TYPE_LATCH_STATUS:
         case SAI_ATTR_VALUE_TYPE_PORT_LANE_LATCH_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_TIMESPEC:
@@ -710,6 +728,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_FABRIC_PORT_REACHABILITY:
         case SAI_ATTR_VALUE_TYPE_PORT_ERR_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
+        case SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST:
 
             if (md->allowedobjecttypes != NULL)
             {
@@ -968,8 +987,12 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_FREQUENCY_OFFSET_PPM_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_LANE_LATCH_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
+        case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
+        case SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST:
 
             if (((md->objecttype == SAI_OBJECT_TYPE_PORT) || (md->objecttype == SAI_OBJECT_TYPE_PORT_SERDES))
                  && md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL)
@@ -1176,8 +1199,12 @@ void check_attr_default_value_type(
                 case SAI_ATTR_VALUE_TYPE_MAP_LIST:
                 case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
                 case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
+                case SAI_ATTR_VALUE_TYPE_PORT_FREQUENCY_OFFSET_PPM_LIST:
+                case SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST:
                 case SAI_ATTR_VALUE_TYPE_PORT_LANE_LATCH_STATUS_LIST:
                 case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
+                case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
+                case SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST:
                     break;
 
                 default:
@@ -1485,7 +1512,7 @@ void check_attr_validonly(
              * but you won't be able to change it anyway.
              */
 
-            META_MD_LOG_WARN(md, "marked as valid only, on flags CREATE_ONLY, default value is present, should this be CREATE_AND_SET?");
+            META_MD_LOG_DEBUG(md, "marked as valid only, on flags CREATE_ONLY, default value is present, should this be CREATE_AND_SET?");
 
             /* intentional fall through */
 
@@ -1625,6 +1652,16 @@ void check_attr_validonly(
             {
                 /*
                  * MPLS out segment attributes are required for ingress node and valid only for MPLS next hop.
+                 */
+            }
+            else if (md->objecttype == SAI_OBJECT_TYPE_TWAMP_SESSION &&
+                    (md->attrid == SAI_TWAMP_SESSION_ATTR_TX_PKT_CNT || md->attrid == SAI_TWAMP_SESSION_ATTR_TX_PKT_PERIOD ||
+                     md->attrid == SAI_TWAMP_SESSION_ATTR_TUNNEL_OUTER_VLAN_ID || md->attrid == SAI_TWAMP_SESSION_ATTR_TUNNEL_OUTER_VLAN_PRI ||
+                     md->attrid == SAI_TWAMP_SESSION_ATTR_TUNNEL_OUTER_VLAN_CFI || md->attrid == SAI_TWAMP_SESSION_ATTR_VLAN_ID ||
+                     md->attrid == SAI_TWAMP_SESSION_ATTR_VLAN_PRI || md->attrid == SAI_TWAMP_SESSION_ATTR_VLAN_CFI))
+            {
+                /*
+                 * TWAMP packet tx mode attributes are depending on TWAMP_PKT_TX_MODE.
                  */
             }
             else
@@ -1777,10 +1814,14 @@ void check_attr_allow_flags(
             case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
             case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
             case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
+            case SAI_ATTR_VALUE_TYPE_PORT_FREQUENCY_OFFSET_PPM_LIST:
+            case SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST:
             case SAI_ATTR_VALUE_TYPE_PORT_LANE_LATCH_STATUS_LIST:
             case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST:
             case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
             case SAI_ATTR_VALUE_TYPE_PORT_ERR_STATUS_LIST:
+            case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
+            case SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST:
                 break;
 
             default:
@@ -2321,7 +2362,7 @@ void check_attr_acl_field_or_action(
         META_ASSERT_FALSE(md->defaultvalue->aclaction.enable, "enable should be false");
     }
 
-    if (md->objecttype != SAI_OBJECT_TYPE_ACL_ENTRY)
+    if (md->objecttype != SAI_OBJECT_TYPE_ACL_ENTRY && md->objecttype != SAI_OBJECT_TYPE_UDF_MATCH)
     {
         META_ASSERT_FALSE(md->isaclfield, "field should be not marked as acl field");
         META_ASSERT_FALSE(md->isaclaction, "field should be not marked as acl action");
@@ -2329,18 +2370,60 @@ void check_attr_acl_field_or_action(
         return;
     }
 
-    if (md->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_START &&
-            md->attrid <= SAI_ACL_ENTRY_ATTR_FIELD_END)
+    if (md->objecttype == SAI_OBJECT_TYPE_ACL_ENTRY)
     {
-        META_ASSERT_TRUE(md->isaclfield, "field should be marked as acl field");
-        META_ASSERT_FALSE(md->isaclaction, "field should be not marked as acl action");
+        if (md->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_START &&
+                md->attrid <= SAI_ACL_ENTRY_ATTR_FIELD_END)
+        {
+            META_ASSERT_TRUE(md->isaclfield, "field should be marked as acl field");
+            META_ASSERT_FALSE(md->isaclaction, "field should be not marked as acl action");
+        }
+
+        if (md->attrid >= SAI_ACL_ENTRY_ATTR_ACTION_START &&
+                md->attrid <= SAI_ACL_ENTRY_ATTR_ACTION_END)
+        {
+            META_ASSERT_FALSE(md->isaclfield, "field should not be marked as acl field");
+            META_ASSERT_TRUE(md->isaclaction, "field should be marked as acl action");
+        }
     }
 
-    if (md->attrid >= SAI_ACL_ENTRY_ATTR_ACTION_START &&
-            md->attrid <= SAI_ACL_ENTRY_ATTR_ACTION_END)
+    if (md->objecttype == SAI_OBJECT_TYPE_UDF_MATCH)
     {
-        META_ASSERT_FALSE(md->isaclfield, "field should not be marked as acl field");
-        META_ASSERT_TRUE(md->isaclaction, "field should be marked as acl action");
+        if (md->attrid <= SAI_UDF_MATCH_ATTR_GRE_TYPE)
+        {
+            META_ASSERT_TRUE(md->isaclfield, "field should be marked as acl field");
+            META_ASSERT_FALSE(md->isaclaction, "field should be not marked as acl action");
+        }
+
+        if (md->attrid == SAI_UDF_MATCH_ATTR_L4_DST_PORT_TYPE)
+        {
+            META_ASSERT_TRUE(md->isaclfield, "field should be marked as acl field");
+            META_ASSERT_FALSE(md->isaclaction, "field should be not marked as acl action");
+        }
+    }
+}
+
+void check_attr_acl_mask(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    /*
+     * Field acl mask reuses existing attribute acl field mask key, then we
+     * need to have some conditions. Since acl field have enable mask and data
+     * fields, then this mask alone is not compatible.
+     */
+
+    if (md->isaclmask)
+    {
+        META_ASSERT_FALSE(md->isaclfield, "aclmask can't be mark as alcfield");
+        META_ASSERT_FALSE(md->isaclaction, "aclmask can't be marked as aclaction");
+
+        META_ASSERT_TRUE(md->objecttype == SAI_OBJECT_TYPE_ACL_TABLE, "object type for acl mask must be acl table");
+
+        META_ASSERT_TRUE((md->attrvaluetype >= SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_BOOL &&
+                md->attrvaluetype <= SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST),
+                "aclmask attribute attr id must be in acl field start/end range");
     }
 }
 
@@ -2624,12 +2707,15 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_FREQUENCY_OFFSET_PPM_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST:
         case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_ERR_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT16_RANGE_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_LANE_LATCH_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_JSON:
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
+        case SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST:
 
             if (md->isprimitive)
             {
@@ -3286,6 +3372,22 @@ void check_attr_extension_flag(
     }
 }
 
+void check_attr_condition_relaxed(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    if (md->isconditionrelaxed && !md->isconditional)
+    {
+        META_MD_ASSERT_FAIL(md, "relaxed flag applied to non conditional attribute");
+    }
+
+    if (md->isconditionrelaxed)
+    {
+        META_LOG_WARN("condition relaxed on: %s", md->attridname);
+    }
+}
+
 void check_single_attribute(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -3318,6 +3420,7 @@ void check_single_attribute(
     check_attr_reverse_graph(md);
     check_attr_acl_conditions(md);
     check_attr_acl_field_or_action(md);
+    check_attr_acl_mask(md);
     check_attr_existing_objects(md);
     check_attr_sai_pointer(md);
     check_attr_brief_description(md);
@@ -3331,6 +3434,7 @@ void check_single_attribute(
     check_attr_extension_flag(md);
     check_attr_mixed_condition(md);
     check_attr_mixed_validonly(md);
+    check_attr_condition_relaxed(md);
 
     define_attr(md);
 }
@@ -3752,6 +3856,13 @@ void check_attr_sorted_by_id_name()
         META_ASSERT_NOT_NULL(found);
 
         META_ASSERT_TRUE(strcmp(found->attridname, am->attridname) == 0, "search attr by id name failed to find");
+
+        const sai_attr_metadata_t *found_ext = sai_metadata_get_attr_metadata_by_attr_id_name_ext(am->attridname);
+
+        META_ASSERT_NOT_NULL(found_ext);
+
+        META_ASSERT_TRUE(strcmp(found_ext->attridname, am->attridname) == 0, "search attr by id name ext failed to find");
+
     }
 
     META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name(NULL));     /* null pointer */
@@ -3760,6 +3871,13 @@ void check_attr_sorted_by_id_name()
     META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name("SAI_P"));  /* in the middle of attr names */
     META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name("SAI_W"));  /* in the middle of attr names */
     META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name("ZZZ"));    /* after all attr names */
+
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name_ext(NULL));     /* null pointer */
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name_ext("AAA"));    /* before all attr names */
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name_ext("SAI_B"));  /* in the middle of attr names */
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name_ext("SAI_P"));  /* in the middle of attr names */
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name_ext("SAI_W"));  /* in the middle of attr names */
+    META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name_ext("ZZZ"));    /* after all attr names */
 }
 
 void list_loop(
@@ -4731,7 +4849,8 @@ void check_object_ro_list(
             oi->objecttype == SAI_OBJECT_TYPE_DTEL ||
             oi->objecttype == SAI_OBJECT_TYPE_DTEL_QUEUE_REPORT ||
             oi->objecttype == SAI_OBJECT_TYPE_DTEL_EVENT ||
-            oi->objecttype == SAI_OBJECT_TYPE_GENERIC_PROGRAMMABLE)
+            oi->objecttype == SAI_OBJECT_TYPE_GENERIC_PROGRAMMABLE ||
+            oi->objecttype == SAI_OBJECT_TYPE_TWAMP_SESSION)
     {
         /*
          * We skip hostif table entry since there is no 1 object which can
@@ -4775,7 +4894,7 @@ void check_object_ro_list(
 
     if (oi->isexperimental)
     {
-        META_LOG_WARN("experimental object %s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
+        META_LOG_DEBUG("experimental object %s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
         return;
     }
 
@@ -5436,6 +5555,151 @@ void check_global_apis()
     META_ASSERT_TRUE(sizeof(type) >= sizeof(int32_t), "apis type should be at least int32");
 }
 
+/* will check single struct size, as well as array alignment and packing */
+
+#define CHECK_STRUCT_SIZE(name,size) \
+    META_ASSERT_TRUE(sizeof(name) == (size), "wrong size of " #name ", expected %d, got %zu", (size), sizeof(name)); \
+    META_ASSERT_TRUE(sizeof(name[3]) == (3*(size)), "wrong size of " #name "[3], expected %d, got %zu", (3*size), sizeof(name[3]));
+
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-attribute=noreturn"
+void check_struct_and_union_size()
+{
+    META_LOG_ENTER();
+
+    /*
+     * At this point we want to be binary backward compatible, which means that
+     * each union and struct must have the same size (since structs and unions
+     * are used in arrays for example sai_attibute_t* when creating object).
+     *
+     * Also in structs we must check if order of members did not changed. This
+     * is done via external automated script.
+     *
+     * WARNING: !!! DO NOT CHANGE NUMERICAL VALUES !!!
+     *
+     * Since this is manual size check, then this list may need to be updated
+     * in the future when new unions or structures are added. Experimental
+     * headers are and should not be checked here since they can disappear.
+     * Also *_api_t structures should not be changed since they are subject to
+     * be expanded.
+     *
+     * Those struct sizes may change on non x86_64 architecture, for example
+     * armhf, which is 32 bit. Then please add ifdef statement here and provide
+     * corresponding values.
+     *
+     * NOTE: at some point, it may be required to modify some structures for
+     * some objects, and this should be permitted after consulting with SAI
+     * community, to allow binary compatibility break. When this happens, a
+     * specific comment should be added here why that struct change happened.
+     *
+     * TODO: We need to figure out to do this automatically.
+     */
+
+    /* unions */
+
+    CHECK_STRUCT_SIZE(sai_acl_action_parameter_t, 24);
+    CHECK_STRUCT_SIZE(sai_acl_field_data_data_t, 16);
+    CHECK_STRUCT_SIZE(sai_acl_field_data_mask_t, 16);
+    CHECK_STRUCT_SIZE(sai_attribute_value_t, 40);
+    CHECK_STRUCT_SIZE(sai_ip_addr_t, 16);
+    CHECK_STRUCT_SIZE(sai_object_key_entry_t, 64);
+    CHECK_STRUCT_SIZE(sai_tlv_entry_t, 36);
+
+    /* structs */
+
+    CHECK_STRUCT_SIZE(sai_acl_action_data_t, 32);
+    CHECK_STRUCT_SIZE(sai_acl_capability_t, 32);
+    CHECK_STRUCT_SIZE(sai_acl_chain_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_acl_chain_t, 8);
+    CHECK_STRUCT_SIZE(sai_acl_field_data_t, 40);
+    CHECK_STRUCT_SIZE(sai_acl_resource_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_acl_resource_t, 12);
+    CHECK_STRUCT_SIZE(sai_attr_capability_t, 3);
+    CHECK_STRUCT_SIZE(sai_attribute_t, 48);
+    CHECK_STRUCT_SIZE(sai_bfd_session_state_notification_t, 16);
+    CHECK_STRUCT_SIZE(sai_fabric_port_reachability_t, 8);
+    CHECK_STRUCT_SIZE(sai_fdb_entry_t, 24);
+    CHECK_STRUCT_SIZE(sai_fdb_event_notification_data_t, 48);
+    CHECK_STRUCT_SIZE(sai_hmac_t, 36);
+    CHECK_STRUCT_SIZE(sai_inseg_entry_t, 16);
+    CHECK_STRUCT_SIZE(sai_ip_address_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_ip_address_t, 20);
+    CHECK_STRUCT_SIZE(sai_ipmc_entry_t, 64);
+    CHECK_STRUCT_SIZE(sai_ip_prefix_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_ip_prefix_t, 36);
+    CHECK_STRUCT_SIZE(sai_ipsec_sa_status_notification_t, 16);
+    CHECK_STRUCT_SIZE(sai_json_t, 16);
+    CHECK_STRUCT_SIZE(sai_l2mc_entry_t, 64);
+    CHECK_STRUCT_SIZE(sai_latch_status_t, 2);
+    CHECK_STRUCT_SIZE(sai_map_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_map_t, 8);
+    CHECK_STRUCT_SIZE(sai_mcast_fdb_entry_t, 24);
+    CHECK_STRUCT_SIZE(sai_my_sid_entry_t, 40);
+    CHECK_STRUCT_SIZE(sai_nat_entry_data_t, 32);
+    CHECK_STRUCT_SIZE(sai_nat_entry_key_t, 16);
+    CHECK_STRUCT_SIZE(sai_nat_entry_mask_t, 16);
+    CHECK_STRUCT_SIZE(sai_nat_entry_t, 56);
+    CHECK_STRUCT_SIZE(sai_nat_event_notification_data_t, 64);
+    CHECK_STRUCT_SIZE(sai_neighbor_entry_t, 40);
+    CHECK_STRUCT_SIZE(sai_object_key_t, 64);
+    CHECK_STRUCT_SIZE(sai_object_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_port_err_status_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_port_eye_values_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_port_lane_eye_values_t, 20);
+    CHECK_STRUCT_SIZE(sai_port_lane_latch_status_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_port_lane_latch_status_t, 8);
+    CHECK_STRUCT_SIZE(sai_port_frequency_offset_ppm_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_port_frequency_offset_ppm_values_t, 8);
+    CHECK_STRUCT_SIZE(sai_port_snr_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_port_snr_values_t, 8);
+    CHECK_STRUCT_SIZE(sai_port_oper_status_notification_t, 16);
+    CHECK_STRUCT_SIZE(sai_prbs_rx_state_t, 8);
+    CHECK_STRUCT_SIZE(sai_qos_map_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_qos_map_params_t, 16);
+    CHECK_STRUCT_SIZE(sai_qos_map_t, 32);
+    CHECK_STRUCT_SIZE(sai_queue_deadlock_notification_data_t, 16);
+    CHECK_STRUCT_SIZE(sai_route_entry_t, 56);
+    CHECK_STRUCT_SIZE(sai_s16_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_s32_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_s32_range_t, 8);
+    CHECK_STRUCT_SIZE(sai_s8_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_segment_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_service_method_table_t, 16);
+    CHECK_STRUCT_SIZE(sai_stat_capability_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_stat_capability_t, 8);
+    CHECK_STRUCT_SIZE(sai_system_port_config_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_system_port_config_t, 24);
+    CHECK_STRUCT_SIZE(sai_timespec_t, 16);
+    CHECK_STRUCT_SIZE(sai_tlv_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_tlv_t, 40);
+    CHECK_STRUCT_SIZE(sai_u16_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_u16_range_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_u16_range_t, 4);
+    CHECK_STRUCT_SIZE(sai_u32_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_u32_range_t, 8);
+    CHECK_STRUCT_SIZE(sai_u8_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_vlan_list_t, 16);
+}
+#pragma GCC diagnostic pop
+
+#define _ENTRY(X,x) META_LOG_DEBUG("%s: %d, %s: %zu", #X, SAI_OBJECT_TYPE_ ## X, # x, sizeof(sai_ ## x ## _t));
+#define _BULK_ENTRY(X,x) META_LOG_DEBUG("%s: %d, %s: %zu", #X, SAI_OBJECT_TYPE_ ## X, # x, sizeof(sai_ ## x ## _t));
+
+void check_declare_entry_macro()
+{
+    SAI_META_LOG_ENTER();
+
+    SAI_METADATA_DECLARE_EVERY_ENTRY(_ENTRY);
+    SAI_METADATA_DECLARE_EVERY_BULK_ENTRY(_BULK_ENTRY);
+}
+
+void check_json_type_size()
+{
+    SAI_META_LOG_ENTER();
+
+    META_ASSERT_TRUE(sizeof(sai_s8_list_t) == sizeof(sai_json_t), "json type is expected to have same size as s8 list");
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -5480,6 +5744,9 @@ int main(int argc, char **argv)
     check_max_conditions_len();
     check_object_type_extension_max_value();
     check_global_apis();
+    check_struct_and_union_size();
+    check_declare_entry_macro();
+    check_json_type_size();
 
     SAI_META_LOG_DEBUG("log test");
 

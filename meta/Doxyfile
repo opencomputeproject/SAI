@@ -234,6 +234,7 @@ ALIASES                += "passparam      =@par Pass paramater:^^         @xmlon
 ALIASES                += "extraparam     =@par Extra paramater:^^        @xmlonly @@extraparam     @endxmlonly"
 ALIASES                += "suffix         =@par Serialize suffix:^^       @xmlonly @@suffix         @endxmlonly"
 ALIASES                += "isresourcetype =@par IsResourceType:^^         @xmlonly @@isresourcetype @endxmlonly"
+ALIASES                += "relaxed        =@par Condition Relaxed:^^      @xmlonly @@relaxed        @endxmlonly"
 ALIASES                += "deprecated     =@par Deprecated:^^             @xmlonly @@deprecated     @endxmlonly"
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).

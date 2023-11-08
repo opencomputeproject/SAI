@@ -25,6 +25,7 @@
 #ifndef __SAISWITCHEXTENSIONS_H_
 #define __SAISWITCHEXTENSIONS_H_
 
+#include <saiswitch.h>
 #include <saitypes.h>
 
 /**

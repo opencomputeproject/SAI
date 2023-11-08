@@ -80,6 +80,18 @@ extern const sai_attr_metadata_t* sai_metadata_get_attr_metadata_by_attr_id_name
         _In_ const char *attr_id_name);
 
 /**
+ * @brief Gets attribute metadata based on attribute id name, supporting case of
+ * attribute id name is in deserialized buffer and terminated by characters listed
+ * in function sai_serialize_is_char_allowed.
+ *
+ * @param[in] attr_id_name Attribute id name
+ *
+ * @return Pointer to object metadata or NULL in case of failure
+ */
+extern const sai_attr_metadata_t* sai_metadata_get_attr_metadata_by_attr_id_name_ext(
+        _In_ const char *attr_id_name);
+
+/**
  * @brief Gets ignored attribute metadata based on attribute id name
  *
  * @param[in] attr_id_name Attribute id name
@@ -197,6 +209,13 @@ extern bool sai_metadata_is_validonly_met(
         _In_ const sai_attr_metadata_t *metadata,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Metadata query API version.
+ *
+ * Will return SAI version which was used to generate metadata.
+ */
+extern sai_api_version_t sai_metadata_query_api_version(void);
 
 /**
  * @}

@@ -55,6 +55,12 @@
 
 set -e
 
+if ! git rev-parse --git-dir > /dev/null 2>&1; then
+
+    echo "WARNING: this is not git repository, will skip ancestry check"
+    exit
+fi
+
 # 1. get all necessary data to temp directory for future processing
 # 2. pass all interesting commits to processor to build history
 
@@ -100,16 +106,23 @@ function create_commit_list()
 
 function check_enum_history()
 {
-    perl ancestry.pl $LIST
+    perl ancestry.pl -H "ancestry.9f8efee.history" $LIST
 }
 
 #
 # MAIN
 #
 
-# BEGIN_COMMIT is the commit from we want enums to be backward compatible
+# BEGIN_COMMIT is the commit from we check each commit history for backward compatibility
 
-BEGIN_COMMIT=3132018
+# since checking ancestry history is taking longer time each commit, we will
+# use history file to load all the history from previous processed commits, in
+# this way we just load entire history to perl directly and save time on
+# processing all those previous commits, this process can be repeated later on if
+# the processing time will increase too much
+
+BEGIN_COMMIT=3132018 # from this commit we are backward compatible
+BEGIN_COMMIT=9f8efee # to this commit we have history file
 END_COMMIT=HEAD
 
 clean_temp_dir
@@ -117,3 +130,4 @@ create_temp_dir
 create_commit_list $BEGIN_COMMIT $END_COMMIT
 checkout_inc_directories
 check_enum_history
+clean_temp_dir

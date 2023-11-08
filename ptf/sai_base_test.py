@@ -51,7 +51,7 @@ THRIFT_PORT = 9092
 SKIP_TEST_NO_RESOURCES_MSG = 'Not enough resources to run test'
 PLATFORM = os.environ.get('PLATFORM')
 platform_map = {'broadcom': 'brcm', 'barefoot': 'bfn',
-                'mellanox': 'mlnx', 'common': 'common'}
+                'mellanox': 'mlnx', 'common': 'common', 'marvell': 'mrvl'}
 
 
 class ThriftInterface(BaseTest):
@@ -413,6 +413,9 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
 
         # get port_list and portX objects
         attr = sai_thrift_get_switch_attribute(
+            self.client, number_of_active_ports=True)
+        self.active_ports_no = attr['number_of_active_ports']
+        attr = sai_thrift_get_switch_attribute(
             self.client, port_list=sai_thrift_object_list_t(
                 idlist=[], count=self.active_ports_no))
         self.assertEqual(self.active_ports_no, attr['port_list'].count)
@@ -634,6 +637,9 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
         """
         Remove default vlan
         """
+        if 'target' in self.test_params:
+            if self.test_params['target'] == 'bmv2':
+                return
         members = self.get_vlan_member(self.default_vlan_id)
         self.remove_vlan_members(members)
 
@@ -647,6 +653,12 @@ class SaiHelperBase(ThriftInterfaceDataPlane):
             self.config_db_loader = ConfigDBLoader()
         self.ports_config = self.config_db_loader.get_port_config()
         
+        if 'port_config_ini' in self.test_params:
+            self.port_config_ini_loader = PortConfigInILoader(self.test_params['port_config_ini'])
+        else:
+            self.port_config_ini_loader = PortConfigInILoader()
+        self.port_config_ini_loader.parse_port_config()
+
         self.port_configer = PortConfiger(self)
         self.def_bridge_port_list = []
         self.def_bridge_port_list = []
@@ -971,9 +983,10 @@ class SaiHelperUtilsMixin:
         # add members
         idx = 0
         for member, tag in members.items():
-            tag = SAI_VLAN_TAGGING_MODE_UNTAGGED
             if tag == 'tagged':
                 tag = SAI_VLAN_TAGGING_MODE_TAGGED
+            else:
+                tag = SAI_VLAN_TAGGING_MODE_UNTAGGED
             vlan_member_id = sai_thrift_create_vlan_member(
                 self.client,
                 vlan_id=vlan_id,

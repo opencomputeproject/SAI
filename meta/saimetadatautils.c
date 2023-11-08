@@ -150,6 +150,75 @@ const sai_attr_metadata_t* sai_metadata_get_attr_metadata_by_attr_id_name(
     return NULL;
 }
 
+static int sai_metadata_attr_id_name_cmp(
+        _In_ const char * str1,
+        _In_ const char * str2)
+{
+    char c1 = 0;
+    char c2 = 0;
+
+    while (true)
+    {
+        c1 = *str1++;
+        c2 = *str2++;
+
+        if (sai_serialize_is_char_allowed(c1) || sai_serialize_is_char_allowed(c2) || c1 != c2)
+        {
+            if (sai_serialize_is_char_allowed(c1))
+            {
+                c1 = 0;
+            }
+
+            if (sai_serialize_is_char_allowed(c2))
+            {
+                c2 = 0;
+            }
+
+            return c1 - c2;
+        }
+    }
+}
+
+const sai_attr_metadata_t* sai_metadata_get_attr_metadata_by_attr_id_name_ext(
+        _In_ const char *attr_id_name)
+{
+    if (attr_id_name == NULL)
+    {
+        return NULL;
+    }
+
+    /* use binary search */
+
+    ssize_t first = 0;
+    ssize_t last = (ssize_t)(sai_metadata_attr_sorted_by_id_name_count - 1);
+
+    while (first <= last)
+    {
+        ssize_t middle = (first + last) / 2;
+
+        int res = sai_metadata_attr_id_name_cmp(attr_id_name, sai_metadata_attr_sorted_by_id_name[middle]->attridname);
+
+        if (res > 0)
+        {
+            first = middle + 1;
+        }
+        else if (res < 0)
+        {
+            last = middle - 1;
+        }
+        else
+        {
+            /* found */
+
+            return sai_metadata_attr_sorted_by_id_name[middle];
+        }
+    }
+
+    /* not found */
+
+    return NULL;
+}
+
 const sai_attr_metadata_t* sai_metadata_get_ignored_attr_metadata_by_attr_id_name(
         _In_ const char *attr_id_name)
 {
@@ -510,4 +579,9 @@ bool sai_metadata_is_validonly_met(
     }
 
     return false;
+}
+
+sai_api_version_t sai_metadata_query_api_version(void)
+{
+    return SAI_API_VERSION;
 }

@@ -2497,7 +2497,7 @@ typedef enum _sai_switch_attr_t
      *
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_VOQ
+     * @condition SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_VOQ or SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_FABRIC
      */
     SAI_SWITCH_ATTR_SWITCH_ID,
 
@@ -2851,13 +2851,17 @@ typedef enum _sai_switch_attr_t
      *
      * true: Trigger the switch isolate process
      * false: Undo the isolation operation.
-     * This attribute is for Fabric Chassis only
+     * This attribute is for Fabric or VOQ Chassis only
+     * Setting this flag to true will stop data traffic from flowing
+     * on local fabric ports. Fabric control traffic like credit grants
+     * and control messages will still continue to flow. Setting this
+     * flag to false will (re)enable data traffic on fabric ports.
      * If this attribute is set to true, it overrides port level isolation setting.
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
-     * @validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_FABRIC
+     * @validonly SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_FABRIC or SAI_SWITCH_ATTR_TYPE == SAI_SWITCH_TYPE_VOQ
      */
     SAI_SWITCH_ATTR_SWITCH_ISOLATE,
 
@@ -2874,6 +2878,129 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_HOSTIF_OPER_STATUS_UPDATE_MODE,
 
     /**
+     * @brief Health notification callback function passed to the adapter.
+     *
+     * Use sai_switch_asic_sdk_health_event_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_switch_asic_sdk_health_event_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_SWITCH_ASIC_SDK_HEALTH_EVENT_NOTIFY,
+
+    /**
+     * @brief Registration for health fatal categories.
+     *
+     * For specifying categories of causes for severity fatal events
+     *
+     * @type sai_s32_list_t sai_switch_asic_sdk_health_category_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_REG_FATAL_SWITCH_ASIC_SDK_HEALTH_CATEGORY,
+
+    /**
+     * @brief Registration for health warning categories.
+     *
+     * For specifying categories of causes for severity warning events
+     *
+     * @type sai_s32_list_t sai_switch_asic_sdk_health_category_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_REG_WARNING_SWITCH_ASIC_SDK_HEALTH_CATEGORY,
+
+    /**
+     * @brief Registration for health notice categories.
+     *
+     * For specifying categories of causes for severity notice events
+     *
+     * @type sai_s32_list_t sai_switch_asic_sdk_health_category_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_REG_NOTICE_SWITCH_ASIC_SDK_HEALTH_CATEGORY,
+
+    /**
+     * @brief ACL chain capabilities supported by the NPU
+     *
+     * @type sai_acl_chain_list_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_ACL_CHAIN_LIST,
+
+    /**
+     * @brief Port host tx ready notification callback
+     * function passed to the adapter.
+     *
+     * Use sai_port_host_tx_ready_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_port_host_tx_ready_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_PORT_HOST_TX_READY_NOTIFY,
+
+    /**
+     * @brief Minimum priority for Tunnel Term table
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_TUNNEL_TERM_TABLE_ENTRY_MINIMUM_PRIORITY,
+
+    /**
+     * @brief Maximum priority for Tunnel Term table
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_TUNNEL_TERM_TABLE_ENTRY_MAXIMUM_PRIORITY,
+
+    /**
+     * @brief TWAMP session event notification callback function passed to the adapter.
+     *
+     * Use sai_twamp_session_event_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_twamp_session_event_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_TWAMP_SESSION_EVENT_NOTIFY,
+
+    /**
+     * @brief Number of Two-Way Active Measurement Protocol session
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_TWAMP_SESSION,
+
+    /**
+     * @brief Max number of Two-Way Active Measurement Protocol session supports
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_TWAMP_SESSION,
+
+    /**
+     * @brief Available IP Next hop group member entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_IP_NEXT_HOP_GROUP_MEMBER_ENTRY,
+
+    /**
+     * @brief Available VOQ including unicast and multicast VOQ
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_SYSTEM_VOQS,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
@@ -2885,6 +3012,41 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_CUSTOM_RANGE_END
 
 } sai_switch_attr_t;
+
+/**
+ * @brief Switch health event severity
+ */
+typedef enum _sai_switch_asic_sdk_health_severity_t
+{
+    /** Switch event severity fatal */
+    SAI_SWITCH_ASIC_SDK_HEALTH_SEVERITY_FATAL,
+
+    /** Switch event severity warning */
+    SAI_SWITCH_ASIC_SDK_HEALTH_SEVERITY_WARNING,
+
+    /** Switch event severity notice */
+    SAI_SWITCH_ASIC_SDK_HEALTH_SEVERITY_NOTICE
+
+} sai_switch_asic_sdk_health_severity_t;
+
+/**
+ * @brief Switch health categories
+ */
+typedef enum _sai_switch_asic_sdk_health_category_t
+{
+    /** Switch health software category */
+    SAI_SWITCH_ASIC_SDK_HEALTH_CATEGORY_SW,
+
+    /** Switch health firmware category */
+    SAI_SWITCH_ASIC_SDK_HEALTH_CATEGORY_FW,
+
+    /** Switch health cpu hardware category */
+    SAI_SWITCH_ASIC_SDK_HEALTH_CATEGORY_CPU_HW,
+
+    /** Switch health ASIC hardware category */
+    SAI_SWITCH_ASIC_SDK_HEALTH_CATEGORY_ASIC_HW
+
+} sai_switch_asic_sdk_health_category_t;
 
 /**
  * @brief Switch counter IDs in sai_get_switch_stats() call
@@ -3084,6 +3246,40 @@ typedef enum _sai_switch_stat_t
  * the transceiver type plugged in to the port
  */
 #define SAI_KEY_HW_PORT_PROFILE_ID_CONFIG_FILE    "SAI_HW_PORT_PROFILE_ID_CONFIG_FILE"
+
+/**
+ * @brief Switch health event callback
+ *
+ * @objects switch_id SAI_OBJECT_TYPE_SWITCH
+ *
+ * @param[in] switch_id Switch Id
+ * @param[in] severity Health event severity
+ * @param[in] timestamp Time and date of receiving the SDK Health event
+ * @param[in] category Category of cause
+ * @param[in] data Data of switch health
+ * @param[in] description JSON-encoded description string with information delivered from SDK event/trap
+ * Example of a possible description:
+ * {
+ *    "switch_id": "0x00000000000000AB",
+ *    "severity": "2",
+ *    "timestamp": {
+ *        "tv_sec": "22429",
+ *        "tv_nsec": "3428724"
+ *    },
+ *    "category": "3",
+ *    "data": {
+ *        data_type: "0"
+ *    },
+ *    "additional_data": "Some additional information"
+ * }
+ */
+typedef void (*sai_switch_asic_sdk_health_event_notification_fn)(
+        _In_ sai_object_id_t switch_id,
+        _In_ sai_switch_asic_sdk_health_severity_t severity,
+        _In_ sai_timespec_t timestamp,
+        _In_ sai_switch_asic_sdk_health_category_t category,
+        _In_ sai_switch_health_data_t data,
+        _In_ const sai_u8_list_t description);
 
 /**
  * @brief Switch shutdown request callback.

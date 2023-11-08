@@ -470,6 +470,26 @@ typedef enum _sai_attr_value_type_t
      * @brief Attribute value is IP prefix list.
      */
     SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST,
+
+    /**
+     * @brief Attribute value is IP prefix list.
+     */
+    SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST,
+
+    /**
+     * @brief Attribute value is frequency offset ppm list.
+     */
+    SAI_ATTR_VALUE_TYPE_PORT_FREQUENCY_OFFSET_PPM_LIST,
+
+    /**
+     * @brief Attribute value is SNR list.
+     */
+    SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST,
+
+    /**
+     * @brief Attribute value is statistics data.
+     */
+    SAI_ATTR_VALUE_TYPE_TWAMP_STATS_DATA,
 } sai_attr_value_type_t;
 
 /**
@@ -1249,6 +1269,16 @@ typedef struct _sai_attr_metadata_t
      * to check this field and give run time warning about this attribute.
      */
     bool                                        isdeprecated;
+
+    /**
+     * @brief Indicates whether condition is relaxed.
+     *
+     * If attribute is MANDATORY_ON_CREATE and relaxed flag is set to true then
+     * given attribute can be passed to create function even if the condition
+     * is not met. If relaxed flag is set to false, then attribute is forbidden
+     * to be passed to create function is condition is not met.
+     */
+    bool                                        isconditionrelaxed;
 
 } sai_attr_metadata_t;
 
