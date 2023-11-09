@@ -251,7 +251,7 @@ typedef enum _sai_next_hop_attr_t
      * @flags CREATE_AND_SET
      * @default false
      */
-    SAI_NEXT_HOP_ATTR_DISABLE_VLAN_REWRITE
+    SAI_NEXT_HOP_ATTR_DISABLE_VLAN_REWRITE,
 
     /**
      * @brief End of attributes
