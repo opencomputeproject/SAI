@@ -294,7 +294,15 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_ARS                      = 104,
     SAI_OBJECT_TYPE_ACL_TABLE_CHAIN_GROUP    = 105,
     SAI_OBJECT_TYPE_TWAMP_SESSION            = 106,
-    SAI_OBJECT_TYPE_MAX,  /* Must remain in last position */
+
+    /** Must remain in last position */
+    SAI_OBJECT_TYPE_MAX,
+
+    /** Custom range base value */
+    SAI_OBJECT_TYPE_CUSTOM_RANGE_START = 256,
+
+    /** End of custom range base */
+    SAI_OBJECT_TYPE_CUSTOM_RANGE_END
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t

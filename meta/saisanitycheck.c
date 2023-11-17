@@ -5538,6 +5538,8 @@ void check_object_type_extension_max_value()
      */
 
     META_ASSERT_TRUE(SAI_OBJECT_TYPE_EXTENSIONS_MAX < 256, "max object type can be 255 to be encoded on single byte");
+
+    META_ASSERT_TRUE(SAI_OBJECT_TYPE_MAX < SAI_OBJECT_TYPE_EXTENSIONS_MAX, "max object must be less than max extensions");
 }
 
 void check_global_apis()
