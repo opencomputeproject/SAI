@@ -5594,7 +5594,10 @@ void check_struct_and_union_size()
      * community, to allow binary compatibility break. When this happens, a
      * specific comment should be added here why that struct change happened.
      *
-     * TODO: We need to figure out to do this automatically.
+     * This is already done automatically using size.sh and size.pl, but this
+     * only works when git repository is present, since check is getting that
+     * data from previous commit. We still need to preserve some of those check
+     * her.
      */
 
     /* unions */
