@@ -33,6 +33,7 @@ meta/sai_rpc_frontend
 # temporary files
 **/*~
 **/*.swp
+**/*.bak
 
 **/.deps/
 **/.dirstamp
@@ -51,6 +52,7 @@ test/saithrift/saiserver
 test/saithrift/src/gen-cpp/
 test/saithrift/src/gen-py/
 test/saithrift/src/obj/
+test/saithriftv2/build/
 test/saithriftv2/gen-cpp/
 test/saithriftv2/gen-py/
 test/saithriftv2/obj/
