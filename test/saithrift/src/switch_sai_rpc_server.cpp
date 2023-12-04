@@ -85,7 +85,6 @@ using namespace ::switch_sai;
 
 extern sai_object_id_t gSwitchId;
 
-
 typedef std::vector<sai_thrift_attribute_t> std_sai_thrift_attr_vctr_t;
 
 std::vector<std::pair<sai_fdb_entry_t, sai_object_id_t>>gFdbMap;
@@ -4218,7 +4217,7 @@ public:
     }
     // Returns sai_object_id for a system_port_id
     sai_thrift_object_id_t sai_thrift_get_sys_port_obj_id_by_port_id(const int32_t sys_port_id) {
-        printf("sai_thrift_get_sys_port_id_by_port_id\n");
+        SAI_THRIFT_LOG_DBG("Called.");
         sai_status_t status = SAI_STATUS_SUCCESS;
         sai_switch_api_t *switch_api;
         sai_system_port_api_t *sys_port_api;
@@ -4230,22 +4229,22 @@ public:
 
         status = sai_api_query(SAI_API_SWITCH, (void **) &switch_api);
         if (status != SAI_STATUS_SUCCESS) {
-            printf("sai_api_query failed!!!\n");
+            SAI_THRIFT_LOG_ERR("sai_api_query failed!!!");
             return SAI_NULL_OBJECT_ID;
         }
         attr.id = SAI_SWITCH_ATTR_TYPE;
         status = switch_api->get_switch_attribute(gSwitchId, 1, &attr);
         if (status != SAI_STATUS_SUCCESS) {
-            printf("get_switch_attribute failed!!!\n");
+            SAI_THRIFT_LOG_ERR("get_switch_attribute failed!!!");
             return SAI_NULL_OBJECT_ID;
         }
         if (attr.value.u32 != SAI_SWITCH_TYPE_VOQ) {
-            printf("Switch is not VOQ switch!!!\n");
+            SAI_THRIFT_LOG_ERR("Switch is not VOQ switch!!!");
             return SAI_NULL_OBJECT_ID;
         }
         status = sai_api_query(SAI_API_SYSTEM_PORT, (void **) &sys_port_api);
         if (status != SAI_STATUS_SUCCESS) {
-            printf("sai_api_query failed!!!\n");
+            SAI_THRIFT_LOG_ERR("sai_api_query failed!!!");
             return SAI_NULL_OBJECT_ID;
         }
 
@@ -4258,7 +4257,7 @@ public:
         sys_port_list_object_attribute.value.objlist.count = max_sys_ports;
         status = switch_api->get_switch_attribute(gSwitchId, 1, &sys_port_list_object_attribute);
         if (status != SAI_STATUS_SUCCESS) {
-            printf("get_switch_attribute failed!!!\n");
+            SAI_THRIFT_LOG_ERR("get_switch_attribute failed!!!");
             free(sys_port_list_object_attribute.value.objlist.list);
             return SAI_NULL_OBJECT_ID;
         }
@@ -4267,7 +4266,7 @@ public:
            sys_port_attr.id = SAI_SYSTEM_PORT_ATTR_CONFIG_INFO;
            status = sys_port_api->get_system_port_attribute(sys_port_list_object_attribute.value.objlist.list[i], 1, &sys_port_attr);
            if (status != SAI_STATUS_SUCCESS) {
-               printf("get_system_port_attribute failed!!! for system_port 0x%lx\n", sys_port_list_object_attribute.value.objlist.list[i]);
+               SAI_THRIFT_LOG_ERR("get_system_port_attribute failed!!! for system_port 0x%lx", sys_port_list_object_attribute.value.objlist.list[i]);
                continue;
            }
            if(sys_port_attr.value.sysportconfig.port_id == sys_port_id) {
@@ -4277,12 +4276,12 @@ public:
            }
         }
 
-        printf("Didn't find system port port\n");
+        SAI_THRIFT_LOG_ERR("Didn't find system port port\n");
         free(sys_port_list_object_attribute.value.objlist.list);
         return SAI_NULL_OBJECT_ID;
     }
     void sai_thrift_get_system_port_attribute(sai_thrift_attribute_list_t& thrift_attr_list, const sai_thrift_object_id_t sys_port_oid) {
-      printf("sai_thrift_get_system_port_attribute for 0x%lx\n", sys_port_oid);
+      SAI_THRIFT_LOG_DBG("sai_thrift_get_system_port_attribute for 0x%lx", sys_port_oid);
       sai_status_t status = SAI_STATUS_SUCCESS;
       sai_system_port_api_t *sys_port_api;
       sai_attribute_t max_voq_attribute;
@@ -4292,19 +4291,19 @@ public:
       int max_voqs = 0;
 
       if(sys_port_oid == SAI_NULL_OBJECT_ID) {
-	  printf("Invalid system port!!!\n");
-	  return;
+	 SAI_THRIFT_LOG_ERR("Invalid system port!!!");
+	 return;
       }
       status = sai_api_query(SAI_API_SYSTEM_PORT, (void **) &sys_port_api);
       if (status != SAI_STATUS_SUCCESS) {
-          printf("sai_api_query failed!!!\n");
+          SAI_THRIFT_LOG_ERR("sai_api_query failed!!!");
           return;
       }
 
       max_voq_attribute.id = SAI_SYSTEM_PORT_ATTR_QOS_NUMBER_OF_VOQS;
       status = sys_port_api->get_system_port_attribute(sys_port_oid, 1, &max_voq_attribute);
       if (status != SAI_STATUS_SUCCESS) {
-          printf("sai_api_query failed!!!\n");
+          SAI_THRIFT_LOG_ERR("sai_api_query failed!!!");
           return;
       }
       max_voqs = max_voq_attribute.value.u32;
@@ -4314,7 +4313,7 @@ public:
       voq_list_object_attribute.value.objlist.count = max_voqs;
       status = sys_port_api->get_system_port_attribute(sys_port_oid, 1, &voq_list_object_attribute);
       if (status != SAI_STATUS_SUCCESS) {
-          printf("sai_api_query failed!!!\n");
+          SAI_THRIFT_LOG_ERR("sai_api_query failed!!!");
           return;
       }
 
@@ -4328,6 +4327,7 @@ public:
       }
       attr_list.push_back(thrift_voq_list_attribute);
       free(voq_list_object_attribute.value.objlist.list);
+      SAI_THRIFT_LOG_DBG("Exited.");
     }
 };
 
