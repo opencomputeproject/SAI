@@ -1450,3 +1450,26 @@ def sai_thrift_create_tunnel_term_table(client, tunnel_type, addr_family, vr_id,
     tb_attr_list=[attribute1,attribute2,attribute3,attribute4,attribute5,attribute6]
     tunnel_entry_id=client.sai_thrift_create_tunnel_term_table_entry(tb_attr_list)
     return tunnel_entry_id
+
+def sai_thrift_read_port_voq_counters(client, port):
+    sys_port_oid = client.sai_thrift_get_sys_port_obj_id_by_port_id(port)
+    voq_list = []
+    port_attr_list = client.sai_thrift_get_system_port_attribute(sys_port_oid)
+    attr_list = port_attr_list.attr_list
+    for attribute in attr_list:
+        if attribute.id == SAI_SYSTEM_PORT_ATTR_QOS_VOQ_LIST:
+            for voq_id in attribute.value.objlist.object_id_list:
+                voq_list.append(voq_id)
+
+    cnt_ids = []
+    thrift_results = []
+    voq_counters_results = []
+    cnt_ids.append(SAI_QUEUE_STAT_PACKETS)
+    queue1 = 0
+    for voq in voq_list:
+        if queue1 <= 7:
+            thrift_results = client.sai_thrift_get_queue_stats(
+                voq, cnt_ids, len(cnt_ids))
+            voq_counters_results.append(thrift_results[0])
+            queue1 += 1
+    return (voq_counters_results)

@@ -58,6 +58,7 @@ extern "C" {
 #include <saimirror.h>
 #include <saistatus.h>
 #include <saitunnel.h>
+#include <saisystemport.h>
 
 #include "arpa/inet.h"
 
@@ -4213,6 +4214,120 @@ public:
         SAI_THRIFT_LOG_DBG("Exited.");
 
         return status;
+    }
+    // Returns sai_object_id for a system_port_id
+    sai_thrift_object_id_t sai_thrift_get_sys_port_obj_id_by_port_id(const int32_t sys_port_id) {
+        SAI_THRIFT_LOG_DBG("Called.");
+        sai_status_t status = SAI_STATUS_SUCCESS;
+        sai_switch_api_t *switch_api;
+        sai_system_port_api_t *sys_port_api;
+        sai_attribute_t attr, max_sys_port_attribute;
+        sai_attribute_t sys_port_list_object_attribute;
+        sai_attribute_t sys_port_attr;
+        int max_sys_ports = 0;
+	sai_object_id_t sys_port_obj_id;
+
+        status = sai_api_query(SAI_API_SWITCH, (void **) &switch_api);
+        if (status != SAI_STATUS_SUCCESS) {
+            SAI_THRIFT_LOG_ERR("sai_api_query failed!!!");
+            return SAI_NULL_OBJECT_ID;
+        }
+        attr.id = SAI_SWITCH_ATTR_TYPE;
+        status = switch_api->get_switch_attribute(gSwitchId, 1, &attr);
+        if (status != SAI_STATUS_SUCCESS) {
+            SAI_THRIFT_LOG_ERR("get_switch_attribute failed!!!");
+            return SAI_NULL_OBJECT_ID;
+        }
+        if (attr.value.u32 != SAI_SWITCH_TYPE_VOQ) {
+            SAI_THRIFT_LOG_ERR("Switch is not VOQ switch!!!");
+            return SAI_NULL_OBJECT_ID;
+        }
+        status = sai_api_query(SAI_API_SYSTEM_PORT, (void **) &sys_port_api);
+        if (status != SAI_STATUS_SUCCESS) {
+            SAI_THRIFT_LOG_ERR("sai_api_query failed!!!");
+            return SAI_NULL_OBJECT_ID;
+        }
+
+        max_sys_port_attribute.id = SAI_SWITCH_ATTR_NUMBER_OF_SYSTEM_PORTS;
+        switch_api->get_switch_attribute(gSwitchId, 1, &max_sys_port_attribute);
+        max_sys_ports = max_sys_port_attribute.value.u32;
+
+        sys_port_list_object_attribute.id = SAI_SWITCH_ATTR_SYSTEM_PORT_LIST;
+        sys_port_list_object_attribute.value.objlist.list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * max_sys_ports);
+        sys_port_list_object_attribute.value.objlist.count = max_sys_ports;
+        status = switch_api->get_switch_attribute(gSwitchId, 1, &sys_port_list_object_attribute);
+        if (status != SAI_STATUS_SUCCESS) {
+            SAI_THRIFT_LOG_ERR("get_switch_attribute failed!!!");
+            free(sys_port_list_object_attribute.value.objlist.list);
+            return SAI_NULL_OBJECT_ID;
+        }
+
+        for (int i=0 ; i<max_sys_ports ; i++){
+           sys_port_attr.id = SAI_SYSTEM_PORT_ATTR_CONFIG_INFO;
+           status = sys_port_api->get_system_port_attribute(sys_port_list_object_attribute.value.objlist.list[i], 1, &sys_port_attr);
+           if (status != SAI_STATUS_SUCCESS) {
+               SAI_THRIFT_LOG_ERR("get_system_port_attribute failed!!! for system_port 0x%lx", sys_port_list_object_attribute.value.objlist.list[i]);
+               continue;
+           }
+           if(sys_port_attr.value.sysportconfig.port_id == sys_port_id) {
+              sys_port_obj_id = sys_port_list_object_attribute.value.objlist.list[i];
+              free(sys_port_list_object_attribute.value.objlist.list);
+              return sys_port_obj_id;
+           }
+        }
+
+        SAI_THRIFT_LOG_ERR("Didn't find system port port\n");
+        free(sys_port_list_object_attribute.value.objlist.list);
+        return SAI_NULL_OBJECT_ID;
+    }
+    void sai_thrift_get_system_port_attribute(sai_thrift_attribute_list_t& thrift_attr_list, const sai_thrift_object_id_t sys_port_oid) {
+      SAI_THRIFT_LOG_DBG("sai_thrift_get_system_port_attribute for 0x%lx", sys_port_oid);
+      sai_status_t status = SAI_STATUS_SUCCESS;
+      sai_system_port_api_t *sys_port_api;
+      sai_attribute_t max_voq_attribute;
+      sai_attribute_t voq_list_object_attribute;
+      sai_thrift_attribute_t thrift_voq_list_attribute;
+      sai_object_list_t *voq_list_object;
+      int max_voqs = 0;
+
+      if(sys_port_oid == SAI_NULL_OBJECT_ID) {
+	 SAI_THRIFT_LOG_ERR("Invalid system port!!!");
+	 return;
+      }
+      status = sai_api_query(SAI_API_SYSTEM_PORT, (void **) &sys_port_api);
+      if (status != SAI_STATUS_SUCCESS) {
+          SAI_THRIFT_LOG_ERR("sai_api_query failed!!!");
+          return;
+      }
+
+      max_voq_attribute.id = SAI_SYSTEM_PORT_ATTR_QOS_NUMBER_OF_VOQS;
+      status = sys_port_api->get_system_port_attribute(sys_port_oid, 1, &max_voq_attribute);
+      if (status != SAI_STATUS_SUCCESS) {
+          SAI_THRIFT_LOG_ERR("sai_api_query failed!!!");
+          return;
+      }
+      max_voqs = max_voq_attribute.value.u32;
+
+      voq_list_object_attribute.id = SAI_SYSTEM_PORT_ATTR_QOS_VOQ_LIST;
+      voq_list_object_attribute.value.objlist.list = (sai_object_id_t *) malloc(sizeof(sai_object_id_t) * max_voqs);
+      voq_list_object_attribute.value.objlist.count = max_voqs;
+      status = sys_port_api->get_system_port_attribute(sys_port_oid, 1, &voq_list_object_attribute);
+      if (status != SAI_STATUS_SUCCESS) {
+          SAI_THRIFT_LOG_ERR("sai_api_query failed!!!");
+          return;
+      }
+
+      std::vector<sai_thrift_attribute_t>& attr_list = thrift_attr_list.attr_list;
+      thrift_voq_list_attribute.id = SAI_SYSTEM_PORT_ATTR_QOS_VOQ_LIST;
+      thrift_voq_list_attribute.value.objlist.count = max_voqs;
+      std::vector<sai_thrift_object_id_t>& voq_list = thrift_voq_list_attribute.value.objlist.object_id_list;
+      voq_list_object = &voq_list_object_attribute.value.objlist;
+      for (int index = 0; index < max_voqs; index++) {
+          voq_list.push_back((sai_thrift_object_id_t) voq_list_object->list[index]);
+      }
+      attr_list.push_back(thrift_voq_list_attribute);
+      free(voq_list_object_attribute.value.objlist.list);
+      SAI_THRIFT_LOG_DBG("Exited.");
     }
 };
 
