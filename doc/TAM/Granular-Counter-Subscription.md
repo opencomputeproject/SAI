@@ -71,7 +71,7 @@ typedef enum _sai_tam_counter_subscription_attr_t
     SAI_TAM_COUNTER_SUBSCRIPTION_ATTR_LABEL,
 ```
 
-The attribute SAI_TAM_COUNTER_SUBSCRIPTION_ATTR_LABEL may be used to provide the NOS-specific counter ID.
+The attribute SAI_TAM_COUNTER_SUBSCRIPTION_ATTR_LABEL configures the application counter ID.
 
 
 ## 3 Configuration example
@@ -170,7 +170,7 @@ sai_attr_list[0].value.objlist.list[0] = sai_tam_telemetry_obj;
 
 sai_attr_list[1].id = SAI_TAM_ATTR_TAM_BIND_POINT_TYPE_LIST;
 sai_attr_list[1].value.objlist.count = 1;
-sai_attr_list[1].value.objlist.list[0] = SAI_TAM_BIND_POINT_TYPE_QUEUE;
+sai_attr_list[1].value.objlist.list[0] = SAI_TAM_BIND_POINT_TYPE_SWITCH;
 
 attr_count = 2;
 sai_create_tam_fn(
@@ -179,13 +179,13 @@ sai_create_tam_fn(
     attr_count,
     sai_attr_list);
 
-// Example: Attach the TAM to a queue
+// Example: Attach the TAM to the switch
 
-sai_attr.id = SAI_QUEUE_ATTR_TAM;
+sai_attr.id = SAI_SWITCH_ATTR_TAM_OBJECT_ID;
 sai_attr.value.oid = sai_tam_obj;
 
 sai_set_queue_attribute_fn(
-    sai_queue_obj,
+    sai_switch_obj,
     sai_attr);
 ```
 
