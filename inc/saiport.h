@@ -142,7 +142,10 @@ typedef enum _sai_port_loopback_mode_t
     SAI_PORT_LOOPBACK_MODE_MAC,
 
     /** Port loopback at PHY remote end */
-    SAI_PORT_LOOPBACK_MODE_PHY_REMOTE
+    SAI_PORT_LOOPBACK_MODE_PHY_REMOTE,
+
+    /** Port loopback at MAC remote end */
+    SAI_PORT_LOOPBACK_MODE_MAC_REMOTE
 } sai_port_loopback_mode_t;
 
 /**
