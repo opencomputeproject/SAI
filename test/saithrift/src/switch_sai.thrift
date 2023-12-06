@@ -419,4 +419,7 @@ service switch_sai_rpc {
     sai_thrift_status_t sai_thrift_remove_debug_counter(1: sai_thrift_object_id_t thrift_debug_counter_id);
     sai_thrift_status_t sai_thrift_set_debug_counter_attribute(1: sai_thrift_object_id_t dc_id,
                                                                2: sai_thrift_attribute_t thrift_attr);
+    // VOQ API
+    sai_thrift_object_id_t sai_thrift_get_sys_port_obj_id_by_port_id(1: i32 sys_port_id);
+    sai_thrift_attribute_list_t sai_thrift_get_system_port_attribute(1: sai_thrift_object_id_t sys_port_object_id);
 }
