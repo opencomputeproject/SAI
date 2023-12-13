@@ -208,6 +208,11 @@ typedef enum _sai_hash_algorithm_t
     /** Combination of CRC and XOR based hash algorithm */
     SAI_HASH_ALGORITHM_CRC_XOR = 6,
 
+    /** Custom range base value */
+    SAI_HASH_ALGORITHM_CUSTOM_RANGE_START = 0x00000100,
+
+    /** End of custom range base */
+    SAI_HASH_ALGORITHM_CUSTOM_RANGE_END
 } sai_hash_algorithm_t;
 
 /**
