@@ -1733,7 +1733,7 @@ typedef enum _sai_ser_type_t
     /**
      * @brief Unknown error type
      */
-    SAI_SER_TYPE_UNKNONW = 0,
+    SAI_SER_TYPE_UNKNOWN = 0,
 
     /**
      * @brief Parity error
@@ -1749,11 +1749,6 @@ typedef enum _sai_ser_type_t
      * @brief ECC double bit error
      */
     SAI_SER_TYPE_ECC_DOUBLE_BIT = 3,
-
-    /**
-     * @brief Other errors
-     */
-    SAI_SER_TYPE_OTHER = 4,
 } sai_ser_type_t;
 
 typedef enum _sai_ser_correction_type_t
@@ -1789,37 +1784,42 @@ typedef enum _sai_ser_correction_type_t
     SAI_SER_CORRECTION_TYPE_SPECIAL = 5,
 } sai_ser_correction_type_t;
 
+/**
+ * @brief SAI SER log info type
+ *
+ * @flags strict
+ */
 typedef enum _sai_ser_log_type_t
 {
     /**
      * @brief Error happens on memory
      */
-    SAI_SER_LOG_TYPE_MEM = 0,
+    SAI_SER_LOG_TYPE_MEM = 1 << 0,
 
     /**
      * @brief Error happens on register
      */
-    SAI_SER_LOG_TYPE_REG = 1,
+    SAI_SER_LOG_TYPE_REG = 1 << 1,
 
     /**
      * @brief Parity errors detected more than once
      */
-    SAI_SER_LOG_TYPE_MULTI = 2,
+    SAI_SER_LOG_TYPE_MULTI = 1 << 2,
 
     /**
      * @brief Error corrected by SW
      */
-    SAI_SER_LOG_TYPE_CORRECTED = 3,
+    SAI_SER_LOG_TYPE_CORRECTED = 1 << 3,
 
     /**
      * @brief Restore entry from HW cache
      */
-    SAI_SER_LOG_TYPE_ENTRY_INFO = 4,
+    SAI_SER_LOG_TYPE_ENTRY_INFO = 1 << 4,
 
     /**
      * @brief Cache data is valid
      */
-    SAI_SER_LOG_TYPE_CACHE = 5,
+    SAI_SER_LOG_TYPE_CACHE = 1 << 5,
 } sai_ser_log_type_t;
 
 typedef struct _sai_ser_health_data_t
