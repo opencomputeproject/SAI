@@ -1,0 +1,612 @@
+#  Telemetry Granular Counter Subscription
+-------------------------------------------------------------------------------
+ Title       | Telemetry Granular Counter Subscription
+-------------|-----------------------------------------------------------------
+ Authors     | Chikkegowda Chikkaiah, Cisco
+ Status      | In review
+ Type        | Standards track
+ Created     | 2024-01-1 - Initial Draft
+ SAI-Version | 1.12
+-------------------------------------------------------------------------------
+
+
+## 1.0  Introduction
+
+Traditionally, ICMP based link prober is used to detect the link failures. This link prober is responsible for sending ICMP echo packets, receiving ICMP echo replies if any, and reporting the detection result.
+
+Typically, when link probe is performed by control plane application (software link failure detection), the systems operate at periodic slow exchange of probe request and reply as it leverages the kernel network stack to send/receive control packets, link failure detection can take longer.  To further reduce the detection interval, application could leverage the HW/ASIC to send/receive link probe packets at faster rate.
+
+Purpose of this document is to propose SAI specification to abstract ICMP based probe as a simple service. The service primitives provided by ICMP echo are to create, destroy, and modify a session, given the destination address and other parameters.  ICMP Echo in return provides a signal to its clients indicating when the ICMP Echo session goes up or down.
+
+This specification proposes the following points:
+1. Proposes the concept of an ICMP echo object or session that can be offloaded to HW/ASIC or other modules for expedited link detection.
+2. Introduces SAI APIs to define ICMP echo session properties
+3. Introduces a switch-level notification API for tracking changes in ICMP echo session states.
+
+
+## 1.1.0 Functional requirements of ICMP echo session
+- Transmit ICMP echo requests (probes) at regular, configurable intervals.
+- Identify and report changes in probe state to the control plane application.
+- Enable applications to set customized transmit and receive intervals.
+- Allow configuration of IP encapsulation parameters.
+- Establish a unique identification for each probing session.
+- Determine whether an offloaded session should process ICMP probing packets.
+- Offer statistics on ICMP echo probe and reply activities.
+
+## 2.0 Protocol overview and ICMP echo session
+ICMP echo is simple network link connectivity test protocol, similar to that most of the L3 routing protocols. ICMP Echo session runs between pair of devices exchanging ICMP echo request and reply packets.
+
+### 2.1.0 ICMP echo request and reply packet ###
+
+```C
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |     Type      |     Code      |          Checksum             |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |           Identifier          |        Sequence Number        |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |     Data ...
+   +-+-+-+-+-
+```
+
+### 2.2.0 ICMP echo payload packet ###
+
+Besides the ICMP echo request and reply packets, additional information about the ICMP echo session is essential and is transmitted within the payload.
+
+***Session ID:*** To correlate probe and reply packets with a session, especially when the session is offloaded to hardware, a unique identifier is required. This distinct identifier is conveyed within the ICMP payload field.
+
+***Session Cookie:*** The value of the session cookie is communicated through the ICMP payload field. The offloading engine interprets this value to decide whether the packet should undergo processing by the ICMP echo session or not.
+packets not matching the cookie are punted to NOS.
+
+
+```C
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                           Cookie                              |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                           Version                             |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                           Session ID(MSB)                     |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                           Session ID(LSB)                     |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                           Sequence Number                     |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |TLV Type (SENTINAL: 0xFF) | TLV Length (0)                     |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+```
+
+The packets generated by the session in the hardware/ASIC exclusively consist of the sentinel TLV.
+
+
+### 2.3.0 ICMP Echo Session State ###
+
+If a targeted device does not respond to an ICMP echo request within the detection time period, the link is marked "DOWN", If an ICMP echo response is subsequently received, the link is marked "UP".
+
+
+![icmp probe state machine](figures/icmp_state_machine.png "Figure 1: icmp probe state machine ")
+
+
+## 3.0 Specification ##
+
+### Changes To sai.h ###
+New type SAI_API_ICMP_ECHO is added into sai_api_t
+
+```C
+/**
+ * @brief Defined API sets have assigned IDs.
+ *
+ * If specific API method table changes in any way (method signature, number of
+ * methods), a new ID needs to be created (e.g. VLAN2) and old API still may
+ * need to be supported for compatibility with older adapter hosts.
+ */
+typedef enum _sai_api_t
+{
+    SAI_API_UNSPECIFIED      =  0, /**< unspecified API */
+    SAI_API_SWITCH           =  1, /**< sai_switch_api_t */
+    SAI_API_PORT             =  2, /**< sai_port_api_t */
+
+    ...
+
+    SAI_API_MY_MAC           = 45, /**< sai_my_mac_api_t */
+    SAI_API_IPSEC            = 46, /**< sai_ipsec_api_t */
+    SAI_API_ICMP_ECHO        = 47, /**< sai_icmp_echo_t */
+    SAI_API_MAX,                   /**< total number of APIs */
+
+} sai_api_t;
+```
+
+### Changes To saiswitch.h ###
+
+New attribute SAI_SWITCH_ATTR_ICMP_ECHO_SESSION_STATE_NOTIFY is added into sai_switch_attr_t
+
+```C
+/**
+ * @brief Attribute Id in sai_set_switch_attribute() and
+ * sai_get_switch_attribute() calls.
+ */
+typedef enum _sai_switch_attr_t
+{
+    /**
+     * @brief Number of ECMP Members configured. SAI_SWITCH_ATTR_ECMP_MEMBER_COUNT takes precedence over SAI_KEY_NUM_ECMP_GROUPS string. D
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 64
+     */
+    SAI_SWITCH_ATTR_ECMP_MEMBER_COUNT,
+
+    ...
+
+   /** 
+     * @brief Set Switch ICMP ECHO session state change event notification callback function passed to the adapter. 
+     * 
+     * Use sai_icmp_echo_session_state_change_notification_fn as notification function. 
+     * 
+     * @type sai_pointer_t sai_icmp_echo_session_state_change_notification_fn 
+     * @flags CREATE_AND_SET 
+     * @default NULL 
+     */ 
+    SAI_SWITCH_ATTR_ICMP_ECHO_SESSION_STATE_NOTIFY, 
+    ...
+
+} sai_switch_attr_t;
+
+
+```
+
+
+### New Header saiicmpecho.h ###
+
+sai_icmp_echo_session_state_t defines icmp probe session state
+```C
+/** 
+ * @brief SAI ICMP echo session state 
+ */ 
+typedef enum _sai_icmp_echo_session_state_t 
+{ 
+   /** ICMP echo  session is DOWN */ 
+    SAI_ICMP_ECHO_SESSION_DOWN, 
+
+   /** ICMP echo  session is DOWN */ 
+    SAI_ICMP_ECHO_SESSION_UP, 
+
+} sai_icmp_echo_session_state_t; 
+```
+sai_icmp_echo_session_state_notification_t defines state change notification fields
+```C
+/** 
+ * @brief Defines the operational status of the ICMP echo session 
+ */ 
+typedef struct _sai_icmp_echo_session_state_notification_t 
+
+{ 
+    /** ICMP echo Session id */ 
+    sai_object_id_t icmp_echo_session_id; 
+
+    /** ICMP echo session state */ 
+    sai_icmp_session_state_t session_state; 
+
+} sai_icmp_echo_session_state_notification_t; 
+```
+
+sai_icmp_echo_session_attr_t defines icmp echo session attributes
+```C
+/** 
+ * @brief SAI attributes for ICMP echo session 
+ */ 
+typedef enum _sai_icmp_echo_session_attr_t 
+
+{ 
+    /** 
+     * @brief Start of attributes 
+     */ 
+    SAI_ICMP_ECHO_SESSION_ATTR_START, 
+
+    /** 
+     * @brief Hardware lookup valid 
+     * 
+     * @type bool 
+     * @flags CREATE_ONLY 
+     * @default true 
+     */ 
+    SAI_ICMP_ECHO_SESSION_ATTR_VIRTUAL_ROUTER = SAI_ICMP_ECHO_SESSION_ATTR_START, 
+
+    /** 
+     * @brief Virtual Router 
+     * 
+     * @type sai_object_id_t 
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET 
+     * @objects SAI_OBJECT_TYPE_VIRTUAL_ROUTER 
+     * @condition SAI_ICMP_ECHO_SESSION_ATTR_HW_LOOKUP_VALID == true 
+     */ 
+    SAI_ICMP_ECHO_SESSION_ATTR_VIRTUAL_ROUTER, 
+
+    /** 
+     * @brief Destination Port 
+     * 
+     * @type sai_object_id_t 
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET 
+     * @objects SAI_OBJECT_TYPE_PORT 
+     * @condition SAI_ICMP_ECHO_SESSION_ATTR_HW_LOOKUP_VALID == false 
+     */ 
+    SAI_ICMP_ECHO_SESSION_ATTR_PORT, 
+
+    /** 
+     * @brief ICMP echo session unique identifier  
+     * 
+     * @type sai_uint32_t 
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY 
+     */ 
+    SAI_ICMP_ECHO_SESSION_ATTR_ID, 
+ 
+    /** 
+     * @brief IP header TOS 
+     * 
+     * @type sai_uint8_t 
+     * @flags CREATE_AND_SET 
+     * @default 0 
+     */ 
+
+    SAI_ICMP_ECHO_SESSION_ATTR_TOS, 
+
+    /** 
+     * @brief IP header TTL 
+     * 
+     * @type sai_uint8_t 
+     * @flags CREATE_AND_SET 
+     * @default 255 
+     */ 
+    SAI_ICMP_ECHO_SESSION_ATTR_TTL, 
+
+    /** 
+     * @brief IP header version 
+     * 
+     * @type sai_uint8_t 
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET 
+     */ 
+    SAI_ICMP_ECHO_SESSION_ATTR_IPHDR_VERSION, 
+
+    /** 
+     * @brief Source IP 
+     * 
+     * @type sai_ip_address_t 
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY 
+     */ 
+    SAI_ICMP_ECHO_SESSION_ATTR_SRC_IP_ADDRESS, 
+
+    /** 
+     * @brief Destination IP 
+     * 
+     * @type sai_ip_address_t 
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY 
+     */ 
+    SAI_ICMP_ECHO_SESSION_ATTR_DST_IP_ADDRESS, 
+
+    /** 
+     * @brief L2 source MAC address 
+     * 
+     * @type sai_mac_t 
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET 
+     * @condition SAI_ICMP_ECHO_SESSION_ATTR_HW_LOOKUP_VALID == false 
+     */ 
+    SAI_ICMP_ECHO_SESSION_ATTR_SRC_MAC_ADDRESS, 
+
+    /** 
+     * @brief L2 destination MAC address 
+     * 
+     * @type sai_mac_t 
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET 
+     * @condition SAI_ICMP_ECHO_SESSION_ATTR_HW_LOOKUP_VALID == false 
+     */ 
+    SAI_ICMP_ECHO_SESSION_ATTR_DST_MAC_ADDRESS, 
+
+    /** 
+     * @brief Minimum Transmit interval in microseconds 
+     * 
+     * @type sai_uint32_t 
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET 
+     */ 
+    SAI_ICMP_ECHO_SESSION_ATTR_MIN_TX, 
+
+    /** 
+     * @brief Minimum Receive interval in microseconds 
+     * 
+     * @type sai_uint32_t 
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET 
+     */ 
+    SAI_ICMP_ECHO_SESSION_ATTR_MIN_RX, 
+
+    /** 
+     * @brief Detect time Multiplier 
+     * 
+     * @type sai_uint8_t 
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET 
+     */ 
+    SAI_ICMP_ECHO_SESSION_ATTR_MULTIPLIER, 
+
+    /** 
+     * @brief ICMP ECHO Session state 
+     * 
+     * @type sai_icmp_echo_session_state_t 
+     * @flags READ_ONLY 
+     */ 
+    SAI_ICMP_ECHO_SESSION_ATTR_STATE, 
+
+    /** 
+     * @brief End of attributes 
+     */ 
+    SAI_ICMP_ECHO_SESSION_ATTR_END, 
+
+    /** Custom range base value */ 
+    SAI_ICMP_ECHO_SESSION_ATTR_CUSTOM_RANGE_START = 0x10000000, 
+
+    /** End of custom range base */ 
+    SAI_ICMP_ECHO_SESSION_ATTR_CUSTOM_RANGE_END 
+
+} sai_icmp_echo_session_attr_t; 
+```
+sai_icmp_echo_session_stat_t defines session stats
+```C
+
+/** 
+ * @brief ICMP ECHO Session counter IDs in sai_get_icmp_echo_session_stats() call 
+ */ 
+typedef enum _sai_icmp_echo_session_stat_t 
+{ 
+    /** Ingress packet stat count */ 
+    SAI_ICMP_ECHO_SESSION_STAT_IN_PACKETS, 
+
+    /** Egress packet stat count */ 
+    SAI_ICMP_ECHO_SESSION_STAT_OUT_PACKETS  
+
+} sai_icmp_echo_session_stat_t; 
+```
+sai_create_icmp_echo_session_fn defines the interfaces to create icmp echo seesion
+
+```C
+/** 
+ * @brief Create icmp echo session. 
+ * 
+ * @param[out] icmp_echo_session_id ICMP ECHO session id 
+ * @param[in] switch_id Switch id 
+ * @param[in] attr_count Number of attributes 
+ * @param[in] attr_list Value of attributes 
+ * 
+ * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different 
+ * error code is returned. 
+ */ 
+typedef sai_status_t (*sai_create_icmp_echo_session_fn)( 
+        _Out_ sai_object_id_t *icmp_echo_session_id, 
+        _In_ sai_object_id_t switch_id, 
+        _In_ uint32_t attr_count, 
+        _In_ const sai_attribute_t *attr_list);
+```
+sai_remove_icmp_echo_session_fn defines the interfaces to delete icmp echo seesion
+```C
+/** 
+ * @brief Remove ICMP ECHO session. 
+ * 
+ * @param[in] icmp_echo_session_id ICMP ECHO session id 
+ * 
+ * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different 
+ * error code is returned. 
+ */ 
+typedef sai_status_t (*sai_remove_icmp_echo_session_fn)( 
+        _In_ sai_object_id_t icmp_echo_session_id); 
+```
+sai_set_icmp_echo_session_attribute_fn defines the interfaces to update icmp echo seesion attributes
+```C
+/** 
+ * @brief Set ICMP ECHO session attributes. 
+ * 
+ * @param[in] icmp_echo_session_id ICMP ECHO session id 
+ * @param[in] attr Value of attribute 
+ * 
+ * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different 
+ * error code is returned. 
+ */ 
+typedef sai_status_t (*sai_set_icmp_echo_session_attribute_fn)( 
+        _In_ sai_object_id_t icmp_session_id, 
+        _In_ const sai_attribute_t *attr); 
+```
+sai_get_icmp_echo_session_attribute_fn defines the interface to query session attribut values
+```C
+/** 
+ * @brief Get ICMP ECHO session attributes. 
+ * 
+ * @param[in] icmp_session_id ICMP ECHO session id 
+ * @param[in] attr_count Number of attributes 
+ * @param[inout] attr_list Value of attribute 
+ * 
+ * @return #SAI_STATUS_SUCCESS if operation is successful otherwise a different 
+ * error code is returned. 
+ */ 
+typedef sai_status_t (*sai_get_icmp_echo_session_attribute_fn)( 
+        _In_ sai_object_id_t icmp_echo_session_id, 
+        _In_ uint32_t attr_count, 
+        _Inout_ sai_attribute_t *attr_list); 
+```
+sai_get_icmp_echo_session_stats_fn defines the interface to query session stats
+```C
+/** 
+ * @brief Get ICMP ECHO session statistics counters. 
+ * 
+ * @param[in] icmp_echo_session_id ICMP ECHO session id 
+ * @param[in] number_of_counters Number of counters in the array 
+ * @param[in] counter_ids Specifies the array of counter ids 
+ * @param[out] counters Array of resulting counter values. 
+ * 
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error 
+ */ 
+typedef sai_status_t (*sai_get_icmp_echo_session_stats_fn)( 
+        _In_ sai_object_id_t icmp_session_id, 
+        _In_ uint32_t number_of_counters, 
+        _In_ const sai_icmp_echo_session_stat_t *counter_ids, 
+        _Out_ uint64_t *counters);
+```
+sai_clear_icmp_echo_session_stats_fn defines the interface to clear session stats
+
+```C
+/** 
+ * @brief Clear ICMP ECHO session statistics counters. 
+ * 
+ * @param[in] icmp_echo_session_id ICMP ECHO session id 
+ * @param[in] number_of_counters Number of counters in the array 
+ * @param[in] counter_ids Specifies the array of counter ids 
+ * 
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error 
+ */ 
+typedef sai_status_t (*sai_clear_icmp_echo_session_stats_fn)( 
+        _In_ sai_object_id_t icmp_echo_session_id, 
+        _In_ uint32_t number_of_counters, 
+        _In_ const sai_icmp_echo_session_stat_t *counter_ids); 
+```
+sai_icmp_echo_session_state_change_notification_fn the interface to notify session state
+```C
+/** 
+ * @brief ICMP ECHO session state change notification 
+ * 
+ * Passed as a parameter into sai_initialize_switch() 
+ * 
+ * @count data[count] 
+ * 
+ * @param[in] count Number of notifications 
+ * @param[in] data Array of ICMP ECHO session state 
+ */ 
+typedef void (*sai_icmp_echo_session_state_change_notification_fn)( 
+        _In_ uint32_t count, 
+        _In_ sai_icmp_echo_session_state_notification_t *data); 
+```
+
+sai_icmp_echo_api_t defines the ICMP_ECHO API table
+```C
+/** 
+ * @brief ICMP ECHO method table retrieved with sai_api_query() 
+ */ 
+typedef struct _sai_icmp_echo_api_t 
+{ 
+    sai_create_icmp_echo_session_fn            create_icmp_echo_session; 
+    sai_remove_icmp_echo_session_fn            remove_icmp_echo_session; 
+    sai_set_icmp_echo_session_attribute_fn     set_icmp_echo_session_attribute; 
+    sai_get_icmp_echo_session_attribute_fn     get_icmp_echo_session_attribute; 
+    sai_get_icmp_echo_session_stats_fn         get_icmp_echo_session_stats; 
+    sai_clear_icmp_echo_session_stats_fn       clear_icmp_echo_session_stats; 
+
+} sai_icmp_echo_api_t; 
+```
+
+### Example ###
+
+#### Create session using egress interface: ####
+
+In this case SAI expects the application to tell the attributes related to encapsulation and egress physical interface.
+
+```C
+sai_api_query(SAI_API_ICMP_ECHO, &icmp_api);   /* get icmp echo object API pointer */  
+
+sai_object_id_t icmp_session = 0; 
+sai_attribute_t icmp_attr[] = {0}; 
+
+icmp_attr[1].id = SAI_ICMP_ECHO_SESSION_ATTR_HW_LOOKUP_VALID; 
+icmp_attr[1].value.oid = false; 
+
+icmp_attr[2].id = SAI_ ICMP_ECHO _SESSION_ATTR_PORT; 
+icmp_attr[2].value.oid = port_object_id; 
+
+icmp_attr[2].id = SAI_ ICMP_ECHO _SESSION_ATTR_LOCAL_DISCRIMINATOR; 
+icmp_attr[2].value.s32 = 2893; 
+
+icmp_attr[3].id = SAI_ ICMP_ECHO _SESSION_ATTR_IPHDR_VERSION; 
+icmp_attr[3].value.u8 = ipv4; 
+
+icmp_attr[4].id = SAI_ ICMP_ECHO _SESSION_ATTR_MULTIPLIER; 
+icmp_attr[4].value.s32 = 5; 
+
+icmp_attr[5].id =SAI_ ICMP_ECHO _SESSION_ATTR_SRC_IP_ADDRESS; 
+icmp_attr[5].value.ipaddr.addr.ip4 = 0xa0101002; 
+
+icmp_attr[5].value.ipaddr.addr_family = SAI_IP_ADDR_FAMILY_IPV4; 
+icmp_attr[6].id =SAI_ ICMP_ECHO _SESSION_ATTR_DST_IP_ADDRESS; 
+
+icmp_attr[6].value.ipaddr.addr.ip4 = 0xa0101011; 
+icmp_attr[6].value.ipaddr.addr_family = SAI_IP_ADDR_FAMILY_IPV4; 
+
+icmp_attr[7].id =SAI_ ICMP_ECHO _SESSION_ATTR_SRC_MAC_ADDRESS; 
+sai_mac_t  s_mac = 0x0002030405;
+memcpy (attr[7].value.mac, s_mac, sizoef(sai_mac_t));
+
+icmp_attr[8].id =SAI_ ICMP_ECHO _SESSION_ATTR_DST_MAC_ADDRESS; 
+sai_mac_t  d_mac = 0x001112131415;
+memcpy (attr[8].value.mac, d_mac, sizoef(sai_mac_t));
+
+icmp_attr[9].id = SAI_ ICMP_ECHO _SESSION_ATTR_TX_INTERVAL; 
+icmp_attr[9].value.s32 = 500;  /* in microseconds */
+
+icmp_attr[9].id = SAI_ ICMP_ECHO _SESSION_ATTR_MIN_RX; 
+icmp_attr[9].value.s32 = 500;  /* in Microseconds */
+
+attr_count = 9
+icmp_api-> create_icmp_echo_session(&icmp_session, switch_id, attr_count, icmp_attr);   /* Invoke create session api
+```
+The other case being running ICMP probe sessions on each lag member link instead of running probe session on the lag interface itself.
+
+#### Create session using Endpoint ip address: ####
+
+A ICMP echo session between two endpoints can be created by simply specifying the icmp ip packet attributes. In this case, either SAI or NPU can resolve the encap and egress interface.
+
+In this case SAI expects virtual router id and SAI_ICMP_ECHO_SESSION_ATTR_HW_LOOKUP_VALID  set to true
+```C
+sai_api_query(SAI_API_ICMP_ECHO, &icmp_api);   /* get icmp echo object API pointer */  
+
+sai_object_id_t icmp_session = 0; 
+sai_attribute_t icmp_attr[] = {0}; 
+
+icmp_attr[1].id = SAI_ICMP_ECHO_SESSION_ATTR_HW_LOOKUP_VALID; 
+icmp_attr[1].value.oid = true; 
+
+icmp_attr[2].id = SAI_ICMP_ECHO_SESSION_ATTR_VIRTUAL_ROUTER; 
+icmp_attr[2].value.oid = <virtual_router_id>; 
+
+icmp_attr[2].id = SAI_ ICMP_ECHO _SESSION_ATTR_LOCAL_DISCRIMINATOR; 
+icmp_attr[2].value.s32 = 2893; 
+
+icmp_attr[3].id = SAI_ ICMP_ECHO _SESSION_ATTR_IPHDR_VERSION; 
+icmp_attr[3].value.u8 = ipv4; 
+
+icmp_attr[4].id = SAI_ ICMP_ECHO _SESSION_ATTR_MULTIPLIER; 
+icmp_attr[4].value.s32 = 5; 
+
+icmp_attr[5].id =SAI_ ICMP_ECHO _SESSION_ATTR_SRC_IP_ADDRESS; 
+icmp_attr[5].value.ipaddr.addr.ip4 = 0xa0101002; 
+
+icmp_attr[5].value.ipaddr.addr_family = SAI_IP_ADDR_FAMILY_IPV4; 
+icmp_attr[6].id =SAI_ ICMP_ECHO _SESSION_ATTR_DST_IP_ADDRESS; 
+
+icmp_attr[6].value.ipaddr.addr.ip4 = 0xa0101011; 
+icmp_attr[6].value.ipaddr.addr_family = SAI_IP_ADDR_FAMILY_IPV4; 
+
+icmp_attr[9].id = SAI_ ICMP_ECHO _SESSION_ATTR_TX_INTERVAL; 
+icmp_attr[9].value.s32 = 500;  /* in microseconds */
+
+icmp_attr[9].id = SAI_ ICMP_ECHO _SESSION_ATTR_MIN_RX; 
+icmp_attr[9].value.s32 = 500;  /* in Microseconds */
+
+attr_count = 9
+icmp_api-> create_icmp_echo_session(&icmp_session, switch_id, attr_count, icmp_attr);   /* Invoke create session api
+```
+### Remove session ###
+```C
+sai_api_query(SAI_API_ICMP_ECHO, &icmp_api);   /* get icmp object API pointer */ 
+
+sai_object_id_t icmp_session_id = <session id>  
+
+icmp_api->remove_icmp_session(icmp_session_id); 
+```
+
+### State Change Notification ###
+
+The offloaded session is responsible for keeping the device’s session state up to date and notifying the clients on state changes. Whenever the state changes, the device notify’s all clients registered in SAI for the callback with the   _sai_icmp_echo_session_state_notification_t struct where icmp_session_id is session unique id and the session_state with either SAI_ICMP_ECHO_SESSION_STATE_DOWN when state changes to Down or SAI_ICMP_ECHO_SESSION_STATE_UP when state changes to Up. 
