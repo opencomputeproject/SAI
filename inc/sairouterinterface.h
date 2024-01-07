@@ -295,6 +295,28 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_ADMIN_MPLS_STATE,
 
     /**
+     * @brief Set router interface statistics counting mode
+     *
+     * @type sai_stats_count_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_STATS_COUNT_MODE_PACKET_AND_BYTE
+     */
+    SAI_ROUTER_INTERFACE_ATTR_STATS_COUNT_MODE,
+
+    /**
+     * @brief Attach counter object list
+     *
+     * Counter object should be of type Selective.
+     * Fill (#SAI_COUNTER_ATTR_TYPE with #SAI_COUNTER_TYPE_SELECTIVE).
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @default empty
+     */
+    SAI_ROUTER_INTERFACE_ATTR_SELECTIVE_COUNTER_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_ROUTER_INTERFACE_ATTR_END,
