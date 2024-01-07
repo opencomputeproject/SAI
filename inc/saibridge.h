@@ -260,6 +260,28 @@ typedef enum _sai_bridge_port_attr_t
     SAI_BRIDGE_PORT_ATTR_ISOLATION_GROUP,
 
     /**
+     * @brief Set bridge port statistics counting mode
+     *
+     * @type sai_stats_count_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_STATS_COUNT_MODE_PACKET_AND_BYTE
+     */
+    SAI_BRIDGE_PORT_ATTR_STATS_COUNT_MODE,
+
+    /**
+     * @brief Attach counter object list
+     *
+     * Counter object should be of type Selective.
+     * Fill (#SAI_COUNTER_ATTR_TYPE with #SAI_COUNTER_TYPE_SELECTIVE).
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @default empty
+     */
+    SAI_BRIDGE_PORT_ATTR_SELECTIVE_COUNTER_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_BRIDGE_PORT_ATTR_END,
@@ -562,6 +584,28 @@ typedef enum _sai_bridge_attr_t
      * @validonly SAI_BRIDGE_ATTR_TYPE == SAI_BRIDGE_TYPE_1D and (SAI_BRIDGE_ATTR_BROADCAST_FLOOD_CONTROL_TYPE == SAI_BRIDGE_FLOOD_CONTROL_TYPE_L2MC_GROUP or SAI_BRIDGE_ATTR_BROADCAST_FLOOD_CONTROL_TYPE == SAI_BRIDGE_FLOOD_CONTROL_TYPE_COMBINED)
      */
     SAI_BRIDGE_ATTR_BROADCAST_FLOOD_GROUP,
+
+    /**
+     * @brief Set bridge statistics counting mode
+     *
+     * @type sai_stats_count_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_STATS_COUNT_MODE_PACKET_AND_BYTE
+     */
+    SAI_BRIDGE_ATTR_STATS_COUNT_MODE,
+
+    /**
+     * @brief Attach counter object list
+     *
+     * Counter object should be of type Selective.
+     * Fill (#SAI_COUNTER_ATTR_TYPE with #SAI_COUNTER_TYPE_SELECTIVE).
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @default empty
+     */
+    SAI_BRIDGE_ATTR_SELECTIVE_COUNTER_LIST,
 
     /**
      * @brief End of attributes

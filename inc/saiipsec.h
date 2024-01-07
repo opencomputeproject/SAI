@@ -373,6 +373,28 @@ typedef enum _sai_ipsec_port_attr_t
     SAI_IPSEC_PORT_ATTR_SWITCH_SWITCHING_MODE,
 
     /**
+     * @brief Set IPSEC port statistics counting mode
+     *
+     * @type sai_stats_count_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_STATS_COUNT_MODE_PACKET_AND_BYTE
+     */
+    SAI_IPSEC_PORT_ATTR_STATS_COUNT_MODE,
+
+    /**
+     * @brief Attach counter object list
+     *
+     * Counter object should be of type Selective.
+     * Fill (#SAI_COUNTER_ATTR_TYPE with #SAI_COUNTER_TYPE_SELECTIVE).
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @default empty
+     */
+    SAI_IPSEC_PORT_ATTR_SELECTIVE_COUNTER_LIST,
+
+    /**
      * @brief End of IPsec Port attributes
      */
     SAI_IPSEC_PORT_ATTR_END,
@@ -630,6 +652,28 @@ typedef enum _sai_ipsec_sa_attr_t
      * @validonly SAI_IPSEC_SA_ATTR_IPSEC_DIRECTION == SAI_IPSEC_DIRECTION_INGRESS
      */
     SAI_IPSEC_SA_ATTR_MINIMUM_INGRESS_ESN,
+
+    /**
+     * @brief Set IPSEC SA statistics counting mode
+     *
+     * @type sai_stats_count_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_STATS_COUNT_MODE_PACKET_AND_BYTE
+     */
+    SAI_IPSEC_SA_ATTR_STATS_COUNT_MODE,
+
+    /**
+     * @brief Attach counter object list
+     *
+     * Counter object should be of type Selective.
+     * Fill (#SAI_COUNTER_ATTR_TYPE with #SAI_COUNTER_TYPE_SELECTIVE).
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @default empty
+     */
+    SAI_IPSEC_SA_ATTR_SELECTIVE_COUNTER_LIST,
 
     /**
      * @brief End of IPsec Security Association attributes
