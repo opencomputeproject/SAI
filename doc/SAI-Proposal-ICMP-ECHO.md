@@ -1,6 +1,6 @@
-#  Telemetry Granular Counter Subscription
+#  ICMP ECHO offload
 -------------------------------------------------------------------------------
- Title       | Telemetry Granular Counter Subscription
+ Title       | ICMP ECHO offload
 -------------|-----------------------------------------------------------------
  Authors     | Chikkegowda Chikkaiah, Cisco
  Status      | In review
