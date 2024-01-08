@@ -146,6 +146,7 @@ typedef enum _sai_api_t
     SAI_API_ARS              = 48, /**<sai_ars_api_t */
     SAI_API_ARS_PROFILE      = 49, /**<sai_ars_api_profile_t */
     SAI_API_TWAMP            = 50, /**< sai_twamp_api_t */
+    SAI_API_ICMP_ECHO        = 51, /**< sai_icmp_echo_api_t */
     SAI_API_MAX,                   /**< total number of APIs */
 
     /** Custom range base value */
