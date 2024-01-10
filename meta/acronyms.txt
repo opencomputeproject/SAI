@@ -35,6 +35,7 @@ DNAT - Destination Network Address Translation
 DSCP - Differentiated Services Code Point
 DTEL - Data Plane Telemetry
 ECC - Error Correction Code
+ECD - Enhanced Cable Diagnostics
 ECMP - Equal Cost Multi-Path
 ECN - Explicit Congestion Notification
 ECT - ECN Capable Transport
