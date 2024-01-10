@@ -2505,8 +2505,11 @@ typedef enum _sai_port_attr_t
  */
 typedef enum _sai_port_stat_t
 {
+    /** Port stat range start */
+    SAI_PORT_STAT_START,
+
     /** SAI port stat if in octets */
-    SAI_PORT_STAT_IF_IN_OCTETS,
+    SAI_PORT_STAT_IF_IN_OCTETS = SAI_PORT_STAT_START,
 
     /** SAI port stat if in ucast pkts */
     SAI_PORT_STAT_IF_IN_UCAST_PKTS,
@@ -3216,6 +3219,9 @@ typedef enum _sai_port_stat_t
 
     /** Port stat out drop reasons range end */
     SAI_PORT_STAT_OUT_DROP_REASON_RANGE_END = 0x00002fff,
+
+    /** Port stat range end */
+    SAI_PORT_STAT_END
 
 } sai_port_stat_t;
 
