@@ -149,6 +149,42 @@ sub CreateCustomRangeTest
     WriteTest "}";
 }
 
+sub CreateCustomRangeAll
+{
+    WriteTest "#pragma GCC diagnostic push";
+    WriteTest "#pragma GCC diagnostic ignored \"-Wsuggest-attribute=noreturn\"";
+
+    DefineTestName "custom_range_all_test";
+
+    # purpose of this test is to make sure
+    # all enums define custom range start and end markers
+
+    WriteTest "{";
+
+    my @keys = sort keys %main::SAI_ENUMS_CUSTOM_RANGES;
+
+    for my $key (@keys)
+    {
+        my @all = @{ $main::SAI_ENUMS_CUSTOM_RANGES{$key}{customranges} };
+
+        for my $enum (@all)
+        {
+            # extepions and will be removed
+            next if $enum eq "SAI_API_CUSTOM_RANGE_START";
+            next if $enum eq "SAI_API_CUSTOM_RANGE_END";
+            next if $enum eq "SAI_OBJECT_TYPE_CUSTOM_RANGE_START";
+            next if $enum eq "SAI_OBJECT_TYPE_CUSTOM_RANGE_END";
+
+            WriteTest "    TEST_ASSERT_TRUE($enum == 0x10000000, \"invalid custom range start for $enum\");" if $enum =~ /_START$/;
+            WriteTest "    TEST_ASSERT_TRUE($enum > 0x10000000, \"invalid custom range end for $enum\");" if $enum =~ /_END$/;
+        }
+    }
+
+    WriteTest "}";
+
+    WriteTest "#pragma GCC diagnostic pop";
+}
+
 sub CreateEnumSizeCheckTest
 {
     DefineTestName "enum_size_check_test";
@@ -694,6 +730,8 @@ sub CreateTests
     CreateStructUnionSizeCheckTest();
 
     CreatePragmaPop();
+
+    CreateCustomRangeAll();
 
     WriteTestMain();
 }

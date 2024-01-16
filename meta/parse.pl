@@ -68,6 +68,7 @@ our %FUNCTION_DEF = ();
 our @ALL_ENUMS = ();
 our %GLOBAL_APIS = ();
 our %OBJECT_TYPE_BULK_MAP = ();
+our %SAI_ENUMS_CUSTOM_RANGES = ();
 
 my $FLAGS = "MANDATORY_ON_CREATE|CREATE_ONLY|CREATE_AND_SET|READ_ONLY|KEY";
 my $ENUM_FLAGS_TYPES = "(none|strict|mixed|ranges|free)";
@@ -655,6 +656,10 @@ sub ProcessEnumSection
         my @ranges = grep(/^SAI_\w+(RANGE_BASE)$/, @values);
 
         $SAI_ENUMS{$enumtypename}{ranges} = \@ranges;
+
+        my @custom = grep(/^SAI_\w+_CUSTOM_RANGE_(START|END)$/, @values);
+
+        $SAI_ENUMS_CUSTOM_RANGES{$enumtypename}{customranges} = \@custom;
 
         @values = grep(!/^SAI_\w+_(START|END)$/, @values);
         @values = grep(!/^SAI_\w+(RANGE_BASE)$/, @values);
