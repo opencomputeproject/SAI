@@ -31,6 +31,7 @@
 /* existing enum extensions */
 #include "saitypesextensions.h"
 #include "saiswitchextensions.h"
+#include "saiportextensions.h"
 
 /* new experimental object type includes */
 #include "saiexperimentaldashvip.h"
