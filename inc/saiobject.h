@@ -250,8 +250,8 @@ sai_status_t sai_bulk_get_attribute(
  * @param[in] object_type Type of SAI objects to query.
  * @param[in] query_attr_count Count for query attributes.
  * @param[in] query_attr_list List of quary attributes. 
- * @param[out] object_count Number of objects retrieved.
- * @param[out] object_key Array of object keys retrieved.
+ * @param[inout] object_count Number of objects retrieved.
+ * @param[inout] object_key Array of object keys retrieved.
  * @param[inout] attr_count List of attr_count. Caller passes the number
  *    of attribute allocated in. Callee returns with the actual
  *    number of attributes filled in. If the count is less than
@@ -273,15 +273,15 @@ sai_status_t sai_bulk_get_attribute(
  * @return sai_status_t Status of the operation.
  */
 sai_status_t sai_bulk_query_attribute(
-    _In_ sai_object_id_t switch_id,
-    _In_ sai_object_type_t object_type,
-    _In_ uint32_t query_attr_count,
-    _In_ sai_attribute_t *query_attr_list,
-    _Out_ uint32_t *object_count,
-    _Out_ sai_object_key_t *object_key,
-    _Inout_ uint32_t *attr_count,
-    _Inout_ sai_attribute_t **attr_list,
-    _Inout_ sai_status_t *object_statuses);
+        _In_ sai_object_id_t switch_id,
+        _In_ sai_object_type_t object_type,
+        _In_ uint32_t query_attr_count,
+        _In_ sai_attribute_t *query_attr_list,
+        _Inout_ uint32_t *object_count,
+        _Inout_ sai_object_key_t *object_key,
+        _Inout_ uint32_t *attr_count,
+        _Inout_ sai_attribute_t **attr_list,
+        _Inout_ sai_status_t *object_statuses);
 
 /**
  * @brief Query attribute capability
