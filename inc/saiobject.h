@@ -249,7 +249,7 @@ sai_status_t sai_bulk_get_attribute(
  * @param[in] switch_id Switch object ID to perform the query.
  * @param[in] object_type Type of SAI objects to query.
  * @param[in] query_attr_count Count for query attributes.
- * @param[in] query_attr_list List of quary attributes. 
+ * @param[in] query_attr_list List of query attributes. 
  * @param[inout] object_count Number of objects retrieved.
  * @param[inout] object_key Array of object keys retrieved.
  * @param[inout] attr_count List of attr_count. Caller passes the number
