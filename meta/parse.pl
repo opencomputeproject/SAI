@@ -2630,7 +2630,7 @@ sub ProcessStructValueType
     return "SAI_ATTR_VALUE_TYPE_BOOL"             if $type eq "bool";
     return "SAI_ATTR_VALUE_TYPE_IPV6"             if $type eq "sai_ip6_t";
     return "SAI_ATTR_VALUE_TYPE_UINT8"            if $type eq "sai_uint8_t";
-    return "SAI_ATTR_VALUE_TYPE_UINT16"           if $type eq "sai_uint16_t";    
+    return "SAI_ATTR_VALUE_TYPE_UINT16"           if $type eq "sai_uint16_t";
     return "SAI_ATTR_VALUE_TYPE_UINT64"           if $type eq "uint64_t";
     return "SAI_ATTR_VALUE_TYPE_TWAMP_STATS_DATA" if $type eq "sai_twamp_session_stats_data_t";
     return "SAI_ATTR_VALUE_TYPE_INT32"            if defined $SAI_ENUMS{$type}; # enum
