@@ -37,6 +37,8 @@
 #include <saisrv6.h>
 
 /* new experimental object type includes */
+#include <saiexperimentaldashflow.h>
+#include <saiexperimentaldashmeter.h>
 #include <saiexperimentaldashvip.h>
 #include <saiexperimentaldashpavalidation.h>
 #include <saiexperimentaldashvnet.h>
@@ -113,6 +115,9 @@ typedef union _sai_object_key_entry_t
 
     /** @validonly object_type == SAI_OBJECT_TYPE_VIP_ENTRY */
     sai_vip_entry_t vip_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_FLOW_ENTRY */
+    sai_flow_entry_t flow_entry;
 
     /* Add new experimental entries above this line */
 
@@ -248,8 +253,6 @@ sai_status_t sai_bulk_get_attribute(
  *
  * @param[in] switch_id Switch object ID to perform the query.
  * @param[in] object_type Type of SAI objects to query.
- * @param[in] query_attr_count Count for query attributes.
- * @param[in] query_attr_list List of query attributes. 
  * @param[inout] object_count Number of objects retrieved.
  * @param[inout] object_key Array of object keys retrieved.
  * @param[inout] attr_count List of attr_count. Caller passes the number
@@ -257,7 +260,7 @@ sai_status_t sai_bulk_get_attribute(
  *    number of attributes filled in. If the count is less than
  *    needed, callee fills with the needed count and do not fill
  *    the attributes. Callee also set the corresponding status to
- *    #SAI_STATUS_BUFFER_OVERFLOW. 
+ *    #SAI_STATUS_BUFFER_OVERFLOW.
  * @param[inout] attr_list List of attributes for every object. Caller is
  *    responsible for allocating and freeing buffer for the attributes.
  *    For list based attribute, e.g., s32list, objlist, callee should
@@ -270,13 +273,11 @@ sai_status_t sai_bulk_get_attribute(
  *    If the allocated attribute count is not large enough,
  *    set the status to #SAI_STATUS_BUFFER_OVERFLOW.
  *
- * @return sai_status_t Status of the operation.
+ * @return #SAI_STATUS_SUCCESS on success, #SAI_STATUS_BUFFER_OVERFLOW if lists size insufficient, failure status code on error
  */
 sai_status_t sai_bulk_query_attribute(
         _In_ sai_object_id_t switch_id,
         _In_ sai_object_type_t object_type,
-        _In_ uint32_t query_attr_count,
-        _In_ const sai_attribute_t *query_attr_list,
         _Inout_ uint32_t *object_count,
         _Inout_ sai_object_key_t *object_key,
         _Inout_ uint32_t *attr_count,
