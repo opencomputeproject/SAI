@@ -37,8 +37,6 @@
 #include <saisrv6.h>
 
 /* new experimental object type includes */
-#include <saiexperimentaldashflow.h>
-#include <saiexperimentaldashmeter.h>
 #include <saiexperimentaldashvip.h>
 #include <saiexperimentaldashpavalidation.h>
 #include <saiexperimentaldashvnet.h>
@@ -115,9 +113,6 @@ typedef union _sai_object_key_entry_t
 
     /** @validonly object_type == SAI_OBJECT_TYPE_VIP_ENTRY */
     sai_vip_entry_t vip_entry;
-
-    /** @validonly object_type == SAI_OBJECT_TYPE_FLOW_ENTRY */
-    sai_flow_entry_t flow_entry;
 
     /* Add new experimental entries above this line */
 
