@@ -2630,6 +2630,7 @@ sub ProcessStructValueType
     return "SAI_ATTR_VALUE_TYPE_BOOL"             if $type eq "bool";
     return "SAI_ATTR_VALUE_TYPE_IPV6"             if $type eq "sai_ip6_t";
     return "SAI_ATTR_VALUE_TYPE_UINT8"            if $type eq "sai_uint8_t";
+    return "SAI_ATTR_VALUE_TYPE_UINT16"           if $type eq "sai_uint16_t";
     return "SAI_ATTR_VALUE_TYPE_UINT64"           if $type eq "uint64_t";
     return "SAI_ATTR_VALUE_TYPE_TWAMP_STATS_DATA" if $type eq "sai_twamp_session_stats_data_t";
     return "SAI_ATTR_VALUE_TYPE_INT32"            if defined $SAI_ENUMS{$type}; # enum
@@ -4080,7 +4081,7 @@ sub ProcessSingleNonObjectId
 
         # allowed entries on object structs
 
-        if (not $type =~ /^sai_(nat_entry_data|mac|object_id|vlan_id|ip_address|ip_prefix|acl_chain|label_id|ip6|uint8|uint32|\w+_type)_t$/)
+        if (not $type =~ /^sai_(nat_entry_data|mac|object_id|vlan_id|ip_address|ip_prefix|acl_chain|label_id|ip6|uint8|uint16|uint32|\w+_type)_t$/)
         {
             LogError "struct member $member type '$type' is not allowed on struct $structname";
             next;
