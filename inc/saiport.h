@@ -2486,6 +2486,26 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_CABLE_TYPE,
 
     /**
+     * @brief Assign weight in percent to historical or past port load quality measure in switch pipeline. All quality measure should add up less than 100 percent.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_PORT_ATTR_ARS_ENABLE == true
+     */
+    SAI_PORT_ATTR_ARS_PORT_LOAD_PAST_WEIGHT,
+
+    /**
+     * @brief Assign weight in percent to future load quality measure in switch pipeline. All quality measure should add up less than 100 percent.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_PORT_ATTR_ARS_ENABLE == true
+     */
+    SAI_PORT_ATTR_ARS_PORT_LOAD_FUTURE_WEIGHT,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
