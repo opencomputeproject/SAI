@@ -791,8 +791,10 @@ typedef enum _sai_tam_int_attr_t
      * @brief Tam report type
      *
      * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_TAM_REPORT
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_TAM_INT_ATTR_REPORT_ID,
 
