@@ -5,7 +5,7 @@ The Switch Abstraction Interface(SAI) defines the APIs to provide a vendor-indep
 This document explains the new SAI features as well as the enhancements and the bug fixes on existing features. 
 
 
-### List of enhancements added in this release: 
+### List of enhancements added in this release : 
 
 CRM for DASH - [PR#1785](https://github.com/opencomputeproject/SAI/pull/1785) <br> 
 Add hostif trap for HTTP - [PR#1789](https://github.com/opencomputeproject/SAI/pull/1789) <br> 
