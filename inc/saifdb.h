@@ -166,6 +166,18 @@ typedef enum _sai_fdb_entry_attr_t
     SAI_FDB_ENTRY_ATTR_ENDPOINT_IP,
 
     /**
+     * @brief NextHop Group with members as Nexthops as Tunnel Nexthops
+     *
+     * Valid only for Ethernet Segment Ports - EVPN Multihoming feature
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @default SAI_NULL_OBJECT_ID
+     * @objects SAI_OBJECT_TYPE_NEXT_HOP_GROUP
+     */
+    SAI_FDB_ENTRY_ATTR_NEXT_HOP_GROUP_ID,
+
+    /**
      * @brief Attach a counter
      *
      * When it is empty, then packet hits won't be counted

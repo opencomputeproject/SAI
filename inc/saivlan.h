@@ -52,6 +52,20 @@ typedef enum _sai_vlan_tagging_mode_t
 } sai_vlan_tagging_mode_t;
 
 /**
+ * @brief Attribute data for df_mode parameter
+ */
+typedef enum _sai_vlan_df_mode_t
+{
+    SAI_VLAN_DF_MODE_IGNORE,
+
+    SAI_VLAN_DF_MODE_BLOCKED,
+
+    SAI_VLAN_DF_MODE_UNBLOCKED
+
+} sai_vlan_df_mode_t;
+
+
+/**
  * @brief Attribute data for multicast_lookup_key_type parameter
  */
 typedef enum _sai_vlan_mcast_lookup_key_type_t
@@ -451,6 +465,28 @@ typedef enum _sai_vlan_member_attr_t
      * @default SAI_VLAN_TAGGING_MODE_UNTAGGED
      */
     SAI_VLAN_MEMBER_ATTR_VLAN_TAGGING_MODE,
+
+    /**
+     * @brief Designator Forwarding Mode
+     *
+     * Valid only for Ethernet Segment Ports - EVPN Multihoming feature
+     *
+     * @type sai_vlan_df_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_VLAN_DF_MODE_IGNORE
+     */
+    SAI_VLAN_MEMBER_ATTR_DF_MODE,
+
+    /**
+     * @brief Split Horizon List ID
+     *
+     * Valid only for Ethernet Segment Ports - EVPN Multihoming feature
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_SPLIT_HORIZON_LIST
+     */
+    SAI_VLAN_MEMBER_ATTR_SPLIT_HORIZON_LIST_ID,
 
     /**
      * @brief End of attributes
