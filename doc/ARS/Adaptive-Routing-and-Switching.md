@@ -246,6 +246,122 @@ Example Workflow:
     	attr_count,
     	sai_attr_list);
 ```
+### 6.1.1 HW Allocated Quantization Bands
+This section talks about the quantization bands that are managed by hardware. 
+Attributes are introduced to specify the range as min and max. Hardware use the min and max for a specific metrics and internally allocates quantization band values. These bands can be read using the read only attributes.
+
+```
+    /**
+     * @brief Minimum past load threshold value for quantization process.
+     * Used by hardware to allocate the quantization bands.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ARS_PROFILE_ATTR_LOAD_PAST_MIN_VAL,
+
+    /**
+     * @brief Maximum past load threshold value for quantization process.
+     * Used by hardware to allocate the quantization bands.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ARS_PROFILE_ATTR_LOAD_PAST_MAX_VAL,
+    /**
+     * @brief Minimum future load threshold value for quantization process.
+     * Used by hardware to allocate the quantization bands.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ARS_PROFILE_ATTR_LOAD_FUTURE_MIN_VAL,
+
+    /**
+     * @brief Maximum future load threshold value for quantization process.
+     * Used by hardware to allocate the quantization bands.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ARS_PROFILE_ATTR_LOAD_FUTURE_MAX_VAL,
+
+    /**
+     * @brief Minimum current load threshold value for quantization process.
+     * Used by hardware to allocate the quantization bands.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ARS_PROFILE_ATTR_LOAD_CURRENT_MIN_VAL,
+
+    /**
+     * @brief Maximum current load threshold value for quantization process.
+     * Used by hardware to allocate the quantization bands.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ARS_PROFILE_ATTR_LOAD_CURRENT_MAX_VAL,
+```
+
+Read only attributes to read hardware allocated value. This is mostly for debugging or book keeping.
+
+```
+    /**
+     * @brief Minimum threshold used for quantization bands for past load
+     *
+     * @type sai_u32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_MIN_THRESHOLD_LIST_LOAD_PAST,
+
+    /**
+     * @brief Maximum threshold used for quantization bands for past load
+     *
+     * @type sai_u32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_MAX_THRESHOLD_LIST_LOAD_PAST,
+    /**
+     * @brief Minimum threshold used for quantization bands for future load
+     *
+     * @type sai_u32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_MIN_THRESHOLD_LIST_LOAD_FUTURE,
+
+    /**
+     * @brief Maximum threshold used for quantization bands for future load
+     *
+     * @type sai_u32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_MAX_THRESHOLD_LIST_LOAD_FUTURE,
+
+    /**
+     * @brief Minimum threshold used for quantization bands for current load
+     *
+     * @type sai_u32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_MIN_THRESHOLD_LIST_LOAD_CURRENT,
+
+    /**
+     * @brief Maximum threshold used for quantization bands for current load
+     *
+     * @type sai_u32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_MAX_THRESHOLD_LIST_LOAD_CURRENT,
+```
+
 
 ### 6.2 Bind ARS Profile Object to Switch Object
 Bind the ars profile object created in the previous step to the switch. There can be only a single ARS profile specified for a switch.

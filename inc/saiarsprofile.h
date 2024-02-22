@@ -328,6 +328,7 @@ typedef enum _sai_ars_profile_attr_t
 
     /**
      * @brief Minimum past load threshold value for quantization process.
+     * Used by hardware to allocate the quantization bands.
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -337,6 +338,7 @@ typedef enum _sai_ars_profile_attr_t
 
     /**
      * @brief Maximum past load threshold value for quantization process.
+     * Used by hardware to allocate the quantization bands.
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -362,6 +364,7 @@ typedef enum _sai_ars_profile_attr_t
 
     /**
      * @brief Minimum future load threshold value for quantization process.
+     * Used by hardware to allocate the quantization bands.
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -371,6 +374,7 @@ typedef enum _sai_ars_profile_attr_t
 
     /**
      * @brief Maximum future load threshold value for quantization process.
+     * Used by hardware to allocate the quantization bands.
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -396,6 +400,7 @@ typedef enum _sai_ars_profile_attr_t
 
     /**
      * @brief Minimum current load threshold value for quantization process.
+     * Used by hardware to allocate the quantization bands.
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -405,6 +410,7 @@ typedef enum _sai_ars_profile_attr_t
 
     /**
      * @brief Maximum current load threshold value for quantization process.
+     * Used by hardware to allocate the quantization bands.
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -427,6 +433,15 @@ typedef enum _sai_ars_profile_attr_t
      * @flags READ_ONLY
      */
     SAI_ARS_PROFILE_ATTR_QUANT_BAND_MAX_THRESHOLD_LIST_LOAD_CURRENT,
+
+    /**
+     * @brief Maximum flows supported for ARS processing
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ARS_PROFILE_ATTR_MAX_FLOWS,
 
     /**
      * @brief End of attributes
