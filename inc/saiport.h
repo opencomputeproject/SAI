@@ -2288,6 +2288,7 @@ typedef enum _sai_port_attr_t
      * @flags CREATE_AND_SET
      * @default false
      * @validonly SAI_PORT_ATTR_ARS_ENABLE == true
+     * @deprecated true
      */
     SAI_PORT_ATTR_ARS_PORT_LOAD_PAST_ENABLE,
 
@@ -2299,6 +2300,7 @@ typedef enum _sai_port_attr_t
      * @flags CREATE_AND_SET
      * @default false
      * @validonly SAI_PORT_ATTR_ARS_ENABLE == true
+     * @deprecated true
      */
     SAI_PORT_ATTR_ARS_PORT_LOAD_FUTURE_ENABLE,
 
