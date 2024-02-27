@@ -47,6 +47,7 @@
 #include <saiexperimentaldashdirectionlookup.h>
 #include <saiexperimentaldashacl.h>
 #include <saiexperimentalbmtor.h>
+#include <saiexperimentalicmpecho.h>
 
 /**
  * @defgroup SAIOBJECT SAI - Object API definitions.
