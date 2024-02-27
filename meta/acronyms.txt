@@ -11,6 +11,7 @@ BFD - Bidirectional Forwarding Detection
 BFDV6 - Bidirectional Forwarding Detection for IPv6
 BGP - Border Gateway Protocol
 BOS - Bottom Of Stack
+BW - Bandwidth
 CAM - Content Addressable Memory
 CAUI - 100 Gigabit Attachment Unit Interface
 CB - Callback
