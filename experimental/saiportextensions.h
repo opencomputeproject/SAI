@@ -52,6 +52,18 @@ typedef enum _sai_port_stat_extensions_t
 {
     SAI_PORT_STAT_EXTENSIONS_RANGE_START = SAI_PORT_STAT_END,
 
+    /** DASH port LB_FAST_PATH_ICMP_IN_BYTES stat count */
+    SAI_PORT_STAT_LB_FAST_PATH_ICMP_IN_BYTES = SAI_PORT_STAT_EXTENSIONS_RANGE_START,
+
+    /** DASH port LB_FAST_PATH_ICMP_IN_PACKETS stat count */
+    SAI_PORT_STAT_LB_FAST_PATH_ICMP_IN_PACKETS,
+
+    /** DASH port LB_FAST_PATH_ENI_MISS_BYTES stat count */
+    SAI_PORT_STAT_LB_FAST_PATH_ENI_MISS_BYTES,
+
+    /** DASH port LB_FAST_PATH_ENI_MISS_PACKETS stat count */
+    SAI_PORT_STAT_LB_FAST_PATH_ENI_MISS_PACKETS,
+
     /* Add new experimental port stats above this line */
 
     SAI_PORT_STAT_EXTENSIONS_RANGE_END
