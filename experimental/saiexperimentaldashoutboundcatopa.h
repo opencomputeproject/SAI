@@ -19,7 +19,9 @@
  *
  * @file    saiexperimentaldashoutboundcatopa.h
  *
- * @brief   This module defines SAI P4 extension  interface
+ * @brief   This module defines SAI extensions for DASH outbound CA to PA
+ *
+ * @warning This module is a SAI experimental module
  */
 
 #if !defined (__SAIEXPERIMENTALDASHOUTBOUNDCATOPA_H_)
@@ -28,7 +30,7 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_OUTBOUND_CA_TO_PA SAI - Extension specific API definitions
+ * @defgroup SAIEXPERIMENTALDASH_OUTBOUND_CA_TO_PA SAI - Experimental: DASH outbound CA to PA specific API definitions
  *
  * @{
  */

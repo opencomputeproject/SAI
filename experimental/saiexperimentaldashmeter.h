@@ -19,7 +19,9 @@
  *
  * @file    saiexperimentaldashmeter.h
  *
- * @brief   This module defines SAI P4 extension  interface
+ * @brief   This module defines SAI extensions for DASH meter
+ *
+ * @warning This module is a SAI experimental module
  */
 
 #if !defined (__SAIEXPERIMENTALDASHMETER_H_)
@@ -28,7 +30,7 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_METER SAI - Extension specific API definitions
+ * @defgroup SAIEXPERIMENTALDASH_METER SAI - Experimental: DASH meter specific API definitions
  *
  * @{
  */
