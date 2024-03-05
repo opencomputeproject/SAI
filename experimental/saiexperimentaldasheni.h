@@ -431,6 +431,27 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_OUTBOUND_V6_STAGE5_DASH_ACL_GROUP_ID,
 
     /**
+     * @brief Owner of ENI, when DPU participates in HA
+     *
+     * @par Irrespective of the DPU in the HA pair where traffic actually lands,
+     * only the DASH ACL rules configured on the owner DPU will be evaluated
+     * for all flows belonging to this ENI.
+     *
+     * @type bool
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_ENI_ATTR_HA_OWNER,
+
+    /**
+     * @brief VIP associated with this ENI, when DPU participates in HA
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_ONLY
+     * @default 0
+     */
+    SAI_ENI_ATTR_HA_VIP_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_ENI_ATTR_END,

@@ -207,6 +207,7 @@ sub CheckStatsFunction
     return if $fname eq "sai_get_tam_snapshot_stats_fn"; # exception
     return if $fname eq "sai_bulk_object_get_stats_fn"; # exception
     return if $fname eq "sai_bulk_object_clear_stats_fn"; # exception
+    return if $fname eq "sai_clear_dash_ha_all_stats_fn"; # exception
 
     if (not $fname =~ /^sai_((get|clear)_(\w+)_stats|get_\w+_stats_ext)_fn$/)
     {
@@ -310,7 +311,7 @@ sub CheckFunctionsParams
                 $pattern = "${pattern}_id";
             }
 
-            if (not $first =~ /^$pattern$/)
+            if (not $first =~ /^$pattern$/ and not $first eq "switch_id")
             {
                 LogWarning "first param should be called ${pattern} but is $first in $fname: $file";
             }
@@ -453,7 +454,8 @@ sub CheckFunctionNaming
     switch_mdio_cl22_read
     switch_mdio_cl22_write
     switch_register_read
-    switch_register_write);
+    switch_register_write
+    \(\\w+\)_dash_ha_fsm);
 
     my $REG = "(" . (join"|",@listex) . ")";
 
@@ -498,6 +500,7 @@ sub CheckQuadApi
     my ($data, $file) = @_;
 
     return if not $data =~ m!(sai_\w+_api_t)(.+?)\1;!igs;
+    return if $data =~ "sai_dash_ha_api_t";
 
     my $apis = $2;
 
@@ -513,6 +516,7 @@ sub CheckQuadApi
 
         $f =~ s/remove_all_neighbor_entries/X/;
         $f =~ s/clear_port_all_stats/X/;
+        $f =~ s/clear_dash_ha_all_stats/X/;
 
         $f =~ s/^create_\w+/c/;
         $f =~ s/^remove_\w+/r/;

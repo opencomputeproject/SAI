@@ -490,6 +490,21 @@ typedef enum _sai_attr_value_type_t
      * @brief Attribute value is statistics data.
      */
     SAI_ATTR_VALUE_TYPE_TWAMP_STATS_DATA,
+
+    /**
+     * @brief Attribute value is VNI range list.
+     */
+    SAI_ATTR_VALUE_TYPE_VNI_RANGE_LIST,
+
+    /**
+     * @brief Attribute value is DASH VIP info list
+     */
+    SAI_ATTR_VALUE_TYPE_DASH_HA_VIP_INFO_LIST,
+
+    /**
+     * @brief Attribute value is DASH VIP status list
+     */
+    SAI_ATTR_VALUE_TYPE_DASH_HA_VIP_STATUS_LIST,
 } sai_attr_value_type_t;
 
 /**

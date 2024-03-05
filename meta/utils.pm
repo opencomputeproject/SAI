@@ -336,7 +336,7 @@ sub IsSpecialObject
 {
     my $objectType = shift;
 
-    return ($objectType eq "SAI_OBJECT_TYPE_FDB_FLUSH" or $objectType eq "SAI_OBJECT_TYPE_HOSTIF_PACKET");
+    return ($objectType eq "SAI_OBJECT_TYPE_FDB_FLUSH" or $objectType eq "SAI_OBJECT_TYPE_HOSTIF_PACKET" or $objectType eq "SAI_OBJECT_TYPE_DASH_HA_FSM");
 }
 
 sub SanityCheckContent
@@ -456,7 +456,6 @@ sub ProcessEnumInitializers
 
     # using reference here, will cause update $ini inside initializer table
     # reference and that's what we want
-
     for my $ini (@$ini_ref)
     {
         if ($ini eq "")

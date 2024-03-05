@@ -1330,6 +1330,84 @@ typedef struct _sai_port_err_status_list_t
     sai_port_err_status_t *list;
 } sai_port_err_status_list_t;
 
+typedef struct _sai_vni_range_t
+{
+    uint32_t min;
+    uint32_t max;
+
+} sai_vni_range_t;
+
+typedef struct _sai_vni_range_list_t
+{
+    uint32_t count;
+    sai_vni_range_t *list;
+
+} sai_vni_range_list_t;
+
+/**
+ * @brief Attribute data for HA_ROLE parameter
+ */
+typedef enum _sai_dash_ha_oper_role_t
+{
+    SAI_DASH_HA_OPER_ROLE_NONE,
+    SAI_DASH_HA_OPER_ROLE_ACTIVE,
+    SAI_DASH_HA_OPER_ROLE_STANDBY,
+    SAI_DASH_HA_OPER_ROLE_SHUTDOWN,
+    SAI_DASH_HA_OPER_ROLE_DORMANT_STANDALONE,
+    SAI_DASH_HA_OPER_ROLE_DORMANT_ACTIVE,
+    SAI_DASH_HA_OPER_ROLE_DORMANT_STANDBY
+} sai_dash_ha_oper_role_t;
+
+/**
+ * @brief DASH HA VIP pair identified by a VIP ID
+ */
+typedef struct _sai_dash_ha_vip_info_t
+{
+    /** VIP ID */
+    uint32_t vip_id;
+
+    /**
+     * @brief VIP IPv4 and IPv6 address pair
+     */
+    sai_ip4_t vip_ipv4;
+    sai_ip6_t vip_ipv6;
+
+} sai_dash_ha_vip_info_t;
+
+typedef struct _sai_dash_ha_vip_info_list_t
+{
+    uint32_t count;
+    sai_dash_ha_vip_info_t *list;
+
+} sai_dash_ha_vip_info_list_t;
+
+/**
+ * @brief DASH HA VIP status
+ */
+typedef struct _sai_dash_ha_vip_status_t
+{
+    /** VIP ID */
+    uint32_t vip_id;
+
+    /**
+     * @brief VIP role
+     */
+    sai_dash_ha_oper_role_t vip_role;
+
+    /**
+     * @brief Indicate need for HA Flow reconcile trigger for this VIP
+     */
+    bool flow_reconcile_expected;
+
+} sai_dash_ha_vip_status_t;
+
+typedef struct _sai_dash_ha_vip_status_list_t
+{
+    uint32_t count;
+    sai_dash_ha_vip_status_t *list;
+
+} sai_dash_ha_vip_status_list_t;
+
 /**
  * @brief Data Type
  *
@@ -1528,6 +1606,15 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST */
     sai_port_snr_list_t portsnrlist;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_VNI_RANGE_LIST */
+    sai_vni_range_list_t vnirangelist;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_DASH_HA_VIP_INFO_LIST */
+    sai_dash_ha_vip_info_list_t dashhavipinfolist;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_DASH_HA_VIP_STATUS_LIST */
+    sai_dash_ha_vip_status_list_t dashhavipstatuslist;
 } sai_attribute_value_t;
 
 /**

@@ -2638,6 +2638,7 @@ sub ProcessStructValueType
     return "-1"                                   if $type eq "sai_fdb_entry_t";
     return "-1"                                   if $type eq "sai_nat_entry_t";
     return "-1"                                   if $type eq "sai_attribute_t*";
+    return "-1"                                   if $type eq "sai_dash_ha_fsm_entry_t";
 
     LogError "invalid struct member value type $type";
 
@@ -3954,7 +3955,6 @@ sub CreateObjectInfo
         # since we use those members in rev graph entries
         # so struct members must be generated previously
         #
-
         my $isnonobjectid       = ProcessIsNonObjectId($struct, $ot);
         my $structmembers       = ProcessStructMembersName($struct, $ot ,lc($1));
         my $structmemberscount  = ProcessStructMembersCount($struct, $ot);
@@ -4295,6 +4295,7 @@ sub ExtractStatsFunctionMap
             # exceptions
 
             next if $fn eq "clear_port_all_stats";
+            next if $fn eq "clear_dash_ha_all_stats";
             next if $fn eq "get_tam_snapshot_stats";
 
             if (not $fn =~ /^(?:get|clear)_(\w+)_stats(?:_ext)?$/)
