@@ -68,6 +68,7 @@ our %FUNCTION_DEF = ();
 our @ALL_ENUMS = ();
 our %GLOBAL_APIS = ();
 our %OBJECT_TYPE_BULK_MAP = ();
+our %SAI_ENUMS_CUSTOM_RANGES = ();
 
 my $FLAGS = "MANDATORY_ON_CREATE|CREATE_ONLY|CREATE_AND_SET|READ_ONLY|KEY";
 my $ENUM_FLAGS_TYPES = "(none|strict|mixed|ranges|free)";
@@ -655,6 +656,10 @@ sub ProcessEnumSection
         my @ranges = grep(/^SAI_\w+(RANGE_BASE)$/, @values);
 
         $SAI_ENUMS{$enumtypename}{ranges} = \@ranges;
+
+        my @custom = grep(/^SAI_\w+_CUSTOM_RANGE_(START|END)$/, @values);
+
+        $SAI_ENUMS_CUSTOM_RANGES{$enumtypename}{customranges} = \@custom;
 
         @values = grep(!/^SAI_\w+_(START|END)$/, @values);
         @values = grep(!/^SAI_\w+(RANGE_BASE)$/, @values);
@@ -2625,6 +2630,7 @@ sub ProcessStructValueType
     return "SAI_ATTR_VALUE_TYPE_BOOL"             if $type eq "bool";
     return "SAI_ATTR_VALUE_TYPE_IPV6"             if $type eq "sai_ip6_t";
     return "SAI_ATTR_VALUE_TYPE_UINT8"            if $type eq "sai_uint8_t";
+    return "SAI_ATTR_VALUE_TYPE_UINT16"           if $type eq "sai_uint16_t";
     return "SAI_ATTR_VALUE_TYPE_UINT64"           if $type eq "uint64_t";
     return "SAI_ATTR_VALUE_TYPE_TWAMP_STATS_DATA" if $type eq "sai_twamp_session_stats_data_t";
     return "SAI_ATTR_VALUE_TYPE_INT32"            if defined $SAI_ENUMS{$type}; # enum
@@ -4075,7 +4081,7 @@ sub ProcessSingleNonObjectId
 
         # allowed entries on object structs
 
-        if (not $type =~ /^sai_(nat_entry_data|mac|object_id|vlan_id|ip_address|ip_prefix|acl_chain|label_id|ip6|uint8|uint32|\w+_type)_t$/)
+        if (not $type =~ /^sai_(nat_entry_data|mac|object_id|vlan_id|ip_address|ip_prefix|acl_chain|label_id|ip6|uint8|uint16|uint32|\w+_type)_t$/)
         {
             LogError "struct member $member type '$type' is not allowed on struct $structname";
             next;

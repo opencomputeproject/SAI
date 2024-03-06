@@ -142,7 +142,10 @@ typedef enum _sai_port_loopback_mode_t
     SAI_PORT_LOOPBACK_MODE_MAC,
 
     /** Port loopback at PHY remote end */
-    SAI_PORT_LOOPBACK_MODE_PHY_REMOTE
+    SAI_PORT_LOOPBACK_MODE_PHY_REMOTE,
+
+    /** Port loopback at MAC remote end */
+    SAI_PORT_LOOPBACK_MODE_MAC_REMOTE
 } sai_port_loopback_mode_t;
 
 /**
@@ -165,6 +168,53 @@ typedef enum _sai_port_media_type_t
     /** Media type Back plane. */
     SAI_PORT_MEDIA_TYPE_BACKPLANE,
 } sai_port_media_type_t;
+
+/**
+ * @brief Attribute data for #SAI_PORT_ATTR_CABLE_PAIR_STATE
+ * Copper cable pair states
+ */
+typedef enum _sai_port_cable_pair_state_t
+{
+    /**  Cable pair state is good */
+    SAI_PORT_CABLE_PAIR_STATE_OK,
+
+    /**  The Cable pair state open */
+    SAI_PORT_CABLE_PAIR_STATE_OPEN,
+
+    /**  The Cable pair state short (within pair) */
+    SAI_PORT_CABLE_PAIR_STATE_SHORT,
+
+    /**  The Cable pair state is shorted with another pair (inter-short) cross talk */
+    SAI_PORT_CABLE_PAIR_STATE_CROSSTALK,
+
+    /**  Cable state unknown */
+    SAI_PORT_CABLE_PAIR_STATE_UNKNOWN
+} sai_port_cable_pair_state_t;
+
+/**
+ * @brief Attribute data for #SAI_PORT_ATTR_CABLE_TYPE
+ * Copper cable types
+ */
+typedef enum _sai_port_cable_type_t
+{
+    /**  Cable type Unknown */
+    SAI_PORT_CABLE_TYPE_UNKNOWN,
+
+    /**  Cable type CAT5 */
+    SAI_PORT_CABLE_TYPE_CAT5,
+
+    /**  Cable type CAT5E */
+    SAI_PORT_CABLE_TYPE_CAT5E,
+
+    /**  Cable type CAT6 */
+    SAI_PORT_CABLE_TYPE_CAT6,
+
+    /**  Cable type CAT6A */
+    SAI_PORT_CABLE_TYPE_CAT6A,
+
+    /**  Cable type CAT7 */
+    SAI_PORT_CABLE_TYPE_CAT7
+} sai_port_cable_type_t;
 
 /**
  * @brief Breakout Mode types based on number
@@ -2402,6 +2452,40 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_DATAPATH_ENABLE,
 
     /**
+     * @brief Read ethernet copper cable pair status.
+     *
+     * Returns pair states sequentially from list index 0 to n (n = number of pairs - 1)
+     * value of n depends on number of pairs in twisted ethernet copper cable
+     * Cable diagnostics triggers ECD once cable pair states is requested, it is synchronous call.
+     *
+     * @type sai_s32_list_t sai_port_cable_pair_state_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_CABLE_PAIR_STATE,
+
+    /**
+     * @brief Get ethernet copper cable pair length (unit meter)
+     *
+     * Returns ethernet cable pair length sequentially from list index 0 to n (n = number of pairs - 1)
+     * value of n depends on number of pairs in twisted ethernet copper cable
+     * Cable diagnostics runs once cable pair length is requested, it is synchronous call.
+     *
+     * @type sai_s32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_CABLE_PAIR_LENGTH,
+
+    /**
+     * @brief Configure ethernet copper cable type to check the cable status
+     *
+     * @type sai_port_cable_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_CABLE_TYPE_UNKNOWN
+     * @validonly SAI_PORT_ATTR_MEDIA_TYPE == SAI_PORT_MEDIA_TYPE_COPPER
+     */
+    SAI_PORT_ATTR_CABLE_TYPE,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
@@ -2421,8 +2505,11 @@ typedef enum _sai_port_attr_t
  */
 typedef enum _sai_port_stat_t
 {
+    /** Port stat range start */
+    SAI_PORT_STAT_START,
+
     /** SAI port stat if in octets */
-    SAI_PORT_STAT_IF_IN_OCTETS,
+    SAI_PORT_STAT_IF_IN_OCTETS = SAI_PORT_STAT_START,
 
     /** SAI port stat if in ucast pkts */
     SAI_PORT_STAT_IF_IN_UCAST_PKTS,
@@ -3132,6 +3219,9 @@ typedef enum _sai_port_stat_t
 
     /** Port stat out drop reasons range end */
     SAI_PORT_STAT_OUT_DROP_REASON_RANGE_END = 0x00002fff,
+
+    /** Port stat range end */
+    SAI_PORT_STAT_END
 
 } sai_port_stat_t;
 

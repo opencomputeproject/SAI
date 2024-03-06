@@ -4,6 +4,3 @@
 [submodule "test/saithrift/ctypesgen"]
 	path = test/saithrift/ctypesgen
 	url = https://github.com/davidjamesca/ctypesgen
-[submodule "bm/behavioral-model"]
-	path = bm/behavioral-model
-	url = https://github.com/p4lang/behavioral-model.git
