@@ -1,0 +1,2 @@
+#compatiable with bookworm python 3.11 environment and build with python3
+debian/usr/local/local/lib/python3*/dist-packages/* /usr/lib/python3/dist-packages/
