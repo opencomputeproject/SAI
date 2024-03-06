@@ -662,6 +662,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_INT32_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT8:
         case SAI_ATTR_VALUE_TYPE_UINT16:
+        case SAI_ATTR_VALUE_TYPE_INT16:
         case SAI_ATTR_VALUE_TYPE_VLAN_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT32:
         case SAI_ATTR_VALUE_TYPE_UINT64:
@@ -729,6 +730,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_PORT_ERR_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST:
+        case SAI_ATTR_VALUE_TYPE_POE_PORT_POWER_CONSUMPTION:
 
             if (md->allowedobjecttypes != NULL)
             {
@@ -2759,6 +2761,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
         case SAI_ATTR_VALUE_TYPE_POINTER:
         case SAI_ATTR_VALUE_TYPE_UINT16:
+        case SAI_ATTR_VALUE_TYPE_INT16:
         case SAI_ATTR_VALUE_TYPE_UINT32:
         case SAI_ATTR_VALUE_TYPE_UINT32_RANGE:
         case SAI_ATTR_VALUE_TYPE_UINT64:
@@ -2774,6 +2777,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG:
         case SAI_ATTR_VALUE_TYPE_FABRIC_PORT_REACHABILITY:
         case SAI_ATTR_VALUE_TYPE_LATCH_STATUS:
+        case SAI_ATTR_VALUE_TYPE_POE_PORT_POWER_CONSUMPTION:
 
             if (!md->isprimitive)
             {
