@@ -34,12 +34,14 @@ has 'type' => (
         is_attr_list         => 'is_attr_list',
         typename             => 'name',
         thrift_typename      => 'thrift_name',
+        protobuf_typename    => 'protobuf_name',
         convert_to_list      => 'convert_to_list',
         convert_to_attr_list => 'convert_to_attr_list'
     },
 );
 
 with 'SAI::RPC::ThriftName::Variable';
+with 'SAI::RPC::ProtoBufName::Variable';
 
 ###########
 # Methods #

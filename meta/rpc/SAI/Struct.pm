@@ -22,7 +22,7 @@ use Moose;
 has 'name' => ( is => 'ro', required => 1 );
 has 'members' => ( is => 'ro' );
 
-with 'SAI::RPC::ThriftName', 'SAI::Utils::XMLLoader';
+with 'SAI::RPC::ThriftName', 'SAI::RPC::ProtoBufName', 'SAI::Utils::XMLLoader';
 
 ###########
 # Methods #
