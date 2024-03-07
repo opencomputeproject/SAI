@@ -198,7 +198,7 @@ untie @lines;
 
 say colored( 'Generating ProtoBuf files...', 'bold blue' );
 chdir $gen_dir;
-system('protoc --cpp_out=. --proto_path=.. sai.proto') == 0 or die colored("Command failed: $!", "red"); 
+system('protoc --cpp_out=. --proto_path=.. sai.proto') == 0 or die colored("Command failed: $!", "red");
 chdir $run_dir;
 
 
