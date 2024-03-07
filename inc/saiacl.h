@@ -3185,11 +3185,10 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_SET_ARS_OBJECT = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x36,
 
     /**
-     * @brief Disable ARS forwarding for a destination that can be a LAG or nexthopgroup
+     * @brief Enable ARS forwarding for a given match condition. This rule takes effect only when global ARS profile object is created and has binding to the switch
      *
-     * @type sai_acl_action_data_t sai_object_id_t
+     * @type sai_acl_action_data_t bool
      * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP_GROUP
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_DISABLE_ARS_FORWARDING = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x37,
