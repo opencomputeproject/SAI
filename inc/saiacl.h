@@ -3185,7 +3185,7 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_SET_ARS_OBJECT = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x36,
 
     /**
-     * @brief Enable ARS forwarding for a given match condition. This rule takes effect only when global ARS profile object is created and has binding to the switch
+     * @brief Disable ARS forwarding for a given match condition. This rule takes effect only when global ARS profile object is created and has binding to the switch
      *
      * @type sai_acl_action_data_t bool
      * @flags CREATE_AND_SET
