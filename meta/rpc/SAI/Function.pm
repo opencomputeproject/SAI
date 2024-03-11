@@ -167,7 +167,7 @@ sub _find_count_arg {
             #  or list of uint32 (and we have pointer to pointer)
             or (    $arg->type->ptr == 2
                 and $prev_arg->is_list
-                and ($prev_arg->type->subtype->thrift_name =~ /uint32_t/))
+                and $prev_arg->type->subtype->thrift_name =~ /uint32_t/)
           )
         {
             # Note, that counter must be directly previous argument.
