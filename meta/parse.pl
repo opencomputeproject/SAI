@@ -2429,17 +2429,17 @@ sub CheckEnumNaming
 {
     my ($attr, $type) = @_;
 
-    LogError "can't match sai type on '$type'" if not $type =~ /.*sai_(\w+)_t/;
+    LogError "can't match sai type on '$type'" if not $type =~ /.*sai_(dash_)?(\w+)_t/;
 
-    my $enumTypeName = uc($1);
+    my $enumTypeName = uc($2);
 
-    return if $attr =~ /_${enumTypeName}_LIST$/;
-    return if $attr =~ /_$enumTypeName$/;
+    return if $attr =~ /(_DASH)?_${enumTypeName}_LIST$/;
+    return if $attr =~ /(_DASH)?_$enumTypeName$/;
 
-    $attr =~ /SAI_(\w+?)_ATTR(_\w+?)(_LIST)?$/;
+    $attr =~ /SAI_(DASH_)?(\w+?)_ATTR(_\w+?)(_LIST)?$/;
 
-    my $attrObjectType = $1;
-    my $attrSuffix = $2;
+    my $attrObjectType = $2;
+    my $attrSuffix = $3;
 
     if ($enumTypeName =~ /^${attrObjectType}_(\w+)$/)
     {
