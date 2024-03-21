@@ -791,8 +791,10 @@ typedef enum _sai_tam_int_attr_t
      * @brief Tam report type
      *
      * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_REPORT
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_TAM_INT_ATTR_REPORT_ID,
 
@@ -1438,8 +1440,9 @@ typedef enum _sai_tam_telemetry_attr_t
      * @brief Collector object list
      *
      * @type sai_object_list_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_COLLECTOR
+     * @default empty
      */
     SAI_TAM_TELEMETRY_ATTR_COLLECTOR_LIST,
 
@@ -1555,9 +1558,9 @@ typedef enum _sai_tam_transport_type_t
     SAI_TAM_TRANSPORT_TYPE_GRPC,
 
     /**
-     * @brief Transport MIRROR session
+     * @brief Transport forwarding to port
      */
-    SAI_TAM_TRANSPORT_TYPE_MIRROR,
+    SAI_TAM_TRANSPORT_TYPE_PORT,
 } sai_tam_transport_type_t;
 
 /**
@@ -1638,6 +1641,66 @@ typedef enum _sai_tam_transport_attr_t
      * @default 1500
      */
     SAI_TAM_TRANSPORT_ATTR_MTU,
+
+    /**
+     * @brief L2 source MAC address
+     *
+     * @type sai_mac_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE == SAI_TAM_TRANSPORT_TYPE_PORT
+     */
+    SAI_TAM_TRANSPORT_ATTR_SRC_MAC_ADDRESS,
+
+    /**
+     * @brief L2 destination MAC address
+     *
+     * @type sai_mac_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE == SAI_TAM_TRANSPORT_TYPE_PORT
+     */
+    SAI_TAM_TRANSPORT_ATTR_DST_MAC_ADDRESS,
+
+    /**
+     * @brief L2 header TPID.
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0x8100
+     * @validonly SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE == SAI_TAM_TRANSPORT_TYPE_PORT
+     */
+    SAI_TAM_TRANSPORT_ATTR_VLAN_TPID,
+
+    /**
+     * @brief L2 header VLAN Id.
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan true
+     * @default 0
+     * @validonly SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE == SAI_TAM_TRANSPORT_TYPE_PORT
+     */
+    SAI_TAM_TRANSPORT_ATTR_VLAN_ID,
+
+    /**
+     * @brief L2 header packet priority (3 bits).
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE == SAI_TAM_TRANSPORT_TYPE_PORT
+     */
+    SAI_TAM_TRANSPORT_ATTR_VLAN_PRI,
+
+    /**
+     * @brief L2 header Vlan CFI (1 bit).
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE == SAI_TAM_TRANSPORT_TYPE_PORT
+     */
+    SAI_TAM_TRANSPORT_ATTR_VLAN_CFI,
 
     /**
      * @brief End of Attributes
@@ -1849,6 +1912,297 @@ typedef sai_status_t (*sai_set_tam_collector_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
+ * @brief TAM Packet Ingress Drop Types
+ */
+typedef enum _sai_packet_drop_type_ingress_t
+{
+    /** None */
+    SAI_PACKET_DROP_TYPE_INGRESS_NONE,
+
+    /** ALL */
+    SAI_PACKET_DROP_TYPE_INGRESS_ALL,
+
+    /** Flags drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_CML_FLAGS_DROP,
+
+    /** Layer 2 source static move drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_L2_SRC_STATIC_MOVE,
+
+    /** Layer 2 discard drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_L2_SRC_DISCARD,
+
+    /** MAC multicast drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_MACSA_MULTICAST,
+
+    /** TPID check fail drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_OUTER_TPID_CHECK_FAILED,
+
+    /** Port vlan check fail drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_INCOMING_PVLAN_CHECK_FAILED,
+
+    /** Packet integrity check fail drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_PKT_INTEGRITY_CHECK_FAILED,
+
+    /** Unknown protocol drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_PROTOCOL_PKT_DROP,
+
+    /** VLAN membership check fail drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_MEMBERSHIP_CHECK_FAILED,
+
+    /** Spanning tree check fail drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_SPANNING_TREE_CHECK_FAILED,
+
+    /** Layer 2 destination lookup miss drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_L2_DST_LOOKUP_MISS,
+
+    /** Layer 2 destination discard drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_L2_DST_DISCARD,
+
+    /** Layer 3 destination lookup miss drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_L3_DST_LOOKUP_MISS,
+
+    /** Layer 3 destination discard drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_L3_DST_DISCARD,
+
+    /** Layer 3 header error drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_L3_HDR_ERROR,
+
+    /** Layer 3 IP TTL error drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_L3_TTL_ERROR,
+
+    /** RPF check fail drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_IPMC_L3_IIF_OR_RPA_ID_CHECK_FAILED,
+
+    /** Tunnel TTL check fail drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_TUNNEL_TTL_CHECK_FAILED,
+
+    /** Invalid tunnel object drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_TUNNEL_OBJECT_VALIDATION_FAILED,
+
+    /** Invalid tunnel adaptation drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_TUNNEL_ADAPT_DROP,
+
+    /** Port VLAN drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_PVLAN_DROP,
+
+    /** Filter drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_VFP,
+
+    /** Filter drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_IFP,
+
+    /** Filter based metering drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_IFP_METER,
+
+    /** Destination filter drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_DST_FP,
+
+    /** MPLS protection drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_MPLS_PROTECTION_DROP,
+
+    /** Invalid MPLS label action drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_MPLS_LABEL_ACTION_INVALID,
+
+    /** MPLS termination table drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_MPLS_TERM_POLICY_SELECT_TABLE_DROP,
+
+    /** MPLS reserved label drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_MPLS_RESERVED_LABEL_EXPOSED,
+
+    /** MPLS TTL error drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_MPLS_TTL_ERROR,
+
+    /** MPLS ECN drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_MPLS_ECN_ERROR,
+
+    /** Exact match table drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_EM_FT,
+
+    /** VLAN translation table drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_IVXLT,
+
+    /** Re-circulation mirror drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_EP_RECIRC_MIRROR_DROP,
+
+    /** IPv4 gateway drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_MTOP_IPV4_GATEWAY,
+
+    /** Reverse RPF check drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_URPF_CHECK_FAILED,
+
+    /** Source port knockout drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_SRC_PORT_KNOCKOUT_DROP,
+
+    /** LAG fail over port down drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_LAG_FAILOVER_PORT_DOWN,
+
+    /** Split horizon check fail drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_SPLIT_HORIZON_CHECK_FAILED,
+
+    /** Destination link down drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_DST_LINK_DOWN,
+
+    /** Port block mask drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_BLOCK_MASK_DROP,
+
+    /** Layer 3 MTU check fail drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_L3_MTU_CHECK_FAILED,
+
+    /** Sequence number check fail drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_SEQ_NUM_CHECK_FAILED,
+
+    /** Ingress interface same as egress interface drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_L3_IIF_EQ_L3_OIF,
+
+    /** Storm control drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_STORM_CONTROL_DROP,
+
+    /** Membership check fail drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_EGR_MEMBERSHIP_CHECK_FAILED,
+
+    /** Spanning tree check fail drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_EGR_SPANNING_TREE_CHECK_FAILED,
+
+    /** Port block mode drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_DST_PBM_ZERO,
+
+    /** MPLS control packet drops */
+    SAI_PACKET_DROP_TYPE_INGRESS_MPLS_CTRL_PKT_DROP,
+} sai_packet_drop_type_ingress_t;
+
+/**
+ * @brief TAM Packet MMU Drop Types
+ */
+typedef enum _sai_packet_drop_type_mmu_t
+{
+    /** None */
+    SAI_PACKET_DROP_TYPE_MMU_NONE,
+
+    /** ALL */
+    SAI_PACKET_DROP_TYPE_MMU_ALL,
+
+    /** Port group limit */
+    SAI_PACKET_DROP_TYPE_MMU_ING_PG_LIMIT,
+
+    /** Ingress port service pool limit */
+    SAI_PACKET_DROP_TYPE_MMU_ING_PORTSP_LIMIT,
+
+    /** Headroom pool limit */
+    SAI_PACKET_DROP_TYPE_MMU_ING_HEADROOM_POOL_LIMIT,
+
+    /** Egress queue limit */
+    SAI_PACKET_DROP_TYPE_MMU_EGR_QUEUE_LIMIT,
+
+    /** Egress port service pool limit */
+    SAI_PACKET_DROP_TYPE_MMU_EGR_PORTSP_LIMIT,
+
+    /** WRED check */
+    SAI_PACKET_DROP_TYPE_MMU_WRED_CHECKS,
+} sai_packet_drop_type_mmu_t;
+
+/**
+ * @brief TAM Packet Egress Drop Types
+ */
+typedef enum _sai_packet_drop_type_egress_t
+{
+    /** None */
+    SAI_PACKET_DROP_TYPE_EGRESS_NONE,
+
+    /** ALL */
+    SAI_PACKET_DROP_TYPE_EGRESS_ALL,
+
+    /** Layer 2 output interface drops */
+    SAI_PACKET_DROP_TYPE_EGRESS_L2_OIF,
+
+    /** Membership drops */
+    SAI_PACKET_DROP_TYPE_EGRESS_MEMBERSHIP,
+
+    /** Membership drops */
+    SAI_PACKET_DROP_TYPE_EGRESS_DVP_MEMBERSHIP,
+
+    /** TTL check drops */
+    SAI_PACKET_DROP_TYPE_EGRESS_TTL,
+
+    /** Layer 3 same interface drops */
+    SAI_PACKET_DROP_TYPE_EGRESS_L3_SAME_INTF,
+
+    /** Layer 2 same interface drops */
+    SAI_PACKET_DROP_TYPE_EGRESS_L2_SAME_PORT,
+
+    /** Split horizon drops */
+    SAI_PACKET_DROP_TYPE_EGRESS_SPLIT_HORIZON,
+
+    /** Spanning tree disabled drops */
+    SAI_PACKET_DROP_TYPE_EGRESS_STG_DISABLE,
+
+    /** Spanning tree blocked drops */
+    SAI_PACKET_DROP_TYPE_EGRESS_STG_BLOCK,
+
+    /** Filter drops */
+    SAI_PACKET_DROP_TYPE_EGRESS_EFP,
+
+    /** Metering drops */
+    SAI_PACKET_DROP_TYPE_EGRESS_EGR_METER,
+
+    /** MTU check drops */
+    SAI_PACKET_DROP_TYPE_EGRESS_EGR_MTU,
+
+    /** VLAN translation table drops */
+    SAI_PACKET_DROP_TYPE_EGRESS_EGR_VXLT,
+
+    /** Cell size large drops */
+    SAI_PACKET_DROP_TYPE_EGRESS_EGR_CELL_TOO_LARGE,
+
+    /** Cell size small drops */
+    SAI_PACKET_DROP_TYPE_EGRESS_EGR_CELL_TOO_SMALL,
+
+    /** QOS remarking drops */
+    SAI_PACKET_DROP_TYPE_EGRESS_QOS_REMARKING,
+
+    /** Same membership drops */
+    SAI_PACKET_DROP_TYPE_EGRESS_SVP_EQUAL_DVP,
+
+    /** Invalid 1588 packet drops */
+    SAI_PACKET_DROP_TYPE_EGRESS_INVALID_1588_PKT,
+
+    /** Flex edit drops */
+    SAI_PACKET_DROP_TYPE_EGRESS_FLEX_EDITOR,
+
+    /** Egress re-circulation drops */
+    SAI_PACKET_DROP_TYPE_EGRESS_EP_RECIRC,
+
+    /** IFA metadata delete drops */
+    SAI_PACKET_DROP_TYPE_EGRESS_IFA_MD_DELETE,
+} sai_packet_drop_type_egress_t;
+
+/**
+ * @brief TAM Switch Event Types
+ */
+typedef enum _sai_switch_event_type_t
+{
+    /** None */
+    SAI_SWITCH_EVENT_TYPE_NONE,
+
+    /** ALL */
+    SAI_SWITCH_EVENT_TYPE_ALL,
+
+    /** Stable Full */
+    SAI_SWITCH_EVENT_TYPE_STABLE_FULL,
+
+    /** Stable Error */
+    SAI_SWITCH_EVENT_TYPE_STABLE_ERROR,
+
+    /** Uncontrolled Shutdown */
+    SAI_SWITCH_EVENT_TYPE_UNCONTROLLED_SHUTDOWN,
+
+    /** Downgrade during Warm Boot */
+    SAI_SWITCH_EVENT_TYPE_WARM_BOOT_DOWNGRADE,
+
+    /** Parity Error */
+    SAI_SWITCH_EVENT_TYPE_PARITY_ERROR,
+} sai_switch_event_type_t;
+
+/**
  * @brief Enum defining event types.
  */
 typedef enum _sai_tam_event_type_t
@@ -1886,10 +2240,16 @@ typedef enum _sai_tam_event_type_t
     SAI_TAM_EVENT_TYPE_QUEUE_TAIL_DROP,
 
     /**
-     * @brief Packet drop event
-     * Simple drop of packets for any reason
+     * @brief Type of packet drops
+     * Simple drop monitoring of packets
      */
     SAI_TAM_EVENT_TYPE_PACKET_DROP,
+
+    /**
+     * @brief Packet drop event
+     * State aware drop monitoring of packets
+     */
+    SAI_TAM_EVENT_TYPE_PACKET_DROP_STATEFUL,
 
     /**
      * @brief Switch resource utilization threshold event
@@ -1912,6 +2272,16 @@ typedef enum _sai_tam_event_type_t
      * @brief Buffer service pool threshold event
      */
     SAI_TAM_EVENT_TYPE_BSP,
+
+    /**
+     * @brief Flow latency monitoring event
+     */
+    SAI_TAM_EVENT_TYPE_FLOW_LATENCY,
+
+    /**
+     * @brief Switch monitoring event
+     */
+    SAI_TAM_EVENT_TYPE_SWITCH,
 } sai_tam_event_type_t;
 
 /**
@@ -2026,6 +2396,46 @@ typedef enum _sai_tam_event_attr_t
     SAI_TAM_EVENT_ATTR_TYPE = SAI_TAM_EVENT_ATTR_START,
 
     /**
+     * @brief Type of ingress packet drops
+     *
+     * @type sai_s32_list_t sai_packet_drop_type_ingress_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     * @validonly SAI_TAM_EVENT_ATTR_TYPE == SAI_TAM_EVENT_TYPE_PACKET_DROP or SAI_TAM_EVENT_ATTR_TYPE == SAI_TAM_EVENT_TYPE_PACKET_DROP_STATEFUL
+     */
+    SAI_TAM_EVENT_ATTR_PACKET_DROP_TYPE_INGRESS,
+
+    /**
+     * @brief Type of MMU packet drops
+     *
+     * @type sai_s32_list_t sai_packet_drop_type_mmu_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     * @validonly SAI_TAM_EVENT_ATTR_TYPE == SAI_TAM_EVENT_TYPE_PACKET_DROP or SAI_TAM_EVENT_ATTR_TYPE == SAI_TAM_EVENT_TYPE_PACKET_DROP_STATEFUL
+     */
+    SAI_TAM_EVENT_ATTR_PACKET_DROP_TYPE_MMU,
+
+    /**
+     * @brief Type of egress packet drops
+     *
+     * @type sai_s32_list_t sai_packet_drop_type_egress_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     * @validonly SAI_TAM_EVENT_ATTR_TYPE == SAI_TAM_EVENT_TYPE_PACKET_DROP or SAI_TAM_EVENT_ATTR_TYPE == SAI_TAM_EVENT_TYPE_PACKET_DROP_STATEFUL
+     */
+    SAI_TAM_EVENT_ATTR_PACKET_DROP_TYPE_EGRESS,
+
+    /**
+     * @brief Type of switch event
+     *
+     * @type sai_s32_list_t sai_switch_event_type_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     * @validonly SAI_TAM_EVENT_ATTR_TYPE == SAI_TAM_EVENT_TYPE_SWITCH
+     */
+    SAI_TAM_EVENT_ATTR_SWITCH_EVENT_TYPE,
+
+    /**
      * @brief Event action
      *
      * @type sai_object_list_t
@@ -2038,8 +2448,9 @@ typedef enum _sai_tam_event_attr_t
      * @brief Collector object list
      *
      * @type sai_object_list_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_TAM_COLLECTOR
+     * @default empty
      */
     SAI_TAM_EVENT_ATTR_COLLECTOR_LIST,
 
@@ -2062,6 +2473,47 @@ typedef enum _sai_tam_event_attr_t
      * @default 0
      */
     SAI_TAM_EVENT_ATTR_DSCP_VALUE,
+
+    /**
+     * @brief Aging interval (in milliseconds) for an event
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_EVENT_ATTR_AGING_INTERVAL,
+
+    /**
+     * @brief Enable/Disable Samplepacket session
+     *
+     * Enable ingress sampling by assigning samplepacket object id Disable
+     * ingress sampling by assigning #SAI_NULL_OBJECT_ID as attribute value.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_SAMPLEPACKET
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_TAM_EVENT_ATTR_INGRESS_SAMPLEPACKET_ENABLE,
+
+    /**
+     * @brief Device Identifier
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_EVENT_ATTR_DEVICE_ID,
+
+    /**
+     * @brief Event Identifier
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_EVENT_ATTR_EVENT_ID,
 
     /**
      * @brief End of Attributes
