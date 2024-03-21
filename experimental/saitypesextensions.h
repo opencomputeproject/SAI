@@ -96,5 +96,13 @@ typedef enum _sai_dash_encapsulation_t
 
 } sai_dash_encapsulation_t;
 
+typedef enum _sai_dash_tunnel_dscp_mode_t
+{
+    SAI_DASH_TUNNEL_DSCP_MODE_PRESERVE_MODEL,
+
+    SAI_DASH_TUNNEL_DSCP_MODE_PIPE_MODEL,
+
+} sai_dash_tunnel_dscp_mode_t;
+
 #endif /* __SAITYPESEXTENSIONS_H_ */
 
