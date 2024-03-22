@@ -111,42 +111,76 @@ typedef enum _sai_dash_acl_rule_attr_t
     SAI_DASH_ACL_RULE_ATTR_DASH_ACL_GROUP_ID,
 
     /**
-     * @brief List matched key dip
+     * @brief Ternary matched key dst_tag
      *
-     * @type sai_ip_prefix_list_t
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_DASH_ACL_RULE_ATTR_DST_TAG,
+
+    /**
+     * @brief Ternary matched mask dst_tag
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_DASH_ACL_RULE_ATTR_DST_TAG_MASK,
+
+    /**
+     * @brief Ternary matched key src_tag
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_DASH_ACL_RULE_ATTR_SRC_TAG,
+
+    /**
+     * @brief Ternary matched mask src_tag
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_DASH_ACL_RULE_ATTR_SRC_TAG_MASK,
+
+    /**
+     * @brief Optional matched key dip
+     *
+     * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_DASH_ACL_RULE_ATTR_DIP,
 
     /**
-     * @brief List matched key sip
+     * @brief Optional matched key sip
      *
-     * @type sai_ip_prefix_list_t
+     * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_DASH_ACL_RULE_ATTR_SIP,
 
     /**
-     * @brief List matched key protocol
+     * @brief Optional matched key protocol
      *
-     * @type sai_u8_list_t
+     * @type sai_uint8_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_DASH_ACL_RULE_ATTR_PROTOCOL,
 
     /**
-     * @brief Range_list matched key src_port
+     * @brief Optional matched key src_port
      *
-     * @type sai_u16_range_list_t
+     * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @isvlan false
      */
     SAI_DASH_ACL_RULE_ATTR_SRC_PORT,
 
     /**
-     * @brief Range_list matched key dst_port
+     * @brief Optional matched key dst_port
      *
-     * @type sai_u16_range_list_t
+     * @type sai_uint16_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @isvlan false
      */
     SAI_DASH_ACL_RULE_ATTR_DST_PORT,
 
@@ -170,15 +204,6 @@ typedef enum _sai_dash_acl_rule_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      */
     SAI_DASH_ACL_RULE_ATTR_PRIORITY,
-
-    /**
-     * @brief IP address family for resource accounting
-     *
-     * @type sai_ip_addr_family_t
-     * @flags READ_ONLY
-     * @isresourcetype true
-     */
-    SAI_DASH_ACL_RULE_ATTR_IP_ADDR_FAMILY,
 
     /**
      * @brief End of attributes

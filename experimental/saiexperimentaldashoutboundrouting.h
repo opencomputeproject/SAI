@@ -203,7 +203,7 @@ typedef enum _sai_outbound_routing_entry_attr_t
      *
      * @type sai_dash_encapsulation_t
      * @flags CREATE_AND_SET
-     * @default SAI_DASH_ENCAPSULATION_VXLAN
+     * @default SAI_DASH_ENCAPSULATION_INVALID
      * @validonly SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_SERVICE_TUNNEL
      */
     SAI_OUTBOUND_ROUTING_ENTRY_ATTR_DASH_ENCAPSULATION,
