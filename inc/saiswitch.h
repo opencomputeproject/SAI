@@ -3001,6 +3001,14 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_AVAILABLE_SYSTEM_VOQS,
 
     /**
+     * @brief Pre-Ingress ACL stage.
+     *
+     * @type sai_acl_capability_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_ACL_STAGE_PRE_INGRESS,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
