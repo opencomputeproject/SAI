@@ -104,7 +104,7 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
      *
      * @type sai_mac_t
      * @flags CREATE_AND_SET
-     * @default 0:0:0:0:0:0
+     * @default 00:00:00:00:00:00
      * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_TUNNEL_MAPPING
      */
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_OVERLAY_DMAC,

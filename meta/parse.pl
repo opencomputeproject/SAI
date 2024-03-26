@@ -358,7 +358,7 @@ sub ProcessTagDefault
 
     return $val if $val =~ /^0\.0\.0\.0$/;
 
-    return $val if $val =~ /^0\:0\:0\:0\:0\:0$/;
+    return $val if $val =~ /^00:00:00:00:00:00$/;
 
     return $val if $val eq "disabled";
 
@@ -1644,7 +1644,7 @@ sub ProcessDefaultValueType
 
     return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^0\.0\.0\.0$/;
 
-    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^0\:0\:0\:0\:0\:0$/;
+    return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default =~ /^00:00:00:00:00:00$/;
 
     return "SAI_DEFAULT_VALUE_TYPE_CONST" if $default eq "disabled";
 
@@ -1723,7 +1723,7 @@ sub ProcessDefaultValue
     {
         WriteSource "$val = { 0 };";
     }
-    elsif ($default =~ /^0\:0\:0\:0\:0\:0$/ and $type =~ /^(sai_mac_t)/)
+    elsif ($default =~ /^00:00:00:00:00:00$/ and $type =~ /^(sai_mac_t)/)
     {
         WriteSource "$val = { .mac = { 0, 0, 0, 0, 0, 0 } };";
     }
