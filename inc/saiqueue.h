@@ -393,6 +393,9 @@ typedef enum _sai_queue_stat_t
     /** Get packets deleted when the credit watch dog expires for VOQ System [uint64_t] */
     SAI_QUEUE_STAT_CREDIT_WD_DELETED_PACKETS = 0x00000026,
 
+    /** Queue delay watermark in nanoseconds [uint64_t] */
+    SAI_QUEUE_STAT_DELAY_WATERMARK_NS = 0x00000027,
+
     /** Custom range base value */
     SAI_QUEUE_STAT_CUSTOM_RANGE_BASE = 0x10000000
 
