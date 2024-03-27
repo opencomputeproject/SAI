@@ -19,7 +19,9 @@
  *
  * @file    saiexperimentaldasheni.h
  *
- * @brief   This module defines SAI P4 extension  interface
+ * @brief   This module defines SAI extensions for DASH ENI
+ *
+ * @warning This module is a SAI experimental module
  */
 
 #if !defined (__SAIEXPERIMENTALDASHENI_H_)
@@ -28,7 +30,7 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_ENI SAI - Extension specific API definitions
+ * @defgroup SAIEXPERIMENTALDASH_ENI SAI - Experimental: DASH ENI specific API definitions
  *
  * @{
  */
@@ -472,14 +474,14 @@ typedef enum _sai_eni_attr_t
 } sai_eni_attr_t;
 
 /**
- * @brief Counter IDs for eni in sai_get_eni_stats() call
+ * @brief Counter IDs for ENI in sai_get_eni_stats() call
  */
 typedef enum _sai_eni_stat_t
 {
-    /** DASH eni LB_FAST_PATH_ICMP_IN_BYTES stat count */
+    /** DASH ENI LB_FAST_PATH_ICMP_IN_BYTES stat count */
     SAI_ENI_STAT_LB_FAST_PATH_ICMP_IN_BYTES,
 
-    /** DASH eni LB_FAST_PATH_ICMP_IN_PACKETS stat count */
+    /** DASH ENI LB_FAST_PATH_ICMP_IN_PACKETS stat count */
     SAI_ENI_STAT_LB_FAST_PATH_ICMP_IN_PACKETS,
 
 } sai_eni_stat_t;
@@ -632,7 +634,7 @@ typedef sai_status_t (*sai_get_eni_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Get eni statistics counters. Deprecated for backward compatibility.
+ * @brief Get ENI statistics counters. Deprecated for backward compatibility.
  *
  * @param[in] eni_id Entry id
  * @param[in] number_of_counters Number of counters in the array
@@ -648,7 +650,7 @@ typedef sai_status_t (*sai_get_eni_stats_fn)(
         _Out_ uint64_t *counters);
 
 /**
- * @brief Get eni statistics counters extended.
+ * @brief Get ENI statistics counters extended.
  *
  * @param[in] eni_id Entry id
  * @param[in] number_of_counters Number of counters in the array
@@ -666,7 +668,7 @@ typedef sai_status_t (*sai_get_eni_stats_ext_fn)(
         _Out_ uint64_t *counters);
 
 /**
- * @brief Clear eni statistics counters.
+ * @brief Clear ENI statistics counters.
  *
  * @param[in] eni_id Entry id
  * @param[in] number_of_counters Number of counters in the array

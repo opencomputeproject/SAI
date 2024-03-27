@@ -19,7 +19,9 @@
  *
  * @file    saiexperimentaldashvnet.h
  *
- * @brief   This module defines SAI P4 extension  interface
+ * @brief   This module defines SAI extensions for DASH VNET
+ *
+ * @warning This module is a SAI experimental module
  */
 
 #if !defined (__SAIEXPERIMENTALDASHVNET_H_)
@@ -28,7 +30,7 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_VNET SAI - Extension specific API definitions
+ * @defgroup SAIEXPERIMENTALDASH_VNET SAI - Experimental: DASH VNET specific API definitions
  *
  * @{
  */

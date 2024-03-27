@@ -19,7 +19,7 @@
  *
  * @file    saiexperimentaldashacl.h
  *
- * @brief   This module defines SAI P4 extension  interface
+ * @brief   This module defines SAI extensions for DASH ACL
  */
 
 #if !defined (__SAIEXPERIMENTALDASHACL_H_)
@@ -28,7 +28,7 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_ACL SAI - Extension specific API definitions
+ * @defgroup SAIEXPERIMENTALDASH_ACL SAI - Experimental: DASH ACL specific API definitions
  *
  * @{
  */

@@ -19,7 +19,9 @@
  *
  * @file    saiexperimentaldashinboundrouting.h
  *
- * @brief   This module defines SAI P4 extension  interface
+ * @brief   This module defines SAI extensions for DASH inbound routing
+ *
+ * @warning This module is a SAI experimental module
  */
 
 #if !defined (__SAIEXPERIMENTALDASHINBOUNDROUTING_H_)
@@ -28,7 +30,7 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_INBOUND_ROUTING SAI - Extension specific API definitions
+ * @defgroup SAIEXPERIMENTALDASH_INBOUND_ROUTING SAI - Experimental: DASH inbound routing specific API definitions
  *
  * @{
  */
