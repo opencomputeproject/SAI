@@ -490,6 +490,11 @@ typedef enum _sai_attr_value_type_t
      * @brief Attribute value is statistics data.
      */
     SAI_ATTR_VALUE_TYPE_TWAMP_STATS_DATA,
+
+    /**
+     * @brief Attribute value is the POE port consumption data.
+     */
+    SAI_ATTR_VALUE_TYPE_POE_PORT_POWER_CONSUMPTION,
 } sai_attr_value_type_t;
 
 /**
