@@ -10,6 +10,8 @@ The flow is defined in [tunnel decap](https://github.com/opencomputeproject/SAI/
 Pre-ingress ACL takes effect before the tunnel decapsulation.
 Ingress ACL takes effect after tunnel decapsulation.
 
+Any changes to the outer fields in the Pre-ingress stage will be overriden in case tunnel termination happens. (E.g. Set SIP will be overriden by inner SIP).
+
 Below are the examples of ACL behavior with different scenarios:
 
 |Bind point type|Key|Stage|Match|Action|Tunnel termination type|Packet outer DIP|Packet inner DIP|Result|
