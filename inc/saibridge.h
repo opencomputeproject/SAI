@@ -85,6 +85,8 @@ typedef enum _sai_bridge_port_type_t
     /** Bridge tunnel port */
     SAI_BRIDGE_PORT_TYPE_TUNNEL,
 
+    /** Bridge port next hop group */
+    SAI_BRIDGE_PORT_TYPE_BRIDGE_PORT_NEXT_HOP_GROUP,
 } sai_bridge_port_type_t;
 
 /**
@@ -258,6 +260,60 @@ typedef enum _sai_bridge_port_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_BRIDGE_PORT_ATTR_ISOLATION_GROUP,
+
+    /**
+     * @brief Associated bridge port nexthop group id
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_NEXT_HOP_GROUP
+     * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_BRIDGE_PORT_NEXT_HOP_GROUP
+     */
+    SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_NEXT_HOP_GROUP_ID,
+
+    /**
+     * @brief Indicates if the bridge port is set to drop the broadcast, unknown unicast and multicast traffic
+     * When set to true, ingress BUM traffic will be dropped
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_PORT
+     */
+    SAI_BRIDGE_PORT_ATTR_BUM_RX_DROP,
+
+    /**
+     * @brief Indicates if the bridge port is set to drop the broadcast, unknown unicast and multicast traffic
+     * When set to true, egress BUM traffic will be dropped
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_PORT
+     */
+    SAI_BRIDGE_PORT_ATTR_BUM_TX_DROP,
+
+    /**
+     * @brief Indicates if the bridge port is set to drop the unicast traffic
+     * When set to true, ingress unicast traffic will be dropped
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_PORT
+     */
+    SAI_BRIDGE_PORT_ATTR_UCAST_RX_DROP,
+
+    /**
+     * @brief Indicates if the bridge port is set to drop the unicast traffic
+     * When set to true, egress unicast traffic will be dropped
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_PORT
+     */
+    SAI_BRIDGE_PORT_ATTR_UCAST_TX_DROP,
 
     /**
      * @brief End of attributes
