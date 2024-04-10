@@ -11,6 +11,7 @@ BFD - Bidirectional Forwarding Detection
 BFDV6 - Bidirectional Forwarding Detection for IPv6
 BGP - Border Gateway Protocol
 BOS - Bottom Of Stack
+BW - Bandwidth
 CAM - Content Addressable Memory
 CAUI - 100 Gigabit Attachment Unit Interface
 CB - Callback
@@ -51,6 +52,7 @@ FEC - Forward Error Correction
 FPGA - Field Programmable Gate Array
 FW  - Firmware
 GCM - Galois Counter Mode
+GENETLINK - Generic Nelink
 GMII - Gigabit Media-Independent Interface
 GNMI - gRPC Network Management Interface
 GPB - Google Protocol Buffers

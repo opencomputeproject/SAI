@@ -702,6 +702,9 @@ typedef enum _sai_hostif_user_defined_trap_type_t
     /** In Segment Entry traps */
     SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_INSEG_ENTRY,
 
+    /** Traps to be associated with TAM collector */
+    SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_TAM,
+
     /** Custom range base */
     SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_CUSTOM_RANGE_BASE = 0x00001000,
 

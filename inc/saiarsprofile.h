@@ -444,6 +444,24 @@ typedef enum _sai_ars_profile_attr_t
     SAI_ARS_PROFILE_ATTR_MAX_FLOWS,
 
     /**
+     * @brief Enable IPv4 traffic (ether type) for ARS processing.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_ARS_PROFILE_ATTR_ENABLE_IPV4,
+
+    /**
+     * @brief Enable IPv6 traffic (ether type) for ARS processing.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_ARS_PROFILE_ATTR_ENABLE_IPV6,
+
+    /**
      * @brief End of attributes
      */
     SAI_ARS_PROFILE_ATTR_END,
