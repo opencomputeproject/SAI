@@ -2281,22 +2281,26 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_ARS_PORT_LOAD_SCALING_FACTOR,
 
     /**
-     * @brief Enable historical or past port load quality measure in switch pipeline
+     * @brief Enable historical or past port load quality measure in switch pipeline.
+     * This attribute is deprecated and SAI_PORT_ATTR_ARS_PORT_LOAD_PAST_WEIGHT value will indicate if this metric is enabled or not.
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
      * @validonly SAI_PORT_ATTR_ARS_ENABLE == true
+     * @deprecated true
      */
     SAI_PORT_ATTR_ARS_PORT_LOAD_PAST_ENABLE,
 
     /**
      * @brief Enable future load quality measure in switch pipeline
+     * This attribute is deprecated and SAI_PORT_ATTR_ARS_PORT_LOAD_FUTURE_WEIGHT value will indicate if this metric is enabled or not.
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
      * @validonly SAI_PORT_ATTR_ARS_ENABLE == true
+     * @deprecated true
      */
     SAI_PORT_ATTR_ARS_PORT_LOAD_FUTURE_ENABLE,
 
@@ -2484,6 +2488,24 @@ typedef enum _sai_port_attr_t
      * @validonly SAI_PORT_ATTR_MEDIA_TYPE == SAI_PORT_MEDIA_TYPE_COPPER
      */
     SAI_PORT_ATTR_CABLE_TYPE,
+
+    /**
+     * @brief Assign weight in percent to past port load quality measure in switch pipeline. All quality measures if add up to less then 100 then remaining value is used for vendor specific internal weights.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_ATTR_ARS_PORT_LOAD_PAST_WEIGHT,
+
+    /**
+     * @brief Assign weight in percent to future load quality measure in switch pipeline. All quality measures if add up to less then 100 then remaining value is used for vendor specific internal weights.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_ATTR_ARS_PORT_LOAD_FUTURE_WEIGHT,
 
     /**
      * @brief End of attributes
