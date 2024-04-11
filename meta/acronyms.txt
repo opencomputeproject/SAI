@@ -10,6 +10,7 @@ ASIC - Application Specific Integrated Circuit
 BFD - Bidirectional Forwarding Detection
 BFDV6 - Bidirectional Forwarding Detection for IPv6
 BGP - Border Gateway Protocol
+BMTOR - Behavioral Model Top-of-Rack
 BOS - Bottom Of Stack
 BW - Bandwidth
 CAM - Content Addressable Memory
@@ -42,6 +43,7 @@ ECN - Explicit Congestion Notification
 ECT - ECN Capable Transport
 EEE - Electrical and Electronics Engineering
 EEPROM - Electrically erasable programmable read-only memory
+ENI - Elastic Network Interface
 ERSPAN - Encapsulated Remote SPAN
 ESN - Extended Sequence Number
 EWMA - Exponentially Weighted Moving Average
@@ -159,6 +161,7 @@ UDP - User Datagram Protocol
 USD - Ultimate Segment Decapsulation
 USP - Ultimate Segment Pop
 USXGMII - Universal Serial 10 Gigabit Media Independent Interface
+VNET - Virtual Network
 VNI - Virtual Network Interface
 VNID - Virtual Network Identifier
 VOQ - Virtual Output Queue
