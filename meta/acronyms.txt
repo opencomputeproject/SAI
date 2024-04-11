@@ -52,6 +52,7 @@ FEC - Forward Error Correction
 FPGA - Field Programmable Gate Array
 FW  - Firmware
 GCM - Galois Counter Mode
+GENETLINK - Generic Nelink
 GMII - Gigabit Media-Independent Interface
 GNMI - gRPC Network Management Interface
 GPB - Google Protocol Buffers

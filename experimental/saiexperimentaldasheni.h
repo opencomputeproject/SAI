@@ -211,6 +211,25 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_V6_METER_POLICY_ID,
 
     /**
+     * @brief Action set_eni_attrs parameter DASH_TUNNEL_DSCP_MODE
+     *
+     * @type sai_dash_tunnel_dscp_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_DASH_TUNNEL_DSCP_MODE_PRESERVE_MODEL
+     */
+    SAI_ENI_ATTR_DASH_TUNNEL_DSCP_MODE,
+
+    /**
+     * @brief Action set_eni_attrs parameter DSCP
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_ENI_ATTR_DASH_TUNNEL_DSCP_MODE == SAI_DASH_TUNNEL_DSCP_MODE_PIPE_MODEL
+     */
+    SAI_ENI_ATTR_DSCP,
+
+    /**
      * @brief Action set_eni_attrs parameter INBOUND_V4_STAGE1_DASH_ACL_GROUP_ID
      *
      * @type sai_object_id_t

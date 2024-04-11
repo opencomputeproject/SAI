@@ -108,7 +108,7 @@ class VxLanBaseSetup(SaiHelper):
 
         self.decap_tunnel_map_entry = sai_thrift_create_tunnel_map_entry(
             self.client,
-            tunnel_map=self.encap_tunnel_map,
+            tunnel_map=self.decap_tunnel_map,
             tunnel_map_type=SAI_TUNNEL_MAP_TYPE_VNI_TO_VIRTUAL_ROUTER_ID,
             virtual_router_id_value=self.ovrf,
             vni_id_key=self.vni)
