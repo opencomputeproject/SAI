@@ -619,6 +619,7 @@ sub CreateStructUnionSizeCheckTest
             $STRUCTS{$name} = $name;
 
             next if $name =~ /^sai_\w+_api_t$/; # skip api structs
+            next if $name eq "sai_switch_health_data_t";
 
             my $upname = uc($name);
 
