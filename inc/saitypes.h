@@ -1785,7 +1785,7 @@ typedef enum _sai_ser_correction_type_t
 } sai_ser_correction_type_t;
 
 /**
- * @brief SAI SER log info type
+ * @brief SAI SER log information type
  *
  * @flags strict
  */
