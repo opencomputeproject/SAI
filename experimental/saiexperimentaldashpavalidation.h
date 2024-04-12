@@ -19,7 +19,9 @@
  *
  * @file    saiexperimentaldashpavalidation.h
  *
- * @brief   This module defines SAI P4 extension  interface
+ * @brief   This module defines SAI extensions for DASH PA validation
+ *
+ * @warning This module is a SAI experimental module
  */
 
 #if !defined (__SAIEXPERIMENTALDASHPAVALIDATION_H_)
@@ -28,7 +30,7 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_PA_VALIDATION SAI - Extension specific API definitions
+ * @defgroup SAIEXPERIMENTALDASH_PA_VALIDATION SAI - Experimental: DASH PA validation specific API definitions
  *
  * @{
  */

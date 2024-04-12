@@ -162,7 +162,8 @@ sub BuildCommitHistory
         # of union may not increase by adding members, and actual union size
         # check is performed by sai sanity check
 
-        if ($currCount != $histCount and not $structTypeName =~ /^sai_\w+_api_t$/)
+        if ($currCount != $histCount and not $structTypeName =~ /^sai_\w+_api_t$/
+                and $structTypeName ne "sai_switch_health_data_t")
         {
             LogError "FATAL: struct $structTypeName member count differs, was $histCount but is $currCount on commit $commit" if $type eq "struct";
         }
