@@ -22,7 +22,7 @@ stages:
   - job:
 
     container:
-      image: sonicdev-microsoft.azurecr.io:443/sonic-slave-bookworm:latest
+      image: sonicdev-microsoft.azurecr.io:443/sonic-slave-bullseye:latest
 
     displayName: "build"
     timeoutInMinutes: 60
