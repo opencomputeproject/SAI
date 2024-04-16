@@ -1414,7 +1414,7 @@ class L3L4PortTest(SaiHelperSimplified):
             self.client,
             acl_stage=table_stage_ingress,
             acl_bind_point_type_list=table_bind_point_type_list,
-            field_src_ip=True)
+            field_l4_src_port=True, field_l4_dst_port=True)
 
         self.assertNotEqual(acl_ingress_table_id, 0)
 
