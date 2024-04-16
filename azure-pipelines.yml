@@ -22,7 +22,7 @@ stages:
   - job:
 
     container:
-      image: sonicdev-microsoft.azurecr.io:443/sonic-slave-buster:latest
+      image: sonicdev-microsoft.azurecr.io:443/sonic-slave-bookworm:latest
 
     displayName: "build"
     timeoutInMinutes: 60
@@ -34,7 +34,7 @@ stages:
     - script: |
         set -ex
         sudo apt-get update
-        sudo apt-get install -y thrift-compiler libthrift-0.11.0 libthrift-dev
+        sudo apt-get install -y thrift-compiler libthrift-dev
       displayName: "Install thrift compiler"
     - script: |
         set -ex
