@@ -326,6 +326,7 @@ sub CreateApiNameTest
             WriteTest "        dummy = &re;";
             WriteTest "        dummy = &se;";
             WriteTest "        dummy = &ge;";
+            WriteTest "        dummy = NULL;";
             WriteTest "        checked[(int)$ot] = $ot;";
         }
         else
