@@ -310,6 +310,9 @@ typedef enum _sai_switch_type_t
     /** Switch type is Fabric switch device */
     SAI_SWITCH_TYPE_FABRIC,
 
+    /** Switch type is POE (Power over Ethernet) */
+    SAI_SWITCH_TYPE_POE,
+
 } sai_switch_type_t;
 
 /**
@@ -3007,6 +3010,16 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_ACL_STAGE_PRE_INGRESS,
+
+    /**
+     * @brief POE device list
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_POE_DEVICE
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_POE_DEVICE_LIST,
 
     /**
      * @brief End of attributes
