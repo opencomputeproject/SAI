@@ -295,6 +295,9 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_ACL_TABLE_CHAIN_GROUP    = 105,
     SAI_OBJECT_TYPE_TWAMP_SESSION            = 106,
     SAI_OBJECT_TYPE_TAM_COUNTER_SUBSCRIPTION = 107,
+    SAI_OBJECT_TYPE_POE_DEVICE               = 108,
+    SAI_OBJECT_TYPE_POE_PSE                  = 109,
+    SAI_OBJECT_TYPE_POE_PORT                 = 110,
 
     /** Must remain in last position */
     SAI_OBJECT_TYPE_MAX,
@@ -1197,6 +1200,93 @@ typedef struct _sai_port_snr_list_t
 } sai_port_snr_list_t;
 
 /**
+ * @brief POE port active channel (when delivering power)
+ */
+typedef enum _sai_poe_port_active_channel_type_t
+{
+    SAI_POE_PORT_ACTIVE_CHANNEL_TYPE_A,
+    SAI_POE_PORT_ACTIVE_CHANNEL_TYPE_B,
+    SAI_POE_PORT_ACTIVE_CHANNEL_TYPE_A_AND_B,
+} sai_poe_port_active_channel_type_t;
+
+/**
+ * @brief POE port signature type (when delivering power)
+ */
+typedef enum _sai_poe_port_signature_type_t
+{
+    SAI_POE_PORT_SIGNATURE_TYPE_SINGLE,
+    SAI_POE_PORT_SIGNATURE_TYPE_DUAL,
+} sai_poe_port_signature_type_t;
+
+/**
+ * @brief POE port classification method (when delivering power)
+ */
+typedef enum _sai_poe_port_class_method_type_t
+{
+    SAI_POE_PORT_CLASS_METHOD_TYPE_REGULAR,
+    SAI_POE_PORT_CLASS_METHOD_TYPE_AUTO_CLASS,
+} sai_poe_port_class_method_type_t;
+
+/**
+ * @brief Defines a port consumption structure
+ *
+ * Data that is needed and available when a port is delivering power
+ */
+typedef struct _sai_poe_port_power_consumption_t
+{
+    /**
+     * @brief Active channel: a/b/ab
+     */
+    sai_poe_port_active_channel_type_t active_channel;
+
+    /**
+     * @brief Voltage in MILLI volts
+     */
+    uint32_t voltage;
+
+    /**
+     * @brief Current in MILLI ampere
+     */
+    uint32_t current;
+
+    /**
+     * @brief Consumption in MILLI watts
+     */
+    uint32_t consumption;
+
+    /**
+     * @brief Single or dual signature port
+     */
+    sai_poe_port_signature_type_t signature_type;
+
+    /**
+     * @brief IEEE 802.3bt port class method type regular/auto
+     */
+    sai_poe_port_class_method_type_t class_method;
+
+    /**
+     * @brief Measured class for channel a
+     */
+    uint8_t measured_class_a;
+
+    /**
+     * @brief Assigned (final) class for channel a
+     */
+    uint8_t assigned_class_a;
+
+    /**
+     * @brief Dual signature IEEE 802.3bt port - measured class for channel b
+     */
+    uint8_t measured_class_b;
+
+    /**
+     * @brief Dual signature IEEE 802.3bt port - assigned (final) class for channel b
+     */
+    uint8_t assigned_class_b;
+
+} sai_poe_port_power_consumption_t;
+
+/**
  * @brief Enum defining MPLS out segment type
  */
 typedef enum _sai_outseg_type_t
@@ -1528,6 +1618,10 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST */
     sai_port_snr_list_t portsnrlist;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_POE_PORT_POWER_CONSUMPTION */
+    sai_poe_port_power_consumption_t portpowerconsumption;
+
 } sai_attribute_value_t;
 
 /**

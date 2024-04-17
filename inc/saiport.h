@@ -2508,6 +2508,16 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_ARS_PORT_LOAD_FUTURE_WEIGHT,
 
     /**
+     * @brief On NPUs that support POE, read the associated POE port ID
+     *
+     * @type sai_object_id_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_POE_PORT
+     * @allownull true
+     */
+    SAI_PORT_ATTR_POE_PORT_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
