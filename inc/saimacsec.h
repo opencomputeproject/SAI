@@ -459,15 +459,6 @@ typedef enum _sai_macsec_flow_attr_t
     SAI_MACSEC_FLOW_ATTR_SC_LIST,
 
     /**
-     * @brief MACsec Port object id to associate a macsec flow with MACsec Port id
-     *
-     * @type sai_object_id_t
-     * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_MACSEC_PORT
-     */
-    SAI_MACSEC_FLOW_ATTR_MACSEC_PORT_ID,
-
-    /**
      * @brief End of MACsec Flow attributes
      */
     SAI_MACSEC_FLOW_ATTR_END,
