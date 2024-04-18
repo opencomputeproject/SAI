@@ -107,7 +107,27 @@ typedef enum _sai_inbound_routing_entry_attr_t
     SAI_INBOUND_ROUTING_ENTRY_ATTR_ACTION = SAI_INBOUND_ROUTING_ENTRY_ATTR_START,
 
     /**
-     * @brief Action vxlan_decap_pa_validate parameter SRC_VNET_ID
+     * @brief Action tunnel_decap, tunnel_decap_pa_validate parameter METER_CLASS_OR
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_INBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_INBOUND_ROUTING_ENTRY_ACTION_VXLAN_DECAP or SAI_INBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_INBOUND_ROUTING_ENTRY_ACTION_VXLAN_DECAP_PA_VALIDATE
+     */
+    SAI_INBOUND_ROUTING_ENTRY_ATTR_METER_CLASS_OR,
+
+    /**
+     * @brief Action tunnel_decap, tunnel_decap_pa_validate parameter METER_CLASS_AND
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 4294967295
+     * @validonly SAI_INBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_INBOUND_ROUTING_ENTRY_ACTION_VXLAN_DECAP or SAI_INBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_INBOUND_ROUTING_ENTRY_ACTION_VXLAN_DECAP_PA_VALIDATE
+     */
+    SAI_INBOUND_ROUTING_ENTRY_ATTR_METER_CLASS_AND,
+
+    /**
+     * @brief Action tunnel_decap_pa_validate parameter SRC_VNET_ID
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
