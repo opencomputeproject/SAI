@@ -464,7 +464,8 @@ typedef enum _sai_macsec_flow_attr_t
      * @type sai_object_id_t
      * @flags CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_MACSEC_PORT
-     * @default 0
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_MACSEC_FLOW_ATTR_MACSEC_PORT_ID,
 
