@@ -459,17 +459,6 @@ typedef enum _sai_macsec_flow_attr_t
     SAI_MACSEC_FLOW_ATTR_SC_LIST,
 
     /**
-     * @brief MACsec Port object id to associate a MACsec flow with MACsec Port id
-     *
-     * @type sai_object_id_t
-     * @flags CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_MACSEC_PORT
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
-     */
-    SAI_MACSEC_FLOW_ATTR_MACSEC_PORT_ID,
-
-    /**
      * @brief End of MACsec Flow attributes
      */
     SAI_MACSEC_FLOW_ATTR_END,
@@ -705,6 +694,17 @@ typedef enum _sai_macsec_sc_attr_t
      * @default true
      */
     SAI_MACSEC_SC_ATTR_ENCRYPTION_ENABLE,
+
+    /**
+     * @brief Bind MACsec Port object id with MACsec Secure Channel
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_MACSEC_PORT
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_MACSEC_SC_ATTR_MACSEC_PORT_ID,
 
     /**
      * @brief End of MACsec Secure Channel attributes
