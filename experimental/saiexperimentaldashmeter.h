@@ -80,10 +80,10 @@ typedef enum _sai_meter_bucket_attr_t
  */
 typedef enum _sai_meter_bucket_stat_t
 {
-    /** DASH meter_bucket OUTBOUND_BYTES stat count */
+    /** DASH METER_BUCKET OUTBOUND_BYTES stat count */
     SAI_METER_BUCKET_STAT_OUTBOUND_BYTES,
 
-    /** DASH meter_bucket INBOUND_BYTES stat count */
+    /** DASH METER_BUCKET INBOUND_BYTES stat count */
     SAI_METER_BUCKET_STAT_INBOUND_BYTES,
 
 } sai_meter_bucket_stat_t;
