@@ -104,5 +104,24 @@ typedef enum _sai_dash_tunnel_dscp_mode_t
 
 } sai_dash_tunnel_dscp_mode_t;
 
+/**
+ * @brief Defines a list of enums for dash_routing_actions
+ *
+ * @flags strict
+ */
+typedef enum _sai_dash_routing_actions_t
+{
+    SAI_DASH_ROUTING_ACTIONS_STATIC_ENCAP = 1,
+
+    SAI_DASH_ROUTING_ACTIONS_NAT = 2,
+
+    SAI_DASH_ROUTING_ACTIONS_NAT46 = 4,
+
+    SAI_DASH_ROUTING_ACTIONS_NAT64 = 8,
+
+    SAI_DASH_ROUTING_ACTIONS_NAT_PORT = 16,
+
+} sai_dash_routing_actions_t;
+
 #endif /* __SAITYPESEXTENSIONS_H_ */
 
