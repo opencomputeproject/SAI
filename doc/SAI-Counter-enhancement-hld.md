@@ -2,7 +2,7 @@
 -------------------------------------------------------------------------------
  Title       | SAI counter enahncement
 -------------|-----------------------------------------------------------------
- Authors     |<code> Rajkumar P R, Marvell Technology Inc <br>          Ravindranath C K, Marvell Technology Inc </code>
+ Authors     |<code> Rajkumar P R, Marvell Technology Inc <br> Ravindranath C K, Marvell Technology Inc </code>
  Status      | In review
  Type        | Standards track
  Created     | 01/07/2024
@@ -463,122 +463,152 @@ else
 - New workflow with more attributes per object.
 
 ### Option 3
-This is an optimization to option 2 to reduce the number of attributes.
+This is an optimization to option 2 to reduce the number of attributes. Introduce a new counter type and selective counter attributes to saicounter.
 
-Introduce a new attribute value type holding list of stat_id to counter object.
-
-**saitypes.h**
+**saicounter.h**
 ```
-typedef struct
-{
-      /** Object type of the stat enum*/
-      sai_object_type_t  object_type;
+typedef enum _sai_counter_type_t
+     /** Regular */
+     SAI_COUNTER_TYPE_REGULAR,
 
-      /** Stat enum value */
-      sai_stat_id_t      stat_enum;
-
-      /** Counter ObjectId associated with stat enum */
-      sai_object_id_t    counter_id;
-
-} sai_counter_id_t;
-
-typedef struct _sai_counter_list_t
-{
-    /** Number of stats */
-    uint32_t count;
-
-    /** List of stat-id to counter object */
-    sai_counter_id_t *list;
-
-} sai_counter_list_t;
-
-
-typedef union _sai_attribute_value_t
-{
-
-
-    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_STATID_COUNTER_LIST */
-    sai_counter_list_t statidcounterlist;
-
-} sai_attribute_value_t;
-
++    /** Selective Counter */
++    SAI_COUNTER_TYPE_SELECTIVE,
++
+ } sai_counter_type_t;
 
 ```
-**saimetadatypes.h**
-
 ```
-typedef enum _sai_attr_value_type_t
+typedef enum _sai_counter_attr_t
 {
+    /**
+     * @brief Enable/disable packet count
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default true
+     */
+    SAI_COUNTER_ATTR_ENABLE_PACKET_COUNT,
 
     /**
-     * @brief Attribute value is STAT enum to COUNTER object list.
+     * @brief Enable/disable byte count
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default true
      */
-    SAI_ATTR_VALUE_TYPE_STATID_COUNTER_LIST
+    SAI_COUNTER_ATTR_ENABLE_BYTE_COUNT,
 
-} sai_attr_value_type_t;
+    /**
+     * @brief Object Type of the stat-id
+     *
+     * @type sai_object_type_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_COUNTER_ATTR_TYPE == SAI_COUNTER_TYPE_SELECTIVE
+     */
+    SAI_COUNTER_ATTR_OBJECT_TYPE,
+
+    /**
+     * @brief Stat id list
+     *
+     * List of statistics enum mapped to this counter
+     *
+     * @type sai_stat_id_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     * @validonly SAI_COUNTER_ATTR_TYPE == SAI_COUNTER_TYPE_SELECTIVE
+     */
+    SAI_COUNTER_ATTR_STAT_ID_LIST,
+
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_COUNTER_ATTR_END,
+
+    /** Custom range base value */
+    SAI_COUNTER_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_COUNTER_ATTR_CUSTOM_RANGE_END
+
+} sai_counter_attr_t;
+
 ```
-
-Introduce an attribute  for stat-id counter object list in each of the object file.
-
 **sairouterinterface.h**
-```
- * @brief Router interface counter objects
- * Counter Object list for supported router interface stats enum
- * @type sai_counter_list_t
- * @flags CREATE_AND_SET
- * @allownull true
- * @default SAI_NULL_OBJECT_ID
- */
- SAI_ROUTER_INTERFACE_ATTR_COUNTER_IDS
+ ```
+    /**
+     * @brief Attach counter object list
+     *
+     * counter object should be of type Selective,
+     * fill (#SAI_COUNTER_ATTR_TYPE with #SAI_COUNTER_TYPE_SELECTIVE)
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @default empty
+     */
+    SAI_ROUTER_INTERFACE_ATTR_SELECTIVE_COUNTER_LIST,
 
 ```
 **saivlan.h**
-```
- * @brief Vlan counter objects
- * Counter Object list for supported vlan stats enum
- * @type sai_counter_list_t
- * @flags CREATE_AND_SET
- * @allownull true
- * @default SAI_NULL_OBJECT_ID
- */
- SAI_VLAN_ATTR_COUNTER_IDS
-
+ ```
+    /**
+     * @brief Attach counter object list
+     *
+     * counter object should be of type Selective,
+     * fill (#SAI_COUNTER_ATTR_TYPE with #SAI_COUNTER_TYPE_SELECTIVE)
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @default empty
+     */
+    SAI_VLAN_ATTR_SELECTIVE_COUNTER_LIST,
 ```
 **saitunnel.h**
-```
- * @brief Tunnel counter objects
- * Counter Object list for supported tunnel stats enum
- * @type sai_counter_list_t
- * @flags CREATE_AND_SET
- * @allownull true
- * @default SAI_NULL_OBJECT_ID
- */
- SAI_TUNNEL_ATTR_COUNTER_IDS
-
+ ```
+    /**
+     * @brief Attach counter object list
+     *
+     * counter object should be of type Selective,
+     * fill (#SAI_COUNTER_ATTR_TYPE with #SAI_COUNTER_TYPE_SELECTIVE)
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @default empty
+     */
+    SAI_TUNNEL_ATTR_SELECTIVE_COUNTER_LIST,
 ```
 **saiqueue.h**
-```
- * @brief Queue counter objects
- * Counter Object list for supported queue stats enum
- * @type sai_counter_list_t
- * @flags CREATE_AND_SET
- * @allownull true
- * @default SAI_NULL_OBJECT_ID
- */
- SAI_QUEUE_ATTR_COUNTER_IDS
-
+ ```
+    /**
+     * @brief Attach counter object list
+     *
+     * counter object should be of type Selective,
+     * fill (#SAI_COUNTER_ATTR_TYPE with #SAI_COUNTER_TYPE_SELECTIVE)
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @default empty
+     */
+    SAI_QUEUE_ATTR_SELECTIVE_COUNTER_LIST,
 ```
 **saiport.h**
-```
- * @brief Port counter objects
- * Counter Object list for supported port stats enum
- * @type sai_counter_list_t
- * @flags CREATE_AND_SET
- * @allownull true
- * @default SAI_NULL_OBJECT_ID
- */
- SAI_PORT_ATTR_COUNTER_IDS
-
+ ```
+    /**
+     * @brief Attach counter object list
+     *
+     * counter object should be of type Selective,
+     * fill (#SAI_COUNTER_ATTR_TYPE with #SAI_COUNTER_TYPE_SELECTIVE)
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @default empty
+     */
+    SAI_PORT_ATTR_SELECTIVE_COUNTER_LIST,
 ```
 #### Sample workflow
 Query and save the stats capability during initialization.
@@ -586,8 +616,8 @@ Query and save the stats capability during initialization.
 ```
     uint32_t ROUTER_INTERFACE_MAX_STAT_ID = 0;
 
-    vector <sai_int32_t> countArr;
-    vector <sai_object_id_t> countOid; /* per routerinterface object */
+    vector <sai_int32_t> countArr; // Array of supported stat-ids
+    vector <sai_object_id_t> countOid; // Selective counter object mapped to stat-ids.
     vector<sai_stat_capability_t> statList;
     sai_stat_capability_list_t values = { .count = 0, .list = nullptr };
 
@@ -627,31 +657,79 @@ vector<sai_attribute_t> attrs;
 
 /* Default counting when not supported by vendor SAI, must return
    "rif_capability.create_implemented = false" */
-status = sai_query_attribute_capability(gSwitchId, SAI_OBJECT_TYPE_ROUTER_INTERFACE,                     SAI_ROUTER_INTERFACE_ATTR_COUNTER_IDS, &rif_capability);
+status = sai_query_attribute_capability(gSwitchId, SAI_OBJECT_TYPE_ROUTER_INTERFACE,                     SAI_ROUTER_INTERFACE_ATTR_SELECTIVE_COUNTER_LIST , &rif_capability);
 if (status == SAI_STATUS_SUCCESS && rif_capability.create_implemented)
 {
-    vector<sai_counter_id_t> oid_list(ROUTER_INTERFACE_MAX_STAT_ID); //Allocate place holder for all stats-ids
-    attr.value.statidcounterlist.count = static_cast<uint32_t>(ROUTER_INTERFACE_MAX_STAT_ID);
-    attr.value.statidcounterlist.list = oid_list.data();
+    vector<sai_object_id_t> oid_list(ROUTER_INTERFACE_MAX_STAT_ID); //Allocate place holder for all stats-ids
+    attr.value.objlist.count = static_cast<uint32_t>(ROUTER_INTERFACE_MAX_STAT_ID);
+    attr.value.objlist.list = oid_list.data();
 
     for(int32_t idx = 0; idx < ROUTER_INTERFACE_MAX_STAT_ID; idx ++)
     {
-        /* Create counter object */
+        /* Create selective counter object */
         cnt_attr.id = SAI_COUNTER_ATTR_TYPE;
-        cnt_attr.value.s32 = SAI_COUNTER_TYPE_REGULAR;
+        cnt_attr.value.s32 = SAI_COUNTER_TYPE_SELECTIVE;
+        cnt_attr.id = SAI_COUNTER_ATTR_OBJECT_TYPE;
+        cnt_attr.value.s32 = SAI_OBJECT_TYPE_ROUTER_INTERFACE;
         cnt_attrs.push_back(cnt_attr);
-        stat_id = countArr[idx];
-        status = sai_counter_api->sai_create_counter(&countOid[idx], gSwitchId, 1, cnt_attrs.data());
+        cnt_attr.id = SAI_COUNTER_ATTR_STAT_ID_LIST;
+        cnt_attr.value.s32list.count = 1;
+        cnt_attr.value.s32list.list = new int;
+        cnt_attr.value.s32list.list[0] = countArr[idx];
+        cnt_attrs.push_back(cnt_attr);
+        cnt_attr.id = SAI_COUNTER_ATTR_ENABLE_PACKET_COUNT;
+        cnt_attr.value.booldata = true;
+        cnt_attrs.push_back(cnt_attr);
+        cnt_attr.id = SAI_COUNTER_ATTR_ENABLE_BYTE_COUNT;
+        cnt_attr.value.booldata = true;
+        cnt_attrs.push_back(cnt_attr);
+        status = sai_counter_api->sai_create_counter(&countOid[idx], gSwitchId, 5, cnt_attrs.data());
 
-        attr.value.objlist.list[idx].object_type = SAI_OBJECT_TYPE_ROUTER_INTERFACE;
-        attr.value.objlist.list[idx].stat_enum = stat_id;
-        attr.value.objlist.list[idx].counter_id = countOid[idx];
+        attr.value.objlist.list[idx] = countOid[idx];
     }
-    attr.id = SAI_ROUTER_INTERFACE_ATTR_COUNTER_IDS;
+    attr.id = SAI_ROUTER_INTERFACE_ATTR_SELECTIVE_COUNTER_LIST;
     attrs.push_back(attr);
 }
 
 sai_status_t status = sai_router_intfs_api->create_router_interface(&port.m_rif_id, gSwitchId, (uint32_t)attrs.size(), attrs.data());
+```
+**Note that multiple stat-ids can map to same counter object.**
+```
+if (status == SAI_STATUS_SUCCESS && rif_capability.create_implemented)
+{
+    vector<sai_object_id_t> oid_list(1); //Allocate place holder for all stats-ids
+    attr.value.objlist.count = static_cast<uint32_t>(1);
+    attr.value.objlist.list = oid_list.data();
+
+    /* Create selective counter object */
+    cnt_attr.id = SAI_COUNTER_ATTR_TYPE;
+    cnt_attr.value.s32 = SAI_COUNTER_TYPE_SELECTIVE;
+    cnt_attr.id = SAI_COUNTER_ATTR_OBJECT_TYPE;
+    cnt_attr.value.s32 = SAI_OBJECT_TYPE_ROUTER_INTERFACE;
+    cnt_attrs.push_back(cnt_attr);
+    cnt_attr.id = SAI_COUNTER_ATTR_ENABLE_PACKET_COUNT;
+    cnt_attr.value.booldata = true;
+    cnt_attrs.push_back(cnt_attr);
+    cnt_attr.id = SAI_COUNTER_ATTR_ENABLE_BYTE_COUNT;
+    cnt_attr.value.booldata = true;
+    cnt_attrs.push_back(cnt_attr);
+    cnt_attr.id = SAI_COUNTER_ATTR_STAT_ID_LIST;
+    cnt_attr.value.s32list.count = ROUTER_INTERFACE_MAX_STAT_ID;
+    cnt_attr.value.s32list.list = new int(ROUTER_INTERFACE_MAX_STAT_ID);
+    for(int32_t idx = 0; idx < ROUTER_INTERFACE_MAX_STAT_ID; idx ++)
+    {
+        cnt_attr.value.s32list.list[idx] = countArr[idx];
+    }
+    cnt_attrs.push_back(cnt_attr);
+
+    status = sai_counter_api->sai_create_counter(&countOid[0], gSwitchId, 5, cnt_attrs.data());
+
+    attr.value.objlist.list[idx] = countOid[0];
+    attr.id = SAI_ROUTER_INTERFACE_ATTR_SELECTIVE_COUNTER_LIST;
+    attrs.push_back(attr);
+
+    sai_status_t status = sai_router_intfs_api->create_router_interface(&port.m_rif_id, gSwitchId, (uint32_t)attrs.size(), attrs.data());
+}
 ```
 ##### Set Object:
 ```c
@@ -680,11 +758,24 @@ if (status == SAI_STATUS_SUCCESS && rif_capability.set_implemented && isStatIdFo
     {
         if(countOid[idx] == SAI_NULL_OBJECT_ID)
         {
-            /* Create counter object for IN_COUNTER */
+             /* Create selective counter object */
             cnt_attr.id = SAI_COUNTER_ATTR_TYPE;
-            cnt_attr.value.s32 = SAI_COUNTER_TYPE_REGULAR;
+            cnt_attr.value.s32 = SAI_COUNTER_TYPE_SELECTIVE;
+            cnt_attr.id = SAI_COUNTER_ATTR_OBJECT_TYPE;
+            cnt_attr.value.s32 = SAI_OBJECT_TYPE_ROUTER_INTERFACE;
             cnt_attrs.push_back(cnt_attr);
-            status = sai_counter_api->sai_create_counter(&countOid[idx], gSwitchId, 1, cnt_attrs.data());
+            cnt_attr.id = SAI_COUNTER_ATTR_STAT_ID_LIST;
+            cnt_attr.value.s32list.count = 1;
+            cnt_attr.value.s32list.list = new int;
+            cnt_attr.value.s32list.list[0] = countArr[idx]; 
+            cnt_attrs.push_back(cnt_attr);
+            cnt_attr.id = SAI_COUNTER_ATTR_ENABLE_PACKET_COUNT;
+            cnt_attr.value.booldata = true;
+            cnt_attrs.push_back(cnt_attr);
+            cnt_attr.id = SAI_COUNTER_ATTR_ENABLE_BYTE_COUNT;
+            cnt_attr.value.booldata = true;
+            cnt_attrs.push_back(cnt_attr);
+            status = sai_counter_api->sai_create_counter(&countOid[idx], gSwitchId, 5,  cnt_attrs.data());
         }
     }
     else
@@ -703,9 +794,7 @@ if (status == SAI_STATUS_SUCCESS && rif_capability.set_implemented && isStatIdFo
     attr.id = SAI_ROUTER_INTERFACE_ATTR_COUNTER_IDS;
     for(int32_t idx = 0; idx < ROUTER_INTERFACE_MAX_STAT_ID; idx ++)
     {
-        attr.value.objlist.list[idx].object_type = SAI_OBJECT_TYPE_ROUTER_INTERFACE;
-        attr.value.objlist.list[idx].stat_enum = countArr[idx];
-        attr.value.objlist.list[idx].counter_id = countOid[idx];
+        attr.value.objlist.list[idx] = countOid[idx];
     }
 }
 
@@ -713,6 +802,8 @@ sai_status_t status =
         sai_router_intfs_api->set_router_interface_attribute(port.m_rif_id, &attr);
 
 ```
+In case of same selective counter Object mapped to multiple stat-ids, do sai_set_counter_attribute() with updated stat-id list and no operation required in sairouterinterface.
+
 ##### Get statistics:
 ```c
 /* Assume, countOid array is updated for the specific router-interface as part of create/set operation.*/
@@ -727,10 +818,11 @@ if (status == SAI_STATUS_SUCCESS && rif_capability.get_implemented)
     {
         if(countOid[idx] != SAI_NULL_OBJECT_ID)
         {
-            status = sai_counter_api->get_counter_stats(
+            status = sai_counter_api->get_counter_stats_ext(
                             countOid[idx],
                             2,/*count packet and byte */
                             stat_ids,
+                            SAI_STATS_MODE_READ,
                             stats);
         }
     }
@@ -764,12 +856,11 @@ else
 
 ```
 #### Pros
-- Number of attributes reduced to 1
-- Flexiblity to count selective statistics.
+- Flexiblity to count selective statistics per object.
 
 #### Cons
 
-- New workflow with more attributes per object.
+- New workflow
 
 **Prefered: Option 3**
 
