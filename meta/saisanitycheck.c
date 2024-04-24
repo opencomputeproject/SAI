@@ -3657,6 +3657,7 @@ void check_non_object_id_object_types()
                 case SAI_ATTR_VALUE_TYPE_UINT32:
                 case SAI_ATTR_VALUE_TYPE_UINT16:
                 case SAI_ATTR_VALUE_TYPE_UINT8:
+                case SAI_ATTR_VALUE_TYPE_UINT32_RANGE:
                 case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
                 case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
                 case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
