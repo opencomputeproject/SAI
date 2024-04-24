@@ -143,6 +143,18 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_METER_CLASS_OVERRIDE,
 
     /**
+     * @brief Action set_tunnel_mapping, set_private_link_mapping parameter DASH_TUNNEL_ID
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_DASH_TUNNEL
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_TUNNEL_MAPPING or SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_PRIVATE_LINK_MAPPING
+     */
+    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_DASH_TUNNEL_ID,
+
+    /**
      * @brief Action set_private_link_mapping parameter OVERLAY_SIP
      *
      * @type sai_ip_address_t
