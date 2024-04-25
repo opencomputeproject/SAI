@@ -36,6 +36,15 @@
  */
 
 /**
+ * @brief Attribute data for #SAI_ENI_ETHER_ADDRESS_MAP_ENTRY_ATTR_ACTION
+ */
+typedef enum _sai_eni_ether_address_map_entry_action_t
+{
+    SAI_ENI_ETHER_ADDRESS_MAP_ENTRY_ACTION_SET_ENI,
+
+} sai_eni_ether_address_map_entry_action_t;
+
+/**
  * @brief Entry for eni_ether_address_map_entry
  */
 typedef struct _sai_eni_ether_address_map_entry_t
@@ -65,6 +74,15 @@ typedef enum _sai_eni_ether_address_map_entry_attr_t
     SAI_ENI_ETHER_ADDRESS_MAP_ENTRY_ATTR_START,
 
     /**
+     * @brief Action
+     *
+     * @type sai_eni_ether_address_map_entry_action_t
+     * @flags CREATE_AND_SET
+     * @default SAI_ENI_ETHER_ADDRESS_MAP_ENTRY_ACTION_SET_ENI
+     */
+    SAI_ENI_ETHER_ADDRESS_MAP_ENTRY_ATTR_ACTION = SAI_ENI_ETHER_ADDRESS_MAP_ENTRY_ATTR_START,
+
+    /**
      * @brief Action set_eni parameter ENI_ID
      *
      * @type sai_object_id_t
@@ -73,7 +91,7 @@ typedef enum _sai_eni_ether_address_map_entry_attr_t
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
-    SAI_ENI_ETHER_ADDRESS_MAP_ENTRY_ATTR_ENI_ID = SAI_ENI_ETHER_ADDRESS_MAP_ENTRY_ATTR_START,
+    SAI_ENI_ETHER_ADDRESS_MAP_ENTRY_ATTR_ENI_ID,
 
     /**
      * @brief End of attributes
