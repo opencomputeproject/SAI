@@ -259,6 +259,19 @@ typedef enum _sai_queue_attr_t
     SAI_QUEUE_ATTR_PFC_CONTINUOUS_DEADLOCK_STATE,
 
     /**
+     * @brief Attach counter object list
+     *
+     * counter object should be of type Selective,
+     * fill (#SAI_COUNTER_ATTR_TYPE with #SAI_COUNTER_TYPE_SELECTIVE)
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @default empty
+     */
+    SAI_QUEUE_ATTR_SELECTIVE_COUNTER_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_QUEUE_ATTR_END,
