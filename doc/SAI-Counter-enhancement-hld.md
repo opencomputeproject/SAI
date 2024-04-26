@@ -20,6 +20,7 @@ When some SAI objects are created, the default statistics enum defined in each t
 ## Options
 1. A new SAI attribute introduced in each of these object to determine counting mode.
 2. In parallel to existing design, introduce a new counter ID attribute per statistics type to count packet, byte.
+3. Using saicounter
 
 ## SAI Spec Enhancement
 ### Option 1
@@ -477,9 +478,13 @@ typedef enum _sai_counter_type_t
  } sai_counter_type_t;
 
 ```
+
 ```
 typedef enum _sai_counter_attr_t
 {
+    :
+    :
+
     /**
      * @brief Enable/disable packet count
      *
@@ -512,13 +517,12 @@ typedef enum _sai_counter_attr_t
      *
      * List of statistics enum mapped to this counter
      *
-     * @type sai_stat_id_list_t
+     * @type sai_s32_list_t
      * @flags CREATE_AND_SET
      * @default empty
      * @validonly SAI_COUNTER_ATTR_TYPE == SAI_COUNTER_TYPE_SELECTIVE
      */
     SAI_COUNTER_ATTR_STAT_ID_LIST,
-
 
     /**
      * @brief End of attributes
