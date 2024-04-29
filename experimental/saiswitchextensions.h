@@ -37,6 +37,14 @@ typedef enum _sai_switch_attr_extensions_t
 {
     SAI_SWITCH_ATTR_EXTENSIONS_RANGE_START = SAI_SWITCH_ATTR_END,
 
+    /**
+     * @brief Maximum number of meter buckets per ENI.
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_DASH_CAPS_MAX_METER_BUCKET_COUNT_PER_ENI = SAI_SWITCH_ATTR_EXTENSIONS_RANGE_START,
+
     SAI_SWITCH_ATTR_EXTENSIONS_RANGE_END
 
 } sai_switch_attr_extensions_t;
