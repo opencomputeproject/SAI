@@ -777,8 +777,8 @@ typedef enum _sai_tunnel_attr_t
     /**
      * @brief Attach counter object list
      *
-     * counter object should be of type Selective,
-     * fill (#SAI_COUNTER_ATTR_TYPE with #SAI_COUNTER_TYPE_SELECTIVE)
+     * Counter object should be of type Selective.
+     * Fill (#SAI_COUNTER_ATTR_TYPE with #SAI_COUNTER_TYPE_SELECTIVE).
      *
      * @type sai_object_list_t
      * @flags CREATE_AND_SET
