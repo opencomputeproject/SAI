@@ -208,6 +208,7 @@ sub BuildCommitHistory
                 {
                     #print "elsif (defined $enumName $IGNORED{$enumName} and $IGNORED{$enumName} eq $HISTORY{$enumTypeName}{$enumName}{name})";
 
+                    next if $HISTORY{$enumTypeName}{$enumValue} eq "SAI_PORT_BREAKOUT_MODE_TYPE_MAX";
                     LogWarning "Both enums have the same value $enumName and $HISTORY{$enumTypeName}{$enumValue} = $enumValue";
                 }
             }
