@@ -33,8 +33,11 @@
  */
 typedef enum _sai_dash_caps_ha_scope_level_t
 {
-    Card,
-    ENI,
+    /** Card level HA scope */
+    SAI_DASH_CAPS_HA_SCOPE_LEVEL_CARD,
+
+    /** ENI level HA scope */
+    SAI_DASH_CAPS_HA_SCOPE_LEVEL_ENI,
 } sai_dash_caps_ha_scope_level_t;
 
 /**
@@ -43,10 +46,10 @@ typedef enum _sai_dash_caps_ha_scope_level_t
 typedef enum _sai_ha_set_event_t
 {
     /** Data plane channel goes up. */
-    SAI_HA_SET_DP_CHANNEL_UP,
+    SAI_HA_SET_EVENT_DP_CHANNEL_UP,
 
     /** Data plane channel goes down. */
-    SAI_HA_SET_DP_CHANNEL_DOWN,
+    SAI_HA_SET_EVENT_DP_CHANNEL_DOWN,
 
 } sai_ha_set_event_t;
 
@@ -75,7 +78,7 @@ typedef struct _sai_ha_set_event_data_t
  */
 typedef void (*sai_ha_set_event_notification_fn)(
         _In_ uint32_t count,
-        _In_ const sai_ha_set_event_data_t *ha_set_event_data);
+        _In_ const sai_ha_set_event_data_t *data);
 
 /**
  * @brief Notification data format received from SAI HA scope callback
@@ -105,7 +108,7 @@ typedef struct _sai_ha_scope_event_data_t
  */
 typedef void (*sai_ha_scope_event_notification_fn)(
         _In_ uint32_t count,
-        _In_ const sai_ha_scope_event_data_t *ha_scope_event_data);
+        _In_ const sai_ha_scope_event_data_t *data);
 
 /**
  * @brief SAI switch attribute extensions.
@@ -126,7 +129,7 @@ typedef enum _sai_switch_attr_extensions_t
 
     /**
      * @brief DASH capability HA scope level.
-     * 
+     *
      * It indicates on which level HA scope can be supported, such as ENI or Card.
      *
      * @type sai_dash_caps_ha_scope_level_t
@@ -135,8 +138,8 @@ typedef enum _sai_switch_attr_extensions_t
     SAI_SWITCH_ATTR_DASH_CAPS_HA_SCOPE_LEVEL,
 
     /**
-     * @brief DASH capability HA owner needed. 
-     * 
+     * @brief DASH capability HA owner needed.
+     *
      * If true, the DASH host need to own driving the HA state machine, otherwise the DASH
      * implementation can drive the HA state machine by itself.
      *
