@@ -1596,6 +1596,30 @@ public:
       }
       attr_list.push_back(thrift_port_list_attribute);
       free(port_list_object_attribute.value.objlist.list);
+
+      sai_attribute_t switch_attr;
+      switch_attr.id = SAI_SWITCH_ATTR_TYPE;
+      status = switch_api->get_switch_attribute(gSwitchId, 1, &switch_attr);
+      if (status != SAI_STATUS_SUCCESS) {
+          SAI_THRIFT_LOG_ERR("get_switch_attribute failed!!!");
+          return;
+      }
+      if (switch_attr.value.u32 != SAI_SWITCH_TYPE_VOQ) {
+          return;
+      }
+      switch_attr.id = SAI_SWITCH_ATTR_CREDIT_WD;
+      status = switch_api->get_switch_attribute(gSwitchId, 1, &switch_attr);
+      if (status != SAI_STATUS_SUCCESS) {
+          SAI_THRIFT_LOG_ERR("get_switch_attribute failed!!!");
+          return;
+      }
+
+      sai_thrift_attribute_t credit_wd_attribute;
+      thrift_attr_list.attr_count = 2;
+      credit_wd_attribute.id = SAI_SWITCH_ATTR_CREDIT_WD;
+      credit_wd_attribute.value.booldata =  switch_attr.value.booldata;
+      attr_list.push_back(credit_wd_attribute);
+      printf("sai_thrift_get_switch_attribute credit_wd:%d\n", switch_attr.value.booldata);
   }
 
   sai_thrift_status_t sai_thrift_set_switch_attribute(const sai_thrift_attribute_t& thrift_attr) {
@@ -1609,6 +1633,20 @@ public:
           return status;
       }
 
+      if (thrift_attr.id == SAI_SWITCH_ATTR_CREDIT_WD)
+      {
+          attr.id = SAI_SWITCH_ATTR_TYPE;
+          status = switch_api->get_switch_attribute(gSwitchId, 1, &attr);
+          if (status != SAI_STATUS_SUCCESS) {
+              SAI_THRIFT_LOG_ERR("get_switch_attribute failed!!!");
+              return status;
+          }
+          if (attr.value.u32 != SAI_SWITCH_TYPE_VOQ) {
+              SAI_THRIFT_LOG_ERR("Switch is not VOQ switch!!!");
+              return SAI_STATUS_NOT_SUPPORTED;
+          }
+          printf("sai_thrift_set_switch_attribute credit_wd value:%d\n", thrift_attr.value.booldata);
+      }
       sai_thrift_parse_switch_attribute(thrift_attr, &attr);
 
       status = switch_api->set_switch_attribute(gSwitchId, &attr);
@@ -1638,6 +1676,10 @@ public:
 
           case SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_SEED:
               attr->value.u32 = thrift_attr.value.u32;
+              break;
+
+          case SAI_SWITCH_ATTR_CREDIT_WD:
+              attr->value.booldata = thrift_attr.value.booldata;
               break;
 
           default:
