@@ -479,6 +479,24 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_DISABLE_FAST_PATH_ICMP_FLOW_REDIRECTION,
 
     /**
+     * @brief Action set_eni_attrs parameter FULL_FLOW_RESIMULATION_REQUESTED
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_ENI_ATTR_FULL_FLOW_RESIMULATION_REQUESTED,
+
+    /**
+     * @brief Action set_eni_attrs parameter MAX_RESIMULATED_FLOW_PER_SECOND
+     *
+     * @type sai_uint64_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ENI_ATTR_MAX_RESIMULATED_FLOW_PER_SECOND,
+
+    /**
      * @brief End of attributes
      */
     SAI_ENI_ATTR_END,
@@ -501,6 +519,12 @@ typedef enum _sai_eni_stat_t
 
     /** DASH ENI LB_FAST_PATH_ICMP_IN_PACKETS stat count */
     SAI_ENI_STAT_LB_FAST_PATH_ICMP_IN_PACKETS,
+
+    /** DASH ENI FLOW_UPDATED_BY_RESIMULATION stat count */
+    SAI_ENI_STAT_FLOW_UPDATED_BY_RESIMULATION,
+
+    /** DASH ENI FLOW_UPDATE_BY_RESIMULATION_FAILED stat count */
+    SAI_ENI_STAT_FLOW_UPDATE_BY_RESIMULATION_FAILED,
 
 } sai_eni_stat_t;
 
