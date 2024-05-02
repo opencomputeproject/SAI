@@ -34,6 +34,7 @@
 #include "saiportextensions.h"
 
 /* new experimental object type includes */
+#include "saiexperimentaldashha.h"
 #include "saiexperimentaldashvip.h"
 #include "saiexperimentaldashpavalidation.h"
 #include "saiexperimentaldashvnet.h"
@@ -76,6 +77,8 @@ typedef enum _sai_api_extensions_t
     SAI_API_DASH_PA_VALIDATION,
 
     SAI_API_DASH_VIP,
+
+    SAI_API_DASH_HA,
 
     /* Add new experimental APIs above this line */
 
