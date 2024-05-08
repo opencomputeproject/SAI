@@ -1619,7 +1619,6 @@ public:
       credit_wd_attribute.id = SAI_SWITCH_ATTR_CREDIT_WD;
       credit_wd_attribute.value.booldata =  switch_attr.value.booldata;
       attr_list.push_back(credit_wd_attribute);
-      printf("sai_thrift_get_switch_attribute credit_wd:%d\n", switch_attr.value.booldata);
   }
 
   sai_thrift_status_t sai_thrift_set_switch_attribute(const sai_thrift_attribute_t& thrift_attr) {
@@ -1645,7 +1644,6 @@ public:
               SAI_THRIFT_LOG_ERR("Switch is not VOQ switch!!!");
               return SAI_STATUS_NOT_SUPPORTED;
           }
-          printf("sai_thrift_set_switch_attribute credit_wd value:%d\n", thrift_attr.value.booldata);
       }
       sai_thrift_parse_switch_attribute(thrift_attr, &attr);
 
