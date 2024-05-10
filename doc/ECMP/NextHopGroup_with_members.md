@@ -24,6 +24,11 @@ If we could instead specify the current list of next hop group members, we could
 * Add a new Next hop group attribute for the list of weights
 * Create/modify the Next hop group by specifying both of the above lists
 
+No next hop group member objects will be created in this workflow.
+Any modification of the next hop group will need the application to pass in the
+current list of next hops.
+The member next hops need not be removed before removing the next hop group.
+
 ### Example
 
 Create a next hop group.

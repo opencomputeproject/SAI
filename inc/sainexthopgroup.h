@@ -113,6 +113,8 @@ typedef enum _sai_next_hop_group_attr_t
     /**
      * @brief Next hop member list
      *
+     * Not valid when SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_ECMP_WITH_MEMBERS
+     *
      * @type sai_object_list_t
      * @flags READ_ONLY
      * @objects SAI_OBJECT_TYPE_NEXT_HOP_GROUP_MEMBER
