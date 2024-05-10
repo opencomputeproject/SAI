@@ -53,7 +53,7 @@ Create a next hop group.
         group_attr.push_back(attr);
 
         sai_status_t status =
-          sai->create(SAI_OBJECT_TYPE_NEXT_HOP_GROUP, &group_oid, switchid,
+          sai_next_hop_group_api->create_next_hop_group(&group_oid, switchid,
                       (uint32_t)group_attr.size(), group_attr.data());
 ```
 
@@ -77,7 +77,7 @@ Modify follows the same pattern by specifying the new list of next hops and weig
         group_attr.push_back(attr);
 
         sai_status_t status =
-          sai->bulkSet(SAI_OBJECT_TYPE_NEXT_HOP_GROUP,
+          sai_next_hop_group_api->set_next_hop_groups_attribute(
                       (uint32_t)nhg_oids.size(),
                       nhg_oids.data(), group_attr.data(),
                       SAI_BULK_OP_ERROR_MODE_STOP_ON_ERROR,
