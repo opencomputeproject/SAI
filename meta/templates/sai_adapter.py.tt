@@ -190,10 +190,10 @@ client.[% function.thrift_name %](
 
 [%- BLOCK catch_exception -%]
     except sai_thrift_exception as e:
-        status = e.status
-        if SKIP_TEST_ON_EXPECTED_ERROR and status in EXPECTED_ERROR_CODE:
+        sai_status = e.status
+        if SKIP_TEST_ON_EXPECTED_ERROR and sai_status in EXPECTED_ERROR_CODE:
             reason = "SkipTest on expected error. [% function.thrift_name %] with errorcode: {} error: {}".format(
-                status, e)
+                sai_status, e)
             print(reason)
             testutils.skipped_test_count=1
             raise SkipTest(reason)
@@ -207,7 +207,7 @@ client.[% function.thrift_name %](
     [%- ELSIF function.operation == 'create' %]
             pass
     [%- ELSE %]
-            return status
+            return sai_status
     [%- END %]
         else:
             raise e
