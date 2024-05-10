@@ -525,6 +525,13 @@ EXPECTED_ERROR_CODE = [-2]
 SKIP_TEST_ON_EXPECTED_ERROR = True
 sai_status = 0
 
+def __getattr__(name):
+    if name == 'status':
+        global sai_status
+        return sai_status
+    else:
+        raise AttributeError(f'module {__name__} has no attribute {name}')
+
 [%- PROCESS dev_utils IF dev_utils -%]
 [%- PROCESS invocation_logger IF adapter_logger -%]
 
