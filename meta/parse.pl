@@ -2413,6 +2413,7 @@ sub ProcessSingleObjectType
         WriteSource ".isresourcetype                = $isresourcetype,";
         WriteSource ".isdeprecated                  = $isdeprecated,";
         WriteSource ".isconditionrelaxed            = $isrelaxed,";
+        WriteSource ".iscustom                      = $attr >= 0x10000000";
 
         WriteSource "};";
 
