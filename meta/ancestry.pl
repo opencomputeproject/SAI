@@ -238,7 +238,7 @@ if (defined $optionHistoryFile)
 
     eval($history) or die "failed to eval history file: $optionHistoryFile";
 
-    die "history file $optionHistoryFile not complete, missing too many keys" if scalar keys %HISTORY < 280;
+    die "history file $optionHistoryFile not complete, missing too many keys" if scalar keys %HISTORY < 314;
 
     LogInfo "loaded history from $optionHistoryFile";
 }
