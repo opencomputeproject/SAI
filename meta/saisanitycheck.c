@@ -210,15 +210,28 @@ void check_all_enums_values()
 
             if (value != last + 1)
             {
-                flags = true;
-
-                if (is_flag_enum(emd))
+                if (value == CUSTOM_ATTR_RANGE_START)
                 {
-                    /* flags, ok */
+                    /*
+                     * Object contains custom attributes in custom range, they
+                     * still needs to be increasing by 1 but since those are
+                     * not flags, attribute value can't be used as array index.
+                     */
+
+                    META_ENUM_LOG_WARN(emd, "contains custom range attibutes");
                 }
                 else
                 {
-                    META_ENUM_ASSERT_FAIL(emd, "values are not increasing by 1: last: %d current: %d, should be marked as @flags?", last, value);
+                    flags = true;
+
+                    if (is_flag_enum(emd))
+                    {
+                        /* flags, ok */
+                    }
+                    else
+                    {
+                        META_ENUM_ASSERT_FAIL(emd, "values are not increasing by 1: last: %d current: %d, should be marked as @flags?", last, value);
+                    }
                 }
             }
 
@@ -3528,6 +3541,8 @@ void check_object_infos()
 
         bool has_extensions_attrs = false;
 
+        bool has_custom_range_attrs = false;
+
         for (; meta[index] != NULL; ++index)
         {
             const sai_attr_metadata_t* am = meta[index];
@@ -3537,13 +3552,26 @@ void check_object_infos()
 
             if (last + 1 != (int)am->attrid)
             {
-                if (is_flag_enum(info->enummetadata))
+                if (am->attrid == CUSTOM_ATTR_RANGE_START)
                 {
-                    /* flags, ok */
+                    /*
+                     * Object contains custom attributes in custom range, they
+                     * still needs to be increasing by 1 but since those are
+                     * not flags, attribute value can't be used as array index.
+                     */
+
+                    has_custom_range_attrs = true;
                 }
                 else
                 {
-                    META_MD_ASSERT_FAIL(am, "attr id is not increasing by 1: prev %d, curr %d", last, am->attrid);
+                    if (is_flag_enum(info->enummetadata))
+                    {
+                        /* flags, ok */
+                    }
+                    else
+                    {
+                        META_MD_ASSERT_FAIL(am, "attr id is not increasing by 1: prev %d, curr %d", last, am->attrid);
+                    }
                 }
             }
 
@@ -3590,6 +3618,10 @@ void check_object_infos()
             else if (has_extensions_attrs)
             {
                 /* ok, extension attribute */
+            }
+            else if (has_custom_range_attrs)
+            {
+                /* ok, custom range attributes */
             }
             else
             {
@@ -3825,8 +3857,8 @@ void check_attr_sorted_by_id_name()
 
     const char *last = "AAA";
 
-    META_ASSERT_TRUE(sai_metadata_attr_sorted_by_id_name_count > 800,
-            "there should be at least 800 attributes in total");
+    META_ASSERT_TRUE(sai_metadata_attr_sorted_by_id_name_count > 1700,
+            "there should be at least 1700 attributes in total");
 
     for (; i < sai_metadata_attr_sorted_by_id_name_count; ++i)
     {
@@ -4147,7 +4179,7 @@ void check_mixed_object_list_types()
      * be supported.
      */
 
-    META_ASSERT_TRUE(sai_metadata_attr_sorted_by_id_name_count > 800, "there should be at least 800 attributes in total");
+    META_ASSERT_TRUE(sai_metadata_attr_sorted_by_id_name_count > 1700, "there should be at least 1700 attributes in total");
 
     size_t idx = 0;
 
@@ -5150,7 +5182,6 @@ void check_get_attr_metadata()
         while (mda[idx])
         {
             const sai_attr_metadata_t* m = mda[idx++];
-
             const sai_attr_metadata_t* md = sai_metadata_get_attr_metadata(ot, m->attrid);
 
             META_ASSERT_NOT_NULL(md);
@@ -5160,7 +5191,156 @@ void check_get_attr_metadata()
         }
     }
 
-    META_ASSERT_TRUE(count > 600, "expected at least 600 attributes");
+    META_ASSERT_TRUE(count > 1700, "expected at least 1700 attributes");
+}
+
+void check_get_attr_metadata_custom_range()
+{
+    META_LOG_ENTER();
+
+    /*
+     * This function will check, if attributes which are marked as no flags,
+     * will have values equal to attribute index in metadata array even if
+     * attribute is extension attribute, and custom range attributes will be
+     * ignored.
+     *
+     * This will make sure that we can use attr id as index in arrays except
+     * custom attributes.
+     */
+
+    size_t count = 0;
+
+    size_t ot = 0;
+
+    for (; ot < SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++ot)
+    {
+        const sai_object_type_info_t* oti = sai_metadata_get_object_type_info(ot);
+
+        if (oti == NULL)
+            continue;
+
+        const sai_attr_metadata_t* const* mda = sai_metadata_attr_by_object_type[ot];
+
+        if (oti->enummetadata->containsflags)
+        {
+            int idx = 0;
+
+            while (mda[idx])
+            {
+                const sai_attr_metadata_t* m = mda[idx++];
+
+                const sai_attr_metadata_t* md = sai_metadata_get_attr_metadata(ot, m->attrid);
+
+                META_ASSERT_NOT_NULL(md);
+                META_ASSERT_TRUE(m == md, "different attribute found, fatal");
+
+                count++;
+            }
+
+            continue;
+        }
+
+        /* no flags attributes */
+
+        META_ASSERT_TRUE(oti->attridend <= oti->attrmetadatalength, "attridend must be less or equal to total number of attributes");
+
+        uint32_t idx = 0;
+
+        while (mda[idx])
+        {
+            const sai_attr_metadata_t* m = mda[idx];
+            const sai_attr_metadata_t* md = sai_metadata_get_attr_metadata(ot, m->attrid);
+
+            META_ASSERT_NOT_NULL(md);
+            META_ASSERT_TRUE(m == md, "different attribute found, fatal");
+
+            if (oti->attridend == oti->attrmetadatalength || idx < oti->attridend)
+            {
+                META_ASSERT_TRUE(md->attrid == idx, "%s, attrid (%u) must be equal to index (%u)", md->attridname, md->attrid, idx);
+            }
+            else /* extensions or custom attributes */
+            {
+                if (md->attrid < CUSTOM_ATTR_RANGE_START)
+                {
+                    META_ASSERT_TRUE(md->attrid == idx, "extenstion attribute %s, attrid (%u) must be equal to index (%u)", md->attridname, md->attrid, idx);
+                }
+                else
+                {
+                    /* custom range attributes will not follow index increase */
+                }
+            }
+
+            idx++;
+            count++;
+        }
+    }
+
+    META_ASSERT_TRUE(count > 1700, "expected at least 1700 attributes, got %zu", count);
+}
+
+void check_attr_get_outside_range()
+{
+    META_LOG_ENTER();
+
+    int ot = -10;
+
+    for (; ot < (int)(SAI_OBJECT_TYPE_EXTENSIONS_MAX + 10); ++ot)
+    {
+        const sai_object_type_info_t* oti = sai_metadata_get_object_type_info(ot);
+
+        if (oti == NULL)
+            continue;
+
+        int idx = -10;
+
+        for (; idx < (int)(oti->attrmetadatalength + 10); idx++)
+        {
+            const sai_attr_metadata_t* md = sai_metadata_get_attr_metadata(ot, (sai_attr_id_t)idx);
+
+            if (md == NULL)
+                continue;
+
+            if ((int)md->attrid != idx)
+            {
+                META_MD_ASSERT_FAIL(md, "attr %u expected to be %u", md->attrid, idx);
+            }
+        }
+    }
+}
+
+void check_custom_range_attributes()
+{
+    META_LOG_ENTER();
+
+    /* Checks whether attribute is correctly marked as custom */
+
+    size_t ot = 0;
+
+    for (; ot < SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++ot)
+    {
+        const sai_attr_metadata_t* const* mda = sai_metadata_attr_by_object_type[ot];
+
+        int idx = 0;
+
+        while (mda[idx])
+        {
+            const sai_attr_metadata_t* m = mda[idx++];
+            const sai_attr_metadata_t* md = sai_metadata_get_attr_metadata(ot, m->attrid);
+
+            META_ASSERT_NOT_NULL(md);
+
+            if (md->attrid >= CUSTOM_ATTR_RANGE_START)
+            {
+                META_ASSERT_TRUE(md->iscustom, "expected to be marked as custom attribute, %s", md->attridname);
+            }
+            else
+            {
+                META_ASSERT_FALSE(md->iscustom, "expected to be NOT marked as custom attribute, %s", md->attridname);
+            }
+        }
+    }
+
+    /*sai_metadata_get_attr_metadata */
 }
 
 void check_acl_user_defined_field()
@@ -5224,7 +5404,7 @@ void check_defines()
      */
 
     META_ASSERT_TRUE(SAI_METADATA_SWITCH_NOTIFY_ATTR_COUNT == sai_metadata_switch_notify_attr_count, "notify define must be equal");
-    META_ASSERT_TRUE(SAI_METADATA_SWITCH_NOTIFY_ATTR_COUNT > 3, "there must be at least 3 notifications defined");
+    META_ASSERT_TRUE(SAI_METADATA_SWITCH_NOTIFY_ATTR_COUNT >= 15, "there must be at least 15 notifications defined");
 }
 
 void check_object_type_attributes()
@@ -5433,7 +5613,18 @@ void check_enum_flags_type_none(
 
             if (value != last + 1)
             {
-                META_ENUM_ASSERT_FAIL(emd, "values are not increasing by 1: last: %d current: %d, should be marked as @flags?", last, value);
+                if (value == CUSTOM_ATTR_RANGE_START)
+                {
+                    /*
+                     * Object contains custom attributes in custom range, they
+                     * still needs to be increasing by 1 but since those are
+                     * not flags, attribute value can't be used as array index.
+                     */
+                }
+                else
+                {
+                    META_ENUM_ASSERT_FAIL(emd, "values are not increasing by 1: last: %d current: %d, should be marked as @flags?", last, value);
+                }
             }
 
             last = value;
@@ -5742,6 +5933,7 @@ int main(int argc, char **argv)
     check_backward_comparibility_defines();
     check_graph_connected();
     check_get_attr_metadata();
+    check_get_attr_metadata_custom_range();
     check_acl_user_defined_field();
     check_label_size();
     check_switch_notify_list();
@@ -5757,6 +5949,8 @@ int main(int argc, char **argv)
     check_struct_and_union_size();
     check_declare_entry_macro();
     check_json_type_size();
+    check_custom_range_attributes();
+    check_attr_get_outside_range();
 
     SAI_META_LOG_DEBUG("log test");
 

@@ -89,7 +89,7 @@ const sai_attr_metadata_t* sai_metadata_get_attr_metadata(
 
         const sai_object_type_info_t* oi = sai_metadata_all_object_type_infos[objecttype];
 
-        if (!oi->enummetadata->containsflags && attrid < oi->enummetadata->valuescount)
+        if (!oi->enummetadata->containsflags && attrid < oi->attridend)
         {
             return md[attrid];
         }
