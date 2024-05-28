@@ -3022,6 +3022,17 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_POE_DEVICE_LIST,
 
     /**
+     * @brief Set Switch ICMP_ECHO session state change event notification callback function passed to the adapter.
+     *
+     * Use sai_icmp_echo_session_state_change_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_icmp_echo_session_state_change_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_ICMP_ECHO_SESSION_STATE_CHANGE_NOTIFY,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,

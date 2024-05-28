@@ -4855,7 +4855,8 @@ void check_object_ro_list(
             oi->objecttype == SAI_OBJECT_TYPE_DTEL_QUEUE_REPORT ||
             oi->objecttype == SAI_OBJECT_TYPE_DTEL_EVENT ||
             oi->objecttype == SAI_OBJECT_TYPE_GENERIC_PROGRAMMABLE ||
-            oi->objecttype == SAI_OBJECT_TYPE_TWAMP_SESSION)
+            oi->objecttype == SAI_OBJECT_TYPE_TWAMP_SESSION ||
+            oi->objecttype == SAI_OBJECT_TYPE_ICMP_ECHO_SESSION)
     {
         /*
          * We skip hostif table entry since there is no 1 object which can
