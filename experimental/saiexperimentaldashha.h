@@ -25,7 +25,7 @@
 #if !defined (__SAIEXPERIMENTALDASHHA_H_)
 #define __SAIEXPERIMENTALDASHHA_H_
 
-#include <saitypes.h>
+#include <saitypesextensions.h>
 
 /**
  * @defgroup SAIEXPERIMENTALDASH_HA SAI - Extension specific API definitions
@@ -60,6 +60,16 @@ typedef enum _sai_ha_set_attr_t
      * @default 0.0.0.0
      */
     SAI_HA_SET_ATTR_PEER_IP,
+
+    /**
+     * @brief Action set_ha_set_attr parameter CP_DATA_CHANNEL_PORT
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     */
+    SAI_HA_SET_ATTR_CP_DATA_CHANNEL_PORT,
 
     /**
      * @brief Action set_ha_set_attr parameter DP_CHANNEL_DST_PORT
@@ -131,7 +141,7 @@ typedef enum _sai_ha_set_attr_t
 } sai_ha_set_attr_t;
 
 /**
- * @brief Counter IDs for ha_set in sai_get_ha_set_stats() call
+ * @brief Counter IDs for HA_SET in sai_get_ha_set_stats() call
  */
 typedef enum _sai_ha_set_stat_t
 {
@@ -161,6 +171,39 @@ typedef enum _sai_ha_set_stat_t
 
     /** DASH HA_SET DP_PROBE_FAILED stat count */
     SAI_HA_SET_STAT_DP_PROBE_FAILED,
+
+    /** DASH HA_SET CP_DATA_CHANNEL_CONNECT_ATTEMPTED stat count */
+    SAI_HA_SET_STAT_CP_DATA_CHANNEL_CONNECT_ATTEMPTED,
+
+    /** DASH HA_SET CP_DATA_CHANNEL_CONNECT_RECEIVED stat count */
+    SAI_HA_SET_STAT_CP_DATA_CHANNEL_CONNECT_RECEIVED,
+
+    /** DASH HA_SET CP_DATA_CHANNEL_CONNECT_SUCCEEDED stat count */
+    SAI_HA_SET_STAT_CP_DATA_CHANNEL_CONNECT_SUCCEEDED,
+
+    /** DASH HA_SET CP_DATA_CHANNEL_CONNECT_FAILED stat count */
+    SAI_HA_SET_STAT_CP_DATA_CHANNEL_CONNECT_FAILED,
+
+    /** DASH HA_SET CP_DATA_CHANNEL_CONNECT_REJECTED stat count */
+    SAI_HA_SET_STAT_CP_DATA_CHANNEL_CONNECT_REJECTED,
+
+    /** DASH HA_SET CP_DATA_CHANNEL_TIMEOUT_COUNT stat count */
+    SAI_HA_SET_STAT_CP_DATA_CHANNEL_TIMEOUT_COUNT,
+
+    /** DASH HA_SET BULK_SYNC_MESSAGE_RECEIVED stat count */
+    SAI_HA_SET_STAT_BULK_SYNC_MESSAGE_RECEIVED,
+
+    /** DASH HA_SET BULK_SYNC_MESSAGE_SENT stat count */
+    SAI_HA_SET_STAT_BULK_SYNC_MESSAGE_SENT,
+
+    /** DASH HA_SET BULK_SYNC_MESSAGE_SEND_FAILED stat count */
+    SAI_HA_SET_STAT_BULK_SYNC_MESSAGE_SEND_FAILED,
+
+    /** DASH HA_SET BULK_SYNC_FLOW_RECEIVED stat count */
+    SAI_HA_SET_STAT_BULK_SYNC_FLOW_RECEIVED,
+
+    /** DASH HA_SET BULK_SYNC_FLOW_SENT stat count */
+    SAI_HA_SET_STAT_BULK_SYNC_FLOW_SENT,
 
 } sai_ha_set_stat_t;
 
@@ -200,6 +243,23 @@ typedef enum _sai_ha_scope_attr_t
      * @flags READ_ONLY
      */
     SAI_HA_SCOPE_ATTR_FLOW_VERSION,
+
+    /**
+     * @brief Action set_ha_scope_attr parameter FLOW_RECONCILE_REQUESTED
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_HA_SCOPE_ATTR_FLOW_RECONCILE_REQUESTED,
+
+    /**
+     * @brief Action set_ha_scope_attr parameter FLOW_RECONCILE_NEEDED
+     *
+     * @type bool
+     * @flags READ_ONLY
+     */
+    SAI_HA_SCOPE_ATTR_FLOW_RECONCILE_NEEDED,
 
     /**
      * @brief End of attributes
@@ -267,7 +327,7 @@ typedef sai_status_t (*sai_get_ha_set_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Get ha_set statistics counters. Deprecated for backward compatibility.
+ * @brief Get HA_SET statistics counters. Deprecated for backward compatibility.
  *
  * @param[in] ha_set_id Entry id
  * @param[in] number_of_counters Number of counters in the array
@@ -283,7 +343,7 @@ typedef sai_status_t (*sai_get_ha_set_stats_fn)(
         _Out_ uint64_t *counters);
 
 /**
- * @brief Get ha_set statistics counters extended.
+ * @brief Get HA_SET statistics counters extended.
  *
  * @param[in] ha_set_id Entry id
  * @param[in] number_of_counters Number of counters in the array
@@ -301,7 +361,7 @@ typedef sai_status_t (*sai_get_ha_set_stats_ext_fn)(
         _Out_ uint64_t *counters);
 
 /**
- * @brief Clear ha_set statistics counters.
+ * @brief Clear HA_SET statistics counters.
  *
  * @param[in] ha_set_id Entry id
  * @param[in] number_of_counters Number of counters in the array
