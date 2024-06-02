@@ -3022,6 +3022,59 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_POE_DEVICE_LIST,
 
     /**
+     * @brief Enable DOT1P and CFI -> TC AND COLOR MAP on switch
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on switch.
+     * Default no map
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @validonly SAI_SWITCH_ATTR_QOS_DOT1P_TO_TC_MAP == SAI_NULL_OBJECT_ID and SAI_SWITCH_ATTR_QOS_DOT1P_TO_COLOR_MAP == SAI_NULL_OBJECT_ID
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_QOS_DOT1P_AND_CFI_TO_TC_AND_COLOR_MAP,
+
+    /**
+     * @brief Enable COLOR -> CFI MAP on switch
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on switch.
+     * Default no map.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @validonly SAI_SWITCH_ATTR_QOS_TC_AND_COLOR_TO_DOT1P_AND_CFI_MAP == SAI_NULL_OBJECT_ID
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_QOS_COLOR_TO_CFI_MAP,
+
+    /**
+     * @brief Enable TC and COLOR -> DOT1P and CFI MAP on switch.
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on port.
+     * Default no map.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @validonly SAI_SWITCH_ATTR_QOS_TC_AND_COLOR_TO_DOT1P_MAP == SAI_NULL_OBJECT_ID and SAI_SWITCH_ATTR_QOS_COLOR_TO_CFI_MAP == SAI_NULL_OBJECT_ID
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_QOS_TC_AND_COLOR_TO_DOT1P_AND_CFI_MAP,
+
+    /**
+     * @brief QOS MAP types supported by the NPU
+     *
+     * @type sai_qos_map_type_list_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SUPPORTED_QOS_MAP_TYPE,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,

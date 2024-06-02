@@ -722,6 +722,9 @@ typedef enum _sai_packet_color_t
  * TC --> dot1p/DSCP/MPLS_EXP.
  * TC + color --> dot1p/DSCP/MPLS_EXP.
  * TC --> Egress Queue.
+ * dot1p + cfi --> TC + Color 
+ * color --> cfi
+ * TC + color --> dot1p + cfi
  */
 typedef struct _sai_qos_map_params_t
 {
@@ -754,6 +757,9 @@ typedef struct _sai_qos_map_params_t
 
     /** Forwarding class */
     sai_uint8_t fc;
+
+    /** CFI value */
+    sai_uint8_t cfi;
 
 } sai_qos_map_params_t;
 
