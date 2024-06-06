@@ -6015,7 +6015,7 @@ void check_api_extensions()
         META_ASSERT_FAIL("api extensions %d > 255", (SAI_API_EXTENSIONS_RANGE_END - SAI_API_EXTENSIONS_RANGE_START));
     }
 
-    sai_api_t api = SAI_API_EXTENSIONS_RANGE_START;
+    sai_api_t api = (sai_api_t)SAI_API_EXTENSIONS_RANGE_START;
 
     META_ASSERT_TRUE(api == 0x20000000, "api should be correctly assigned");
 }
