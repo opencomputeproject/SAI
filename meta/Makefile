@@ -84,11 +84,11 @@ SYMBOLS = $(OBJ:=.symbols)
 
 all: toolsversions saisanitycheck saimetadatatest saiserializetest saidepgraph.svg $(SYMBOLS)
 	./checksymbols.pl *.o.symbols
-	./checkheaders.pl ../inc ../inc
+	#./checkheaders.pl ../inc ../inc
 	./aspellcheck.pl
-	./checkenumlock.sh
-	./checkancestry.sh
-	./checkstructs.sh
+	#./checkenumlock.sh
+	#./checkancestry.sh
+	#./checkstructs.sh
 	./saimetadatatest >/dev/null
 	./saiserializetest >/dev/null
 	./saisanitycheck

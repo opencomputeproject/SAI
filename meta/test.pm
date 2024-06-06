@@ -254,8 +254,7 @@ sub CreateApiNameTest
 
     my @objects = @{ $main::SAI_ENUMS{sai_object_type_t}{values} };
 
-    WriteTest "    sai_object_type_t checked[SAI_OBJECT_TYPE_EXTENSIONS_MAX];";
-    WriteTest "    memset(checked, 0, SAI_OBJECT_TYPE_EXTENSIONS_MAX * sizeof(sai_object_type_t));";
+    WriteTest "    int visited = 1; /* 1 for NULL object */";
 
     WriteTest "    void *dummy = NULL;";
 
@@ -268,7 +267,7 @@ sub CreateApiNameTest
         if (IsSpecialObject($ot))
         {
             # those objects are special, just attributes, no APIs
-            WriteTest "    checked[(int)$ot] = $ot;";
+            WriteTest "    visited++;";
             next;
         }
 
@@ -327,7 +326,7 @@ sub CreateApiNameTest
             WriteTest "        dummy = &se;";
             WriteTest "        dummy = &ge;";
             WriteTest "        dummy = NULL;";
-            WriteTest "        checked[(int)$ot] = $ot;";
+            WriteTest "        visited++;";
         }
         else
         {
@@ -360,21 +359,14 @@ sub CreateApiNameTest
             WriteTest "        dummy = &se;";
             WriteTest "        dummy = &ge;";
             WriteTest "        dummy = NULL;";
-            WriteTest "        checked[(int)$ot] = $ot;";
+            WriteTest "        visited++;";
         }
 
         WriteTest "    }";
     }
 
-    WriteTest "    int index = SAI_OBJECT_TYPE_NULL;";
-
-    WriteTest "    for (; index < (int)SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++index)";
-    WriteTest "    {";
-    WriteTest "        printf(\"checking: %s checked (%d) == index (%d)\\n\",";
-    WriteTest "             sai_metadata_enum_sai_object_type_t.valuesnames[index],";
-    WriteTest "             checked[index],(sai_object_type_t)index);";
-    WriteTest "        TEST_ASSERT_TRUE(checked[index] == (sai_object_type_t)index, \"not all objects were processed\");";
-    WriteTest "    }";
+    WriteTest "        int sum = SAI_OBJECT_TYPE_MAX + (SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END - SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START);";
+    WriteTest "        TEST_ASSERT_TRUE_EXT(sum == visited, \"not all objects were processed, expexted: %d, but got: %d\", sum, visited);";
 
     WriteTest "    PP(dummy);";
 
