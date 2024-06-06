@@ -301,6 +301,8 @@ typedef enum _sai_object_type_t
 
     /** Must remain in last position */
     SAI_OBJECT_TYPE_MAX,
+
+    SAI_OBJECT_TYPE_EXTENSIONS_RANGE_BASE = 0x20000000,
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t

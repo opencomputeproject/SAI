@@ -149,6 +149,11 @@ typedef enum _sai_api_t
     SAI_API_TWAMP            = 50, /**< sai_twamp_api_t */
     SAI_API_POE              = 51, /**< sai_poe_api_t */
     SAI_API_MAX,                   /**< total number of APIs */
+
+    /**
+     * @brief Extensions range base
+     */
+    SAI_API_EXTENSIONS_RANGE_BASE = 0x20000000,
 } sai_api_t;
 
 /**
