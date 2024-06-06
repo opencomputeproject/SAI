@@ -2531,6 +2531,7 @@ typedef enum _sai_port_attr_t
     /** End of custom range base */
     SAI_PORT_ATTR_CUSTOM_RANGE_END,
 
+    /** Extensions range base */
     SAI_PORT_ATTR_EXTENSIONS_RANGE_BASE = 0x20000000
 
 } sai_port_attr_t;
@@ -3260,6 +3261,7 @@ typedef enum _sai_port_stat_t
     /** Port stat range end */
     SAI_PORT_STAT_END,
 
+    /** Extensions range base */
     SAI_PORT_STAT_EXTENSIONS_RANGE_BASE = 0x20000000
 
 } sai_port_stat_t;

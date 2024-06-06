@@ -3032,6 +3032,7 @@ typedef enum _sai_switch_attr_t
     /** End of custom range base */
     SAI_SWITCH_ATTR_CUSTOM_RANGE_END,
 
+    /** Extensions range base */
     SAI_SWITCH_ATTR_EXTENSIONS_RANGE_BASE = 0x20000000
 
 } sai_switch_attr_t;
