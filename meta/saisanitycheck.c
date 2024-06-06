@@ -93,6 +93,7 @@ defined_attr_t* defined_attributes = NULL;
 /* custom ranges start are the same for all objects */
 
 #define CUSTOM_ATTR_RANGE_START SAI_PORT_ATTR_CUSTOM_RANGE_START
+#define EXTENSION_RANGE_START (0x20000000)
 
 bool is_extensions_enum(
         _In_ const sai_enum_metadata_t* emd)
@@ -218,7 +219,17 @@ void check_all_enums_values()
                      * not flags, attribute value can't be used as array index.
                      */
 
-                    META_ENUM_LOG_WARN(emd, "contains custom range attibutes");
+                    META_ENUM_LOG_WARN(emd, "contains custom range attributes");
+                }
+                else if (value == EXTENSION_RANGE_START)
+                {
+                    /*
+                     * Object contains extensions attributes, they still needs
+                     * to be increasing by 1 but since those are not flags,
+                     * attribute value can't be used as array index.
+                     */
+
+                    META_ENUM_LOG_WARN(emd, "contains extensions range attributes");
                 }
                 else
                 {
@@ -240,6 +251,10 @@ void check_all_enums_values()
             if (value >= CUSTOM_ATTR_RANGE_START && value < (2 * CUSTOM_ATTR_RANGE_START))
             {
                 /* value is in custom range */
+            }
+            else if (value >= EXTENSION_RANGE_START && value < (2 * EXTENSION_RANGE_START))
+            {
+                /* value is in extensions range */
             }
             else
             {
@@ -3379,7 +3394,7 @@ void check_attr_extension_flag(
 
     const sai_object_type_info_t* oi = sai_metadata_get_object_type_info(md->objecttype);
 
-    if (md->attrid >= oi->attridend && md->attrid < CUSTOM_ATTR_RANGE_START)
+    if (md->attrid >= oi->attridend && md->attrid >= EXTENSION_RANGE_START)
     {
         META_ASSERT_TRUE(md->isextensionattr, "attribute %s expected to be extension", md->attridname);
     }
@@ -3561,6 +3576,10 @@ void check_object_infos()
                      */
 
                     has_custom_range_attrs = true;
+                }
+                else if (am->attrid == EXTENSION_RANGE_START)
+                {
+                    has_extensions_attrs = true;
                 }
                 else
                 {
@@ -5028,16 +5047,6 @@ void check_single_object_info(
     check_attr_end(oi);
 }
 
-void check_api_max()
-{
-    META_LOG_ENTER();
-
-    META_ASSERT_TRUE(SAI_API_MAX <= SAI_API_EXTENSIONS_MAX, "expected api MAX to be less equal than extensions MAX");
-
-    META_ASSERT_TRUE(sai_metadata_enum_sai_api_t.valuescount == SAI_API_EXTENSIONS_MAX,
-            "SAI_API_EXTENSIONS_MAX should be equal to number of SAI_API*");
-}
-
 void check_backward_comparibility_defines()
 {
     META_LOG_ENTER();
@@ -5329,7 +5338,7 @@ void check_custom_range_attributes()
 
             META_ASSERT_NOT_NULL(md);
 
-            if (md->attrid >= CUSTOM_ATTR_RANGE_START)
+            if (md->attrid >= CUSTOM_ATTR_RANGE_START && md->attrid < (2*CUSTOM_ATTR_RANGE_START))
             {
                 META_ASSERT_TRUE(md->iscustom, "expected to be marked as custom attribute, %s", md->attridname);
             }
@@ -5525,7 +5534,14 @@ void check_enum_flags_type_ranges(
 
             /* this check can be relaxed, we allow now 16 types of ranges */
 
-            META_ASSERT_TRUE((val < (16*RANGE_BASE)), "range value 0x%x is too high on %s", val, name);
+            if (val < EXTENSION_RANGE_START)
+            {
+                META_ASSERT_TRUE((val < (16*RANGE_BASE)), "range value 0x%x is too high on %s", val, name);
+            }
+            else
+            {
+                META_ASSERT_TRUE((val < (16*RANGE_BASE + EXTENSION_RANGE_START)), "range value 0x%x is too high on %s", val, name);
+            }
 
             if ((val != prev + 1) && (val & 0xFFF) && ((val & ~0xFFF) == (prev & ~0xFFF)))
             {
@@ -5619,6 +5635,14 @@ void check_enum_flags_type_none(
                      * Object contains custom attributes in custom range, they
                      * still needs to be increasing by 1 but since those are
                      * not flags, attribute value can't be used as array index.
+                     */
+                }
+                else if (value == EXTENSION_RANGE_START)
+                {
+                    /*
+                     * Object contains extensions attributes, they still needs
+                     * to be increasing by 1 but since those are not flags,
+                     * attribute value can't be used as array index.
                      */
                 }
                 else
@@ -5901,6 +5925,25 @@ void check_json_type_size()
     META_ASSERT_TRUE(sizeof(sai_s8_list_t) == sizeof(sai_json_t), "json type is expected to have same size as s8 list");
 }
 
+void check_api_extensions()
+{
+    SAI_META_LOG_ENTER();
+
+    /*
+     * Check if defined extensions api can be fit into 1 byte.
+     * This check can be relaxed in the future.
+     */
+
+    if (SAI_API_EXTENSIONS_RANGE_END - SAI_API_EXTENSIONS_RANGE_START > 255)
+    {
+        META_ASSERT_FAIL("api extensions %d > 255", (SAI_API_EXTENSIONS_RANGE_END - SAI_API_EXTENSIONS_RANGE_START));
+    }
+
+    sai_api_t api = SAI_API_EXTENSIONS_RANGE_START;
+
+    META_ASSERT_TRUE(api == 0x20000000, "api should be correctly assigned");
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -5929,7 +5972,6 @@ int main(int argc, char **argv)
     check_reverse_graph_for_non_object_id();
     check_acl_table_fields_and_acl_entry_fields();
     check_acl_entry_actions();
-    check_api_max();
     check_backward_comparibility_defines();
     check_graph_connected();
     check_get_attr_metadata();
@@ -5951,6 +5993,7 @@ int main(int argc, char **argv)
     check_json_type_size();
     check_custom_range_attributes();
     check_attr_get_outside_range();
+    check_api_extensions();
 
     SAI_META_LOG_DEBUG("log test");
 
