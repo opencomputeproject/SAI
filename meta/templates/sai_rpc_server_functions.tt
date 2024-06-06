@@ -126,7 +126,7 @@ if ([% api %]_api->[% name = function.name; GET methods.$name %] == (void *)0) {
 [%- ######################################################################## -%]
 
 [%- BLOCK sai_api_query -%]
-    status = sai_api_query(static_cast<sai_api_t>(SAI_API_[% api.upper %]), (void **)&[% api %]_api);
+    status = sai_api_query(static_cast<sai_api_t>((sai_api_t)SAI_API_[% api.upper %]), (void **)&[% api %]_api);
     if (status != SAI_STATUS_SUCCESS) {
       [%- PROCESS return_error indentation = 3 status_variable = 'status' %]
     }
