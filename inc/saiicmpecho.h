@@ -108,6 +108,8 @@ typedef enum _sai_icmp_echo_session_attr_t
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_PORT
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_ICMP_ECHO_SESSION_ATTR_RX_PORT,
 
