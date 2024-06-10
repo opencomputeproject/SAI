@@ -4920,6 +4920,99 @@ sub CreateSwitchNotificationAttributesList
     WriteHeader "#define SAI_METADATA_SWITCH_NOTIFY_ATTR_COUNT $count";
 }
 
+sub CreateSwitchNotificationsUpdateMethods
+{
+    #
+    # This function will generate methods for populate switch notifications
+    # from attribute list, this will be handy when auto populating pointers
+    #
+
+    WriteSectionComment "SAI Update Switch Notification Pointers";
+
+    WriteHeader "sai_status_t sai_metadata_update_switch_notification_pointers(";
+    WriteHeader "    _Inout_ sai_switch_notifications_t *sn,";
+    WriteHeader "    _In_ uint32_t count,";
+    WriteHeader "    _In_ const sai_attribute_t* attrs);";
+
+    WriteSource "sai_status_t sai_metadata_update_switch_notification_pointers(";
+    WriteSource "    _Inout_ sai_switch_notifications_t *sn,";
+    WriteSource "    _In_ uint32_t count,";
+    WriteSource "    _In_ const sai_attribute_t* attrs)";
+    WriteSource "{";
+    WriteSource "if (sn == NULL || attrs == NULL)";
+    WriteSource "{";
+    WriteSource "SAI_META_LOG_ERROR(\"sn or attrs parameter is NULL\");";
+    WriteSource "return SAI_STATUS_INVALID_PARAMETER;";
+    WriteSource "}";
+    WriteSource "";
+    WriteSource "uint32_t idx = 0;";
+    WriteSource "";
+    WriteSource "for (; idx < count; idx++)";
+    WriteSource "{";
+    WriteSource "switch(attrs[idx].id)";
+    WriteSource "{";
+
+    for my $name (GetSwitchPointersInOrder(keys %NOTIFICATIONS))
+    {
+        next if not $name =~ /^sai_(\w+)_notification_fn/;
+
+        WriteSource "case SAI_SWITCH_ATTR_" . uc($1) . "_NOTIFY:";
+        WriteSource "    sn->on_$1 = (sai_$1_notification_fn)attrs[idx].value.ptr;";
+        WriteSource "    break;";
+    }
+
+    WriteSource "default:";
+    WriteSource "    SAI_META_LOG_ERROR(\"unsupported notification attribute id: %d\", attrs[idx].id);";
+    WriteSource "    break;";
+
+    WriteSource "}";
+    WriteSource "}";
+    WriteSource "return SAI_STATUS_SUCCESS;";
+    WriteSource "}";
+
+    WriteSectionComment "SAI Update Attribute Notification Pointers";
+
+    WriteHeader "sai_status_t sai_metadata_update_attribute_notification_pointers(";
+    WriteHeader "    _In_ const sai_switch_notifications_t *sn,";
+    WriteHeader "    _In_ uint32_t count,";
+    WriteHeader "    _Inout_ sai_attribute_t* attrs);";
+
+    WriteSource "sai_status_t sai_metadata_update_attribute_notification_pointers(";
+    WriteSource "    _In_ const sai_switch_notifications_t *sn,";
+    WriteSource "    _In_ uint32_t count,";
+    WriteSource "    _Inout_ sai_attribute_t* attrs)";
+    WriteSource "{";
+    WriteSource "if (sn == NULL || attrs == NULL)";
+    WriteSource "{";
+    WriteSource "SAI_META_LOG_ERROR(\"sn or attrs parameter is NULL\");";
+    WriteSource "return SAI_STATUS_INVALID_PARAMETER;";
+    WriteSource "}";
+    WriteSource "";
+    WriteSource "uint32_t idx = 0;";
+    WriteSource "";
+    WriteSource "for (; idx < count; idx++)";
+    WriteSource "{";
+    WriteSource "switch(attrs[idx].id)";
+    WriteSource "{";
+
+    for my $name (GetSwitchPointersInOrder(keys %NOTIFICATIONS))
+    {
+        next if not $name =~ /^sai_(\w+)_notification_fn/;
+
+        WriteSource "case SAI_SWITCH_ATTR_" . uc($1) . "_NOTIFY:";
+        WriteSource "    attrs[idx].value.ptr = (void*)sn->on_$1;";
+        WriteSource "    break;";
+    }
+
+    WriteSource "default:";
+    WriteSource "    break;";
+
+    WriteSource "}";
+    WriteSource "}";
+    WriteSource "return SAI_STATUS_SUCCESS;";
+    WriteSource "}";
+}
+
 sub CreateSwitchPointersStruct
 {
     #
@@ -5527,6 +5620,8 @@ CreateNotificationEnum();
 CreateNotificationNames();
 
 CreateSwitchNotificationAttributesList();
+
+CreateSwitchNotificationsUpdateMethods();
 
 CreateSwitchPointersStruct();
 
