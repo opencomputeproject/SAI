@@ -4962,7 +4962,6 @@ sub CreateSwitchNotificationsUpdateMethods
     }
 
     WriteSource "default:";
-    WriteSource "    SAI_META_LOG_ERROR(\"unsupported notification attribute id: %d\", attrs[idx].id);";
     WriteSource "    break;";
 
     WriteSource "}";
