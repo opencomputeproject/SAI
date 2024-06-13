@@ -385,6 +385,26 @@ void check_object_type()
 
         last = value;
     }
+
+    /*
+     * In long distance future this could be relaxed, but it will have impact
+     * on sonic and vendors.  As currently object type is encoded on a single
+     * byte, and with this extensions change it will be encoded on 9 bits in
+     * sonic:
+     * - 8 bits for object type under SAI_OBJECT_TYPE_MAX) and extensions bit equal to 0
+     * - 8 bits for extension object types reduced by 0x20000000 and extension bit seq to 1
+     * This approach will allow to encode 255 object type for each range.
+     */
+    META_ASSERT_TRUE(SAI_OBJECT_TYPE_MAX < 256, "object types must be able to encode on 1 byte");
+
+    i = SAI_OBJECT_TYPE_NULL;
+
+    for (; i < SAI_OBJECT_TYPE_MAX; i++)
+    {
+        int value = sai_metadata_enum_sai_object_type_t.values[i];
+
+        META_ASSERT_TRUE(value == (int)i, "values from SAI_OBJECT_TYPE_NULL to SAI_OBJECT_TYPE_MAX must increase by 1");
+    }
 }
 
 void check_attr_by_object_type()
