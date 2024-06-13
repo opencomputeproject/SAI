@@ -151,9 +151,6 @@ sub CreateCustomRangeTest
 
 sub CreateCustomRangeAll
 {
-    WriteTest "#pragma GCC diagnostic push";
-    WriteTest "#pragma GCC diagnostic ignored \"-Wsuggest-attribute=noreturn\"";
-
     DefineTestName "custom_range_all_test";
 
     # purpose of this test is to make sure
@@ -176,13 +173,11 @@ sub CreateCustomRangeAll
             next if $enum eq "SAI_OBJECT_TYPE_CUSTOM_RANGE_END";
 
             WriteTest "    TEST_ASSERT_TRUE($enum == 0x10000000, \"invalid custom range start for $enum\");" if $enum =~ /_START$/;
-            WriteTest "    TEST_ASSERT_TRUE($enum > 0x10000000, \"invalid custom range end for $enum\");" if $enum =~ /_END$/;
+            WriteTest "    TEST_ASSERT_TRUE($enum < 0x20000000, \"invalid custom range end for $enum\");" if $enum =~ /_END$/;
         }
     }
 
     WriteTest "}";
-
-    WriteTest "#pragma GCC diagnostic pop";
 }
 
 sub CreateEnumSizeCheckTest
@@ -591,9 +586,6 @@ sub CreateStructUnionSizeCheckTest
 
     my %STRUCTS = ();
 
-    WriteTest "#pragma GCC diagnostic push";
-    WriteTest "#pragma GCC diagnostic ignored \"-Wsuggest-attribute=noreturn\"";
-
     DefineTestName "struct_union_size";
 
     WriteTest "{";
@@ -627,7 +619,6 @@ sub CreateStructUnionSizeCheckTest
     }
 
     WriteTest "}";
-    WriteTest "#pragma GCC diagnostic pop";
 }
 
 sub WriteTestHeader
@@ -683,11 +674,38 @@ sub CreatePragmaPush
     WriteTest "#pragma GCC diagnostic push";
     WriteTest "#pragma GCC diagnostic ignored \"-Wpragmas\"";
     WriteTest "#pragma GCC diagnostic ignored \"-Wenum-conversion\"";
+    WriteTest "#pragma GCC diagnostic ignored \"-Wsuggest-attribute=noreturn\"";
 }
 
 sub CreatePragmaPop
 {
     WriteTest "#pragma GCC diagnostic pop";
+}
+
+sub CreateExtensionRangeTest
+{
+    DefineTestName "extension_range_test";
+
+    # purpose of this test is to make sure
+    # all extensions range bases are from
+
+    WriteTest "{";
+
+    for my $key (sort keys %main::SAI_ENUMS)
+    {
+        next if not defined $main::SAI_ENUMS{$key}{ranges};
+
+        my @ranges = @{ $main::SAI_ENUMS{$key}{ranges} };
+
+        for my $range (@ranges)
+        {
+            next if not $range =~ /EXTENSIONS_RANGE_BASE/;
+
+            WriteTest "    TEST_ASSERT_TRUE($range == 0x20000000, \"invalid extension range base for $range\");";
+        }
+    }
+
+    WriteTest "}";
 }
 
 sub CreateTests
@@ -724,9 +742,11 @@ sub CreateTests
 
     CreateStructUnionSizeCheckTest();
 
-    CreatePragmaPop();
-
     CreateCustomRangeAll();
+
+    CreateExtensionRangeTest();
+
+    CreatePragmaPop();
 
     WriteTestMain();
 }
