@@ -61,6 +61,16 @@ typedef enum _sai_rpf_group_attr_t
     SAI_RPF_GROUP_ATTR_RPF_MEMBER_LIST,
 
     /**
+     * @brief RPF interface group id
+     *
+     * This attribute only takes effect when the value(SAI_OBJECT_TYPE_RPF_GROUP) is not equal to SAI_NULL_OBJECT_ID
+     * @type sai_uint64_t
+     * @flags CREATE_ONLY
+     * @default 0
+     */
+    SAI_RPF_GROUP_ATTR_RPF_GROUP_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_RPF_GROUP_ATTR_END,
@@ -113,6 +123,13 @@ typedef enum _sai_rpf_group_member_attr_t
 
 /**
  * @brief Create RPF interface group
+ *
+ * If there is no SAI_RPF_GROUP_ATTR_RPF_GROUP_ID in attribute list,
+ * or the value of SAI_RPF_GROUP_ATTR_RPF_GROUP_ID attribute is zero,
+ * It means that the upper layer user(usually SONIC) wants to create
+ * a new RPF interface group object id. If there is SAI_RPF_GROUP_ATTR_RPF_GROUP_ID
+ * in attribute list, the expected behavior is that the sai_create_rpf_group_fn
+ * reuse the RPF interface group object id
  *
  * @param[out] rpf_group_id RPF interface group id
  * @param[in] switch_id Switch id
