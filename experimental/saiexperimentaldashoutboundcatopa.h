@@ -174,6 +174,16 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_OVERLAY_SIP,
 
     /**
+     * @brief Action set_private_link_mapping parameter OVERLAY_SIP_MASK
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_PRIVATE_LINK_MAPPING
+     */
+    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_OVERLAY_SIP_MASK,
+
+    /**
      * @brief Action set_private_link_mapping parameter OVERLAY_DIP
      *
      * @type sai_ip_address_t
@@ -182,6 +192,16 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
      * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_PRIVATE_LINK_MAPPING
      */
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_OVERLAY_DIP,
+
+    /**
+     * @brief Action set_private_link_mapping parameter OVERLAY_DIP_MASK
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_PRIVATE_LINK_MAPPING
+     */
+    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_OVERLAY_DIP_MASK,
 
     /**
      * @brief Action set_private_link_mapping parameter DASH_ENCAPSULATION
