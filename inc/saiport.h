@@ -2521,6 +2521,14 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_POE_PORT_ID,
 
     /**
+     * @brief Fabric port reachability for all remote reachable switches
+     *
+     * @type sai_u16_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_FABRIC_REACHABILITY_VECTOR,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
