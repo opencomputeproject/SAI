@@ -2521,6 +2521,14 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_POE_PORT_ID,
 
     /**
+     * @brief The maximum size of SAI_PORT_ATTR_JSON_FORMATTED_DEBUG_DATA in bytes.
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_JSON_FORMATTED_DEBUG_DATA_SIZE,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
