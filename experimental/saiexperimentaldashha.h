@@ -19,7 +19,9 @@
  *
  * @file    saiexperimentaldashha.h
  *
- * @brief   This module defines SAI P4 extension  interface
+ * @brief   This module defines SAI extensions for DASH HA
+ *
+ * @warning This module is a SAI experimental module
  */
 
 #if !defined (__SAIEXPERIMENTALDASHHA_H_)
@@ -28,7 +30,7 @@
 #include <saitypesextensions.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_HA SAI - Extension specific API definitions
+ * @defgroup SAIEXPERIMENTALDASH_HA SAI - Experimental: DASH HA specific API definitions
  *
  * @{
  */

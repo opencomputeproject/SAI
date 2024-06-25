@@ -19,7 +19,7 @@
  *
  * @file    saiexperimentaldashmeter.h
  *
- * @brief   This module defines SAI extensions for DASH meter
+ * @brief   This module defines SAI extensions for DASH METER
  *
  * @warning This module is a SAI experimental module
  */
@@ -27,10 +27,10 @@
 #if !defined (__SAIEXPERIMENTALDASHMETER_H_)
 #define __SAIEXPERIMENTALDASHMETER_H_
 
-#include <saitypes.h>
+#include <saitypesextensions.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_METER SAI - Experimental: DASH meter specific API definitions
+ * @defgroup SAIEXPERIMENTALDASH_METER SAI - Experimental: DASH METER specific API definitions
  *
  * @{
  */
@@ -76,7 +76,7 @@ typedef enum _sai_meter_bucket_attr_t
 } sai_meter_bucket_attr_t;
 
 /**
- * @brief Counter IDs for meter_bucket in sai_get_meter_bucket_stats() call
+ * @brief Counter IDs for METER_BUCKET in sai_get_meter_bucket_stats() call
  */
 typedef enum _sai_meter_bucket_stat_t
 {
@@ -249,7 +249,7 @@ typedef sai_status_t (*sai_get_meter_bucket_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Get meter_bucket statistics counters. Deprecated for backward compatibility.
+ * @brief Get METER_BUCKET statistics counters. Deprecated for backward compatibility.
  *
  * @param[in] meter_bucket_id Entry id
  * @param[in] number_of_counters Number of counters in the array
@@ -265,7 +265,7 @@ typedef sai_status_t (*sai_get_meter_bucket_stats_fn)(
         _Out_ uint64_t *counters);
 
 /**
- * @brief Get meter_bucket statistics counters extended.
+ * @brief Get METER_BUCKET statistics counters extended.
  *
  * @param[in] meter_bucket_id Entry id
  * @param[in] number_of_counters Number of counters in the array
@@ -283,7 +283,7 @@ typedef sai_status_t (*sai_get_meter_bucket_stats_ext_fn)(
         _Out_ uint64_t *counters);
 
 /**
- * @brief Clear meter_bucket statistics counters.
+ * @brief Clear METER_BUCKET statistics counters.
  *
  * @param[in] meter_bucket_id Entry id
  * @param[in] number_of_counters Number of counters in the array

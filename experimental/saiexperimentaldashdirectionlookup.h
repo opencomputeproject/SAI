@@ -19,7 +19,7 @@
  *
  * @file    saiexperimentaldashdirectionlookup.h
  *
- * @brief   This module defines SAI extensions for DASH direction lookup
+ * @brief   This module defines SAI extensions for DASH DIRECTION LOOKUP
  *
  * @warning This module is a SAI experimental module
  */
@@ -27,10 +27,10 @@
 #if !defined (__SAIEXPERIMENTALDASHDIRECTIONLOOKUP_H_)
 #define __SAIEXPERIMENTALDASHDIRECTIONLOOKUP_H_
 
-#include <saitypes.h>
+#include <saitypesextensions.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_DIRECTION_LOOKUP SAI - Experimental: DASH direction lookup specific API definitions
+ * @defgroup SAIEXPERIMENTALDASH_DIRECTION_LOOKUP SAI - Experimental: DASH DIRECTION LOOKUP specific API definitions
  *
  * @{
  */

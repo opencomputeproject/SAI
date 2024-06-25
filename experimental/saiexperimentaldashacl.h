@@ -20,12 +20,14 @@
  * @file    saiexperimentaldashacl.h
  *
  * @brief   This module defines SAI extensions for DASH ACL
+ *
+ * @warning This module is a SAI experimental module
  */
 
 #if !defined (__SAIEXPERIMENTALDASHACL_H_)
 #define __SAIEXPERIMENTALDASHACL_H_
 
-#include <saitypes.h>
+#include <saitypesextensions.h>
 
 /**
  * @defgroup SAIEXPERIMENTALDASH_ACL SAI - Experimental: DASH ACL specific API definitions

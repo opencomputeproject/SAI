@@ -19,7 +19,7 @@
  *
  * @file    saiexperimentaldashoutboundrouting.h
  *
- * @brief   This module defines SAI extensions for DASH outbound routing
+ * @brief   This module defines SAI extensions for DASH OUTBOUND ROUTING
  *
  * @warning This module is a SAI experimental module
  */
@@ -27,10 +27,10 @@
 #if !defined (__SAIEXPERIMENTALDASHOUTBOUNDROUTING_H_)
 #define __SAIEXPERIMENTALDASHOUTBOUNDROUTING_H_
 
-#include <saitypes.h>
+#include <saitypesextensions.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_OUTBOUND_ROUTING SAI - Experimental: DASH outbound routing specific API definitions
+ * @defgroup SAIEXPERIMENTALDASH_OUTBOUND_ROUTING SAI - Experimental: DASH OUTBOUND ROUTING specific API definitions
  *
  * @{
  */
