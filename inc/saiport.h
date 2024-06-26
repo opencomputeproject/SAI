@@ -2526,7 +2526,7 @@ typedef enum _sai_port_attr_t
      * @type sai_u16_list_t
      * @flags READ_ONLY
      */
-    SAI_PORT_ATTR_FABRIC_REACHABILITY_VECTOR,
+    SAI_PORT_ATTR_FABRIC_REACHABILITY_LIST,
 
     /**
      * @brief End of attributes
