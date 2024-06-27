@@ -76,6 +76,8 @@ typedef enum _sai_object_type_extensions_t
 
     SAI_OBJECT_TYPE_DASH_TUNNEL,
 
+    SAI_OBJECT_TYPE_OUTBOUND_ROUTING_GROUP,
+
     /* Add new experimental object types above this line */
 
     SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END
