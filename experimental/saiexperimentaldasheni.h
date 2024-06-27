@@ -508,6 +508,17 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_MAX_RESIMULATED_FLOW_PER_SECOND,
 
     /**
+     * @brief Action parameter outbound routing group id
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_OUTBOUND_ROUTING_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ENI_ATTR_OUTBOUND_ROUTING_GROUP_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_ENI_ATTR_END,

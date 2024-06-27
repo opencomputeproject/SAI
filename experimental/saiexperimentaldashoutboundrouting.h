@@ -65,16 +65,16 @@ typedef struct _sai_outbound_routing_entry_t
     sai_object_id_t switch_id;
 
     /**
-     * @brief Exact matched key eni_id
-     *
-     * @objects SAI_OBJECT_TYPE_ENI
-     */
-    sai_object_id_t eni_id;
-
-    /**
      * @brief LPM matched key destination
      */
     sai_ip_prefix_t destination;
+
+    /**
+     * @brief Exact matched key outbound_routing_group_id
+     *
+     * @objects SAI_OBJECT_TYPE_OUTBOUND_ROUTING_GROUP
+     */
+    sai_object_id_t outbound_routing_group_id;
 
 } sai_outbound_routing_entry_t;
 
@@ -182,7 +182,7 @@ typedef enum _sai_outbound_routing_entry_attr_t
     SAI_OUTBOUND_ROUTING_ENTRY_ATTR_OVERLAY_DIP_MASK,
 
     /**
-     * @brief Action route_service_tunnel parameter OVERLAY_SIP
+     * @brief Action parameter overlay sip
      *
      * @type sai_ip_address_t
      * @flags CREATE_AND_SET
@@ -277,7 +277,39 @@ typedef enum _sai_outbound_routing_entry_attr_t
 } sai_outbound_routing_entry_attr_t;
 
 /**
- * @brief Create dash_outbound_routing_outbound_routing_entry
+ * @brief Attribute ID for outbound routing group
+ */
+typedef enum _sai_outbound_routing_group_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_OUTBOUND_ROUTING_GROUP_ATTR_START,
+
+    /**
+     * @brief Action parameter disabled
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_OUTBOUND_ROUTING_GROUP_ATTR_DISABLED = SAI_OUTBOUND_ROUTING_GROUP_ATTR_START,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_OUTBOUND_ROUTING_GROUP_ATTR_END,
+
+    /** Custom range base value */
+    SAI_OUTBOUND_ROUTING_GROUP_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_OUTBOUND_ROUTING_GROUP_ATTR_CUSTOM_RANGE_END,
+
+} sai_outbound_routing_group_attr_t;
+
+/**
+ * @brief Create outbound routing entry
  *
  * @param[in] outbound_routing_entry Entry
  * @param[in] attr_count Number of attributes
@@ -371,6 +403,58 @@ typedef sai_status_t (*sai_bulk_remove_outbound_routing_entry_fn)(
         _In_ sai_bulk_op_error_mode_t mode,
         _Out_ sai_status_t *object_statuses);
 
+/**
+ * @brief Create outbound routing group
+ *
+ * @param[out] outbound_routing_group_id Entry id
+ * @param[in] switch_id Switch id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_create_outbound_routing_group_fn)(
+        _Out_ sai_object_id_t *outbound_routing_group_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Remove outbound routing group
+ *
+ * @param[in] outbound_routing_group_id Entry id
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_remove_outbound_routing_group_fn)(
+        _In_ sai_object_id_t outbound_routing_group_id);
+
+/**
+ * @brief Set attribute for outbound routing group
+ *
+ * @param[in] outbound_routing_group_id Entry id
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_set_outbound_routing_group_attribute_fn)(
+        _In_ sai_object_id_t outbound_routing_group_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Get attribute for outbound routing group
+ *
+ * @param[in] outbound_routing_group_id Entry id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_get_outbound_routing_group_attribute_fn)(
+        _In_ sai_object_id_t outbound_routing_group_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
 typedef struct _sai_dash_outbound_routing_api_t
 {
     sai_create_outbound_routing_entry_fn           create_outbound_routing_entry;
@@ -379,6 +463,13 @@ typedef struct _sai_dash_outbound_routing_api_t
     sai_get_outbound_routing_entry_attribute_fn    get_outbound_routing_entry_attribute;
     sai_bulk_create_outbound_routing_entry_fn      create_outbound_routing_entries;
     sai_bulk_remove_outbound_routing_entry_fn      remove_outbound_routing_entries;
+
+    sai_create_outbound_routing_group_fn           create_outbound_routing_group;
+    sai_remove_outbound_routing_group_fn           remove_outbound_routing_group;
+    sai_set_outbound_routing_group_attribute_fn    set_outbound_routing_group_attribute;
+    sai_get_outbound_routing_group_attribute_fn    get_outbound_routing_group_attribute;
+    sai_bulk_object_create_fn                      create_outbound_routing_groups;
+    sai_bulk_object_remove_fn                      remove_outbound_routing_groups;
 
 } sai_dash_outbound_routing_api_t;
 
