@@ -114,6 +114,18 @@ extern const char* sai_metadata_get_enum_value_name(
         _In_ int value);
 
 /**
+ * @brief Gets short string representation of enum value
+ *
+ * @param[in] metadata Enum metadata
+ * @param[in] value Enum value to be converted to string
+ *
+ * @return Short string representation of enum value or NULL if value was not found
+ */
+extern const char* sai_metadata_get_enum_value_short_name(
+        _In_ const sai_enum_metadata_t *metadata,
+        _In_ int value);
+
+/**
  * @brief Gets attribute from attribute list by attribute id.
  *
  * @param[in] id Attribute id to be found.

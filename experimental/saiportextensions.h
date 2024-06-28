@@ -35,7 +35,7 @@
  */
 typedef enum _sai_port_attr_extensions_t
 {
-    SAI_PORT_ATTR_EXTENSIONS_RANGE_START = SAI_PORT_ATTR_END,
+    SAI_PORT_ATTR_EXTENSIONS_RANGE_START = SAI_PORT_ATTR_EXTENSIONS_RANGE_BASE,
 
     /* Add new experimental port attributes above this line */
 
@@ -50,7 +50,7 @@ typedef enum _sai_port_attr_extensions_t
  */
 typedef enum _sai_port_stat_extensions_t
 {
-    SAI_PORT_STAT_EXTENSIONS_RANGE_START = SAI_PORT_STAT_END,
+    SAI_PORT_STAT_EXTENSIONS_RANGE_START = SAI_PORT_STAT_EXTENSIONS_RANGE_BASE,
 
     /** DASH port LB_FAST_PATH_ICMP_IN_BYTES stat count */
     SAI_PORT_STAT_LB_FAST_PATH_ICMP_IN_BYTES = SAI_PORT_STAT_EXTENSIONS_RANGE_START,

@@ -2413,7 +2413,7 @@ sub ProcessSingleObjectType
         WriteSource ".isresourcetype                = $isresourcetype,";
         WriteSource ".isdeprecated                  = $isdeprecated,";
         WriteSource ".isconditionrelaxed            = $isrelaxed,";
-        WriteSource ".iscustom                      = $attr >= 0x10000000";
+        WriteSource ".iscustom                      = ($attr >= 0x10000000) && ($attr < 0x20000000)";
 
         WriteSource "};";
 
@@ -2542,7 +2542,8 @@ sub CreateMetadataForAttributes
         WriteSource "};";
     }
 
-    WriteHeader "extern const sai_attr_metadata_t* const* const sai_metadata_attr_by_object_type[];";
+    # This is disabled since it's object type can't be used as index any more
+    # WriteHeader "extern const sai_attr_metadata_t* const* const sai_metadata_attr_by_object_type[];";
     WriteSource "const sai_attr_metadata_t* const* const sai_metadata_attr_by_object_type[] = {";
 
     for my $ot (@objects)
@@ -2565,10 +2566,6 @@ sub CreateMetadataForAttributes
 
     WriteHeader "extern const size_t sai_metadata_attr_by_object_type_count;";
     WriteSource "const size_t sai_metadata_attr_by_object_type_count = $count;";
-
-    WriteSectionComment "Define SAI_OBJECT_TYPE_EXTENSIONS_MAX";
-
-    WriteHeader "#define SAI_OBJECT_TYPE_EXTENSIONS_MAX ((sai_object_type_t)$count)";
 }
 
 sub CreateEnumHelperMethod
@@ -3246,10 +3243,6 @@ sub CreateApisStruct
     WriteHeader "} sai_apis_t;";
 
     my $count = scalar @apis;
-
-    WriteSectionComment "Define SAI_API_EXTENSIONS_MAX";
-
-    WriteHeader "#define SAI_API_EXTENSIONS_MAX ((sai_api_t)$count)";
 }
 
 sub CreateGlobalApis

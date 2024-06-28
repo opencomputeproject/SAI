@@ -1683,7 +1683,7 @@ void test_serialize_attribute()
     sai_attribute_t attribute = {0};
     const sai_attr_metadata_t* amd;
 
-    amd = sai_metadata_attr_by_object_type[SAI_OBJECT_TYPE_SWITCH][0];
+    amd = sai_metadata_get_attr_metadata(SAI_OBJECT_TYPE_SWITCH, 0);
     attribute.id = SAI_SWITCH_ATTR_NUMBER_OF_ACTIVE_PORTS;
     attribute.value.u32 = 3;
 

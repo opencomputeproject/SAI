@@ -151,9 +151,6 @@ sub CreateCustomRangeTest
 
 sub CreateCustomRangeAll
 {
-    WriteTest "#pragma GCC diagnostic push";
-    WriteTest "#pragma GCC diagnostic ignored \"-Wsuggest-attribute=noreturn\"";
-
     DefineTestName "custom_range_all_test";
 
     # purpose of this test is to make sure
@@ -176,13 +173,11 @@ sub CreateCustomRangeAll
             next if $enum eq "SAI_OBJECT_TYPE_CUSTOM_RANGE_END";
 
             WriteTest "    TEST_ASSERT_TRUE($enum == 0x10000000, \"invalid custom range start for $enum\");" if $enum =~ /_START$/;
-            WriteTest "    TEST_ASSERT_TRUE($enum > 0x10000000, \"invalid custom range end for $enum\");" if $enum =~ /_END$/;
+            WriteTest "    TEST_ASSERT_TRUE($enum < 0x20000000, \"invalid custom range end for $enum\");" if $enum =~ /_END$/;
         }
     }
 
     WriteTest "}";
-
-    WriteTest "#pragma GCC diagnostic pop";
 }
 
 sub CreateEnumSizeCheckTest
@@ -254,8 +249,7 @@ sub CreateApiNameTest
 
     my @objects = @{ $main::SAI_ENUMS{sai_object_type_t}{values} };
 
-    WriteTest "    sai_object_type_t checked[SAI_OBJECT_TYPE_EXTENSIONS_MAX];";
-    WriteTest "    memset(checked, 0, SAI_OBJECT_TYPE_EXTENSIONS_MAX * sizeof(sai_object_type_t));";
+    WriteTest "    int visited = 1; /* 1 for NULL object */";
 
     WriteTest "    void *dummy = NULL;";
 
@@ -268,7 +262,7 @@ sub CreateApiNameTest
         if (IsSpecialObject($ot))
         {
             # those objects are special, just attributes, no APIs
-            WriteTest "    checked[(int)$ot] = $ot;";
+            WriteTest "    visited++;";
             next;
         }
 
@@ -327,7 +321,7 @@ sub CreateApiNameTest
             WriteTest "        dummy = &se;";
             WriteTest "        dummy = &ge;";
             WriteTest "        dummy = NULL;";
-            WriteTest "        checked[(int)$ot] = $ot;";
+            WriteTest "        visited++;";
         }
         else
         {
@@ -360,21 +354,14 @@ sub CreateApiNameTest
             WriteTest "        dummy = &se;";
             WriteTest "        dummy = &ge;";
             WriteTest "        dummy = NULL;";
-            WriteTest "        checked[(int)$ot] = $ot;";
+            WriteTest "        visited++;";
         }
 
         WriteTest "    }";
     }
 
-    WriteTest "    int index = SAI_OBJECT_TYPE_NULL;";
-
-    WriteTest "    for (; index < (int)SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++index)";
-    WriteTest "    {";
-    WriteTest "        printf(\"checking: %s checked (%d) == index (%d)\\n\",";
-    WriteTest "             sai_metadata_enum_sai_object_type_t.valuesnames[index],";
-    WriteTest "             checked[index],(sai_object_type_t)index);";
-    WriteTest "        TEST_ASSERT_TRUE(checked[index] == (sai_object_type_t)index, \"not all objects were processed\");";
-    WriteTest "    }";
+    WriteTest "        int sum = SAI_OBJECT_TYPE_MAX + (SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END - SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START);";
+    WriteTest "        TEST_ASSERT_TRUE_EXT(sum == visited, \"not all objects were processed, expexted: %d, but got: %d\", sum, visited);";
 
     WriteTest "    PP(dummy);";
 
@@ -599,9 +586,6 @@ sub CreateStructUnionSizeCheckTest
 
     my %STRUCTS = ();
 
-    WriteTest "#pragma GCC diagnostic push";
-    WriteTest "#pragma GCC diagnostic ignored \"-Wsuggest-attribute=noreturn\"";
-
     DefineTestName "struct_union_size";
 
     WriteTest "{";
@@ -635,7 +619,6 @@ sub CreateStructUnionSizeCheckTest
     }
 
     WriteTest "}";
-    WriteTest "#pragma GCC diagnostic pop";
 }
 
 sub WriteTestHeader
@@ -691,11 +674,38 @@ sub CreatePragmaPush
     WriteTest "#pragma GCC diagnostic push";
     WriteTest "#pragma GCC diagnostic ignored \"-Wpragmas\"";
     WriteTest "#pragma GCC diagnostic ignored \"-Wenum-conversion\"";
+    WriteTest "#pragma GCC diagnostic ignored \"-Wsuggest-attribute=noreturn\"";
 }
 
 sub CreatePragmaPop
 {
     WriteTest "#pragma GCC diagnostic pop";
+}
+
+sub CreateExtensionRangeTest
+{
+    DefineTestName "extension_range_test";
+
+    # purpose of this test is to make sure
+    # all extensions range bases are from
+
+    WriteTest "{";
+
+    for my $key (sort keys %main::SAI_ENUMS)
+    {
+        next if not defined $main::SAI_ENUMS{$key}{ranges};
+
+        my @ranges = @{ $main::SAI_ENUMS{$key}{ranges} };
+
+        for my $range (@ranges)
+        {
+            next if not $range =~ /EXTENSIONS_RANGE_BASE/;
+
+            WriteTest "    TEST_ASSERT_TRUE($range == 0x20000000, \"invalid extension range base for $range\");";
+        }
+    }
+
+    WriteTest "}";
 }
 
 sub CreateTests
@@ -732,9 +742,11 @@ sub CreateTests
 
     CreateStructUnionSizeCheckTest();
 
-    CreatePragmaPop();
-
     CreateCustomRangeAll();
+
+    CreateExtensionRangeTest();
+
+    CreatePragmaPop();
 
     WriteTestMain();
 }

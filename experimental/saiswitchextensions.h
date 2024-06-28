@@ -132,7 +132,7 @@ typedef void (*sai_ha_scope_event_notification_fn)(
  */
 typedef enum _sai_switch_attr_extensions_t
 {
-    SAI_SWITCH_ATTR_EXTENSIONS_RANGE_START = SAI_SWITCH_ATTR_END,
+    SAI_SWITCH_ATTR_EXTENSIONS_RANGE_START = SAI_SWITCH_ATTR_EXTENSIONS_RANGE_BASE,
 
     /**
      * @brief Maximum number of meter buckets per ENI.
