@@ -775,6 +775,19 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_VXLAN_UDP_SPORT_SECURITY,
 
     /**
+     * @brief Attach counter object list
+     *
+     * Counter object should be of type Selective.
+     * Fill (#SAI_COUNTER_ATTR_TYPE with #SAI_COUNTER_TYPE_SELECTIVE).
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @default empty
+     */
+    SAI_TUNNEL_ATTR_SELECTIVE_COUNTER_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_TUNNEL_ATTR_END,
