@@ -3033,6 +3033,22 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_ICMP_ECHO_SESSION_STATE_CHANGE_NOTIFY,
 
     /**
+     * @brief Available ICMP ECHO sessions
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_ICMP_ECHO_SESSION,
+
+    /**
+     * @brief Max number of ICMP ECHO sessions supported
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_ICMP_ECHO_SESSION,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,

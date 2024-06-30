@@ -135,7 +135,9 @@ session_state: Reflects the operational state of the ICMP echo session, which ca
 #### sai_icmp_echo_session_attr_t ####
 This defines icmp echo session attributes. These attributes collectively define the configuration and behavior of ICMP echo sessions in the SAI framework.
 
-- SAI_ICMP_ECHO_SESSION_ATTR_VIRTUAL_ROUTER: Specifies whether hardware lookup is valid, allowing for virtual router configuration.
+- SAI_ICMP_ECHO_SESSION_ATTR_HW_LOOKUP_VALID: A boolean value where true indicates that the device routes the generated packet to outgoing port and false indicates that the packet is injected as is to the specified Port.
+
+- SAI_ICMP_ECHO_SESSION_ATTR_VIRTUAL_ROUTER: The virtual router identifier. Only revelant when SAI_ICMP_ECHO_SESSION_ATTR_HW_LOOKUP_VALID is true.
 
 - SAI_ICMP_ECHO_SESSION_ATTR_PORT: Represents the destination port for ICMP echo sessions, with conditions based on hardware lookup validity. The generated packets are sent out on this port.
 
@@ -239,25 +241,15 @@ typedef struct _sai_icmp_echo_api_t 
 } sai_icmp_echo_api_t; 
 ```
 
-### ICMP echo session with LAG ###
-
-- Sessions across a LAG bundle: Individual sessions are created on each of the member links. The device creates ICMP echo requests for each configured probing session, which are sent through the port specified by the Session attribute SAI_ICMP_ECHO_SESSION_ATT_PORT.
-
-- Session on a logical bundle (LAG interface): A single session is set up on the LAG interface. Given that a LAG interface may have multiple next hops or that a next hop can vary dynamically, the destination for the outbound ICMP echo packets is determined by the router's lookup procedure. The session should be configured with the attributes SAI_ICMP_ECHO_SESSION_ATTR_VIRTUAL_ROUTER and SAI_ICMP_ECHO_SESSION_ATTR_HW_LOOKUP_VALID both set to true.
-
-- Incoming ICMP echo response packets can arrive on any of the member links. If necessary, the Session attribute SAI_ICMP_ECHO_SESSION_ATTR_RX_PORT is provided to verify the incoming packets on a specific member link.
-
 ### 4.0 Examples ###
 
 #### 4.0.1 Create session using egress interface: ####
-
 In this case SAI expects the application to tell the attributes related to encapsulation and egress physical interface.
-
 ```C
 sai_api_query(SAI_API_ICMP_ECHO, &icmp_api);  // Get ICMP echo object API pointer
 
 sai_object_id_t icmp_session = 0;
-sai_attribute_t icmp_attr[11] = {0};  
+sai_attribute_t icmp_attr[10] = {0};
 
 icmp_attr[0].id = SAI_ICMP_ECHO_SESSION_ATTR_HW_LOOKUP_VALID;
 icmp_attr[0].value.booldata = false;  
@@ -318,7 +310,7 @@ In this case SAI expects virtual router id and SAI_ICMP_ECHO_SESSION_ATTR_HW_LOO
 sai_api_query(SAI_API_ICMP_ECHO, &icmp_api);  // get ICMP echo object API pointer
 
 sai_object_id_t icmp_session = 0;
-sai_attribute_t icmp_attr[11] = {0};  
+sai_attribute_t icmp_attr[10] = {0};
 
 icmp_attr[0].id = SAI_ICMP_ECHO_SESSION_ATTR_HW_LOOKUP_VALID;
 icmp_attr[0].value.booldata = true;
@@ -359,6 +351,61 @@ if (status == SAI_STATUS_SUCCESS) {
     // Handle the error condition
 }
 ```
+
+#### 4.0.3 ICMP echo session with protection group ####
+```C
+icmp_echo_session_id = 1; //create a session as explained section 4.0.1 or 4.0.2.
+
+// set SAI_ICMP_ECHO_SESSION_ATTR_SET_NEXT_HOP_GROUP_SWITCHOVER to true if not already.
+sai_attribute_t icmp_attr;
+icmp_attr.id = SAI_ICMP_ECHO_SESSION_ATTR_SET_NEXT_HOP_GROUP_SWITCHOVER;
+icmp_attr.value.booldata = true;
+sai_api_query(SAI_API_ICMP_ECHO, &icmp_api);  // get ICMP echo object API pointer
+icmp_api->set_icmp_echo_session_attribute(icmp_echo_session_id, icmp_attr);
+
+// Create protection group by programming icmp echo session id as monitored object
+nh_1_id = 1;
+nh_2_id = 2;
+switch_id = 0;
+
+// Create nexthop group
+nhg_attrs[0].id = SAI_NEXT_HOP_GROUP_ATTR_TYPE;
+nhg_attrs[0].value.u32 = SAI_NEXT_HOP_GROUP_TYPE_PROTECTION;
+saistatus = sai_frr_api->create_next_hop_group(&nhg_id, switch_id, 1, nhg_attrs);
+if (saistatus != SAI_STATUS_SUCCESS) {
+    return saistatus;
+}
+
+// Program the primary NH Group member
+nhgm_attrs[0].id = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_GROUP_ID;
+nhgm_attrs[0].value.oid = nhg_id;
+nhgm_attrs[1].id = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_ID;
+nhgm_attrs[1].value.oid = nh_1_id;
+nhgm_attrs[2].id = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_CONFIGURED_ROLE;
+nhgm_attrs[2].value.u32 = SAI_NEXT_HOP_GROUP_MEMBER_CONFIGURED_ROLE_PRIMARY;
+nhgm_attrs[3].id = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_MONITORED_OBJECT;
+nhgm_attrs[3].value.oid = icmp_echo_session_id;
+saistatus = sai_frr_api->create_next_hop_group_member(&nhgm_1_id, switch_id, 2, nhgm_attrs);
+if (saistatus != SAI_STATUS_SUCCESS) {
+    return saistatus;
+}
+
+// Program the standby NH Group member
+nhgm_attrs[0].id = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_GROUP_ID;
+nhgm_attrs[0].value.oid = nhg_id;
+nhgm_attrs[1].id = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_ID;
+nhgm_attrs[1].value.oid = nh_2_id;
+nhgm_attrs[2].id = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_CONFIGURED_ROLE;
+nhgm_attrs[2].value.u32 = SAI_NEXT_HOP_GROUP_MEMBER_CONFIGURED_ROLE_STANDBY;
+nhgm_attrs[3].id = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_MONITORED_OBJECT;
+nhgm_attrs[3].value.oid = icmp_echo_session_id;
+saistatus = sai_frr_api->create_next_hop_group_member(&nhgm_2_id, switch_id, 2, nhgm_attrs);
+if (saistatus != SAI_STATUS_SUCCESS) {
+    return saistatus;
+}
+```
+Refer [FRR](https://github.com/opencomputeproject/SAI/blob/master/doc/SAI-Proposal-FRR.md) for further information regarding the attributes associated with the protection group.
+
 #### 4.0.3 Remove session ####
 ```C
 // Example usage of the sai_remove_icmp_echo_session_fn function
@@ -422,3 +469,12 @@ void myCallbackFunction(uint32_t count, sai_icmp_echo_session_state_notification
     }
 }
 ```
+### ICMP echo session with LAG ###
+
+- Sessions across a LAG bundle: Individual sessions are created on each of the member links. The device creates ICMP echo requests for each configured probing session, which are sent through the port specified by the Session attribute SAI_ICMP_ECHO_SESSION_ATT_PORT.
+	- For example, to create a session over a LAG, refer to the section [Create session using egress interface](#4.0.1).
+
+- Session on a logical bundle (LAG interface): A single session is set up on the LAG interface. Given that a LAG interface may have multiple next hops or that a next hop can vary dynamically, the destination for the outbound ICMP echo packets is determined by the router's lookup procedure. The session should be configured with the attributes SAI_ICMP_ECHO_SESSION_ATTR_VIRTUAL_ROUTER and SAI_ICMP_ECHO_SESSION_ATTR_HW_LOOKUP_VALID both set to true.
+	- For example, to create a session over a LAG, refer to the section [Create session using Endpoint IP address](#4.0.2).
+
+- Incoming ICMP echo response packets can arrive on any of the member links. If necessary, the Session attribute SAI_ICMP_ECHO_SESSION_ATTR_RX_PORT is provided to verify the incoming packets on a specific member link.

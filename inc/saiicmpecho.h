@@ -74,7 +74,8 @@ typedef enum _sai_icmp_echo_session_attr_t
     SAI_ICMP_ECHO_SESSION_ATTR_START,
 
     /**
-     * @brief Hardware lookup valid
+     * @brief Hardware lookup valid. TRUE routes packets via L3 forward lookup;
+     * FALSE injects packets directly to specified port.
      *
      * @type bool
      * @flags CREATE_ONLY
