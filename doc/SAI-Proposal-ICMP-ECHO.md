@@ -471,7 +471,7 @@ void myCallbackFunction(uint32_t count, sai_icmp_echo_session_state_notification
 ```
 ### ICMP echo session with LAG ###
 
-- Sessions across a LAG bundle: Individual sessions are created on each of the member links. The device creates ICMP echo requests for each configured probing session, which are sent through the port specified by the Session attribute SAI_ICMP_ECHO_SESSION_ATT_PORT.
+- Sessions across a LAG bundle: Individual sessions are created on each of the member links. The device creates ICMP echo requests for each configured probing session, which are sent through the port specified by the Session attribute SAI_ICMP_ECHO_SESSION_ATTR_PORT.
 	- For example, to create a session over a LAG, refer to the section [Create session using egress interface](#4.0.1).
 
 - Session on a logical bundle (LAG interface): A single session is set up on the LAG interface. Given that a LAG interface may have multiple next hops or that a next hop can vary dynamically, the destination for the outbound ICMP echo packets is determined by the router's lookup procedure. The session should be configured with the attributes SAI_ICMP_ECHO_SESSION_ATTR_VIRTUAL_ROUTER and SAI_ICMP_ECHO_SESSION_ATTR_HW_LOOKUP_VALID both set to true.
