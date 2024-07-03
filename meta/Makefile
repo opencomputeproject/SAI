@@ -69,10 +69,11 @@ BINS = doxygen perl dot
 
 $(foreach bin,$(BINS),$(if $(shell which $(bin)),,$(error "Missing $(bin) in PATH")))
 
-CFLAGS += -I../inc -I../experimental $(WARNINGS)
+CFLAGS += -I../inc -I../experimental -fPIC $(WARNINGS)
 
 CC = $(CROSS_COMPILE)gcc
 CXX = $(CROSS_COMPILE)g++
+LD = $(CROSS_COMPILE)ld
 
 DEPS = $(wildcard ../inc/*.h) $(wildcard ../experimental/*.h)
 XMLDEPS = $(wildcard xml/*.xml)
@@ -82,6 +83,7 @@ OBJ = saimetadata.o saimetadatautils.o saiserialize.o
 SYMBOLS = $(OBJ:=.symbols)
 
 all: toolsversions saisanitycheck saimetadatatest saiserializetest saidepgraph.svg $(SYMBOLS)
+	./checksymbols.pl *.o.symbols
 	./checkheaders.pl ../inc ../inc
 	./aspellcheck.pl
 	./checkenumlock.sh
@@ -125,8 +127,12 @@ saimetadatasize.h: $(DEPS)
 saimetadatatest.c saimetadata.c saimetadata.h: xml $(XMLDEPS) parse.pl $(CONSTHEADERS) $(EXTRA)
 	perl -I. parse.pl
 
-rpc sai.thrift sai_rpc_server.cpp sai_adapter.py: xml $(XMLDEPS) gensairpc.pl
+RPC_MODULES=$(shell find rpc -type f -name "*.pm")
+
+sai.thrift sai_rpc_server.cpp sai_adapter.py: xml $(XMLDEPS) gensairpc.pl templates/*.tt $(RPC_MODULES)
 	perl -Irpc gensairpc.pl $(GEN_SAIRPC_OPTS)
+
+rpc: sai.thrift sai_rpc_server.cpp sai_adapter.py
 
 HEADERS = saimetadata.h saimetadatasize.h $(CONSTHEADERS)
 
@@ -149,7 +155,7 @@ saidepgraphgen: saidepgraphgen.o $(OBJ)
 	$(CXX) -o $@ $^
 
 %.o.symbols: %.o
-	nm $^ | ./checksymbols.pl
+	nm $^ > $@
 
 saidepgraph.gv: saidepgraphgen
 	./saidepgraphgen > $@
@@ -157,11 +163,35 @@ saidepgraph.gv: saidepgraphgen
 saidepgraph.svg: saidepgraph.gv
 	dot -Tsvg saidepgraph.gv > $@
 
-.PHONY: clean
+libsaimetadata.so: $(OBJ)
+	$(CXX) -fPIC -shared -Wl,-Bsymbolic-functions -Wl,-z,relro -Wl,-z,now $^ -o $@
+
+libsai.so: libsai.o
+	$(CXX) -fPIC -shared -Wl,-Bsymbolic-functions -Wl,-z,relro -Wl,-z,now $^ -o $@
+
+RPC_SRC=$(wildcard generated/gen-cpp/*.cpp)
+RPC_OBJ=$(RPC_SRC:.cpp=.o)
+
+generated/gen-cpp/%.o: generated/gen-cpp/%.cpp
+	$(CXX) $(CFLAGS) -std=c++11 -Wno-return-type -c $< -o $@
+
+generated/gen-cpp/sai_rpc_server.skeleton: sai.thrift $(RPC_OBJ)
+	$(CXX) $(RPC_OBJ) -o generated/gen-cpp/sai_rpc_server.skeleton -lthrift
+
+sai_rpc_server.skeleton: generated/gen-cpp/sai_rpc_server.skeleton
+
+sai_rpc_frontend: rpc sai_rpc_frontend.cpp sai_rpc_frontend.main.cpp sai_rpc_server.cpp libsaimetadata.so libsai.so
+	$(CXX) $(CFLAGS) -std=c++11 \
+		generated/gen-cpp/sai_rpc.o generated/gen-cpp/sai_types.o generated/gen-cpp/sai_constants.o \
+		sai_rpc_frontend.main.cpp sai_rpc_frontend.cpp \
+		libsaimetadata.so libsai.so -lthrift -lpthread -I generated/gen-cpp -o sai_rpc_frontend
+
+.PHONY: clean rpc
 
 clean:
-	rm -f *.o *~ .*~ *.tmp .*.swp .*.swo *.bak sai*.gv sai*.svg *.o.symbols doxygen*.db
-	rm -f saimetadata.h saimetadatasize.h saimetadata.c saimetadatatest.c
-	rm -f saisanitycheck saimetadatatest saiserializetest saidepgraphgen
+	rm -f *.o *~ .*~ *.tmp .*.swp .*.swo *.bak sai*.gv sai*.svg *.o.symbols doxygen*.db *.so
+	rm -f saimetadata.h saimetadatasize.h saimetadata.c saimetadatatest.c saiswig.i
+	rm -f saisanitycheck saimetadatatest saiserializetest saidepgraphgen sai_rpc_frontend
 	rm -f sai.thrift sai_rpc_server.cpp sai_adapter.py
+	rm -f *.gcda *.gcno *.gcov
 	rm -rf xml html dist temp generated

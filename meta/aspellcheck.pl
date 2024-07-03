@@ -170,6 +170,8 @@ for my $file (@files)
     next if $file =~ m!temp!;
     next if $file =~ m!xml!;
     next if $file =~ m!saimetadata.[ch]!;
+    next if $file =~ m!generated!;
+    next if $file =~ m!sai_rpc_server.cpp!;
 
     my $data = ReadFile $file;
 

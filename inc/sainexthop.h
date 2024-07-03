@@ -229,6 +229,33 @@ typedef enum _sai_next_hop_attr_t
     SAI_NEXT_HOP_ATTR_QOS_TC_AND_COLOR_TO_MPLS_EXP_MAP,
 
     /**
+     * @brief To enable/disable source MAC rewrite
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_NEXT_HOP_ATTR_DISABLE_SRC_MAC_REWRITE,
+
+    /**
+     * @brief To enable/disable destination MAC rewrite
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_NEXT_HOP_ATTR_DISABLE_DST_MAC_REWRITE,
+
+    /**
+     * @brief To enable/disable VLAN rewrite
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_NEXT_HOP_ATTR_DISABLE_VLAN_REWRITE,
+
+    /**
      * @brief End of attributes
      */
     SAI_NEXT_HOP_ATTR_END,

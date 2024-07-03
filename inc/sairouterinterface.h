@@ -451,6 +451,11 @@ typedef struct _sai_router_interface_api_t
     sai_get_router_interface_stats_ext_fn   get_router_interface_stats_ext;
     sai_clear_router_interface_stats_fn     clear_router_interface_stats;
 
+    sai_bulk_object_create_fn               create_router_interfaces;
+    sai_bulk_object_remove_fn               remove_router_interfaces;
+    sai_bulk_object_set_attribute_fn        set_router_interfaces_attribute;
+    sai_bulk_object_get_attribute_fn        get_router_interfaces_attribute;
+
 } sai_router_interface_api_t;
 
 /**

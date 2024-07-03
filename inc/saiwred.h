@@ -25,7 +25,7 @@
 #if !defined (__SAIWRED_H_)
 #define __SAIWRED_H_
 
-#include "saitypes.h"
+#include <saitypes.h>
 
 /**
  * @defgroup SAIWRED SAI - QOS WRED specific API definitions

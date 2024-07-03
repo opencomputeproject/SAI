@@ -51,7 +51,7 @@ THRIFT_PORT = 9092
 SKIP_TEST_NO_RESOURCES_MSG = 'Not enough resources to run test'
 PLATFORM = os.environ.get('PLATFORM')
 platform_map = {'broadcom': 'brcm', 'barefoot': 'bfn',
-                'mellanox': 'mlnx', 'common': 'common'}
+                'mellanox': 'mlnx', 'common': 'common', 'marvell': 'mrvl'}
 
 
 class ThriftInterface(BaseTest):
@@ -983,9 +983,10 @@ class SaiHelperUtilsMixin:
         # add members
         idx = 0
         for member, tag in members.items():
-            tag = SAI_VLAN_TAGGING_MODE_UNTAGGED
             if tag == 'tagged':
                 tag = SAI_VLAN_TAGGING_MODE_TAGGED
+            else:
+                tag = SAI_VLAN_TAGGING_MODE_UNTAGGED
             vlan_member_id = sai_thrift_create_vlan_member(
                 self.client,
                 vlan_id=vlan_id,

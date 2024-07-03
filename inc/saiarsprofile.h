@@ -327,6 +327,141 @@ typedef enum _sai_ars_profile_attr_t
     SAI_ARS_PROFILE_ATTR_QUANT_BAND_7_MAX_THRESHOLD,
 
     /**
+     * @brief Enable IPv4 traffic (ether type) for ARS processing.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_ARS_PROFILE_ATTR_ENABLE_IPV4,
+
+    /**
+     * @brief Enable IPv6 traffic (ether type) for ARS processing.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_ARS_PROFILE_ATTR_ENABLE_IPV6,
+
+    /**
+     * @brief Minimum past load threshold value for quantization process.
+     * Used by hardware to allocate the quantization bands.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ARS_PROFILE_ATTR_LOAD_PAST_MIN_VAL,
+
+    /**
+     * @brief Maximum past load threshold value for quantization process.
+     * Used by hardware to allocate the quantization bands.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ARS_PROFILE_ATTR_LOAD_PAST_MAX_VAL,
+
+    /**
+     * @brief Minimum threshold used for quantization bands for past load
+     *
+     * @type sai_u32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_MIN_THRESHOLD_LIST_LOAD_PAST,
+
+    /**
+     * @brief Maximum threshold used for quantization bands for past load
+     *
+     * @type sai_u32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_MAX_THRESHOLD_LIST_LOAD_PAST,
+
+    /**
+     * @brief Minimum future load threshold value for quantization process.
+     * Used by hardware to allocate the quantization bands.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ARS_PROFILE_ATTR_LOAD_FUTURE_MIN_VAL,
+
+    /**
+     * @brief Maximum future load threshold value for quantization process.
+     * Used by hardware to allocate the quantization bands.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ARS_PROFILE_ATTR_LOAD_FUTURE_MAX_VAL,
+
+    /**
+     * @brief Minimum threshold used for quantization bands for future load
+     *
+     * @type sai_u32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_MIN_THRESHOLD_LIST_LOAD_FUTURE,
+
+    /**
+     * @brief Maximum threshold used for quantization bands for future load
+     *
+     * @type sai_u32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_MAX_THRESHOLD_LIST_LOAD_FUTURE,
+
+    /**
+     * @brief Minimum current load threshold value for quantization process.
+     * Used by hardware to allocate the quantization bands.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ARS_PROFILE_ATTR_LOAD_CURRENT_MIN_VAL,
+
+    /**
+     * @brief Maximum current load threshold value for quantization process.
+     * Used by hardware to allocate the quantization bands.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ARS_PROFILE_ATTR_LOAD_CURRENT_MAX_VAL,
+
+    /**
+     * @brief Minimum threshold used for quantization bands for current load
+     *
+     * @type sai_u32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_MIN_THRESHOLD_LIST_LOAD_CURRENT,
+
+    /**
+     * @brief Maximum threshold used for quantization bands for current load
+     *
+     * @type sai_u32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_ARS_PROFILE_ATTR_QUANT_BAND_MAX_THRESHOLD_LIST_LOAD_CURRENT,
+
+    /**
+     * @brief Maximum flows supported for ARS processing
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ARS_PROFILE_ATTR_MAX_FLOWS,
+
+    /**
      * @brief End of attributes
      */
     SAI_ARS_PROFILE_ATTR_END,

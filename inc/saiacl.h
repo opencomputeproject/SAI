@@ -1497,9 +1497,54 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_TAM_INT_TYPE = SAI_ACL_TABLE_ATTR_FIELD_START + 0x152,
 
     /**
+     * @brief Inner Src MAC
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_INNER_SRC_MAC = SAI_ACL_TABLE_ATTR_FIELD_START + 0x15b,
+
+    /**
+     * @brief Inner Dst MAC
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_INNER_DST_MAC = SAI_ACL_TABLE_ATTR_FIELD_START + 0x15c,
+
+    /**
+     * @brief VRF_ID
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_VRF_ID = SAI_ACL_TABLE_ATTR_FIELD_START + 0x15d,
+
+    /**
+     * @brief IPMC_TABLE_HIT fields.
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_IPMC_NPU_META_DST_HIT = SAI_ACL_TABLE_ATTR_FIELD_START + 0x15e,
+
+    /**
+     * @brief Tunnel terminated
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_TUNNEL_TERMINATED = SAI_ACL_TABLE_ATTR_FIELD_START + 0x15f,
+
+    /**
      * @brief End of ACL Table Match Field
      */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_DST_IPV6_WORD0,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_TUNNEL_TERMINATED,
 
     /**
      * @brief ACL table entries associated with this table.
@@ -2533,9 +2578,55 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_TAM_INT_TYPE = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x152,
 
     /**
+     * @brief Inner Src MAC Address
+     *
+     * @type sai_acl_field_data_t sai_mac_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_INNER_SRC_MAC = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x15b,
+
+    /**
+     * @brief Inner Dst MAC Address
+     *
+     * @type sai_acl_field_data_t sai_mac_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_INNER_DST_MAC = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x15c,
+
+    /**
+     * @brief VRF_ID
+     *
+     * @type sai_acl_field_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_VIRTUAL_ROUTER
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_VRF_ID = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x15d,
+
+    /**
+     * @brief IPMC_TABLE_HIT
+     *
+     * @type sai_acl_field_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_IPMC_NPU_META_DST_HIT = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x15e,
+
+    /**
+     * @brief Tunnel terminated flag
+     *
+     * @type sai_acl_field_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_TUNNEL_TERMINATED = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x15f,
+
+    /**
      * @brief End of Rule Match Fields
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_DST_IPV6_WORD0,
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_TUNNEL_TERMINATED,
 
     /*
      * Actions [sai_acl_action_data_t]
@@ -3112,11 +3203,10 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_SET_ARS_OBJECT = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x36,
 
     /**
-     * @brief Disable ARS forwarding for a destination that can be a LAG or nexthopgroup
+     * @brief Disable ARS forwarding for a given match condition. This rule takes effect only when global ARS profile object is created and has binding to the switch
      *
-     * @type sai_acl_action_data_t sai_object_id_t
+     * @type sai_acl_action_data_t bool
      * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_NEXT_HOP_GROUP
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_DISABLE_ARS_FORWARDING = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x37,

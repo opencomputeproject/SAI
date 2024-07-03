@@ -25,6 +25,7 @@
 
 use strict;
 use warnings;
+use diagnostics;
 
 use 5.020;
 
@@ -184,7 +185,10 @@ $template->process( catfile( $templates_dir, 'sai.thrift.tt' ),
 
 say colored( 'Generating Thrift files...', 'bold blue' );
 chdir $gen_dir;
-system 'thrift -o . --gen cpp -r ../sai.thrift';
+# rm gen-cpp is needed since thrift don't override existing files
+# even if sai.thrift file changed :(
+system("rm -rf gen-cpp");
+system('thrift -o . --gen cpp -r ../sai.thrift') == 0 or die colored("Command failed: $!", "red");
 chdir $run_dir;
 
 say colored( 'Generating sai_rpc_server.cpp.tt...', 'bold blue' );
@@ -280,6 +284,7 @@ sub generate_server_template_from_skeleton {
                   if $experimental;
                 say {$server_template} '#ifdef __cplusplus';
                 say {$server_template} '}';
+                say {$server_template} '#include <iostream>';
                 say {$server_template} '#endif';
 
                 # Define global variable before "class"
@@ -302,35 +307,55 @@ sub generate_server_template_from_skeleton {
 }
 
 # Find the api name within the header related to the currenct XML file.
-sub get_api_name {
+sub get_api_name
+{
+    # it may happen that metadata is already generated, and SAI directory is
+    # mounted in docker, then the location will be invalid inside docker, so
+    # let's use only filename and inc directory
+
     my $location = shift;
-    my $header;
-    my $api;
+
+    $location =~ s!.+/!!; # leave only filename
 
     # The hash should be static - don't open and traverse the header
     # if we already found the API name inside.
-    state %api_names;
+    state %api_names = (
+            "saimetadatalogger.h" => "common",
+            "saimetadatatypes.h" => "common",
+            "sai.h" => "common",
+            "saiobject.h" => "object", # for sai_object_key_entry_t
+            "saitypes.h" => "common" );
+
     return $api_names{$location} if exists $api_names{$location};
 
-    open $header, '<', "$location"
-      or open $header, '<', "$sai_dir/inc/$location";
-    if ( $header->opened() ) {
-        while ( my $line = <$header> ) {
-            if ( $line =~ /_sai_(\w+)_api_t/ ) {
-                $api = $1;
-                last;
-            }
+    my $file = "$sai_dir/inc/$location";
 
+    $file = "$sai_dir/experimental/$location" if $location =~ /experimental|extension/;
+
+    open(H, '<', $file) or die "Failed to open: $file: $!";
+
+    my @lines = <H>;
+
+    close H or croak;
+
+    for my $line (@lines)
+    {
+        if ($line =~ /^typedef struct _sai_(\w+)_api_t/)
+        {
+            $api_names{$location} = $1;
+
+            return $1;
         }
-        close $header or croak;
     }
 
-    $api //= $1 if $location =~ /inc\/sai(\w+)[.]h$/;
-    $api //= 'common';
-    $api = 'common' if $api eq 'types';
+    if ($location =~ /^sai\w*extensions.h$/)
+    {
+        $api_names{$location} = "common";
 
-    $api_names{$location} = $api;
-    return $api;
+        return "common";
+    }
+
+    die "File $file doesn't contain api struct!";
 }
 
 # The main function that parses all XML files and creates all

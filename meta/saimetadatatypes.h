@@ -475,6 +475,26 @@ typedef enum _sai_attr_value_type_t
      * @brief Attribute value is IP prefix list.
      */
     SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST,
+
+    /**
+     * @brief Attribute value is frequency offset ppm list.
+     */
+    SAI_ATTR_VALUE_TYPE_PORT_FREQUENCY_OFFSET_PPM_LIST,
+
+    /**
+     * @brief Attribute value is SNR list.
+     */
+    SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST,
+
+    /**
+     * @brief Attribute value is statistics data.
+     */
+    SAI_ATTR_VALUE_TYPE_TWAMP_STATS_DATA,
+
+    /**
+     * @brief Attribute value is the POE port consumption data.
+     */
+    SAI_ATTR_VALUE_TYPE_POE_PORT_POWER_CONSUMPTION,
 } sai_attr_value_type_t;
 
 /**
@@ -1254,6 +1274,23 @@ typedef struct _sai_attr_metadata_t
      * to check this field and give run time warning about this attribute.
      */
     bool                                        isdeprecated;
+
+    /**
+     * @brief Indicates whether condition is relaxed.
+     *
+     * If attribute is MANDATORY_ON_CREATE and relaxed flag is set to true then
+     * given attribute can be passed to create function even if the condition
+     * is not met. If relaxed flag is set to false, then attribute is forbidden
+     * to be passed to create function is condition is not met.
+     */
+    bool                                        isconditionrelaxed;
+
+    /**
+     * @brief Indicates whether attribute is custom attribute.
+     *
+     * Custom attribute values begins with SAI_XXX_ATTR_CUSTOM_RANGE_START.
+     */
+    bool                                        iscustom;
 
 } sai_attr_metadata_t;
 

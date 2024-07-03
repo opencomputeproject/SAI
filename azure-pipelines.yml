@@ -22,7 +22,7 @@ stages:
   - job:
 
     container:
-      image: sonicdev-microsoft.azurecr.io:443/sonic-slave-buster:latest
+      image: sonicdev-microsoft.azurecr.io:443/sonic-slave-bullseye:latest
 
     displayName: "build"
     timeoutInMinutes: 60
@@ -33,7 +33,29 @@ stages:
       displayName: 'Checkout code'
     - script: |
         set -ex
+        sudo apt-get update
+        sudo apt-get install -y thrift-compiler libthrift-dev
+      displayName: "Install thrift compiler"
+    - script: |
+        set -ex
         export ANSI_COLORS_DISABLED=1
         cd meta
         make
       displayName: "Metadata check"
+    - script: |
+        set -ex
+        export ANSI_COLORS_DISABLED=1
+        export GEN_SAIRPC_OPTS="-ve"
+        cd meta
+        make rpc
+        make sai_rpc_server.skeleton
+        make sai_rpc_frontend
+      displayName: "Build rpc"
+    - script: |
+        set -ex
+        export ANSI_COLORS_DISABLED=1
+        export GEN_SAIRPC_OPTS="-ve"
+        export SAIRPC_EXTRA_LIBS=-L../../meta
+        cd test/saithriftv2
+        make directories meta obj/librpcserver.a saiserver
+      displayName: "Build saithriftv2 saiserver"

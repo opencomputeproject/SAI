@@ -58,6 +58,9 @@ defined_attr_t* defined_attributes = NULL;
 #define META_ENUM_LOG_WARN(emd, format, ...)\
     META_LOG_WARN("%s: " format, emd->name, ##__VA_ARGS__);
 
+#define META_MD_LOG_DEBUG(md, format, ...)\
+    META_LOG_DEBUG("%s: " format, md->attridname, ##__VA_ARGS__);
+
 #define META_MD_LOG_WARN(md, format, ...)\
     META_LOG_WARN("%s: " format, md->attridname, ##__VA_ARGS__);
 
@@ -207,15 +210,28 @@ void check_all_enums_values()
 
             if (value != last + 1)
             {
-                flags = true;
-
-                if (is_flag_enum(emd))
+                if (value == CUSTOM_ATTR_RANGE_START)
                 {
-                    /* flags, ok */
+                    /*
+                     * Object contains custom attributes in custom range, they
+                     * still needs to be increasing by 1 but since those are
+                     * not flags, attribute value can't be used as array index.
+                     */
+
+                    META_ENUM_LOG_WARN(emd, "contains custom range attibutes");
                 }
                 else
                 {
-                    META_ENUM_ASSERT_FAIL(emd, "values are not increasing by 1: last: %d current: %d, should be marked as @flags?", last, value);
+                    flags = true;
+
+                    if (is_flag_enum(emd))
+                    {
+                        /* flags, ok */
+                    }
+                    else
+                    {
+                        META_ENUM_ASSERT_FAIL(emd, "values are not increasing by 1: last: %d current: %d, should be marked as @flags?", last, value);
+                    }
                 }
             }
 
@@ -659,6 +675,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_INT32_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT8:
         case SAI_ATTR_VALUE_TYPE_UINT16:
+        case SAI_ATTR_VALUE_TYPE_INT16:
         case SAI_ATTR_VALUE_TYPE_VLAN_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT32:
         case SAI_ATTR_VALUE_TYPE_UINT64:
@@ -679,6 +696,8 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_FREQUENCY_OFFSET_PPM_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST:
         case SAI_ATTR_VALUE_TYPE_LATCH_STATUS:
         case SAI_ATTR_VALUE_TYPE_PORT_LANE_LATCH_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_TIMESPEC:
@@ -724,6 +743,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_PORT_ERR_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST:
+        case SAI_ATTR_VALUE_TYPE_POE_PORT_POWER_CONSUMPTION:
 
             if (md->allowedobjecttypes != NULL)
             {
@@ -982,6 +1002,8 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_FREQUENCY_OFFSET_PPM_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_LANE_LATCH_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
@@ -1192,6 +1214,8 @@ void check_attr_default_value_type(
                 case SAI_ATTR_VALUE_TYPE_MAP_LIST:
                 case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
                 case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
+                case SAI_ATTR_VALUE_TYPE_PORT_FREQUENCY_OFFSET_PPM_LIST:
+                case SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST:
                 case SAI_ATTR_VALUE_TYPE_PORT_LANE_LATCH_STATUS_LIST:
                 case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
                 case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
@@ -1503,7 +1527,7 @@ void check_attr_validonly(
              * but you won't be able to change it anyway.
              */
 
-            META_MD_LOG_WARN(md, "marked as valid only, on flags CREATE_ONLY, default value is present, should this be CREATE_AND_SET?");
+            META_MD_LOG_DEBUG(md, "marked as valid only, on flags CREATE_ONLY, default value is present, should this be CREATE_AND_SET?");
 
             /* intentional fall through */
 
@@ -1643,6 +1667,16 @@ void check_attr_validonly(
             {
                 /*
                  * MPLS out segment attributes are required for ingress node and valid only for MPLS next hop.
+                 */
+            }
+            else if (md->objecttype == SAI_OBJECT_TYPE_TWAMP_SESSION &&
+                    (md->attrid == SAI_TWAMP_SESSION_ATTR_TX_PKT_CNT || md->attrid == SAI_TWAMP_SESSION_ATTR_TX_PKT_PERIOD ||
+                     md->attrid == SAI_TWAMP_SESSION_ATTR_TUNNEL_OUTER_VLAN_ID || md->attrid == SAI_TWAMP_SESSION_ATTR_TUNNEL_OUTER_VLAN_PRI ||
+                     md->attrid == SAI_TWAMP_SESSION_ATTR_TUNNEL_OUTER_VLAN_CFI || md->attrid == SAI_TWAMP_SESSION_ATTR_VLAN_ID ||
+                     md->attrid == SAI_TWAMP_SESSION_ATTR_VLAN_PRI || md->attrid == SAI_TWAMP_SESSION_ATTR_VLAN_CFI))
+            {
+                /*
+                 * TWAMP packet tx mode attributes are depending on TWAMP_PKT_TX_MODE.
                  */
             }
             else
@@ -1795,6 +1829,8 @@ void check_attr_allow_flags(
             case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
             case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
             case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
+            case SAI_ATTR_VALUE_TYPE_PORT_FREQUENCY_OFFSET_PPM_LIST:
+            case SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST:
             case SAI_ATTR_VALUE_TYPE_PORT_LANE_LATCH_STATUS_LIST:
             case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST:
             case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
@@ -2382,6 +2418,30 @@ void check_attr_acl_field_or_action(
     }
 }
 
+void check_attr_acl_mask(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    /*
+     * Field acl mask reuses existing attribute acl field mask key, then we
+     * need to have some conditions. Since acl field have enable mask and data
+     * fields, then this mask alone is not compatible.
+     */
+
+    if (md->isaclmask)
+    {
+        META_ASSERT_FALSE(md->isaclfield, "aclmask can't be mark as alcfield");
+        META_ASSERT_FALSE(md->isaclaction, "aclmask can't be marked as aclaction");
+
+        META_ASSERT_TRUE(md->objecttype == SAI_OBJECT_TYPE_ACL_TABLE, "object type for acl mask must be acl table");
+
+        META_ASSERT_TRUE((md->attrvaluetype >= SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_BOOL &&
+                md->attrvaluetype <= SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST),
+                "aclmask attribute attr id must be in acl field start/end range");
+    }
+}
+
 void check_attr_existing_objects(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -2662,6 +2722,8 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_FREQUENCY_OFFSET_PPM_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST:
         case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_ERR_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT16_RANGE_LIST:
@@ -2712,6 +2774,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
         case SAI_ATTR_VALUE_TYPE_POINTER:
         case SAI_ATTR_VALUE_TYPE_UINT16:
+        case SAI_ATTR_VALUE_TYPE_INT16:
         case SAI_ATTR_VALUE_TYPE_UINT32:
         case SAI_ATTR_VALUE_TYPE_UINT32_RANGE:
         case SAI_ATTR_VALUE_TYPE_UINT64:
@@ -2727,6 +2790,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG:
         case SAI_ATTR_VALUE_TYPE_FABRIC_PORT_REACHABILITY:
         case SAI_ATTR_VALUE_TYPE_LATCH_STATUS:
+        case SAI_ATTR_VALUE_TYPE_POE_PORT_POWER_CONSUMPTION:
 
             if (!md->isprimitive)
             {
@@ -3325,6 +3389,22 @@ void check_attr_extension_flag(
     }
 }
 
+void check_attr_condition_relaxed(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    if (md->isconditionrelaxed && !md->isconditional)
+    {
+        META_MD_ASSERT_FAIL(md, "relaxed flag applied to non conditional attribute");
+    }
+
+    if (md->isconditionrelaxed)
+    {
+        META_LOG_WARN("condition relaxed on: %s", md->attridname);
+    }
+}
+
 void check_single_attribute(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -3357,6 +3437,7 @@ void check_single_attribute(
     check_attr_reverse_graph(md);
     check_attr_acl_conditions(md);
     check_attr_acl_field_or_action(md);
+    check_attr_acl_mask(md);
     check_attr_existing_objects(md);
     check_attr_sai_pointer(md);
     check_attr_brief_description(md);
@@ -3370,6 +3451,7 @@ void check_single_attribute(
     check_attr_extension_flag(md);
     check_attr_mixed_condition(md);
     check_attr_mixed_validonly(md);
+    check_attr_condition_relaxed(md);
 
     define_attr(md);
 }
@@ -3459,6 +3541,8 @@ void check_object_infos()
 
         bool has_extensions_attrs = false;
 
+        bool has_custom_range_attrs = false;
+
         for (; meta[index] != NULL; ++index)
         {
             const sai_attr_metadata_t* am = meta[index];
@@ -3468,13 +3552,26 @@ void check_object_infos()
 
             if (last + 1 != (int)am->attrid)
             {
-                if (is_flag_enum(info->enummetadata))
+                if (am->attrid == CUSTOM_ATTR_RANGE_START)
                 {
-                    /* flags, ok */
+                    /*
+                     * Object contains custom attributes in custom range, they
+                     * still needs to be increasing by 1 but since those are
+                     * not flags, attribute value can't be used as array index.
+                     */
+
+                    has_custom_range_attrs = true;
                 }
                 else
                 {
-                    META_MD_ASSERT_FAIL(am, "attr id is not increasing by 1: prev %d, curr %d", last, am->attrid);
+                    if (is_flag_enum(info->enummetadata))
+                    {
+                        /* flags, ok */
+                    }
+                    else
+                    {
+                        META_MD_ASSERT_FAIL(am, "attr id is not increasing by 1: prev %d, curr %d", last, am->attrid);
+                    }
                 }
             }
 
@@ -3521,6 +3618,10 @@ void check_object_infos()
             else if (has_extensions_attrs)
             {
                 /* ok, extension attribute */
+            }
+            else if (has_custom_range_attrs)
+            {
+                /* ok, custom range attributes */
             }
             else
             {
@@ -3588,6 +3689,7 @@ void check_non_object_id_object_types()
                 case SAI_ATTR_VALUE_TYPE_UINT32:
                 case SAI_ATTR_VALUE_TYPE_UINT16:
                 case SAI_ATTR_VALUE_TYPE_UINT8:
+                case SAI_ATTR_VALUE_TYPE_UINT32_RANGE:
                 case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
                 case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
                 case SAI_ATTR_VALUE_TYPE_OBJECT_ID:
@@ -3755,8 +3857,8 @@ void check_attr_sorted_by_id_name()
 
     const char *last = "AAA";
 
-    META_ASSERT_TRUE(sai_metadata_attr_sorted_by_id_name_count > 800,
-            "there should be at least 800 attributes in total");
+    META_ASSERT_TRUE(sai_metadata_attr_sorted_by_id_name_count > 1700,
+            "there should be at least 1700 attributes in total");
 
     for (; i < sai_metadata_attr_sorted_by_id_name_count; ++i)
     {
@@ -4077,7 +4179,7 @@ void check_mixed_object_list_types()
      * be supported.
      */
 
-    META_ASSERT_TRUE(sai_metadata_attr_sorted_by_id_name_count > 800, "there should be at least 800 attributes in total");
+    META_ASSERT_TRUE(sai_metadata_attr_sorted_by_id_name_count > 1700, "there should be at least 1700 attributes in total");
 
     size_t idx = 0;
 
@@ -4784,7 +4886,8 @@ void check_object_ro_list(
             oi->objecttype == SAI_OBJECT_TYPE_DTEL ||
             oi->objecttype == SAI_OBJECT_TYPE_DTEL_QUEUE_REPORT ||
             oi->objecttype == SAI_OBJECT_TYPE_DTEL_EVENT ||
-            oi->objecttype == SAI_OBJECT_TYPE_GENERIC_PROGRAMMABLE)
+            oi->objecttype == SAI_OBJECT_TYPE_GENERIC_PROGRAMMABLE ||
+            oi->objecttype == SAI_OBJECT_TYPE_TWAMP_SESSION)
     {
         /*
          * We skip hostif table entry since there is no 1 object which can
@@ -4828,7 +4931,7 @@ void check_object_ro_list(
 
     if (oi->isexperimental)
     {
-        META_LOG_WARN("experimental object %s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
+        META_LOG_DEBUG("experimental object %s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
         return;
     }
 
@@ -5079,7 +5182,6 @@ void check_get_attr_metadata()
         while (mda[idx])
         {
             const sai_attr_metadata_t* m = mda[idx++];
-
             const sai_attr_metadata_t* md = sai_metadata_get_attr_metadata(ot, m->attrid);
 
             META_ASSERT_NOT_NULL(md);
@@ -5089,7 +5191,156 @@ void check_get_attr_metadata()
         }
     }
 
-    META_ASSERT_TRUE(count > 600, "expected at least 600 attributes");
+    META_ASSERT_TRUE(count > 1700, "expected at least 1700 attributes");
+}
+
+void check_get_attr_metadata_custom_range()
+{
+    META_LOG_ENTER();
+
+    /*
+     * This function will check, if attributes which are marked as no flags,
+     * will have values equal to attribute index in metadata array even if
+     * attribute is extension attribute, and custom range attributes will be
+     * ignored.
+     *
+     * This will make sure that we can use attr id as index in arrays except
+     * custom attributes.
+     */
+
+    size_t count = 0;
+
+    size_t ot = 0;
+
+    for (; ot < SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++ot)
+    {
+        const sai_object_type_info_t* oti = sai_metadata_get_object_type_info(ot);
+
+        if (oti == NULL)
+            continue;
+
+        const sai_attr_metadata_t* const* mda = sai_metadata_attr_by_object_type[ot];
+
+        if (oti->enummetadata->containsflags)
+        {
+            int idx = 0;
+
+            while (mda[idx])
+            {
+                const sai_attr_metadata_t* m = mda[idx++];
+
+                const sai_attr_metadata_t* md = sai_metadata_get_attr_metadata(ot, m->attrid);
+
+                META_ASSERT_NOT_NULL(md);
+                META_ASSERT_TRUE(m == md, "different attribute found, fatal");
+
+                count++;
+            }
+
+            continue;
+        }
+
+        /* no flags attributes */
+
+        META_ASSERT_TRUE(oti->attridend <= oti->attrmetadatalength, "attridend must be less or equal to total number of attributes");
+
+        uint32_t idx = 0;
+
+        while (mda[idx])
+        {
+            const sai_attr_metadata_t* m = mda[idx];
+            const sai_attr_metadata_t* md = sai_metadata_get_attr_metadata(ot, m->attrid);
+
+            META_ASSERT_NOT_NULL(md);
+            META_ASSERT_TRUE(m == md, "different attribute found, fatal");
+
+            if (oti->attridend == oti->attrmetadatalength || idx < oti->attridend)
+            {
+                META_ASSERT_TRUE(md->attrid == idx, "%s, attrid (%u) must be equal to index (%u)", md->attridname, md->attrid, idx);
+            }
+            else /* extensions or custom attributes */
+            {
+                if (md->attrid < CUSTOM_ATTR_RANGE_START)
+                {
+                    META_ASSERT_TRUE(md->attrid == idx, "extenstion attribute %s, attrid (%u) must be equal to index (%u)", md->attridname, md->attrid, idx);
+                }
+                else
+                {
+                    /* custom range attributes will not follow index increase */
+                }
+            }
+
+            idx++;
+            count++;
+        }
+    }
+
+    META_ASSERT_TRUE(count > 1700, "expected at least 1700 attributes, got %zu", count);
+}
+
+void check_attr_get_outside_range()
+{
+    META_LOG_ENTER();
+
+    int ot = -10;
+
+    for (; ot < (int)(SAI_OBJECT_TYPE_EXTENSIONS_MAX + 10); ++ot)
+    {
+        const sai_object_type_info_t* oti = sai_metadata_get_object_type_info(ot);
+
+        if (oti == NULL)
+            continue;
+
+        int idx = -10;
+
+        for (; idx < (int)(oti->attrmetadatalength + 10); idx++)
+        {
+            const sai_attr_metadata_t* md = sai_metadata_get_attr_metadata(ot, (sai_attr_id_t)idx);
+
+            if (md == NULL)
+                continue;
+
+            if ((int)md->attrid != idx)
+            {
+                META_MD_ASSERT_FAIL(md, "attr %u expected to be %u", md->attrid, idx);
+            }
+        }
+    }
+}
+
+void check_custom_range_attributes()
+{
+    META_LOG_ENTER();
+
+    /* Checks whether attribute is correctly marked as custom */
+
+    size_t ot = 0;
+
+    for (; ot < SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++ot)
+    {
+        const sai_attr_metadata_t* const* mda = sai_metadata_attr_by_object_type[ot];
+
+        int idx = 0;
+
+        while (mda[idx])
+        {
+            const sai_attr_metadata_t* m = mda[idx++];
+            const sai_attr_metadata_t* md = sai_metadata_get_attr_metadata(ot, m->attrid);
+
+            META_ASSERT_NOT_NULL(md);
+
+            if (md->attrid >= CUSTOM_ATTR_RANGE_START)
+            {
+                META_ASSERT_TRUE(md->iscustom, "expected to be marked as custom attribute, %s", md->attridname);
+            }
+            else
+            {
+                META_ASSERT_FALSE(md->iscustom, "expected to be NOT marked as custom attribute, %s", md->attridname);
+            }
+        }
+    }
+
+    /*sai_metadata_get_attr_metadata */
 }
 
 void check_acl_user_defined_field()
@@ -5153,7 +5404,7 @@ void check_defines()
      */
 
     META_ASSERT_TRUE(SAI_METADATA_SWITCH_NOTIFY_ATTR_COUNT == sai_metadata_switch_notify_attr_count, "notify define must be equal");
-    META_ASSERT_TRUE(SAI_METADATA_SWITCH_NOTIFY_ATTR_COUNT > 3, "there must be at least 3 notifications defined");
+    META_ASSERT_TRUE(SAI_METADATA_SWITCH_NOTIFY_ATTR_COUNT >= 15, "there must be at least 15 notifications defined");
 }
 
 void check_object_type_attributes()
@@ -5362,7 +5613,18 @@ void check_enum_flags_type_none(
 
             if (value != last + 1)
             {
-                META_ENUM_ASSERT_FAIL(emd, "values are not increasing by 1: last: %d current: %d, should be marked as @flags?", last, value);
+                if (value == CUSTOM_ATTR_RANGE_START)
+                {
+                    /*
+                     * Object contains custom attributes in custom range, they
+                     * still needs to be increasing by 1 but since those are
+                     * not flags, attribute value can't be used as array index.
+                     */
+                }
+                else
+                {
+                    META_ENUM_ASSERT_FAIL(emd, "values are not increasing by 1: last: %d current: %d, should be marked as @flags?", last, value);
+                }
             }
 
             last = value;
@@ -5472,6 +5734,8 @@ void check_object_type_extension_max_value()
      */
 
     META_ASSERT_TRUE(SAI_OBJECT_TYPE_EXTENSIONS_MAX < 256, "max object type can be 255 to be encoded on single byte");
+
+    META_ASSERT_TRUE(SAI_OBJECT_TYPE_MAX < SAI_OBJECT_TYPE_EXTENSIONS_MAX, "max object must be less than max extensions");
 }
 
 void check_global_apis()
@@ -5526,7 +5790,10 @@ void check_struct_and_union_size()
      * community, to allow binary compatibility break. When this happens, a
      * specific comment should be added here why that struct change happened.
      *
-     * TODO: We need to figure out to do this automatically.
+     * This is already done automatically using size.sh and size.pl, but this
+     * only works when git repository is present, since check is getting that
+     * data from previous commit. We still need to preserve some of those check
+     * her.
      */
 
     /* unions */
@@ -5582,6 +5849,10 @@ void check_struct_and_union_size()
     CHECK_STRUCT_SIZE(sai_port_lane_eye_values_t, 20);
     CHECK_STRUCT_SIZE(sai_port_lane_latch_status_list_t, 16);
     CHECK_STRUCT_SIZE(sai_port_lane_latch_status_t, 8);
+    CHECK_STRUCT_SIZE(sai_port_frequency_offset_ppm_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_port_frequency_offset_ppm_values_t, 8);
+    CHECK_STRUCT_SIZE(sai_port_snr_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_port_snr_values_t, 8);
     CHECK_STRUCT_SIZE(sai_port_oper_status_notification_t, 16);
     CHECK_STRUCT_SIZE(sai_prbs_rx_state_t, 8);
     CHECK_STRUCT_SIZE(sai_qos_map_list_t, 16);
@@ -5611,6 +5882,24 @@ void check_struct_and_union_size()
     CHECK_STRUCT_SIZE(sai_vlan_list_t, 16);
 }
 #pragma GCC diagnostic pop
+
+#define _ENTRY(X,x) META_LOG_DEBUG("%s: %d, %s: %zu", #X, SAI_OBJECT_TYPE_ ## X, # x, sizeof(sai_ ## x ## _t));
+#define _BULK_ENTRY(X,x) META_LOG_DEBUG("%s: %d, %s: %zu", #X, SAI_OBJECT_TYPE_ ## X, # x, sizeof(sai_ ## x ## _t));
+
+void check_declare_entry_macro()
+{
+    SAI_META_LOG_ENTER();
+
+    SAI_METADATA_DECLARE_EVERY_ENTRY(_ENTRY);
+    SAI_METADATA_DECLARE_EVERY_BULK_ENTRY(_BULK_ENTRY);
+}
+
+void check_json_type_size()
+{
+    SAI_META_LOG_ENTER();
+
+    META_ASSERT_TRUE(sizeof(sai_s8_list_t) == sizeof(sai_json_t), "json type is expected to have same size as s8 list");
+}
 
 int main(int argc, char **argv)
 {
@@ -5644,6 +5933,7 @@ int main(int argc, char **argv)
     check_backward_comparibility_defines();
     check_graph_connected();
     check_get_attr_metadata();
+    check_get_attr_metadata_custom_range();
     check_acl_user_defined_field();
     check_label_size();
     check_switch_notify_list();
@@ -5657,6 +5947,10 @@ int main(int argc, char **argv)
     check_object_type_extension_max_value();
     check_global_apis();
     check_struct_and_union_size();
+    check_declare_entry_macro();
+    check_json_type_size();
+    check_custom_range_attributes();
+    check_attr_get_outside_range();
 
     SAI_META_LOG_DEBUG("log test");
 

@@ -19,7 +19,9 @@
  *
  * @file    saiexperimentaldashmeter.h
  *
- * @brief   This module defines SAI P4 extension  interface
+ * @brief   This module defines SAI extensions for DASH meter
+ *
+ * @warning This module is a SAI experimental module
  */
 
 #if !defined (__SAIEXPERIMENTALDASHMETER_H_)
@@ -28,7 +30,7 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_METER SAI - Extension specific API definitions
+ * @defgroup SAIEXPERIMENTALDASH_METER SAI - Experimental: DASH meter specific API definitions
  *
  * @{
  */
@@ -55,27 +57,10 @@ typedef enum _sai_meter_bucket_attr_t
     /**
      * @brief Exact matched key meter_class
      *
-     * @type sai_uint16_t
+     * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @isvlan false
      */
     SAI_METER_BUCKET_ATTR_METER_CLASS,
-
-    /**
-     * @brief Action meter_bucket_action parameter OUTBOUND_BYTES_COUNTER
-     *
-     * @type sai_uint64_t
-     * @flags READ_ONLY
-     */
-    SAI_METER_BUCKET_ATTR_OUTBOUND_BYTES_COUNTER,
-
-    /**
-     * @brief Action meter_bucket_action parameter INBOUND_BYTES_COUNTER
-     *
-     * @type sai_uint64_t
-     * @flags READ_ONLY
-     */
-    SAI_METER_BUCKET_ATTR_INBOUND_BYTES_COUNTER,
 
     /**
      * @brief End of attributes
@@ -89,6 +74,19 @@ typedef enum _sai_meter_bucket_attr_t
     SAI_METER_BUCKET_ATTR_CUSTOM_RANGE_END,
 
 } sai_meter_bucket_attr_t;
+
+/**
+ * @brief Counter IDs for meter_bucket in sai_get_meter_bucket_stats() call
+ */
+typedef enum _sai_meter_bucket_stat_t
+{
+    /** DASH METER_BUCKET OUTBOUND_BYTES stat count */
+    SAI_METER_BUCKET_STAT_OUTBOUND_BYTES,
+
+    /** DASH METER_BUCKET INBOUND_BYTES stat count */
+    SAI_METER_BUCKET_STAT_INBOUND_BYTES,
+
+} sai_meter_bucket_stat_t;
 
 /**
  * @brief Attribute ID for dash_meter_meter_policy
@@ -162,9 +160,8 @@ typedef enum _sai_meter_rule_attr_t
     /**
      * @brief Action set_policy_meter_class parameter METER_CLASS
      *
-     * @type sai_uint16_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_METER_RULE_ATTR_METER_CLASS,
@@ -250,6 +247,54 @@ typedef sai_status_t (*sai_get_meter_bucket_attribute_fn)(
         _In_ sai_object_id_t meter_bucket_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
+
+/**
+ * @brief Get meter_bucket statistics counters. Deprecated for backward compatibility.
+ *
+ * @param[in] meter_bucket_id Entry id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_meter_bucket_stats_fn)(
+        _In_ sai_object_id_t meter_bucket_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Get meter_bucket statistics counters extended.
+ *
+ * @param[in] meter_bucket_id Entry id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] mode Statistics mode
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_meter_bucket_stats_ext_fn)(
+        _In_ sai_object_id_t meter_bucket_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _In_ sai_stats_mode_t mode,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Clear meter_bucket statistics counters.
+ *
+ * @param[in] meter_bucket_id Entry id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_clear_meter_bucket_stats_fn)(
+        _In_ sai_object_id_t meter_bucket_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids);
 
 /**
  * @brief Create dash_meter_meter_policy
@@ -361,6 +406,9 @@ typedef struct _sai_dash_meter_api_t
     sai_remove_meter_bucket_fn           remove_meter_bucket;
     sai_set_meter_bucket_attribute_fn    set_meter_bucket_attribute;
     sai_get_meter_bucket_attribute_fn    get_meter_bucket_attribute;
+    sai_get_meter_bucket_stats_fn        get_meter_bucket_stats;
+    sai_get_meter_bucket_stats_ext_fn    get_meter_bucket_stats_ext;
+    sai_clear_meter_bucket_stats_fn      clear_meter_bucket_stats;
     sai_bulk_object_create_fn            create_meter_buckets;
     sai_bulk_object_remove_fn            remove_meter_buckets;
 

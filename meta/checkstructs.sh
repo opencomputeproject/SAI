@@ -55,6 +55,12 @@
 
 set -e
 
+if ! git rev-parse --git-dir > /dev/null 2>&1; then
+
+    echo "WARNING: this is not git repository, will skip structs check"
+    exit
+fi
+
 # 1. get all necessary data to temp directory for future processing
 # 2. pass all interesting commits to processor to build history
 
@@ -102,7 +108,7 @@ function create_commit_list()
 
 function check_structs_history()
 {
-    perl structs.pl $LIST
+    perl structs.pl -H "structs.825c835.history" $LIST
 }
 
 #
@@ -111,7 +117,14 @@ function check_structs_history()
 
 # BEGIN_COMMIT is the commit from we want structs to be backward compatible
 
+# since checking structs history is taking longer time each commit, we will
+# use history file to load all the history from previous processed commits, in
+# this way we just load entire history to perl directly and save time on
+# processing all those previous commits, this process can be repeated later on if
+# the processing time will increase too much
+
 BEGIN_COMMIT=97a1e02 # v1.11.0
+BEGIN_COMMIT=825c835 # to this commit we have history file
 END_COMMIT=HEAD
 
 clean_temp_dir
@@ -119,3 +132,4 @@ create_temp_dir
 create_commit_list $BEGIN_COMMIT $END_COMMIT
 checkout_inc_directories
 check_structs_history
+clean_temp_dir
