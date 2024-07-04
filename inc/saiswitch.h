@@ -310,6 +310,9 @@ typedef enum _sai_switch_type_t
     /** Switch type is Fabric switch device */
     SAI_SWITCH_TYPE_FABRIC,
 
+    /** Switch type is POE (Power over Ethernet) */
+    SAI_SWITCH_TYPE_POE,
+
 } sai_switch_type_t;
 
 /**
@@ -2928,6 +2931,95 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_ACL_CHAIN_LIST,
+
+    /**
+     * @brief Port host tx ready notification callback
+     * function passed to the adapter.
+     *
+     * Use sai_port_host_tx_ready_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_port_host_tx_ready_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_PORT_HOST_TX_READY_NOTIFY,
+
+    /**
+     * @brief Minimum priority for Tunnel Term table
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_TUNNEL_TERM_TABLE_ENTRY_MINIMUM_PRIORITY,
+
+    /**
+     * @brief Maximum priority for Tunnel Term table
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_TUNNEL_TERM_TABLE_ENTRY_MAXIMUM_PRIORITY,
+
+    /**
+     * @brief TWAMP session event notification callback function passed to the adapter.
+     *
+     * Use sai_twamp_session_event_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_twamp_session_event_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_TWAMP_SESSION_EVENT_NOTIFY,
+
+    /**
+     * @brief Number of Two-Way Active Measurement Protocol session
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_TWAMP_SESSION,
+
+    /**
+     * @brief Max number of Two-Way Active Measurement Protocol session supports
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_TWAMP_SESSION,
+
+    /**
+     * @brief Available IP Next hop group member entries
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_IP_NEXT_HOP_GROUP_MEMBER_ENTRY,
+
+    /**
+     * @brief Available VOQ including unicast and multicast VOQ
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_SYSTEM_VOQS,
+
+    /**
+     * @brief Pre-Ingress ACL stage.
+     *
+     * @type sai_acl_capability_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_ACL_STAGE_PRE_INGRESS,
+
+    /**
+     * @brief POE device list
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_POE_DEVICE
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_POE_DEVICE_LIST,
 
     /**
      * @brief End of attributes

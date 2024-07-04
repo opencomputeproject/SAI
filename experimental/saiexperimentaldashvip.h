@@ -19,7 +19,9 @@
  *
  * @file    saiexperimentaldashvip.h
  *
- * @brief   This module defines SAI P4 extension  interface
+ * @brief   This module defines SAI extensions for DASH VIP
+ *
+ * @warning This module is a SAI experimental module
  */
 
 #if !defined (__SAIEXPERIMENTALDASHVIP_H_)
@@ -28,7 +30,7 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_VIP SAI - Extension specific API definitions
+ * @defgroup SAIEXPERIMENTALDASH_VIP SAI - Experimental: DASH VIP specific API definitions
  *
  * @{
  */

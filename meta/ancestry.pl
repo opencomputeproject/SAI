@@ -36,13 +36,15 @@ use utils;
 
 my %options = ();
 
-getopts("dsASl", \%options);
+getopts("dsASlDH:", \%options);
 
 our $optionPrintDebug        = 1 if defined $options{d};
 our $optionDisableAspell     = 1 if defined $options{A};
 our $optionUseXmlSimple      = 1 if defined $options{s};
 our $optionDisableStyleCheck = 1 if defined $options{S};
 our $optionShowLogCaller     = 1 if defined $options{l};
+our $optionDumpHistoryFile   = 1 if defined $options{D};
+our $optionHistoryFile       = $options{H} if defined $options{H};
 
 $SIG{__DIE__} = sub
 {
@@ -175,6 +177,7 @@ sub BuildCommitHistory
             next if $enumName eq "SAI_API_MAX";
             next if $enumName eq "SAI_OBJECT_TYPE_MAX";
             next if $enumName eq "SAI_PORT_INTERFACE_TYPE_MAX";
+            next if $enumName eq "SAI_PORT_BREAKOUT_MODE_TYPE_MAX";
 
             LogError "wrong initializer on $enumName $enumValue" if not $enumValue =~ /^0x[0-9a-f]{8}$/;
 
@@ -205,6 +208,7 @@ sub BuildCommitHistory
                 {
                     #print "elsif (defined $enumName $IGNORED{$enumName} and $IGNORED{$enumName} eq $HISTORY{$enumTypeName}{$enumName}{name})";
 
+                    next if $HISTORY{$enumTypeName}{$enumValue} eq "SAI_PORT_BREAKOUT_MODE_TYPE_MAX";
                     LogWarning "Both enums have the same value $enumName and $HISTORY{$enumTypeName}{$enumValue} = $enumValue";
                 }
             }
@@ -230,6 +234,17 @@ sub CleanData
 # MAIN
 #
 
+if (defined $optionHistoryFile)
+{
+    my $history = ReadHeaderFile($optionHistoryFile);
+
+    eval($history) or die "failed to eval history file: $optionHistoryFile";
+
+    die "history file $optionHistoryFile not complete, missing too many keys" if scalar keys %HISTORY < 314;
+
+    LogInfo "loaded history from $optionHistoryFile";
+}
+
 for my $commit (@ARGV)
 {
     # reset
@@ -248,3 +263,18 @@ for my $commit (@ARGV)
 }
 
 ExitOnErrorsOrWarnings();
+
+if (defined $optionDumpHistoryFile and (scalar @ARGV > 0))
+{
+    $Data::Dumper::Indent = 0;
+
+    my $history = Data::Dumper->Dump([\%HISTORY],[qw/*HISTORY/]);
+
+    $history =~ s/ //g;
+
+    my $lastCommit = $ARGV[-1];
+
+    WriteFile("ancestry.$lastCommit.history", $history);
+
+    LogInfo "ancestry history file saved to: ancestry.$lastCommit.history";
+}

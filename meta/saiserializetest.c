@@ -512,9 +512,9 @@ void test_serialize_enum()
 
     ASSERT_STR_EQ(buf, "-1", res);
 
-    res = sai_serialize_enum(buf, &sai_metadata_enum_sai_object_type_t, 128);
+    res = sai_serialize_enum(buf, &sai_metadata_enum_sai_object_type_t, 228);
 
-    ASSERT_STR_EQ(buf, "128", res);
+    ASSERT_STR_EQ(buf, "228", res);
 
     /* test all enums */
 
@@ -1551,10 +1551,10 @@ void test_serialize_enum_list()
 
     ASSERT_STR_EQ(buf, "{\"count\":2,\"list\":[\"SAI_OBJECT_TYPE_PORT\",\"-1\"]}", res);
 
-    ot[1] = 128;
+    ot[1] = 228;
 
     res = sai_serialize_enum_list(buf, &sai_metadata_enum_sai_object_type_t, &list);
-    ASSERT_STR_EQ(buf, "{\"count\":2,\"list\":[\"SAI_OBJECT_TYPE_PORT\",\"128\"]}", res);
+    ASSERT_STR_EQ(buf, "{\"count\":2,\"list\":[\"SAI_OBJECT_TYPE_PORT\",\"228\"]}", res);
 
     ot[1] = SAI_OBJECT_TYPE_LAG;
     res = sai_serialize_enum_list(buf, NULL, &list);
@@ -1592,12 +1592,12 @@ void test_deserialize_enum_list()
     list.list = NULL;
     list.count = 0;
 
-    buf = "{\"count\":2,\"list\":[\"SAI_OBJECT_TYPE_PORT\",\"128\"]}";
+    buf = "{\"count\":2,\"list\":[\"SAI_OBJECT_TYPE_PORT\",\"228\"]}";
     res = sai_deserialize_enum_list(buf, &sai_metadata_enum_sai_object_type_t, &list);
     ASSERT_TRUE(res == (int)strlen(buf), "expected true");
     ASSERT_TRUE(list.count == 2, "expected true");
     ASSERT_TRUE(list.list[0] == SAI_OBJECT_TYPE_PORT, "expected true");
-    ASSERT_TRUE(list.list[1] == 128, "expected true");
+    ASSERT_TRUE(list.list[1] == 228, "expected true");
     free(list.list);
     list.list = NULL;
     list.count = 0;

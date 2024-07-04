@@ -19,7 +19,9 @@
  *
  * @file    saiexperimentalbmtor.h
  *
- * @brief   This module defines SAI P4 extension  interface
+ * @brief   This module defines SAI extensions needed for the BMTOR application
+ *
+ * @warning This module is a SAI experimental module.
  */
 
 #if !defined (__SAIEXPERIMENTALBMTOR_H_)
@@ -28,7 +30,7 @@
 #include <saitypes.h>
 
 /**
- * @defgroup SAIEXPERIMENTALBMTOR SAI - Extension specific API definitions
+ * @defgroup SAIEXPERIMENTALBMTOR SAI - Experimental: BMTOR specific API definitions
  *
  * @{
  */

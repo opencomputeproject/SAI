@@ -36,13 +36,15 @@ use utils;
 
 my %options = ();
 
-getopts("dsASl", \%options);
+getopts("dsASlDH:", \%options);
 
 our $optionPrintDebug        = 1 if defined $options{d};
 our $optionDisableAspell     = 1 if defined $options{A};
 our $optionUseXmlSimple      = 1 if defined $options{s};
 our $optionDisableStyleCheck = 1 if defined $options{S};
 our $optionShowLogCaller     = 1 if defined $options{l};
+our $optionDumpHistoryFile   = 1 if defined $options{D};
+our $optionHistoryFile       = $options{H} if defined $options{H};
 
 $SIG{__DIE__} = sub
 {
@@ -130,6 +132,13 @@ sub BuildCommitHistory
     {
         LogDebug $structTypeName;
 
+        if ($structTypeName eq "sai_object_key_entry_t")
+        {
+            # skip this union, since it contain experimental entries
+            # and it can be modified time to time
+            next;
+        }
+
         my $arr_ref = $SAI_STRUCTS{$structTypeName}->{fields};
         my $type = $SAI_STRUCTS{$structTypeName}->{type};
 
@@ -155,7 +164,8 @@ sub BuildCommitHistory
         # of union may not increase by adding members, and actual union size
         # check is performed by sai sanity check
 
-        if ($currCount != $histCount and not $structTypeName =~ /^sai_\w+_api_t$/)
+        if ($currCount != $histCount and not $structTypeName =~ /^sai_\w+_api_t$/
+                and $structTypeName ne "sai_switch_health_data_t")
         {
             LogError "FATAL: struct $structTypeName member count differs, was $histCount but is $currCount on commit $commit" if $type eq "struct";
         }
@@ -200,6 +210,17 @@ sub CleanData
 # MAIN
 #
 
+if (defined $optionHistoryFile)
+{
+    my $history = ReadHeaderFile($optionHistoryFile);
+
+    eval($history) or die "failed to eval history file: $optionHistoryFile";
+
+    die "history file $optionHistoryFile not complete, missing too many keys" if scalar keys %HISTORY < 133;
+
+    LogInfo "loaded history from $optionHistoryFile";
+}
+
 for my $commit (@ARGV)
 {
     # reset
@@ -216,3 +237,16 @@ for my $commit (@ARGV)
 }
 
 ExitOnErrorsOrWarnings();
+
+if (defined $optionDumpHistoryFile and (scalar @ARGV > 0))
+{
+    $Data::Dumper::Indent = 0;
+
+    my $history = Data::Dumper->Dump([\%HISTORY],[qw/*HISTORY/]);
+
+    my $lastCommit = $ARGV[-1];
+
+    WriteFile("structs.$lastCommit.history", $history);
+
+    LogInfo "ancestry history file saved to: structs.$lastCommit.history";
+}

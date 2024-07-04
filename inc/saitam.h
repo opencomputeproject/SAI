@@ -476,6 +476,11 @@ typedef enum _sai_tam_int_type_t
      */
     SAI_TAM_INT_TYPE_IFA1_TAILSTAMP,
 
+    /**
+     * @brief INT type Path Tracing
+     */
+    SAI_TAM_INT_TYPE_PATH_TRACING,
+
 } sai_tam_int_type_t;
 
 /**
@@ -786,8 +791,10 @@ typedef enum _sai_tam_int_attr_t
      * @brief Tam report type
      *
      * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_TAM_REPORT
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_TAM_INT_ATTR_REPORT_ID,
 
@@ -891,7 +898,15 @@ typedef enum _sai_tam_telemetry_type_t
      * @brief INT TAM
      * All the data relevant on a per packet basis
      */
-    SAI_TAM_TELEMETRY_TYPE_INT
+    SAI_TAM_TELEMETRY_TYPE_INT,
+
+    /**
+     * @brief Data based on counter subscriptions
+     *
+     * Collect statistics for specific counters, using
+     * SAI_TAM_COUNTER_SUBSCRIPTION objects
+     */
+    SAI_TAM_TELEMETRY_TYPE_COUNTER_SUBSCRIPTION,
 
 } sai_tam_telemetry_type_t;
 
@@ -1053,6 +1068,15 @@ typedef enum _sai_tam_tel_type_attr_t
     SAI_TAM_TEL_TYPE_ATTR_REPORT_ID,
 
     /**
+     * @brief List of Tam counter subscription objects
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_TAM_COUNTER_SUBSCRIPTION
+     */
+    SAI_TAM_TEL_TYPE_ATTR_COUNTER_SUBSCRIPTION_LIST,
+
+    /**
      * @brief End of Attributes
      */
     SAI_TAM_TEL_TYPE_ATTR_END,
@@ -1160,6 +1184,16 @@ typedef enum _sai_tam_report_type_t
      * @brief Report using vendor extensions
      */
     SAI_TAM_REPORT_TYPE_VENDOR_EXTN,
+
+    /**
+     * @brief Report using GENETLINK
+     */
+    SAI_TAM_REPORT_TYPE_GENETLINK,
+
+    /**
+     * @brief Custom range base value
+     */
+    SAI_TAM_REPORT_TYPE_CUSTOM_RANGE_BASE = 0x10000000,
 } sai_tam_report_type_t;
 
 /**
@@ -1174,6 +1208,28 @@ typedef enum _sai_tam_report_mode_t
     SAI_TAM_REPORT_MODE_BULK,
 
 } sai_tam_report_mode_t;
+
+/**
+ * @brief TAM report interval units
+ */
+typedef enum _sai_tam_report_interval_unit_t
+{
+    /**
+     * @brief Report interval unit nanosecond
+     */
+    SAI_TAM_REPORT_INTERVAL_UNIT_NANOSEC,
+
+    /**
+     * @brief Report interval unit microsecond
+     */
+    SAI_TAM_REPORT_INTERVAL_UNIT_USEC,
+
+    /**
+     * @brief Report interval unit millisecond
+     */
+    SAI_TAM_REPORT_INTERVAL_UNIT_MSEC,
+
+} sai_tam_report_interval_unit_t;
 
 /**
  * @brief Attributes for TAM report
@@ -1239,7 +1295,7 @@ typedef enum _sai_tam_report_attr_t
     SAI_TAM_REPORT_ATTR_REPORT_MODE,
 
     /**
-     * @brief Report Interval in micro seconds
+     * @brief Report Interval
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -1267,6 +1323,16 @@ typedef enum _sai_tam_report_attr_t
      * @validonly SAI_TAM_REPORT_ATTR_TYPE == SAI_TAM_REPORT_TYPE_IPFIX
      */
     SAI_TAM_REPORT_ATTR_TEMPLATE_REPORT_INTERVAL,
+
+    /**
+     * @brief Report Interval Units
+     *
+     * @type sai_tam_report_interval_unit_t
+     * @flags CREATE_AND_SET
+     * @default SAI_TAM_REPORT_INTERVAL_UNIT_USEC
+     * @validonly SAI_TAM_REPORT_ATTR_REPORT_MODE == SAI_TAM_REPORT_MODE_BULK
+     */
+    SAI_TAM_REPORT_ATTR_REPORT_INTERVAL_UNIT,
 
     /**
      * @brief End of Attributes
@@ -1730,6 +1796,18 @@ typedef enum _sai_tam_collector_attr_t
     SAI_TAM_COLLECTOR_ATTR_DSCP_VALUE,
 
     /**
+     * @brief Hostif User Defined Trap object used to reach local host via GENETLINK
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_TAM_COLLECTOR_ATTR_LOCALHOST == true
+     */
+    SAI_TAM_COLLECTOR_ATTR_HOSTIF_TRAP,
+
+    /**
      * @brief End of Attributes
      */
     SAI_TAM_COLLECTOR_ATTR_END,
@@ -2075,6 +2153,118 @@ typedef sai_status_t (*sai_set_tam_event_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
+ * @brief Counter Subscription attributes
+ */
+typedef enum _sai_tam_counter_subscription_attr_t
+{
+    /**
+     * @brief Start of Attributes
+     */
+    SAI_TAM_COUNTER_SUBSCRIPTION_ATTR_START,
+
+    /**
+     * @brief TAM telemetry type object
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_TAM_TEL_TYPE
+     */
+    SAI_TAM_COUNTER_SUBSCRIPTION_ATTR_TEL_TYPE = SAI_TAM_COUNTER_SUBSCRIPTION_ATTR_START,
+
+    /**
+     * @brief Subscribed object
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_BUFFER_POOL, SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP, SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_QUEUE
+     */
+    SAI_TAM_COUNTER_SUBSCRIPTION_ATTR_OBJECT_ID,
+
+    /**
+     * @brief Subscribed stat enum
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     */
+    SAI_TAM_COUNTER_SUBSCRIPTION_ATTR_STAT_ID,
+
+    /**
+     * @brief Telemetry label
+     *
+     * Label to identify this counter in telemetry reports.
+     *
+     * @type sai_uint64_t
+     * @flags CREATE_ONLY
+     * @default 0
+     */
+    SAI_TAM_COUNTER_SUBSCRIPTION_ATTR_LABEL,
+
+    /**
+     * @brief End of Attributes
+     */
+    SAI_TAM_COUNTER_SUBSCRIPTION_ATTR_END,
+
+    /** Custom range base value */
+    SAI_TAM_COUNTER_SUBSCRIPTION_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_TAM_COUNTER_SUBSCRIPTION_ATTR_CUSTOM_RANGE_END
+
+} sai_tam_counter_subscription_attr_t;
+
+/**
+ * @brief Create a counter subscription
+ *
+ * @param[out] tam_counter_subscription_id Counter subscription object Id
+ * @param[in] switch_id Switch object id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_create_tam_counter_subscription_fn)(
+        _Out_ sai_object_id_t *tam_counter_subscription_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Delete a specified counter subscription
+ *
+ * @param[in] tam_counter_subscription_id Counter Subscription object id
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_remove_tam_counter_subscription_fn)(
+        _In_ sai_object_id_t tam_counter_subscription_id);
+
+/**
+ * @brief Set value for a specified counter subscription object attribute
+ *
+ * @param[in] tam_counter_subscription_id Counter Subscription object id
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_set_tam_counter_subscription_attribute_fn)(
+        _In_ sai_object_id_t tam_counter_subscription_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Get values for specified event object attributes
+ *
+ * @param[in] tam_counter_subscription_id Counter Subscription object id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_tam_counter_subscription_attribute_fn)(
+        _In_ sai_object_id_t tam_counter_subscription_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+/**
  * @brief TAM event callback
  *
  * @count attr_list[attr_count]
@@ -2121,60 +2311,65 @@ typedef struct _sai_tam_api_t
     /**
      * @brief SAI TAM v1 API set
      */
-    sai_create_tam_fn                         create_tam;
-    sai_remove_tam_fn                         remove_tam;
-    sai_set_tam_attribute_fn                  set_tam_attribute;
-    sai_get_tam_attribute_fn                  get_tam_attribute;
+    sai_create_tam_fn                              create_tam;
+    sai_remove_tam_fn                              remove_tam;
+    sai_set_tam_attribute_fn                       set_tam_attribute;
+    sai_get_tam_attribute_fn                       get_tam_attribute;
 
-    sai_create_tam_math_func_fn               create_tam_math_func;
-    sai_remove_tam_math_func_fn               remove_tam_math_func;
-    sai_set_tam_math_func_attribute_fn        set_tam_math_func_attribute;
-    sai_get_tam_math_func_attribute_fn        get_tam_math_func_attribute;
+    sai_create_tam_math_func_fn                    create_tam_math_func;
+    sai_remove_tam_math_func_fn                    remove_tam_math_func;
+    sai_set_tam_math_func_attribute_fn             set_tam_math_func_attribute;
+    sai_get_tam_math_func_attribute_fn             get_tam_math_func_attribute;
 
-    sai_create_tam_report_fn                  create_tam_report;
-    sai_remove_tam_report_fn                  remove_tam_report;
-    sai_set_tam_report_attribute_fn           set_tam_report_attribute;
-    sai_get_tam_report_attribute_fn           get_tam_report_attribute;
+    sai_create_tam_report_fn                       create_tam_report;
+    sai_remove_tam_report_fn                       remove_tam_report;
+    sai_set_tam_report_attribute_fn                set_tam_report_attribute;
+    sai_get_tam_report_attribute_fn                get_tam_report_attribute;
 
-    sai_create_tam_event_threshold_fn         create_tam_event_threshold;
-    sai_remove_tam_event_threshold_fn         remove_tam_event_threshold;
-    sai_set_tam_event_threshold_attribute_fn  set_tam_event_threshold_attribute;
-    sai_get_tam_event_threshold_attribute_fn  get_tam_event_threshold_attribute;
+    sai_create_tam_event_threshold_fn              create_tam_event_threshold;
+    sai_remove_tam_event_threshold_fn              remove_tam_event_threshold;
+    sai_set_tam_event_threshold_attribute_fn       set_tam_event_threshold_attribute;
+    sai_get_tam_event_threshold_attribute_fn       get_tam_event_threshold_attribute;
 
-    sai_create_tam_int_fn                     create_tam_int;
-    sai_remove_tam_int_fn                     remove_tam_int;
-    sai_set_tam_int_attribute_fn              set_tam_int_attribute;
-    sai_get_tam_int_attribute_fn              get_tam_int_attribute;
+    sai_create_tam_int_fn                          create_tam_int;
+    sai_remove_tam_int_fn                          remove_tam_int;
+    sai_set_tam_int_attribute_fn                   set_tam_int_attribute;
+    sai_get_tam_int_attribute_fn                   get_tam_int_attribute;
 
-    sai_create_tam_tel_type_fn                create_tam_tel_type;
-    sai_remove_tam_tel_type_fn                remove_tam_tel_type;
-    sai_set_tam_tel_type_attribute_fn         set_tam_tel_type_attribute;
-    sai_get_tam_tel_type_attribute_fn         get_tam_tel_type_attribute;
+    sai_create_tam_tel_type_fn                     create_tam_tel_type;
+    sai_remove_tam_tel_type_fn                     remove_tam_tel_type;
+    sai_set_tam_tel_type_attribute_fn              set_tam_tel_type_attribute;
+    sai_get_tam_tel_type_attribute_fn              get_tam_tel_type_attribute;
 
-    sai_create_tam_transport_fn               create_tam_transport;
-    sai_remove_tam_transport_fn               remove_tam_transport;
-    sai_set_tam_transport_attribute_fn        set_tam_transport_attribute;
-    sai_get_tam_transport_attribute_fn        get_tam_transport_attribute;
+    sai_create_tam_transport_fn                    create_tam_transport;
+    sai_remove_tam_transport_fn                    remove_tam_transport;
+    sai_set_tam_transport_attribute_fn             set_tam_transport_attribute;
+    sai_get_tam_transport_attribute_fn             get_tam_transport_attribute;
 
-    sai_create_tam_telemetry_fn               create_tam_telemetry;
-    sai_remove_tam_telemetry_fn               remove_tam_telemetry;
-    sai_set_tam_telemetry_attribute_fn        set_tam_telemetry_attribute;
-    sai_get_tam_telemetry_attribute_fn        get_tam_telemetry_attribute;
+    sai_create_tam_telemetry_fn                    create_tam_telemetry;
+    sai_remove_tam_telemetry_fn                    remove_tam_telemetry;
+    sai_set_tam_telemetry_attribute_fn             set_tam_telemetry_attribute;
+    sai_get_tam_telemetry_attribute_fn             get_tam_telemetry_attribute;
 
-    sai_create_tam_collector_fn               create_tam_collector;
-    sai_remove_tam_collector_fn               remove_tam_collector;
-    sai_set_tam_collector_attribute_fn        set_tam_collector_attribute;
-    sai_get_tam_collector_attribute_fn        get_tam_collector_attribute;
+    sai_create_tam_collector_fn                    create_tam_collector;
+    sai_remove_tam_collector_fn                    remove_tam_collector;
+    sai_set_tam_collector_attribute_fn             set_tam_collector_attribute;
+    sai_get_tam_collector_attribute_fn             get_tam_collector_attribute;
 
-    sai_create_tam_event_action_fn            create_tam_event_action;
-    sai_remove_tam_event_action_fn            remove_tam_event_action;
-    sai_set_tam_event_action_attribute_fn     set_tam_event_action_attribute;
-    sai_get_tam_event_action_attribute_fn     get_tam_event_action_attribute;
+    sai_create_tam_event_action_fn                 create_tam_event_action;
+    sai_remove_tam_event_action_fn                 remove_tam_event_action;
+    sai_set_tam_event_action_attribute_fn          set_tam_event_action_attribute;
+    sai_get_tam_event_action_attribute_fn          get_tam_event_action_attribute;
 
-    sai_create_tam_event_fn                   create_tam_event;
-    sai_remove_tam_event_fn                   remove_tam_event;
-    sai_set_tam_event_attribute_fn            set_tam_event_attribute;
-    sai_get_tam_event_attribute_fn            get_tam_event_attribute;
+    sai_create_tam_event_fn                        create_tam_event;
+    sai_remove_tam_event_fn                        remove_tam_event;
+    sai_set_tam_event_attribute_fn                 set_tam_event_attribute;
+    sai_get_tam_event_attribute_fn                 get_tam_event_attribute;
+
+    sai_create_tam_counter_subscription_fn         create_tam_counter_subscription;
+    sai_remove_tam_counter_subscription_fn         remove_tam_counter_subscription;
+    sai_set_tam_counter_subscription_attribute_fn  set_tam_counter_subscription_attribute;
+    sai_get_tam_counter_subscription_attribute_fn  get_tam_counter_subscription_attribute;
 } sai_tam_api_t;
 
 /**

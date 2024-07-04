@@ -229,11 +229,11 @@ typedef enum _sai_fdb_flush_entry_type_t
  *
  * For example:
  *
- * 1) Flush all entries in FDB table - Do not specify any attribute
- * 2) Flush all entries by bridge port - Set #SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID
- * 3) Flush all entries by VLAN - Set #SAI_FDB_FLUSH_ATTR_BV_ID with object id as vlan object
- * 3) Flush all entries by bridge - Set #SAI_FDB_FLUSH_ATTR_BV_ID with object id as bridge object
- * 4) Flush all entries by bridge port and VLAN - Set #SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID
+ * 1) Flush all dynamic entries in FDB table - Do not specify any attribute
+ * 2) Flush dynamic entries by bridge port - Set #SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID
+ * 3) Flush dynamic entries by VLAN - Set #SAI_FDB_FLUSH_ATTR_BV_ID with object id as vlan object
+ * 3) Flush dynamic entries by bridge - Set #SAI_FDB_FLUSH_ATTR_BV_ID with object id as bridge object
+ * 4) Flush dynamic entries by bridge port and VLAN - Set #SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID
  *    and #SAI_FDB_FLUSH_ATTR_BV_ID
  * 5) Flush all static entries by bridge port and VLAN - Set #SAI_FDB_FLUSH_ATTR_ENTRY_TYPE,
  *    #SAI_FDB_FLUSH_ATTR_BRIDGE_PORT_ID, and #SAI_FDB_FLUSH_ATTR_BV_ID

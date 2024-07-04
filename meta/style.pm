@@ -683,6 +683,7 @@ sub CheckMetadataSourceFiles
         next if $file eq "saimetadata.c";
         next if $file eq "saimetadatatest.c";
         next if $file eq "saimetadatasize.h";
+        next if $file eq "sai_rpc_server.cpp";
 
         next if $file =~ /swig|wrap/;
 
@@ -839,6 +840,7 @@ sub GetWordsFromSources
         next if $src =~ /saimetadata.c/;
         next if $src =~ /saimetadatatest.c/;
         next if $src =~ /saiswig/;
+        next if $src =~ /sai_rpc_server.cpp/;
 
         my $data = ReadHeaderFile($src);
 
@@ -1212,6 +1214,13 @@ sub CheckHeadersStyle
 
                     $wordsToCheck{$word} = "$header $n:$line";
                 }
+            }
+
+            if ($line =~ /#include\s*\"sai/ and not $header =~ /^sai(|extensions|metadatautils).h$/)
+            {
+                # TODO we should dedice later whether use <> or "" on all includes to make it consistent
+
+                LogWarning "include should use <> brackets on: $header:$n:$line";
             }
 
             if ($line =~ /typedef\s*(enum|struct|union).*{/)

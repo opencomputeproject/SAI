@@ -61,12 +61,12 @@ if ([% api %]_api->[% name = function.name; GET methods.$name %] == (void *)0) {
 [%- BLOCK check_switch_id -%]
 
     // need to check if the switch exist
-    if (switch_id != NULL) {
+    if (switch_id != SAI_NULL_OBJECT_ID) {
         return switch_id;
     }
 
     //check if the switch created in syncd
-    if (gSwitchId != NULL) {
+    if (gSwitchId != SAI_NULL_OBJECT_ID) {
       switch_id = gSwitchId;
       return switch_id;
     }
@@ -76,7 +76,7 @@ if ([% api %]_api->[% name = function.name; GET methods.$name %] == (void *)0) {
 [%- BLOCK empty_switch_id -%]
 
     // reset the switch id
-    switch_id = NULL;
+    switch_id = SAI_NULL_OBJECT_ID;
    
 [%- END -%]
 
@@ -179,7 +179,7 @@ if ([% api %]_api->[% name = function.name; GET methods.$name %] == (void *)0) {
     [%- # First declare count argument if not declared yet -%]
     [%- fun = function.name; countarg = arg.count.name -%]
     [%- UNLESS count.$fun.$countarg.declared; count.$fun.$countarg.declared = 1 %]
-    [% arg.count.type.name %] [% arg.count.name %] = [% arg.name %][% IF arg.is_attr_list %].attr_list[% END %].size();
+    [% arg.count.type.name %] [% arg.count.name %] = (uint32_t)[% arg.name %][% IF arg.is_attr_list %].attr_list[% END %].size();
 
     [%- END %]
     if ([% arg.count.name %] != 0) {

@@ -558,7 +558,7 @@ class SrcIpAclTest(SaiHelperSimplified):
         rif_id1 = self.port0_rif
         self.rif_id2 = self.port1_rif
 
-        ip_addr_subnet = '172.16.10.0'
+        ip_addr_subnet = '172.16.10.0/24'
         ip_addr = '172.16.10.1'
         dmac = '00:11:22:33:44:55'
         mac_src = '00:22:22:22:22:22'
@@ -815,7 +815,7 @@ class DstIpAclTest(SaiHelperSimplified):
         rif_id1 = self.port0_rif
         self.rif_id2 = self.port1_rif
 
-        ip_addr_subnet = '172.16.10.0'
+        ip_addr_subnet = '172.16.10.0/24'
         ip_addr = '172.16.10.1'
         dmac = '00:11:22:33:44:55'
         mac_src = '00:22:22:22:22:22'
@@ -1071,7 +1071,7 @@ class MACSrcAclTest(SaiHelperSimplified):
         rif_id1 = self.port0_rif
         self.rif_id2 = self.port1_rif
 
-        ip_addr_subnet = '172.16.10.0'
+        ip_addr_subnet = '172.16.10.0/24'
         ip_addr = '172.16.10.1'
         dmac = '00:11:22:33:44:55'
         self.mac_src = '00:22:22:22:22:22'
@@ -1331,7 +1331,7 @@ class L3L4PortTest(SaiHelperSimplified):
         rif_id1 = self.port0_rif
         self.rif_id2 = self.port1_rif
 
-        ip_addr_subnet = '172.16.10.0'
+        ip_addr_subnet = '172.16.10.0/24'
         ip_addr = '172.16.10.1'
         dmac = '00:11:22:33:44:55'
         mac_src = '00:22:22:22:22:22'
@@ -1414,7 +1414,7 @@ class L3L4PortTest(SaiHelperSimplified):
             self.client,
             acl_stage=table_stage_ingress,
             acl_bind_point_type_list=table_bind_point_type_list,
-            field_src_ip=True)
+            field_l4_src_port=True, field_l4_dst_port=True)
 
         self.assertNotEqual(acl_ingress_table_id, 0)
 
@@ -1611,7 +1611,7 @@ class L3AclRangeTest(SaiHelperSimplified):
         rif_id1 = self.port0_rif
         self.rif_id2 = self.port1_rif
 
-        ip_addr_subnet = '172.16.10.0'
+        ip_addr_subnet = '172.16.10.0/24'
         ip_addr = '172.16.10.1'
         dmac = '00:11:22:33:44:55'
         mac_src = '00:22:22:22:22:22'
@@ -2547,7 +2547,7 @@ class MultAclTableGroupBindTest(SaiHelper):
         super(MultAclTableGroupBindTest, self).setUp()
         rif_id = self.port13_rif
 
-        ip_addr_subnet = '172.16.10.0'
+        ip_addr_subnet = '172.16.10.0/24'
         self.ip_addr = '172.16.10.1'
         self.dmac = '00:11:22:33:44:55'
 

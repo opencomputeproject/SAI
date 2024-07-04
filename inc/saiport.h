@@ -142,7 +142,10 @@ typedef enum _sai_port_loopback_mode_t
     SAI_PORT_LOOPBACK_MODE_MAC,
 
     /** Port loopback at PHY remote end */
-    SAI_PORT_LOOPBACK_MODE_PHY_REMOTE
+    SAI_PORT_LOOPBACK_MODE_PHY_REMOTE,
+
+    /** Port loopback at MAC remote end */
+    SAI_PORT_LOOPBACK_MODE_MAC_REMOTE
 } sai_port_loopback_mode_t;
 
 /**
@@ -167,6 +170,53 @@ typedef enum _sai_port_media_type_t
 } sai_port_media_type_t;
 
 /**
+ * @brief Attribute data for #SAI_PORT_ATTR_CABLE_PAIR_STATE
+ * Copper cable pair states
+ */
+typedef enum _sai_port_cable_pair_state_t
+{
+    /**  Cable pair state is good */
+    SAI_PORT_CABLE_PAIR_STATE_OK,
+
+    /**  The Cable pair state open */
+    SAI_PORT_CABLE_PAIR_STATE_OPEN,
+
+    /**  The Cable pair state short (within pair) */
+    SAI_PORT_CABLE_PAIR_STATE_SHORT,
+
+    /**  The Cable pair state is shorted with another pair (inter-short) cross talk */
+    SAI_PORT_CABLE_PAIR_STATE_CROSSTALK,
+
+    /**  Cable state unknown */
+    SAI_PORT_CABLE_PAIR_STATE_UNKNOWN
+} sai_port_cable_pair_state_t;
+
+/**
+ * @brief Attribute data for #SAI_PORT_ATTR_CABLE_TYPE
+ * Copper cable types
+ */
+typedef enum _sai_port_cable_type_t
+{
+    /**  Cable type Unknown */
+    SAI_PORT_CABLE_TYPE_UNKNOWN,
+
+    /**  Cable type CAT5 */
+    SAI_PORT_CABLE_TYPE_CAT5,
+
+    /**  Cable type CAT5E */
+    SAI_PORT_CABLE_TYPE_CAT5E,
+
+    /**  Cable type CAT6 */
+    SAI_PORT_CABLE_TYPE_CAT6,
+
+    /**  Cable type CAT6A */
+    SAI_PORT_CABLE_TYPE_CAT6A,
+
+    /**  Cable type CAT7 */
+    SAI_PORT_CABLE_TYPE_CAT7
+} sai_port_cable_type_t;
+
+/**
  * @brief Breakout Mode types based on number
  * of SerDes lanes used in a port
  */
@@ -180,6 +230,9 @@ typedef enum _sai_port_breakout_mode_type_t
 
     /** 4 lanes breakout Mode */
     SAI_PORT_BREAKOUT_MODE_TYPE_4_LANE = 2,
+
+    /** 8 lanes breakout Mode */
+    SAI_PORT_BREAKOUT_MODE_TYPE_8_LANE = 3,
 
     /** Breakout mode max count */
     SAI_PORT_BREAKOUT_MODE_TYPE_MAX
@@ -220,6 +273,19 @@ typedef enum _sai_port_fec_mode_extended_t
     /** Enable FC-FEC (CL74) - 10G, 25G, 40G, 50G ports */
     SAI_PORT_FEC_MODE_EXTENDED_FC,
 } sai_port_fec_mode_extended_t;
+
+/**
+ * @brief Attribute data for #SAI_PORT_ATTR_DATAPATH_ENABLE
+ */
+typedef enum _sai_port_datapath_enable_t
+{
+    /** PASS through data path */
+    SAI_PORT_DATAPATH_ENABLE_PASS_THROUGH_MODE,
+
+    /** PCS IEEE data path */
+    SAI_PORT_DATAPATH_ENABLE_PCS_IEEE_MODE,
+
+} sai_port_datapath_enable_t;
 
 /**
  * @brief Priority flow control mode
@@ -488,6 +554,37 @@ typedef enum _sai_port_dual_media_t
     /**  Both Copper and Fiber supported, but Fiber preferred */
     SAI_PORT_DUAL_MEDIA_FIBER_PREFERRED
 } sai_port_dual_media_t;
+
+/**
+ * @brief Attribute data for #SAI_PORT_ATTR_HOST_TX_READY_STATUS
+ */
+typedef enum _sai_port_host_tx_ready_status_t
+{
+    /** Host TX ready status not_ready */
+    SAI_PORT_HOST_TX_READY_STATUS_NOT_READY,
+
+    /** Host TX ready status ready */
+    SAI_PORT_HOST_TX_READY_STATUS_READY
+} sai_port_host_tx_ready_status_t;
+
+/**
+ * @brief Attribute data for #SAI_PORT_ATTR_PATH_TRACING_TIMESTAMP_TYPE
+ */
+typedef enum _sai_port_path_tracing_timestamp_type_t
+{
+    /** Timestamp nanosecond bits [8:15] */
+    SAI_PORT_PATH_TRACING_TIMESTAMP_TYPE_8_15,
+
+    /** Timestamp nanosecond bits [12:19] */
+    SAI_PORT_PATH_TRACING_TIMESTAMP_TYPE_12_19,
+
+    /** Timestamp nanosecond bits [16:23] */
+    SAI_PORT_PATH_TRACING_TIMESTAMP_TYPE_16_23,
+
+    /** Timestamp nanosecond bits [20:27] */
+    SAI_PORT_PATH_TRACING_TIMESTAMP_TYPE_20_27,
+
+} sai_port_path_tracing_timestamp_type_t;
 
 /**
  * @brief Attribute Id in sai_set_port_attribute() and
@@ -1686,6 +1783,7 @@ typedef enum _sai_port_attr_t
      * @type sai_object_id_t
      * @flags READ_ONLY
      * @objects SAI_OBJECT_TYPE_PORT_SERDES
+     * @allownull true
      * @default internal
      */
     SAI_PORT_ATTR_PORT_SERDES_ID,
@@ -2186,22 +2284,26 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_ARS_PORT_LOAD_SCALING_FACTOR,
 
     /**
-     * @brief Enable historical or past port load quality measure in switch pipeline
+     * @brief Enable historical or past port load quality measure in switch pipeline.
+     * This attribute is deprecated and SAI_PORT_ATTR_ARS_PORT_LOAD_PAST_WEIGHT value will indicate if this metric is enabled or not.
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
      * @validonly SAI_PORT_ATTR_ARS_ENABLE == true
+     * @deprecated true
      */
     SAI_PORT_ATTR_ARS_PORT_LOAD_PAST_ENABLE,
 
     /**
      * @brief Enable future load quality measure in switch pipeline
+     * This attribute is deprecated and SAI_PORT_ATTR_ARS_PORT_LOAD_FUTURE_WEIGHT value will indicate if this metric is enabled or not.
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
      * @validonly SAI_PORT_ATTR_ARS_ENABLE == true
+     * @deprecated true
      */
     SAI_PORT_ATTR_ARS_PORT_LOAD_FUTURE_ENABLE,
 
@@ -2285,6 +2387,140 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_OPER_PORT_FEC_MODE,
 
     /**
+     * @brief Enable host_tx_signal (high-speed signal from ASIC to module) required
+     * to start the CMIS module initialization
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     */
+    SAI_PORT_ATTR_HOST_TX_SIGNAL_ENABLE,
+
+    /**
+     * @brief Host tx ready status
+     *
+     * It will be used for query and capability query of "host_tx_ready" signal
+     *
+     * @type sai_port_host_tx_ready_status_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_HOST_TX_READY_STATUS,
+
+    /**
+     * @brief Configure path tracing interface id
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     */
+    SAI_PORT_ATTR_PATH_TRACING_INTF,
+
+    /**
+     * @brief Configure path tracing timestamp template
+     *
+     * @type sai_port_path_tracing_timestamp_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_PATH_TRACING_TIMESTAMP_TYPE_16_23
+     */
+    SAI_PORT_ATTR_PATH_TRACING_TIMESTAMP_TYPE,
+
+    /**
+     * @brief List of per lane RX Frequency PPM for a port
+     *
+     * @type sai_port_frequency_offset_ppm_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_RX_FREQUENCY_OFFSET_PPM,
+
+    /**
+     * @brief List of per lane RX SNR for a port
+     *
+     * @type sai_port_snr_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_RX_SNR,
+
+    /**
+     * @brief Port's DATA PATH Enable
+     *
+     * true: If NO FEC is selected and the data path is enabled as PCS,
+     * the packet is checked for lane alignment marker and it aligns recovered data in receive direction.
+     * PCS RX link status is set if the packet is properly aligned.
+     * SAI_PORT_DATAPATH_ENABLE_PASS_THROUGH_MODE: Default pass-through data path is used where packet is passed
+     * without any processing.
+     * This attribute is valid only if SAI_PORT_ATTR_FEC_MODE_EXTENDED is selected as SAI_PORT_FEC_MODE_EXTENDED_NONE.
+     *
+     * @type sai_port_datapath_enable_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_DATAPATH_ENABLE_PASS_THROUGH_MODE
+     * @validonly SAI_PORT_ATTR_USE_EXTENDED_FEC == true
+     */
+    SAI_PORT_ATTR_DATAPATH_ENABLE,
+
+    /**
+     * @brief Read ethernet copper cable pair status.
+     *
+     * Returns pair states sequentially from list index 0 to n (n = number of pairs - 1)
+     * value of n depends on number of pairs in twisted ethernet copper cable
+     * Cable diagnostics triggers ECD once cable pair states is requested, it is synchronous call.
+     *
+     * @type sai_s32_list_t sai_port_cable_pair_state_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_CABLE_PAIR_STATE,
+
+    /**
+     * @brief Get ethernet copper cable pair length (unit meter)
+     *
+     * Returns ethernet cable pair length sequentially from list index 0 to n (n = number of pairs - 1)
+     * value of n depends on number of pairs in twisted ethernet copper cable
+     * Cable diagnostics runs once cable pair length is requested, it is synchronous call.
+     *
+     * @type sai_s32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_CABLE_PAIR_LENGTH,
+
+    /**
+     * @brief Configure ethernet copper cable type to check the cable status
+     *
+     * @type sai_port_cable_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_CABLE_TYPE_UNKNOWN
+     * @validonly SAI_PORT_ATTR_MEDIA_TYPE == SAI_PORT_MEDIA_TYPE_COPPER
+     */
+    SAI_PORT_ATTR_CABLE_TYPE,
+
+    /**
+     * @brief Assign weight in percent to past port load quality measure in switch pipeline. All quality measures if add up to less then 100 then remaining value is used for vendor specific internal weights.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_ATTR_ARS_PORT_LOAD_PAST_WEIGHT,
+
+    /**
+     * @brief Assign weight in percent to future load quality measure in switch pipeline. All quality measures if add up to less then 100 then remaining value is used for vendor specific internal weights.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_ATTR_ARS_PORT_LOAD_FUTURE_WEIGHT,
+
+    /**
+     * @brief On NPUs that support POE, read the associated POE port ID
+     *
+     * @type sai_object_id_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_POE_PORT
+     * @allownull true
+     */
+    SAI_PORT_ATTR_POE_PORT_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
@@ -2304,8 +2540,11 @@ typedef enum _sai_port_attr_t
  */
 typedef enum _sai_port_stat_t
 {
+    /** Port stat range start */
+    SAI_PORT_STAT_START,
+
     /** SAI port stat if in octets */
-    SAI_PORT_STAT_IF_IN_OCTETS,
+    SAI_PORT_STAT_IF_IN_OCTETS = SAI_PORT_STAT_START,
 
     /** SAI port stat if in ucast pkts */
     SAI_PORT_STAT_IF_IN_UCAST_PKTS,
@@ -2953,6 +3192,9 @@ typedef enum _sai_port_stat_t
     /** Count of FEC codewords with 16 symbol errors. */
     SAI_PORT_STAT_IF_IN_FEC_CODEWORD_ERRORS_S16,
 
+    /** Count of total bits corrected by FEC. Counter will increment monotonically. */
+    SAI_PORT_STAT_IF_IN_FEC_CORRECTED_BITS,
+
     /** Port stat in drop reasons range start */
     SAI_PORT_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,
 
@@ -3012,6 +3254,9 @@ typedef enum _sai_port_stat_t
 
     /** Port stat out drop reasons range end */
     SAI_PORT_STAT_OUT_DROP_REASON_RANGE_END = 0x00002fff,
+
+    /** Port stat range end */
+    SAI_PORT_STAT_END
 
 } sai_port_stat_t;
 
@@ -3138,6 +3383,23 @@ typedef sai_status_t (*sai_clear_port_all_stats_fn)(
 typedef void (*sai_port_state_change_notification_fn)(
         _In_ uint32_t count,
         _In_ const sai_port_oper_status_notification_t *data);
+
+/**
+ * @brief Port host tx ready notification
+ *
+ * Passed as a parameter into sai_initialize_switch()
+ *
+ * @objects switch_id SAI_OBJECT_TYPE_SWITCH
+ * @objects port_id SAI_OBJECT_TYPE_PORT
+ *
+ * @param[in] switch_id Switch Id
+ * @param[in] port_id Port Id
+ * @param[in] host_tx_ready_status New tx ready status
+ */
+typedef void (*sai_port_host_tx_ready_notification_fn)(
+        _In_ sai_object_id_t switch_id,
+        _In_ sai_object_id_t port_id,
+        _In_ sai_port_host_tx_ready_status_t host_tx_ready_status);
 
 /**
  * @brief List of Port buffer pool attributes
@@ -3534,6 +3796,110 @@ typedef enum _sai_port_serdes_attr_t
     SAI_PORT_SERDES_ATTR_TX_FIR_ATTN,
 
     /**
+     * @brief Port serdes control TX PAM4 ratio
+     *
+     * Ratio between the central eye to the upper and lower eyes (for PAM4 only)
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_PAM4_RATIO,
+
+    /**
+     * @brief Port serdes control TX OUT common mode
+     *
+     * Output common mode
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_OUT_COMMON_MODE,
+
+    /**
+     * @brief Port serdes control TX PMOS common mode
+     *
+     * Output buffers input to Common mode PMOS side
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_PMOS_COMMON_MODE,
+
+    /**
+     * @brief Port serdes control TX NMOS common mode
+     *
+     * Output buffers input to Common mode NMOS side
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_NMOS_COMMON_MODE,
+
+    /**
+     * @brief Port serdes control TX PMOS voltage regulator
+     *
+     * Voltage regulator to pre output buffer PMOS side
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_PMOS_VLTG_REG,
+
+    /**
+     * @brief Port serdes control TX NMOS voltage regulator
+     *
+     * Voltage regulator to pre output buffer NMOS side
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_NMOS_VLTG_REG,
+
+    /**
+     * @brief Port serdes control TX pre-coding value
+     *
+     * TX pre-coding value (used for PAM4 links)
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_PRECODING,
+
+    /**
+     * @brief Port serdes control RX pre-coding value
+     *
+     * RX pre-coding value (used for PAM4 links)
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_RX_PRECODING,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_SERDES_ATTR_END,
@@ -3755,6 +4121,10 @@ typedef struct _sai_port_api_t
     sai_bulk_object_remove_fn              remove_ports;
     sai_bulk_object_set_attribute_fn       set_ports_attribute;
     sai_bulk_object_get_attribute_fn       get_ports_attribute;
+    sai_bulk_object_create_fn              create_port_serdess;
+    sai_bulk_object_remove_fn              remove_port_serdess;
+    sai_bulk_object_set_attribute_fn       set_port_serdess_attribute;
+    sai_bulk_object_get_attribute_fn       get_port_serdess_attribute;
 } sai_port_api_t;
 
 /**

@@ -149,6 +149,42 @@ sub CreateCustomRangeTest
     WriteTest "}";
 }
 
+sub CreateCustomRangeAll
+{
+    WriteTest "#pragma GCC diagnostic push";
+    WriteTest "#pragma GCC diagnostic ignored \"-Wsuggest-attribute=noreturn\"";
+
+    DefineTestName "custom_range_all_test";
+
+    # purpose of this test is to make sure
+    # all enums define custom range start and end markers
+
+    WriteTest "{";
+
+    my @keys = sort keys %main::SAI_ENUMS_CUSTOM_RANGES;
+
+    for my $key (@keys)
+    {
+        my @all = @{ $main::SAI_ENUMS_CUSTOM_RANGES{$key}{customranges} };
+
+        for my $enum (@all)
+        {
+            # extepions and will be removed
+            next if $enum eq "SAI_API_CUSTOM_RANGE_START";
+            next if $enum eq "SAI_API_CUSTOM_RANGE_END";
+            next if $enum eq "SAI_OBJECT_TYPE_CUSTOM_RANGE_START";
+            next if $enum eq "SAI_OBJECT_TYPE_CUSTOM_RANGE_END";
+
+            WriteTest "    TEST_ASSERT_TRUE($enum == 0x10000000, \"invalid custom range start for $enum\");" if $enum =~ /_START$/;
+            WriteTest "    TEST_ASSERT_TRUE($enum > 0x10000000, \"invalid custom range end for $enum\");" if $enum =~ /_END$/;
+        }
+    }
+
+    WriteTest "}";
+
+    WriteTest "#pragma GCC diagnostic pop";
+}
+
 sub CreateEnumSizeCheckTest
 {
     DefineTestName "enum_size_check_test";
@@ -231,7 +267,7 @@ sub CreateApiNameTest
 
         if (IsSpecialObject($ot))
         {
-            # those obejcts are special, just attributes, no APIs
+            # those objects are special, just attributes, no APIs
             WriteTest "    checked[(int)$ot] = $ot;";
             next;
         }
@@ -290,6 +326,7 @@ sub CreateApiNameTest
             WriteTest "        dummy = &re;";
             WriteTest "        dummy = &se;";
             WriteTest "        dummy = &ge;";
+            WriteTest "        dummy = NULL;";
             WriteTest "        checked[(int)$ot] = $ot;";
         }
         else
@@ -322,6 +359,7 @@ sub CreateApiNameTest
             WriteTest "        dummy = &re;";
             WriteTest "        dummy = &se;";
             WriteTest "        dummy = &ge;";
+            WriteTest "        dummy = NULL;";
             WriteTest "        checked[(int)$ot] = $ot;";
         }
 
@@ -330,12 +368,12 @@ sub CreateApiNameTest
 
     WriteTest "    int index = SAI_OBJECT_TYPE_NULL;";
 
-    WriteTest "    for (; index < SAI_OBJECT_TYPE_MAX; ++index)";
+    WriteTest "    for (; index < (int)SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++index)";
     WriteTest "    {";
     WriteTest "        printf(\"checking: %s checked (%d) == index (%d)\\n\",";
     WriteTest "             sai_metadata_enum_sai_object_type_t.valuesnames[index],";
     WriteTest "             checked[index],(sai_object_type_t)index);";
-    WriteTest "        TEST_ASSERT_TRUE(checked[index] == (sai_object_type_t)index, \"not all obejcts were processed\");";
+    WriteTest "        TEST_ASSERT_TRUE(checked[index] == (sai_object_type_t)index, \"not all objects were processed\");";
     WriteTest "    }";
 
     WriteTest "    PP(dummy);";
@@ -583,6 +621,7 @@ sub CreateStructUnionSizeCheckTest
             $STRUCTS{$name} = $name;
 
             next if $name =~ /^sai_\w+_api_t$/; # skip api structs
+            next if $name eq "sai_switch_health_data_t";
 
             my $upname = uc($name);
 
@@ -694,6 +733,8 @@ sub CreateTests
     CreateStructUnionSizeCheckTest();
 
     CreatePragmaPop();
+
+    CreateCustomRangeAll();
 
     WriteTestMain();
 }
