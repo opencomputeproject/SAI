@@ -298,6 +298,8 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_POE_DEVICE               = 108,
     SAI_OBJECT_TYPE_POE_PSE                  = 109,
     SAI_OBJECT_TYPE_POE_PORT                 = 110,
+    SAI_OBJECT_TYPE_L2_ECMP_GROUP            = 111,
+    SAI_OBJECT_TYPE_L2_ECMP_GROUP_MEMBER     = 112,
 
     /** Must remain in last position */
     SAI_OBJECT_TYPE_MAX,
