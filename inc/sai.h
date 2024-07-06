@@ -78,6 +78,7 @@
 #include "saimymac.h"
 #include "saigenericprogrammable.h"
 #include "saitwamp.h"
+#include "sail2ecmpgroup.h"
 #include "saiversion.h"
 #include "saipoe.h"
 
@@ -148,6 +149,7 @@ typedef enum _sai_api_t
     SAI_API_ARS_PROFILE      = 49, /**<sai_ars_api_profile_t */
     SAI_API_TWAMP            = 50, /**< sai_twamp_api_t */
     SAI_API_POE              = 51, /**< sai_poe_api_t */
+    SAI_API_L2_ECMP_GROUP    = 52, /**< sai_l2_ecmp_group_api_t */
     SAI_API_MAX,                   /**< total number of APIs */
 
     /** Custom range base value */
