@@ -10,6 +10,7 @@ ASIC - Application Specific Integrated Circuit
 BFD - Bidirectional Forwarding Detection
 BFDV6 - Bidirectional Forwarding Detection for IPv6
 BGP - Border Gateway Protocol
+BINCODE - Binary code
 BMTOR - Behavioral Model Top-of-Rack
 BOS - Bottom Of Stack
 BW - Bandwidth
