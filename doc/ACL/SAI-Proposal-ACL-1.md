@@ -334,6 +334,7 @@ This example creates and ACL group with more than one ACL table and bind it to a
 
 ### Example 4 - Binding an ACL group to a set of ports
 This example creates an ACL group and binds it to multiple ports.
+
     // Bind this ACL group *acl_grp_id1* to port2, and port20s OID.
     port_attr_list.count = 1;
     port_attr_list.list[0].id = SAI_PORT_ATTR_INGRESS_ACL;
