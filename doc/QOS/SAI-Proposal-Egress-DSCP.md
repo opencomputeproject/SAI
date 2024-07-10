@@ -50,7 +50,7 @@ The DSCP value set by various components on the egress side of the ASIC pipeline
 
 4. Switch Qos TC-COLOR -> DSCP map
 
-## Examples packets. ##
+## Examples of packet behavior. ##
 
 These following is a logical diagram which shows how the DSCP value of a packet may be changed by different components. This diagram does not represent the actual layout of the pipeline.
 
