@@ -2521,12 +2521,21 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_POE_PORT_ID,
 
     /**
+<<<<<<< HEAD
      * @brief The maximum size of SAI_PORT_ATTR_JSON_FORMATTED_DEBUG_DATA in bytes.
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
      */
     SAI_PORT_ATTR_JSON_FORMATTED_DEBUG_DATA_SIZE,
+=======
+     * @brief Fabric port reachability for all remote reachable switches
+     *
+     * @type sai_u16_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_FABRIC_REACHABILITY_LIST,
+>>>>>>> 18136be (Adding support to get a list of all reachable switch-id's from a fabric port)
 
     /**
      * @brief End of attributes
