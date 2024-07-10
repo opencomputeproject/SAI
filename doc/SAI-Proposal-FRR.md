@@ -89,7 +89,7 @@ Entity.
 
 The switchover from the primary next hop to backup is triggered once a failure
 of a particular object is spotted.  This object can be a physical port, a tunnel
-interface, BFD session etc.
+interface, BFD session, ICMP ECHO session etc.
 
 It is preferred that the switchover is triggered by the switching entity without
 involving control plane in the process.  This way the amount of time it takes to
@@ -173,7 +173,7 @@ be of one of the types that the hardware is able to monitor.
 -  SAI\_NEXT\_HOP\_GROUP\_MEMBER\_ATTR\_MONITORED\_OBJECT
 
 This attribute allows the switching entity to monitor a specified object
-(BFD session, physical port, tunnel interface etc) and in case of its failure,
+(BFD session, ICMP ECHO session, physical port, tunnel interface etc) and in case of its failure,
 trigger a switchover.
 
 If the referred object fails, then the switch marks the next hop as FAILED and does not use it for forwarding.
