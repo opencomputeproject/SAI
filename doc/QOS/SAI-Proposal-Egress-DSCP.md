@@ -5,7 +5,7 @@ SAI Egress DSCP action behavior
  Authors     | Shahzad Iqbal, Microsoft Corp.
  Status      | In review
  Type        | Standards track
- Created     | 05/31/2024: Initial Draft
+ Created     | 07/10/2024
  SAI-Version | 1.14
 -------------------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ There are currently 6 components in SAI which have the ability to change the DSC
  Function                             | SAI attribute 
 --------------------------------------|----------------------------------------
  Switch Qos TC-COLOR -> DSCP map      | SAI_SWITCH_ATTR_QOS_TC_AND_COLOR_TO_DSCP_MAP
- switch Tunnel TC-COLOR -> DSCP map   | SAI_SWITCH_TUNNEL_ATTR_ENCAP_QOS_TC_AND_COLOR_TO_DSCP_MAP
+ Switch Tunnel TC-COLOR -> DSCP map   | SAI_SWITCH_TUNNEL_ATTR_ENCAP_QOS_TC_AND_COLOR_TO_DSCP_MAP
  Tunnel DSCP mode                     | SAI_TUNNEL_DSCP_MODE_PIPE_MODEL, SAI_TUNNEL_DSCP_MODE_UNIFORM_MODEL 
  Tunnel TC-COLOR -> DSCP mapping      | SAI_TUNNEL_ATTR_ENCAP_QOS_TC_AND_COLOR_TO_DSCP_MAP 
  Port Qos TC-COLOR -> DSCP map        | SAI_PORT_ATTR_QOS_TC_AND_COLOR_TO_DSCP_MAP,
@@ -44,7 +44,7 @@ The DSCP value set by various components on the egress side of the ASIC pipeline
 2. Tunnel DSCP mapping 
     - Tunnel TC-COLOR -> DSCP mapping
     - Tunnel DSCP mode
-    - switch Tunnel TC-COLOR -> DSCP map
+    - Switch Tunnel TC-COLOR -> DSCP map
 
 3. Port Qos TC-COLOR -> DSCP map
 
