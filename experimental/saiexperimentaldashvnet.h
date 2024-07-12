@@ -27,16 +27,16 @@
 #if !defined (__SAIEXPERIMENTALDASHVNET_H_)
 #define __SAIEXPERIMENTALDASHVNET_H_
 
-#include <saitypes.h>
+#include <saitypesextensions.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_VNET SAI - Experimental: DASH VNET specific API definitions
+ * @defgroup SAIEXPERIMENTALDASHVNET SAI - Experimental: DASH VNET specific API definitions
  *
  * @{
  */
 
 /**
- * @brief Attribute ID for dash_vnet_vnet
+ * @brief Attribute ID for VNET
  */
 typedef enum _sai_vnet_attr_t
 {
@@ -46,7 +46,7 @@ typedef enum _sai_vnet_attr_t
     SAI_VNET_ATTR_START,
 
     /**
-     * @brief Action set_vnet_attrs parameter VNI
+     * @brief Action parameter VNI
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -68,7 +68,7 @@ typedef enum _sai_vnet_attr_t
 } sai_vnet_attr_t;
 
 /**
- * @brief Create dash_vnet_vnet
+ * @brief Create VNET
  *
  * @param[out] vnet_id Entry id
  * @param[in] switch_id Switch id
@@ -84,7 +84,7 @@ typedef sai_status_t (*sai_create_vnet_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Remove dash_vnet_vnet
+ * @brief Remove VNET
  *
  * @param[in] vnet_id Entry id
  *
@@ -94,7 +94,7 @@ typedef sai_status_t (*sai_remove_vnet_fn)(
         _In_ sai_object_id_t vnet_id);
 
 /**
- * @brief Set attribute for dash_vnet_vnet
+ * @brief Set attribute for VNET
  *
  * @param[in] vnet_id Entry id
  * @param[in] attr Attribute
@@ -106,7 +106,7 @@ typedef sai_status_t (*sai_set_vnet_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get attribute for dash_vnet_vnet
+ * @brief Get attribute for VNET
  *
  * @param[in] vnet_id Entry id
  * @param[in] attr_count Number of attributes
