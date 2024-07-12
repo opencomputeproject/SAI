@@ -74,6 +74,8 @@ typedef enum _sai_object_type_extensions_t
 
     SAI_OBJECT_TYPE_HA_SCOPE,
 
+    SAI_OBJECT_TYPE_ROUTING_GROUP,
+
     SAI_OBJECT_TYPE_DASH_TUNNEL,
 
     SAI_OBJECT_TYPE_OUTBOUND_ROUTING_GROUP,

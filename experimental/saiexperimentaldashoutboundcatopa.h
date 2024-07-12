@@ -19,7 +19,7 @@
  *
  * @file    saiexperimentaldashoutboundcatopa.h
  *
- * @brief   This module defines SAI extensions for DASH outbound CA to PA
+ * @brief   This module defines SAI extensions for DASH OUTBOUND CA TO PA
  *
  * @warning This module is a SAI experimental module
  */
@@ -27,10 +27,10 @@
 #if !defined (__SAIEXPERIMENTALDASHOUTBOUNDCATOPA_H_)
 #define __SAIEXPERIMENTALDASHOUTBOUNDCATOPA_H_
 
-#include <saitypes.h>
+#include <saitypesextensions.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_OUTBOUND_CA_TO_PA SAI - Experimental: DASH outbound CA to PA specific API definitions
+ * @defgroup SAIEXPERIMENTALDASH_OUTBOUND_CA_TO_PA SAI - Experimental: DASH OUTBOUND CA TO PA specific API definitions
  *
  * @{
  */
@@ -106,7 +106,7 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
      *
      * @type sai_mac_t
      * @flags CREATE_AND_SET
-     * @default 00:00:00:00:00:00
+     * @default vendor
      * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_TUNNEL_MAPPING
      */
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_OVERLAY_DMAC,
