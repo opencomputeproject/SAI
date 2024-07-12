@@ -110,7 +110,7 @@ typedef enum _sai_outbound_routing_entry_attr_t
     SAI_OUTBOUND_ROUTING_ENTRY_ATTR_DST_VNET_ID,
 
     /**
-     * @brief Action route_vnet, route_vnet_direct, route_direct, route_service_tunnel parameter DASH_TUNNEL_ID
+     * @brief Action parameter DASH tunnel id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -122,7 +122,7 @@ typedef enum _sai_outbound_routing_entry_attr_t
     SAI_OUTBOUND_ROUTING_ENTRY_ATTR_DASH_TUNNEL_ID,
 
     /**
-     * @brief Action route_vnet, route_vnet_direct, route_direct, route_service_tunnel parameter METER_CLASS_OR
+     * @brief Action parameter meter class or
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET

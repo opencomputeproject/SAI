@@ -132,7 +132,7 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_METER_CLASS_OR,
 
     /**
-     * @brief Action set_tunnel_mapping, set_private_link_mapping parameter DASH_TUNNEL_ID
+     * @brief Action parameter DASH tunnel id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -144,7 +144,7 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_DASH_TUNNEL_ID,
 
     /**
-     * @brief Action set_tunnel_mapping, set_private_link_mapping parameter FLOW_RESIMULATION_REQUESTED
+     * @brief Action parameter flow re-simulation requested
      *
      * @type bool
      * @flags CREATE_AND_SET
@@ -174,7 +174,7 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_OVERLAY_SIP,
 
     /**
-     * @brief Action set_private_link_mapping parameter OVERLAY_SIP_MASK
+     * @brief Action parameter overlay sip mask
      *
      * @type sai_ip_address_t
      * @flags CREATE_AND_SET
@@ -184,7 +184,7 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_OVERLAY_SIP_MASK,
 
     /**
-     * @brief Action set_private_link_mapping parameter OVERLAY_DIP
+     * @brief Action parameter overlay dip
      *
      * @type sai_ip_address_t
      * @flags CREATE_AND_SET
@@ -194,7 +194,7 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_OVERLAY_DIP,
 
     /**
-     * @brief Action set_private_link_mapping parameter OVERLAY_DIP_MASK
+     * @brief Action parameter overlay dip mask
      *
      * @type sai_ip_address_t
      * @flags CREATE_AND_SET
@@ -204,7 +204,7 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_OVERLAY_DIP_MASK,
 
     /**
-     * @brief Action set_private_link_mapping parameter DASH_ENCAPSULATION
+     * @brief Action parameter DASH encapsulation
      *
      * @type sai_dash_encapsulation_t
      * @flags CREATE_AND_SET
