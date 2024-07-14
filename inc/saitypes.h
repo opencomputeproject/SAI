@@ -303,11 +303,7 @@ typedef enum _sai_object_type_t
     /** Must remain in last position */
     SAI_OBJECT_TYPE_MAX,
 
-    /** Custom range base value */
-    SAI_OBJECT_TYPE_CUSTOM_RANGE_START = 256,
-
-    /** End of custom range base */
-    SAI_OBJECT_TYPE_CUSTOM_RANGE_END
+    SAI_OBJECT_TYPE_EXTENSIONS_RANGE_BASE = 0x20000000,
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t

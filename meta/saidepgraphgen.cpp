@@ -34,7 +34,7 @@ extern "C" {
 }
 
 // node name
-#define NN(x) (sai_metadata_enum_sai_object_type_t.valuesshortnames[(x)])
+#define NN(x) (sai_metadata_get_enum_value_short_name(&sai_metadata_enum_sai_object_type_t,(x)))
 
 static std::set<sai_object_type_t> source;
 static std::set<sai_object_type_t> target;
@@ -132,19 +132,19 @@ static void process_object_type_attributes(
 
 static void process_object_types()
 {
-    for (int i = 0; sai_metadata_attr_by_object_type[i] != NULL; ++i)
+    for (int idx = 1; sai_metadata_all_object_type_infos[idx]; ++idx)
     {
-        const sai_attr_metadata_t* const* const meta = sai_metadata_attr_by_object_type[i];
+        const sai_attr_metadata_t* const* const meta = sai_metadata_all_object_type_infos[idx]->attrmetadata;
 
-        process_object_type_attributes(meta, (sai_object_type_t)i);
+        process_object_type_attributes(meta, sai_metadata_all_object_type_infos[idx]->objecttype);
     }
 }
 
 static void process_colors()
 {
-    for (int i = 0; sai_metadata_attr_by_object_type[i] != NULL; ++i)
+    for (int idx = 1; sai_metadata_all_object_type_infos[idx]; ++idx)
     {
-        sai_object_type_t ot = (sai_object_type_t)i;
+        sai_object_type_t ot = sai_metadata_all_object_type_infos[idx]->objecttype;
 
         bool is_source = source.find(ot) != source.end();
         bool is_target = target.find(ot) != target.end();
@@ -176,23 +176,21 @@ static void process_colors()
         }
     }
 
-    size_t max = show_extensions ? SAI_OBJECT_TYPE_EXTENSIONS_MAX : SAI_OBJECT_TYPE_MAX;
-
-    for (size_t i = SAI_OBJECT_TYPE_NULL; i < max; ++i)
+    for (size_t idx = 1 ; sai_metadata_all_object_type_infos[idx]; ++idx)
     {
-        const sai_object_type_info_t* oi =  sai_metadata_all_object_type_infos[i];
-
-        if (oi == NULL)
-        {
-            continue;
-        }
+        const sai_object_type_info_t* oi =  sai_metadata_all_object_type_infos[idx];
 
         if (!oi->isnonobjectid)
         {
             continue;
         }
 
-        std::cout << NN(i) << " [color=plum, shape = rect];\n";
+        if (oi->objecttype >= SAI_OBJECT_TYPE_MAX && !show_extensions)
+        {
+            continue;
+        }
+
+        std::cout << NN(oi->objecttype) << " [color=plum, shape = rect];\n";
     }
 }
 
@@ -203,18 +201,16 @@ static void process_nonobjectid_connections()
 {
     const char* c = " [color=\"0.650 0.700 0.700\", style = dashed, penwidth=2];\n";
 
-    size_t max = show_extensions ? SAI_OBJECT_TYPE_EXTENSIONS_MAX : SAI_OBJECT_TYPE_MAX;
-
-    for (size_t i = SAI_OBJECT_TYPE_NULL; i < max; ++i)
+    for (size_t idx = 1 ; sai_metadata_all_object_type_infos[idx]; ++idx)
     {
-        const sai_object_type_info_t* oi =  sai_metadata_all_object_type_infos[i];
+        const sai_object_type_info_t* oi =  sai_metadata_all_object_type_infos[idx];
 
-        if (oi == NULL)
+        if (!oi->isnonobjectid)
         {
             continue;
         }
 
-        if (!oi->isnonobjectid)
+        if (oi->objecttype >= SAI_OBJECT_TYPE_MAX && !show_extensions)
         {
             continue;
         }
@@ -236,12 +232,12 @@ static void process_nonobjectid_connections()
                         continue;
                     }
 
-                    std::cout << NN(ot) << " -> " << NN((sai_object_type_t)i) << c;
+                    std::cout << NN(ot) << " -> " << NN(oi->objecttype) << c;
                 }
             }
             else if (sm->isvlan)
             {
-                std::cout << NN(SAI_OBJECT_TYPE_VLAN) << " -> " << NN((sai_object_type_t)i) << c;
+                std::cout << NN(SAI_OBJECT_TYPE_VLAN) << " -> " << NN(oi->objecttype) << c;
             }
         }
     }
