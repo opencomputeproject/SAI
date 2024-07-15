@@ -27,10 +27,10 @@
 #if !defined (__SAIEXPERIMENTALDASHDIRECTIONLOOKUP_H_)
 #define __SAIEXPERIMENTALDASHDIRECTIONLOOKUP_H_
 
-#include <saitypes.h>
+#include <saitypesextensions.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_DIRECTION_LOOKUP SAI - Experimental: DASH direction lookup specific API definitions
+ * @defgroup SAIEXPERIMENTALDASHDIRECTIONLOOKUP SAI - Experimental: DASH direction lookup specific API definitions
  *
  * @{
  */
@@ -64,7 +64,7 @@ typedef struct _sai_direction_lookup_entry_t
 } sai_direction_lookup_entry_t;
 
 /**
- * @brief Attribute ID for dash_direction_lookup_direction_lookup_entry
+ * @brief Attribute ID for direction lookup entry
  */
 typedef enum _sai_direction_lookup_entry_attr_t
 {
@@ -96,7 +96,7 @@ typedef enum _sai_direction_lookup_entry_attr_t
 } sai_direction_lookup_entry_attr_t;
 
 /**
- * @brief Create dash_direction_lookup_direction_lookup_entry
+ * @brief Create direction lookup entry
  *
  * @param[in] direction_lookup_entry Entry
  * @param[in] attr_count Number of attributes
@@ -110,7 +110,7 @@ typedef sai_status_t (*sai_create_direction_lookup_entry_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Remove dash_direction_lookup_direction_lookup_entry
+ * @brief Remove direction lookup entry
  *
  * @param[in] direction_lookup_entry Entry
  *
@@ -120,7 +120,7 @@ typedef sai_status_t (*sai_remove_direction_lookup_entry_fn)(
         _In_ const sai_direction_lookup_entry_t *direction_lookup_entry);
 
 /**
- * @brief Set attribute for dash_direction_lookup_direction_lookup_entry
+ * @brief Set attribute for direction lookup entry
  *
  * @param[in] direction_lookup_entry Entry
  * @param[in] attr Attribute
@@ -132,7 +132,7 @@ typedef sai_status_t (*sai_set_direction_lookup_entry_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get attribute for dash_direction_lookup_direction_lookup_entry
+ * @brief Get attribute for direction lookup entry
  *
  * @param[in] direction_lookup_entry Entry
  * @param[in] attr_count Number of attributes
@@ -146,7 +146,7 @@ typedef sai_status_t (*sai_get_direction_lookup_entry_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Bulk create dash_direction_lookup_direction_lookup_entry
+ * @brief Bulk create direction lookup entry
  *
  * @param[in] object_count Number of objects to create
  * @param[in] direction_lookup_entry List of object to create
@@ -171,7 +171,7 @@ typedef sai_status_t (*sai_bulk_create_direction_lookup_entry_fn)(
         _Out_ sai_status_t *object_statuses);
 
 /**
- * @brief Bulk remove dash_direction_lookup_direction_lookup_entry
+ * @brief Bulk remove direction lookup entry
  *
  * @param[in] object_count Number of objects to remove
  * @param[in] direction_lookup_entry List of objects to remove

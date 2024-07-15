@@ -19,7 +19,9 @@
  *
  * @file    saiexperimentaldashha.h
  *
- * @brief   This module defines SAI P4 extension  interface
+ * @brief   This module defines SAI extensions for DASH HA
+ *
+ * @warning This module is a SAI experimental module
  */
 
 #if !defined (__SAIEXPERIMENTALDASHHA_H_)
@@ -28,13 +30,13 @@
 #include <saitypesextensions.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_HA SAI - Extension specific API definitions
+ * @defgroup SAIEXPERIMENTALDASHHA SAI - Experimental: DASH HA specific API definitions
  *
  * @{
  */
 
 /**
- * @brief Attribute ID for dash_ha_ha_set
+ * @brief Attribute ID for HA set
  */
 typedef enum _sai_ha_set_attr_t
 {
@@ -44,7 +46,7 @@ typedef enum _sai_ha_set_attr_t
     SAI_HA_SET_ATTR_START,
 
     /**
-     * @brief Action set_ha_set_attr parameter LOCAL_IP
+     * @brief Action parameter local IP
      *
      * @type sai_ip_address_t
      * @flags CREATE_AND_SET
@@ -53,7 +55,7 @@ typedef enum _sai_ha_set_attr_t
     SAI_HA_SET_ATTR_LOCAL_IP = SAI_HA_SET_ATTR_START,
 
     /**
-     * @brief Action set_ha_set_attr parameter PEER_IP
+     * @brief Action parameter peer IP
      *
      * @type sai_ip_address_t
      * @flags CREATE_AND_SET
@@ -62,47 +64,47 @@ typedef enum _sai_ha_set_attr_t
     SAI_HA_SET_ATTR_PEER_IP,
 
     /**
-     * @brief Action set_ha_set_attr parameter CP_DATA_CHANNEL_PORT
+     * @brief Action parameter control plane data channel port
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
-     * @isvlan false
+     * @isvlan true
      * @default 0
      */
     SAI_HA_SET_ATTR_CP_DATA_CHANNEL_PORT,
 
     /**
-     * @brief Action set_ha_set_attr parameter DP_CHANNEL_DST_PORT
+     * @brief Action parameter data plane channel dst port
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
-     * @isvlan false
+     * @isvlan true
      * @default 0
      */
     SAI_HA_SET_ATTR_DP_CHANNEL_DST_PORT,
 
     /**
-     * @brief Action set_ha_set_attr parameter DP_CHANNEL_MIN_SRC_PORT
+     * @brief Action parameter data plane channel min src port
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
-     * @isvlan false
+     * @isvlan true
      * @default 0
      */
     SAI_HA_SET_ATTR_DP_CHANNEL_MIN_SRC_PORT,
 
     /**
-     * @brief Action set_ha_set_attr parameter DP_CHANNEL_MAX_SRC_PORT
+     * @brief Action parameter data plane channel max src port
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
-     * @isvlan false
+     * @isvlan true
      * @default 0
      */
     SAI_HA_SET_ATTR_DP_CHANNEL_MAX_SRC_PORT,
 
     /**
-     * @brief Action set_ha_set_attr parameter DP_CHANNEL_PROBE_INTERVAL_MS
+     * @brief Action parameter data plane channel probe interval ms
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -111,7 +113,7 @@ typedef enum _sai_ha_set_attr_t
     SAI_HA_SET_ATTR_DP_CHANNEL_PROBE_INTERVAL_MS,
 
     /**
-     * @brief Action set_ha_set_attr parameter DP_CHANNEL_PROBE_FAIL_THRESHOLD
+     * @brief Action parameter data plane channel probe fail threshold
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -120,7 +122,7 @@ typedef enum _sai_ha_set_attr_t
     SAI_HA_SET_ATTR_DP_CHANNEL_PROBE_FAIL_THRESHOLD,
 
     /**
-     * @brief Action set_ha_set_attr parameter DP_CHANNEL_IS_ALIVE
+     * @brief Action parameter data plane channel is alive
      *
      * @type bool
      * @flags READ_ONLY
@@ -141,7 +143,7 @@ typedef enum _sai_ha_set_attr_t
 } sai_ha_set_attr_t;
 
 /**
- * @brief Counter IDs for HA_SET in sai_get_ha_set_stats() call
+ * @brief Counter IDs for HA SET
  */
 typedef enum _sai_ha_set_stat_t
 {
@@ -208,7 +210,7 @@ typedef enum _sai_ha_set_stat_t
 } sai_ha_set_stat_t;
 
 /**
- * @brief Attribute ID for dash_ha_ha_scope
+ * @brief Attribute ID for HA scope
  */
 typedef enum _sai_ha_scope_attr_t
 {
@@ -218,17 +220,17 @@ typedef enum _sai_ha_scope_attr_t
     SAI_HA_SCOPE_ATTR_START,
 
     /**
-     * @brief Action set_ha_scope_attr parameter HA_SET_ID
+     * @brief Action parameter HA set id
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
-     * @isvlan false
+     * @isvlan true
      * @default 0
      */
     SAI_HA_SCOPE_ATTR_HA_SET_ID = SAI_HA_SCOPE_ATTR_START,
 
     /**
-     * @brief Action set_ha_scope_attr parameter DASH_HA_ROLE
+     * @brief Action parameter DASH HA role
      *
      * @type sai_dash_ha_role_t
      * @flags CREATE_AND_SET
@@ -237,7 +239,7 @@ typedef enum _sai_ha_scope_attr_t
     SAI_HA_SCOPE_ATTR_DASH_HA_ROLE,
 
     /**
-     * @brief Action set_ha_scope_attr parameter FLOW_VERSION
+     * @brief Action parameter flow version
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
@@ -245,7 +247,7 @@ typedef enum _sai_ha_scope_attr_t
     SAI_HA_SCOPE_ATTR_FLOW_VERSION,
 
     /**
-     * @brief Action set_ha_scope_attr parameter FLOW_RECONCILE_REQUESTED
+     * @brief Action parameter flow reconcile requested
      *
      * @type bool
      * @flags CREATE_AND_SET
@@ -254,7 +256,7 @@ typedef enum _sai_ha_scope_attr_t
     SAI_HA_SCOPE_ATTR_FLOW_RECONCILE_REQUESTED,
 
     /**
-     * @brief Action set_ha_scope_attr parameter FLOW_RECONCILE_NEEDED
+     * @brief Action parameter flow reconcile needed
      *
      * @type bool
      * @flags READ_ONLY
@@ -275,7 +277,7 @@ typedef enum _sai_ha_scope_attr_t
 } sai_ha_scope_attr_t;
 
 /**
- * @brief Create dash_ha_ha_set
+ * @brief Create HA set
  *
  * @param[out] ha_set_id Entry id
  * @param[in] switch_id Switch id
@@ -291,7 +293,7 @@ typedef sai_status_t (*sai_create_ha_set_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Remove dash_ha_ha_set
+ * @brief Remove HA set
  *
  * @param[in] ha_set_id Entry id
  *
@@ -301,7 +303,7 @@ typedef sai_status_t (*sai_remove_ha_set_fn)(
         _In_ sai_object_id_t ha_set_id);
 
 /**
- * @brief Set attribute for dash_ha_ha_set
+ * @brief Set attribute for HA set
  *
  * @param[in] ha_set_id Entry id
  * @param[in] attr Attribute
@@ -313,7 +315,7 @@ typedef sai_status_t (*sai_set_ha_set_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get attribute for dash_ha_ha_set
+ * @brief Get attribute for HA set
  *
  * @param[in] ha_set_id Entry id
  * @param[in] attr_count Number of attributes
@@ -375,7 +377,7 @@ typedef sai_status_t (*sai_clear_ha_set_stats_fn)(
         _In_ const sai_stat_id_t *counter_ids);
 
 /**
- * @brief Create dash_ha_ha_scope
+ * @brief Create HA scope
  *
  * @param[out] ha_scope_id Entry id
  * @param[in] switch_id Switch id
@@ -391,7 +393,7 @@ typedef sai_status_t (*sai_create_ha_scope_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Remove dash_ha_ha_scope
+ * @brief Remove HA scope
  *
  * @param[in] ha_scope_id Entry id
  *
@@ -401,7 +403,7 @@ typedef sai_status_t (*sai_remove_ha_scope_fn)(
         _In_ sai_object_id_t ha_scope_id);
 
 /**
- * @brief Set attribute for dash_ha_ha_scope
+ * @brief Set attribute for HA scope
  *
  * @param[in] ha_scope_id Entry id
  * @param[in] attr Attribute
@@ -413,7 +415,7 @@ typedef sai_status_t (*sai_set_ha_scope_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get attribute for dash_ha_ha_scope
+ * @brief Get attribute for HA scope
  *
  * @param[in] ha_scope_id Entry id
  * @param[in] attr_count Number of attributes

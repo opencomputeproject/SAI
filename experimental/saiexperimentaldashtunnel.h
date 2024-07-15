@@ -19,7 +19,7 @@
  *
  * @file    saiexperimentaldashtunnel.h
  *
- * @brief   This module defines SAI extensions for DASH TUNNEL
+ * @brief   This module defines SAI extensions for DASH tunnel
  *
  * @warning This module is a SAI experimental module
  */
@@ -30,13 +30,13 @@
 #include <saitypesextensions.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_TUNNEL SAI - Experimental: DASH TUNNEL specific API definitions
+ * @defgroup SAIEXPERIMENTALDASHTUNNEL SAI - Experimental: DASH tunnel specific API definitions
  *
  * @{
  */
 
 /**
- * @brief Attribute ID for dash_tunnel_dash_tunnel
+ * @brief Attribute ID for DASH tunnel
  */
 typedef enum _sai_dash_tunnel_attr_t
 {
@@ -46,7 +46,7 @@ typedef enum _sai_dash_tunnel_attr_t
     SAI_DASH_TUNNEL_ATTR_START,
 
     /**
-     * @brief Action set_tunnel_attrs parameter DIP
+     * @brief Action parameter dip
      *
      * @type sai_ip_address_t
      * @flags CREATE_AND_SET
@@ -55,7 +55,7 @@ typedef enum _sai_dash_tunnel_attr_t
     SAI_DASH_TUNNEL_ATTR_DIP = SAI_DASH_TUNNEL_ATTR_START,
 
     /**
-     * @brief Action set_tunnel_attrs parameter DASH_ENCAPSULATION
+     * @brief Action parameter DASH encapsulation
      *
      * @type sai_dash_encapsulation_t
      * @flags CREATE_AND_SET
@@ -64,7 +64,7 @@ typedef enum _sai_dash_tunnel_attr_t
     SAI_DASH_TUNNEL_ATTR_DASH_ENCAPSULATION,
 
     /**
-     * @brief Action set_tunnel_attrs parameter TUNNEL_KEY
+     * @brief Action parameter tunnel key
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -86,7 +86,7 @@ typedef enum _sai_dash_tunnel_attr_t
 } sai_dash_tunnel_attr_t;
 
 /**
- * @brief Create dash_tunnel_dash_tunnel
+ * @brief Create DASH tunnel
  *
  * @param[out] dash_tunnel_id Entry id
  * @param[in] switch_id Switch id
@@ -102,7 +102,7 @@ typedef sai_status_t (*sai_create_dash_tunnel_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Remove dash_tunnel_dash_tunnel
+ * @brief Remove DASH tunnel
  *
  * @param[in] dash_tunnel_id Entry id
  *
@@ -112,7 +112,7 @@ typedef sai_status_t (*sai_remove_dash_tunnel_fn)(
         _In_ sai_object_id_t dash_tunnel_id);
 
 /**
- * @brief Set attribute for dash_tunnel_dash_tunnel
+ * @brief Set attribute for DASH tunnel
  *
  * @param[in] dash_tunnel_id Entry id
  * @param[in] attr Attribute
@@ -124,7 +124,7 @@ typedef sai_status_t (*sai_set_dash_tunnel_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get attribute for dash_tunnel_dash_tunnel
+ * @brief Get attribute for DASH tunnel
  *
  * @param[in] dash_tunnel_id Entry id
  * @param[in] attr_count Number of attributes
