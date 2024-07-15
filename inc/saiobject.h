@@ -37,9 +37,6 @@
 #include <saisrv6.h>
 
 /* new experimental object type includes */
-#include <saiexperimentaldashha.h>
-#include <saiexperimentaldashmeter.h>
-#include <saiexperimentaldashtunnel.h>
 #include <saiexperimentaldashvip.h>
 #include <saiexperimentaldashpavalidation.h>
 #include <saiexperimentaldashvnet.h>
