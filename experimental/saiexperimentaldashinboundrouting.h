@@ -27,10 +27,10 @@
 #if !defined (__SAIEXPERIMENTALDASHINBOUNDROUTING_H_)
 #define __SAIEXPERIMENTALDASHINBOUNDROUTING_H_
 
-#include <saitypes.h>
+#include <saitypesextensions.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_INBOUND_ROUTING SAI - Experimental: DASH inbound routing specific API definitions
+ * @defgroup SAIEXPERIMENTALDASHINBOUNDROUTING SAI - Experimental: DASH inbound routing specific API definitions
  *
  * @{
  */
@@ -80,7 +80,7 @@ typedef struct _sai_inbound_routing_entry_t
     sai_ip_address_t sip;
 
     /**
-     * @brief Ternary key sip mask
+     * @brief Ternary matched key sip mask
      */
     sai_ip_address_t sip_mask;
 
@@ -92,7 +92,7 @@ typedef struct _sai_inbound_routing_entry_t
 } sai_inbound_routing_entry_t;
 
 /**
- * @brief Attribute ID for dash_inbound_routing_inbound_routing_entry
+ * @brief Attribute ID for inbound routing entry
  */
 typedef enum _sai_inbound_routing_entry_attr_t
 {
@@ -111,7 +111,7 @@ typedef enum _sai_inbound_routing_entry_attr_t
     SAI_INBOUND_ROUTING_ENTRY_ATTR_ACTION = SAI_INBOUND_ROUTING_ENTRY_ATTR_START,
 
     /**
-     * @brief Action tunnel_decap, tunnel_decap_pa_validate parameter METER_CLASS_OR
+     * @brief Action parameter meter class or
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -121,7 +121,7 @@ typedef enum _sai_inbound_routing_entry_attr_t
     SAI_INBOUND_ROUTING_ENTRY_ATTR_METER_CLASS_OR,
 
     /**
-     * @brief Action tunnel_decap, tunnel_decap_pa_validate parameter METER_CLASS_AND
+     * @brief Action parameter meter class and
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -131,7 +131,7 @@ typedef enum _sai_inbound_routing_entry_attr_t
     SAI_INBOUND_ROUTING_ENTRY_ATTR_METER_CLASS_AND,
 
     /**
-     * @brief Action tunnel_decap_pa_validate parameter SRC_VNET_ID
+     * @brief Action parameter src VNET id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -165,7 +165,7 @@ typedef enum _sai_inbound_routing_entry_attr_t
 } sai_inbound_routing_entry_attr_t;
 
 /**
- * @brief Create dash_inbound_routing_inbound_routing_entry
+ * @brief Create inbound routing entry
  *
  * @param[in] inbound_routing_entry Entry
  * @param[in] attr_count Number of attributes
@@ -179,7 +179,7 @@ typedef sai_status_t (*sai_create_inbound_routing_entry_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Remove dash_inbound_routing_inbound_routing_entry
+ * @brief Remove inbound routing entry
  *
  * @param[in] inbound_routing_entry Entry
  *
@@ -189,7 +189,7 @@ typedef sai_status_t (*sai_remove_inbound_routing_entry_fn)(
         _In_ const sai_inbound_routing_entry_t *inbound_routing_entry);
 
 /**
- * @brief Set attribute for dash_inbound_routing_inbound_routing_entry
+ * @brief Set attribute for inbound routing entry
  *
  * @param[in] inbound_routing_entry Entry
  * @param[in] attr Attribute
@@ -201,7 +201,7 @@ typedef sai_status_t (*sai_set_inbound_routing_entry_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get attribute for dash_inbound_routing_inbound_routing_entry
+ * @brief Get attribute for inbound routing entry
  *
  * @param[in] inbound_routing_entry Entry
  * @param[in] attr_count Number of attributes
@@ -215,7 +215,7 @@ typedef sai_status_t (*sai_get_inbound_routing_entry_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Bulk create dash_inbound_routing_inbound_routing_entry
+ * @brief Bulk create inbound routing entry
  *
  * @param[in] object_count Number of objects to create
  * @param[in] inbound_routing_entry List of object to create
@@ -240,7 +240,7 @@ typedef sai_status_t (*sai_bulk_create_inbound_routing_entry_fn)(
         _Out_ sai_status_t *object_statuses);
 
 /**
- * @brief Bulk remove dash_inbound_routing_inbound_routing_entry
+ * @brief Bulk remove inbound routing entry
  *
  * @param[in] object_count Number of objects to remove
  * @param[in] inbound_routing_entry List of objects to remove

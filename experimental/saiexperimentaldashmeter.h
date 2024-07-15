@@ -27,16 +27,16 @@
 #if !defined (__SAIEXPERIMENTALDASHMETER_H_)
 #define __SAIEXPERIMENTALDASHMETER_H_
 
-#include <saitypes.h>
+#include <saitypesextensions.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_METER SAI - Experimental: DASH meter specific API definitions
+ * @defgroup SAIEXPERIMENTALDASHMETER SAI - Experimental: DASH meter specific API definitions
  *
  * @{
  */
 
 /**
- * @brief Attribute ID for dash_meter_meter_bucket
+ * @brief Attribute ID for meter bucket
  */
 typedef enum _sai_meter_bucket_attr_t
 {
@@ -76,7 +76,7 @@ typedef enum _sai_meter_bucket_attr_t
 } sai_meter_bucket_attr_t;
 
 /**
- * @brief Counter IDs for meter_bucket in sai_get_meter_bucket_stats() call
+ * @brief Counter IDs for METER BUCKET
  */
 typedef enum _sai_meter_bucket_stat_t
 {
@@ -89,7 +89,7 @@ typedef enum _sai_meter_bucket_stat_t
 } sai_meter_bucket_stat_t;
 
 /**
- * @brief Attribute ID for dash_meter_meter_policy
+ * @brief Attribute ID for meter policy
  */
 typedef enum _sai_meter_policy_attr_t
 {
@@ -99,7 +99,7 @@ typedef enum _sai_meter_policy_attr_t
     SAI_METER_POLICY_ATTR_START,
 
     /**
-     * @brief Action check_ip_addr_family parameter IP_ADDR_FAMILY
+     * @brief Action parameter IP address family
      *
      * @type sai_ip_addr_family_t
      * @flags CREATE_AND_SET
@@ -122,7 +122,7 @@ typedef enum _sai_meter_policy_attr_t
 } sai_meter_policy_attr_t;
 
 /**
- * @brief Attribute ID for dash_meter_meter_rule
+ * @brief Attribute ID for meter rule
  */
 typedef enum _sai_meter_rule_attr_t
 {
@@ -150,7 +150,7 @@ typedef enum _sai_meter_rule_attr_t
     SAI_METER_RULE_ATTR_DIP,
 
     /**
-     * @brief Ternary matched mask dip
+     * @brief Ternary matched key dip mask
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
@@ -158,7 +158,7 @@ typedef enum _sai_meter_rule_attr_t
     SAI_METER_RULE_ATTR_DIP_MASK,
 
     /**
-     * @brief Action set_policy_meter_class parameter METER_CLASS
+     * @brief Action parameter meter class
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -197,7 +197,7 @@ typedef enum _sai_meter_rule_attr_t
 } sai_meter_rule_attr_t;
 
 /**
- * @brief Create dash_meter_meter_bucket
+ * @brief Create meter bucket
  *
  * @param[out] meter_bucket_id Entry id
  * @param[in] switch_id Switch id
@@ -213,7 +213,7 @@ typedef sai_status_t (*sai_create_meter_bucket_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Remove dash_meter_meter_bucket
+ * @brief Remove meter bucket
  *
  * @param[in] meter_bucket_id Entry id
  *
@@ -223,7 +223,7 @@ typedef sai_status_t (*sai_remove_meter_bucket_fn)(
         _In_ sai_object_id_t meter_bucket_id);
 
 /**
- * @brief Set attribute for dash_meter_meter_bucket
+ * @brief Set attribute for meter bucket
  *
  * @param[in] meter_bucket_id Entry id
  * @param[in] attr Attribute
@@ -235,7 +235,7 @@ typedef sai_status_t (*sai_set_meter_bucket_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get attribute for dash_meter_meter_bucket
+ * @brief Get attribute for meter bucket
  *
  * @param[in] meter_bucket_id Entry id
  * @param[in] attr_count Number of attributes
@@ -249,7 +249,7 @@ typedef sai_status_t (*sai_get_meter_bucket_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Get meter_bucket statistics counters. Deprecated for backward compatibility.
+ * @brief Get METER_BUCKET statistics counters. Deprecated for backward compatibility.
  *
  * @param[in] meter_bucket_id Entry id
  * @param[in] number_of_counters Number of counters in the array
@@ -265,7 +265,7 @@ typedef sai_status_t (*sai_get_meter_bucket_stats_fn)(
         _Out_ uint64_t *counters);
 
 /**
- * @brief Get meter_bucket statistics counters extended.
+ * @brief Get METER_BUCKET statistics counters extended.
  *
  * @param[in] meter_bucket_id Entry id
  * @param[in] number_of_counters Number of counters in the array
@@ -283,7 +283,7 @@ typedef sai_status_t (*sai_get_meter_bucket_stats_ext_fn)(
         _Out_ uint64_t *counters);
 
 /**
- * @brief Clear meter_bucket statistics counters.
+ * @brief Clear METER_BUCKET statistics counters.
  *
  * @param[in] meter_bucket_id Entry id
  * @param[in] number_of_counters Number of counters in the array
@@ -297,7 +297,7 @@ typedef sai_status_t (*sai_clear_meter_bucket_stats_fn)(
         _In_ const sai_stat_id_t *counter_ids);
 
 /**
- * @brief Create dash_meter_meter_policy
+ * @brief Create meter policy
  *
  * @param[out] meter_policy_id Entry id
  * @param[in] switch_id Switch id
@@ -313,7 +313,7 @@ typedef sai_status_t (*sai_create_meter_policy_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Remove dash_meter_meter_policy
+ * @brief Remove meter policy
  *
  * @param[in] meter_policy_id Entry id
  *
@@ -323,7 +323,7 @@ typedef sai_status_t (*sai_remove_meter_policy_fn)(
         _In_ sai_object_id_t meter_policy_id);
 
 /**
- * @brief Set attribute for dash_meter_meter_policy
+ * @brief Set attribute for meter policy
  *
  * @param[in] meter_policy_id Entry id
  * @param[in] attr Attribute
@@ -335,7 +335,7 @@ typedef sai_status_t (*sai_set_meter_policy_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get attribute for dash_meter_meter_policy
+ * @brief Get attribute for meter policy
  *
  * @param[in] meter_policy_id Entry id
  * @param[in] attr_count Number of attributes
@@ -349,7 +349,7 @@ typedef sai_status_t (*sai_get_meter_policy_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Create dash_meter_meter_rule
+ * @brief Create meter rule
  *
  * @param[out] meter_rule_id Entry id
  * @param[in] switch_id Switch id
@@ -365,7 +365,7 @@ typedef sai_status_t (*sai_create_meter_rule_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Remove dash_meter_meter_rule
+ * @brief Remove meter rule
  *
  * @param[in] meter_rule_id Entry id
  *
@@ -375,7 +375,7 @@ typedef sai_status_t (*sai_remove_meter_rule_fn)(
         _In_ sai_object_id_t meter_rule_id);
 
 /**
- * @brief Set attribute for dash_meter_meter_rule
+ * @brief Set attribute for meter rule
  *
  * @param[in] meter_rule_id Entry id
  * @param[in] attr Attribute
@@ -387,7 +387,7 @@ typedef sai_status_t (*sai_set_meter_rule_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get attribute for dash_meter_meter_rule
+ * @brief Get attribute for meter rule
  *
  * @param[in] meter_rule_id Entry id
  * @param[in] attr_count Number of attributes
