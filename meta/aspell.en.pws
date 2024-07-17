@@ -179,6 +179,7 @@ structs
 sublayer
 subnet
 subnets
+switchover
 SysFS
 syslog
 timespec
