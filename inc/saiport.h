@@ -231,9 +231,6 @@ typedef enum _sai_port_breakout_mode_type_t
     /** 4 lanes breakout Mode */
     SAI_PORT_BREAKOUT_MODE_TYPE_4_LANE = 2,
 
-    /** 8 lanes breakout Mode */
-    SAI_PORT_BREAKOUT_MODE_TYPE_8_LANE = 3,
-
     /** Breakout mode max count */
     SAI_PORT_BREAKOUT_MODE_TYPE_MAX
 } sai_port_breakout_mode_type_t;
@@ -2529,10 +2526,7 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /** End of custom range base */
-    SAI_PORT_ATTR_CUSTOM_RANGE_END,
-
-    /** Extensions range base */
-    SAI_PORT_ATTR_EXTENSIONS_RANGE_BASE = 0x20000000
+    SAI_PORT_ATTR_CUSTOM_RANGE_END
 
 } sai_port_attr_t;
 
@@ -3259,10 +3253,7 @@ typedef enum _sai_port_stat_t
     SAI_PORT_STAT_OUT_DROP_REASON_RANGE_END = 0x00002fff,
 
     /** Port stat range end */
-    SAI_PORT_STAT_END,
-
-    /** Extensions range base */
-    SAI_PORT_STAT_EXTENSIONS_RANGE_BASE = 0x20000000
+    SAI_PORT_STAT_END
 
 } sai_port_stat_t;
 

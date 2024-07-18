@@ -130,6 +130,15 @@ typedef enum _sai_ha_set_attr_t
     SAI_HA_SET_ATTR_DP_CHANNEL_IS_ALIVE,
 
     /**
+     * @brief Action parameter SAI vendor driven HA switchover wait time ms
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_HA_SET_ATTR_DPU_DRIVEN_HA_SWITCHOVER_WAIT_TIME_MS,
+
+    /**
      * @brief End of attributes
      */
     SAI_HA_SET_ATTR_END,
@@ -262,6 +271,50 @@ typedef enum _sai_ha_scope_attr_t
      * @flags READ_ONLY
      */
     SAI_HA_SCOPE_ATTR_FLOW_RECONCILE_NEEDED,
+
+    /**
+     * @brief Action parameter VIP v4
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     */
+    SAI_HA_SCOPE_ATTR_VIP_V4,
+
+    /**
+     * @brief Action parameter VIP v6
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     */
+    SAI_HA_SCOPE_ATTR_VIP_V6,
+
+    /**
+     * @brief Action parameter admin state
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_HA_SCOPE_ATTR_ADMIN_STATE,
+
+    /**
+     * @brief Action parameter activate role
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_HA_SCOPE_ATTR_ACTIVATE_ROLE,
+
+    /**
+     * @brief Action parameter DASH HA state
+     *
+     * @type sai_dash_ha_state_t
+     * @flags READ_ONLY
+     */
+    SAI_HA_SCOPE_ATTR_DASH_HA_STATE,
 
     /**
      * @brief End of attributes

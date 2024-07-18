@@ -26,7 +26,7 @@
 #define __SAISWITCHEXTENSIONS_H_
 
 #include <saiswitch.h>
-#include <saitypesextensions.h>
+#include <saitypes.h>
 
 /**
  * @brief DASH capability HA scope level
@@ -81,25 +81,10 @@ typedef void (*sai_ha_set_event_notification_fn)(
         _In_ const sai_ha_set_event_data_t *data);
 
 /**
- * @brief HA scope event type
- */
-typedef enum _sai_ha_scope_event_t
-{
-    /** HA scope state changed */
-    SAI_HA_SCOPE_EVENT_STATE_CHANGED,
-
-    /** Flow reconcile is needed */
-    SAI_HA_SCOPE_EVENT_FLOW_RECONCILE_NEEDED,
-} sai_ha_scope_event_t;
-
-/**
  * @brief Notification data format received from SAI HA scope callback
  */
 typedef struct _sai_ha_scope_event_data_t
 {
-    /** Event type */
-    sai_ha_scope_event_t event_type;
-
     /** HA scope id */
     sai_object_id_t ha_scope_id;
 
@@ -132,7 +117,7 @@ typedef void (*sai_ha_scope_event_notification_fn)(
  */
 typedef enum _sai_switch_attr_extensions_t
 {
-    SAI_SWITCH_ATTR_EXTENSIONS_RANGE_START = SAI_SWITCH_ATTR_EXTENSIONS_RANGE_BASE,
+    SAI_SWITCH_ATTR_EXTENSIONS_RANGE_START = SAI_SWITCH_ATTR_END,
 
     /**
      * @brief Maximum number of meter buckets per ENI.
