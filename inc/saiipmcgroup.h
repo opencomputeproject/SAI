@@ -93,23 +93,10 @@ typedef enum _sai_ipmc_group_member_attr_t
      * @brief IPMC output id
      *
      * @type sai_object_id_t
-     * @flags CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE, SAI_OBJECT_TYPE_TUNNEL
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE, SAI_OBJECT_TYPE_TUNNEL, SAI_OBJECT_TYPE_NEXT_HOP
      */
     SAI_IPMC_GROUP_MEMBER_ATTR_IPMC_OUTPUT_ID,
-
-    /**
-     * @brief Next Hop Object ID if present over-rides the IPMC_OUTPUT_ID
-     *
-     * @type sai_object_id_t
-     * @flags CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_NEXT_HOP
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
-     */
-    SAI_IPMC_GROUP_MEMBER_ATTR_NEXT_HOP,
 
     /**
      * @brief End of attributes
