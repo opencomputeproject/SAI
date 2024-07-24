@@ -110,18 +110,6 @@ typedef enum _sai_outbound_routing_entry_attr_t
     SAI_OUTBOUND_ROUTING_ENTRY_ATTR_DST_VNET_ID,
 
     /**
-     * @brief Action parameter DASH tunnel id
-     *
-     * @type sai_object_id_t
-     * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_DASH_TUNNEL
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
-     * @validonly SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_VNET or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_VNET_DIRECT or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_DIRECT or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_SERVICE_TUNNEL
-     */
-    SAI_OUTBOUND_ROUTING_ENTRY_ATTR_DASH_TUNNEL_ID,
-
-    /**
      * @brief Action parameter meter class or
      *
      * @type sai_uint32_t
@@ -260,6 +248,18 @@ typedef enum _sai_outbound_routing_entry_attr_t
      * @isresourcetype true
      */
     SAI_OUTBOUND_ROUTING_ENTRY_ATTR_IP_ADDR_FAMILY,
+
+    /**
+     * @brief Action parameter DASH tunnel id
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_DASH_TUNNEL
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_VNET or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_VNET_DIRECT or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_DIRECT or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_SERVICE_TUNNEL
+     */
+    SAI_OUTBOUND_ROUTING_ENTRY_ATTR_DASH_TUNNEL_ID,
 
     /**
      * @brief End of attributes

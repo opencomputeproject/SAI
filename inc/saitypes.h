@@ -298,12 +298,15 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_POE_DEVICE               = 108,
     SAI_OBJECT_TYPE_POE_PSE                  = 109,
     SAI_OBJECT_TYPE_POE_PORT                 = 110,
-    SAI_OBJECT_TYPE_ICMP_ECHO_SESSION        = 111,
 
     /** Must remain in last position */
     SAI_OBJECT_TYPE_MAX,
 
-    SAI_OBJECT_TYPE_EXTENSIONS_RANGE_BASE = 0x20000000,
+    /** Custom range base value */
+    SAI_OBJECT_TYPE_CUSTOM_RANGE_START = 256,
+
+    /** End of custom range base */
+    SAI_OBJECT_TYPE_CUSTOM_RANGE_END
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t

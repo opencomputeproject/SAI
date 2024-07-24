@@ -132,18 +132,6 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_METER_CLASS_OR,
 
     /**
-     * @brief Action parameter DASH tunnel id
-     *
-     * @type sai_object_id_t
-     * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_DASH_TUNNEL
-     * @allownull true
-     * @default SAI_NULL_OBJECT_ID
-     * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_TUNNEL_MAPPING or SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_PRIVATE_LINK_MAPPING
-     */
-    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_DASH_TUNNEL_ID,
-
-    /**
      * @brief Action parameter flow re-simulation requested
      *
      * @type bool
@@ -174,16 +162,6 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_OVERLAY_SIP,
 
     /**
-     * @brief Action parameter overlay sip mask
-     *
-     * @type sai_ip_address_t
-     * @flags CREATE_AND_SET
-     * @default 0.0.0.0
-     * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_PRIVATE_LINK_MAPPING
-     */
-    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_OVERLAY_SIP_MASK,
-
-    /**
      * @brief Action parameter overlay dip
      *
      * @type sai_ip_address_t
@@ -192,16 +170,6 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
      * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_PRIVATE_LINK_MAPPING
      */
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_OVERLAY_DIP,
-
-    /**
-     * @brief Action parameter overlay dip mask
-     *
-     * @type sai_ip_address_t
-     * @flags CREATE_AND_SET
-     * @default 0.0.0.0
-     * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_PRIVATE_LINK_MAPPING
-     */
-    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_OVERLAY_DIP_MASK,
 
     /**
      * @brief Action parameter DASH encapsulation
@@ -242,6 +210,38 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
      * @isresourcetype true
      */
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_IP_ADDR_FAMILY,
+
+    /**
+     * @brief Action parameter DASH tunnel id
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_DASH_TUNNEL
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_TUNNEL_MAPPING or SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_PRIVATE_LINK_MAPPING
+     */
+    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_DASH_TUNNEL_ID,
+
+    /**
+     * @brief Action parameter overlay sip mask
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_PRIVATE_LINK_MAPPING
+     */
+    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_OVERLAY_SIP_MASK,
+
+    /**
+     * @brief Action parameter overlay dip mask
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_PRIVATE_LINK_MAPPING
+     */
+    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_OVERLAY_DIP_MASK,
 
     /**
      * @brief End of attributes
