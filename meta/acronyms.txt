@@ -34,6 +34,7 @@ DLR - Dead Lock Recovery
 DMA - Direct Memory Access
 DNAPT - Destination Network Address Port Translation
 DNAT - Destination Network Address Translation
+DPU - Data Processing Unit
 DSCP - Differentiated Services Code Point
 DTEL - Data Plane Telemetry
 ECC - Error Correction Code
