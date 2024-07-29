@@ -19,19 +19,30 @@
  *
  * @file    saiexperimentaldasheni.h
  *
- * @brief   This module defines SAI P4 extension  interface
+ * @brief   This module defines SAI extensions for DASH ENI
+ *
+ * @warning This module is a SAI experimental module
  */
 
 #if !defined (__SAIEXPERIMENTALDASHENI_H_)
 #define __SAIEXPERIMENTALDASHENI_H_
 
-#include <saitypes.h>
+#include <saitypesextensions.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_ENI SAI - Extension specific API definitions
+ * @defgroup SAIEXPERIMENTALDASHENI SAI - Experimental: DASH ENI specific API definitions
  *
  * @{
  */
+
+/**
+ * @brief Attribute data for #SAI_ENI_ETHER_ADDRESS_MAP_ENTRY_ATTR_ACTION
+ */
+typedef enum _sai_eni_ether_address_map_entry_action_t
+{
+    SAI_ENI_ETHER_ADDRESS_MAP_ENTRY_ACTION_SET_ENI,
+
+} sai_eni_ether_address_map_entry_action_t;
 
 /**
  * @brief Entry for eni_ether_address_map_entry
@@ -53,7 +64,7 @@ typedef struct _sai_eni_ether_address_map_entry_t
 } sai_eni_ether_address_map_entry_t;
 
 /**
- * @brief Attribute ID for dash_eni_eni_ether_address_map_entry
+ * @brief Attribute ID for ENI ether address map entry
  */
 typedef enum _sai_eni_ether_address_map_entry_attr_t
 {
@@ -63,7 +74,16 @@ typedef enum _sai_eni_ether_address_map_entry_attr_t
     SAI_ENI_ETHER_ADDRESS_MAP_ENTRY_ATTR_START,
 
     /**
-     * @brief Action set_eni parameter ENI_ID
+     * @brief Action
+     *
+     * @type sai_eni_ether_address_map_entry_action_t
+     * @flags CREATE_AND_SET
+     * @default SAI_ENI_ETHER_ADDRESS_MAP_ENTRY_ACTION_SET_ENI
+     */
+    SAI_ENI_ETHER_ADDRESS_MAP_ENTRY_ATTR_ACTION = SAI_ENI_ETHER_ADDRESS_MAP_ENTRY_ATTR_START,
+
+    /**
+     * @brief Action parameter ENI id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -71,7 +91,7 @@ typedef enum _sai_eni_ether_address_map_entry_attr_t
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
      */
-    SAI_ENI_ETHER_ADDRESS_MAP_ENTRY_ATTR_ENI_ID = SAI_ENI_ETHER_ADDRESS_MAP_ENTRY_ATTR_START,
+    SAI_ENI_ETHER_ADDRESS_MAP_ENTRY_ATTR_ENI_ID,
 
     /**
      * @brief End of attributes
@@ -87,7 +107,7 @@ typedef enum _sai_eni_ether_address_map_entry_attr_t
 } sai_eni_ether_address_map_entry_attr_t;
 
 /**
- * @brief Attribute ID for dash_eni_eni
+ * @brief Attribute ID for ENI
  */
 typedef enum _sai_eni_attr_t
 {
@@ -97,7 +117,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_START,
 
     /**
-     * @brief Action set_eni_attrs parameter CPS
+     * @brief Action parameter CPS
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -106,7 +126,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_CPS = SAI_ENI_ATTR_START,
 
     /**
-     * @brief Action set_eni_attrs parameter PPS
+     * @brief Action parameter PPS
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -115,7 +135,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_PPS,
 
     /**
-     * @brief Action set_eni_attrs parameter FLOWS
+     * @brief Action parameter flows
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -124,7 +144,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_FLOWS,
 
     /**
-     * @brief Action set_eni_attrs parameter ADMIN_STATE
+     * @brief Action parameter admin state
      *
      * @type bool
      * @flags CREATE_AND_SET
@@ -133,7 +153,18 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_ADMIN_STATE,
 
     /**
-     * @brief Action set_eni_attrs parameter VM_UNDERLAY_DIP
+     * @brief Action parameter HA scope id
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_HA_SCOPE
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ENI_ATTR_HA_SCOPE_ID,
+
+    /**
+     * @brief Action parameter  underlay dip
      *
      * @type sai_ip_address_t
      * @flags CREATE_AND_SET
@@ -142,7 +173,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_VM_UNDERLAY_DIP,
 
     /**
-     * @brief Action set_eni_attrs parameter VM_VNI
+     * @brief Action parameter  VNI
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -151,7 +182,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_VM_VNI,
 
     /**
-     * @brief Action set_eni_attrs parameter VNET_ID
+     * @brief Action parameter VNET id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -162,7 +193,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_VNET_ID,
 
     /**
-     * @brief Action set_eni_attrs parameter PL_SIP
+     * @brief Action parameter PL sip
      *
      * @type sai_ip_address_t
      * @flags CREATE_AND_SET
@@ -171,7 +202,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_PL_SIP,
 
     /**
-     * @brief Action set_eni_attrs parameter PL_SIP_MASK
+     * @brief Action parameter PL sip mask
      *
      * @type sai_ip_address_t
      * @flags CREATE_AND_SET
@@ -180,7 +211,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_PL_SIP_MASK,
 
     /**
-     * @brief Action set_eni_attrs parameter PL_UNDERLAY_SIP
+     * @brief Action parameter PL underlay sip
      *
      * @type sai_ip_address_t
      * @flags CREATE_AND_SET
@@ -189,7 +220,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_PL_UNDERLAY_SIP,
 
     /**
-     * @brief Action set_eni_attrs parameter V4_METER_POLICY_ID
+     * @brief Action parameter v4 meter policy id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -200,7 +231,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_V4_METER_POLICY_ID,
 
     /**
-     * @brief Action set_eni_attrs parameter V6_METER_POLICY_ID
+     * @brief Action parameter v6 meter policy id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -211,7 +242,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_V6_METER_POLICY_ID,
 
     /**
-     * @brief Action set_eni_attrs parameter DASH_TUNNEL_DSCP_MODE
+     * @brief Action parameter DASH tunnel DSCP mode
      *
      * @type sai_dash_tunnel_dscp_mode_t
      * @flags CREATE_AND_SET
@@ -220,7 +251,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_DASH_TUNNEL_DSCP_MODE,
 
     /**
-     * @brief Action set_eni_attrs parameter DSCP
+     * @brief Action parameter DSCP
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
@@ -230,7 +261,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_DSCP,
 
     /**
-     * @brief Action set_eni_attrs parameter INBOUND_V4_STAGE1_DASH_ACL_GROUP_ID
+     * @brief Action parameter inbound v4 stage1 DASH ACL group id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -241,7 +272,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_INBOUND_V4_STAGE1_DASH_ACL_GROUP_ID,
 
     /**
-     * @brief Action set_eni_attrs parameter INBOUND_V4_STAGE2_DASH_ACL_GROUP_ID
+     * @brief Action parameter inbound v4 stage2 DASH ACL group id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -252,7 +283,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_INBOUND_V4_STAGE2_DASH_ACL_GROUP_ID,
 
     /**
-     * @brief Action set_eni_attrs parameter INBOUND_V4_STAGE3_DASH_ACL_GROUP_ID
+     * @brief Action parameter inbound v4 stage3 DASH ACL group id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -263,7 +294,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_INBOUND_V4_STAGE3_DASH_ACL_GROUP_ID,
 
     /**
-     * @brief Action set_eni_attrs parameter INBOUND_V4_STAGE4_DASH_ACL_GROUP_ID
+     * @brief Action parameter inbound v4 stage4 DASH ACL group id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -274,7 +305,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_INBOUND_V4_STAGE4_DASH_ACL_GROUP_ID,
 
     /**
-     * @brief Action set_eni_attrs parameter INBOUND_V4_STAGE5_DASH_ACL_GROUP_ID
+     * @brief Action parameter inbound v4 stage5 DASH ACL group id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -285,7 +316,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_INBOUND_V4_STAGE5_DASH_ACL_GROUP_ID,
 
     /**
-     * @brief Action set_eni_attrs parameter INBOUND_V6_STAGE1_DASH_ACL_GROUP_ID
+     * @brief Action parameter inbound v6 stage1 DASH ACL group id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -296,7 +327,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_INBOUND_V6_STAGE1_DASH_ACL_GROUP_ID,
 
     /**
-     * @brief Action set_eni_attrs parameter INBOUND_V6_STAGE2_DASH_ACL_GROUP_ID
+     * @brief Action parameter inbound v6 stage2 DASH ACL group id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -307,7 +338,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_INBOUND_V6_STAGE2_DASH_ACL_GROUP_ID,
 
     /**
-     * @brief Action set_eni_attrs parameter INBOUND_V6_STAGE3_DASH_ACL_GROUP_ID
+     * @brief Action parameter inbound v6 stage3 DASH ACL group id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -318,7 +349,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_INBOUND_V6_STAGE3_DASH_ACL_GROUP_ID,
 
     /**
-     * @brief Action set_eni_attrs parameter INBOUND_V6_STAGE4_DASH_ACL_GROUP_ID
+     * @brief Action parameter inbound v6 stage4 DASH ACL group id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -329,7 +360,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_INBOUND_V6_STAGE4_DASH_ACL_GROUP_ID,
 
     /**
-     * @brief Action set_eni_attrs parameter INBOUND_V6_STAGE5_DASH_ACL_GROUP_ID
+     * @brief Action parameter inbound v6 stage5 DASH ACL group id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -340,7 +371,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_INBOUND_V6_STAGE5_DASH_ACL_GROUP_ID,
 
     /**
-     * @brief Action set_eni_attrs parameter OUTBOUND_V4_STAGE1_DASH_ACL_GROUP_ID
+     * @brief Action parameter outbound v4 stage1 DASH ACL group id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -351,7 +382,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_OUTBOUND_V4_STAGE1_DASH_ACL_GROUP_ID,
 
     /**
-     * @brief Action set_eni_attrs parameter OUTBOUND_V4_STAGE2_DASH_ACL_GROUP_ID
+     * @brief Action parameter outbound v4 stage2 DASH ACL group id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -362,7 +393,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_OUTBOUND_V4_STAGE2_DASH_ACL_GROUP_ID,
 
     /**
-     * @brief Action set_eni_attrs parameter OUTBOUND_V4_STAGE3_DASH_ACL_GROUP_ID
+     * @brief Action parameter outbound v4 stage3 DASH ACL group id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -373,7 +404,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_OUTBOUND_V4_STAGE3_DASH_ACL_GROUP_ID,
 
     /**
-     * @brief Action set_eni_attrs parameter OUTBOUND_V4_STAGE4_DASH_ACL_GROUP_ID
+     * @brief Action parameter outbound v4 stage4 DASH ACL group id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -384,7 +415,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_OUTBOUND_V4_STAGE4_DASH_ACL_GROUP_ID,
 
     /**
-     * @brief Action set_eni_attrs parameter OUTBOUND_V4_STAGE5_DASH_ACL_GROUP_ID
+     * @brief Action parameter outbound v4 stage5 DASH ACL group id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -395,7 +426,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_OUTBOUND_V4_STAGE5_DASH_ACL_GROUP_ID,
 
     /**
-     * @brief Action set_eni_attrs parameter OUTBOUND_V6_STAGE1_DASH_ACL_GROUP_ID
+     * @brief Action parameter outbound v6 stage1 DASH ACL group id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -406,7 +437,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_OUTBOUND_V6_STAGE1_DASH_ACL_GROUP_ID,
 
     /**
-     * @brief Action set_eni_attrs parameter OUTBOUND_V6_STAGE2_DASH_ACL_GROUP_ID
+     * @brief Action parameter outbound v6 stage2 DASH ACL group id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -417,7 +448,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_OUTBOUND_V6_STAGE2_DASH_ACL_GROUP_ID,
 
     /**
-     * @brief Action set_eni_attrs parameter OUTBOUND_V6_STAGE3_DASH_ACL_GROUP_ID
+     * @brief Action parameter outbound v6 stage3 DASH ACL group id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -428,7 +459,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_OUTBOUND_V6_STAGE3_DASH_ACL_GROUP_ID,
 
     /**
-     * @brief Action set_eni_attrs parameter OUTBOUND_V6_STAGE4_DASH_ACL_GROUP_ID
+     * @brief Action parameter outbound v6 stage4 DASH ACL group id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -439,7 +470,7 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_OUTBOUND_V6_STAGE4_DASH_ACL_GROUP_ID,
 
     /**
-     * @brief Action set_eni_attrs parameter OUTBOUND_V6_STAGE5_DASH_ACL_GROUP_ID
+     * @brief Action parameter outbound v6 stage5 DASH ACL group id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -450,13 +481,42 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_OUTBOUND_V6_STAGE5_DASH_ACL_GROUP_ID,
 
     /**
-     * @brief Action set_eni_attrs parameter DISABLE_FAST_PATH_ICMP_FLOW_REDIRECTION
+     * @brief Action parameter disable fast path ICMP flow redirection
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
      */
     SAI_ENI_ATTR_DISABLE_FAST_PATH_ICMP_FLOW_REDIRECTION,
+
+    /**
+     * @brief Action parameter full flow re-simulation requested
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_ENI_ATTR_FULL_FLOW_RESIMULATION_REQUESTED,
+
+    /**
+     * @brief Action parameter max re-simulated flow per second
+     *
+     * @type sai_uint64_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ENI_ATTR_MAX_RESIMULATED_FLOW_PER_SECOND,
+
+    /**
+     * @brief Action parameter outbound routing group id
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_OUTBOUND_ROUTING_GROUP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ENI_ATTR_OUTBOUND_ROUTING_GROUP_ID,
 
     /**
      * @brief End of attributes
@@ -472,20 +532,248 @@ typedef enum _sai_eni_attr_t
 } sai_eni_attr_t;
 
 /**
- * @brief Counter IDs for eni in sai_get_eni_stats() call
+ * @brief Counter IDs for ENI
  */
 typedef enum _sai_eni_stat_t
 {
-    /** DASH eni LB_FAST_PATH_ICMP_IN_BYTES stat count */
+    /** DASH ENI RX_BYTES stat count */
+    SAI_ENI_STAT_RX_BYTES,
+
+    /** DASH ENI RX_PACKETS stat count */
+    SAI_ENI_STAT_RX_PACKETS,
+
+    /** DASH ENI TX_BYTES stat count */
+    SAI_ENI_STAT_TX_BYTES,
+
+    /** DASH ENI TX_PACKETS stat count */
+    SAI_ENI_STAT_TX_PACKETS,
+
+    /** DASH ENI OUTBOUND_RX_BYTES stat count */
+    SAI_ENI_STAT_OUTBOUND_RX_BYTES,
+
+    /** DASH ENI OUTBOUND_RX_PACKETS stat count */
+    SAI_ENI_STAT_OUTBOUND_RX_PACKETS,
+
+    /** DASH ENI OUTBOUND_TX_BYTES stat count */
+    SAI_ENI_STAT_OUTBOUND_TX_BYTES,
+
+    /** DASH ENI OUTBOUND_TX_PACKETS stat count */
+    SAI_ENI_STAT_OUTBOUND_TX_PACKETS,
+
+    /** DASH ENI INBOUND_RX_BYTES stat count */
+    SAI_ENI_STAT_INBOUND_RX_BYTES,
+
+    /** DASH ENI INBOUND_RX_PACKETS stat count */
+    SAI_ENI_STAT_INBOUND_RX_PACKETS,
+
+    /** DASH ENI INBOUND_TX_BYTES stat count */
+    SAI_ENI_STAT_INBOUND_TX_BYTES,
+
+    /** DASH ENI INBOUND_TX_PACKETS stat count */
+    SAI_ENI_STAT_INBOUND_TX_PACKETS,
+
+    /** DASH ENI LB_FAST_PATH_ICMP_IN_BYTES stat count */
     SAI_ENI_STAT_LB_FAST_PATH_ICMP_IN_BYTES,
 
-    /** DASH eni LB_FAST_PATH_ICMP_IN_PACKETS stat count */
+    /** DASH ENI LB_FAST_PATH_ICMP_IN_PACKETS stat count */
     SAI_ENI_STAT_LB_FAST_PATH_ICMP_IN_PACKETS,
+
+    /** DASH ENI FLOW_CREATED stat count */
+    SAI_ENI_STAT_FLOW_CREATED,
+
+    /** DASH ENI FLOW_CREATE_FAILED stat count */
+    SAI_ENI_STAT_FLOW_CREATE_FAILED,
+
+    /** DASH ENI FLOW_UPDATED stat count */
+    SAI_ENI_STAT_FLOW_UPDATED,
+
+    /** DASH ENI FLOW_UPDATE_FAILED stat count */
+    SAI_ENI_STAT_FLOW_UPDATE_FAILED,
+
+    /** DASH ENI FLOW_UPDATED_BY_RESIMULATION stat count */
+    SAI_ENI_STAT_FLOW_UPDATED_BY_RESIMULATION,
+
+    /** DASH ENI FLOW_UPDATE_BY_RESIMULATION_FAILED stat count */
+    SAI_ENI_STAT_FLOW_UPDATE_BY_RESIMULATION_FAILED,
+
+    /** DASH ENI FLOW_DELETED stat count */
+    SAI_ENI_STAT_FLOW_DELETED,
+
+    /** DASH ENI FLOW_DELETE_FAILED stat count */
+    SAI_ENI_STAT_FLOW_DELETE_FAILED,
+
+    /** DASH ENI FLOW_AGED stat count */
+    SAI_ENI_STAT_FLOW_AGED,
+
+    /** DASH ENI INLINE_SYNC_PACKET_RX_BYTES stat count */
+    SAI_ENI_STAT_INLINE_SYNC_PACKET_RX_BYTES,
+
+    /** DASH ENI INLINE_SYNC_PACKET_RX_PACKETS stat count */
+    SAI_ENI_STAT_INLINE_SYNC_PACKET_RX_PACKETS,
+
+    /** DASH ENI INLINE_SYNC_PACKET_TX_BYTES stat count */
+    SAI_ENI_STAT_INLINE_SYNC_PACKET_TX_BYTES,
+
+    /** DASH ENI INLINE_SYNC_PACKET_TX_PACKETS stat count */
+    SAI_ENI_STAT_INLINE_SYNC_PACKET_TX_PACKETS,
+
+    /** DASH ENI TIMED_SYNC_PACKET_RX_BYTES stat count */
+    SAI_ENI_STAT_TIMED_SYNC_PACKET_RX_BYTES,
+
+    /** DASH ENI TIMED_SYNC_PACKET_RX_PACKETS stat count */
+    SAI_ENI_STAT_TIMED_SYNC_PACKET_RX_PACKETS,
+
+    /** DASH ENI TIMED_SYNC_PACKET_TX_BYTES stat count */
+    SAI_ENI_STAT_TIMED_SYNC_PACKET_TX_BYTES,
+
+    /** DASH ENI TIMED_SYNC_PACKET_TX_PACKETS stat count */
+    SAI_ENI_STAT_TIMED_SYNC_PACKET_TX_PACKETS,
+
+    /** DASH ENI INLINE_FLOW_CREATE_REQ_SENT stat count */
+    SAI_ENI_STAT_INLINE_FLOW_CREATE_REQ_SENT,
+
+    /** DASH ENI INLINE_FLOW_CREATE_REQ_RECV stat count */
+    SAI_ENI_STAT_INLINE_FLOW_CREATE_REQ_RECV,
+
+    /** DASH ENI INLINE_FLOW_CREATE_REQ_FAILED stat count */
+    SAI_ENI_STAT_INLINE_FLOW_CREATE_REQ_FAILED,
+
+    /** DASH ENI INLINE_FLOW_CREATE_REQ_IGNORED stat count */
+    SAI_ENI_STAT_INLINE_FLOW_CREATE_REQ_IGNORED,
+
+    /** DASH ENI INLINE_FLOW_CREATE_ACK_RECV stat count */
+    SAI_ENI_STAT_INLINE_FLOW_CREATE_ACK_RECV,
+
+    /** DASH ENI INLINE_FLOW_CREATE_ACK_FAILED stat count */
+    SAI_ENI_STAT_INLINE_FLOW_CREATE_ACK_FAILED,
+
+    /** DASH ENI INLINE_FLOW_CREATE_ACK_IGNORED stat count */
+    SAI_ENI_STAT_INLINE_FLOW_CREATE_ACK_IGNORED,
+
+    /** DASH ENI TIMED_FLOW_CREATE_REQ_SENT stat count */
+    SAI_ENI_STAT_TIMED_FLOW_CREATE_REQ_SENT,
+
+    /** DASH ENI TIMED_FLOW_CREATE_REQ_RECV stat count */
+    SAI_ENI_STAT_TIMED_FLOW_CREATE_REQ_RECV,
+
+    /** DASH ENI TIMED_FLOW_CREATE_REQ_FAILED stat count */
+    SAI_ENI_STAT_TIMED_FLOW_CREATE_REQ_FAILED,
+
+    /** DASH ENI TIMED_FLOW_CREATE_REQ_IGNORED stat count */
+    SAI_ENI_STAT_TIMED_FLOW_CREATE_REQ_IGNORED,
+
+    /** DASH ENI TIMED_FLOW_CREATE_ACK_RECV stat count */
+    SAI_ENI_STAT_TIMED_FLOW_CREATE_ACK_RECV,
+
+    /** DASH ENI TIMED_FLOW_CREATE_ACK_FAILED stat count */
+    SAI_ENI_STAT_TIMED_FLOW_CREATE_ACK_FAILED,
+
+    /** DASH ENI TIMED_FLOW_CREATE_ACK_IGNORED stat count */
+    SAI_ENI_STAT_TIMED_FLOW_CREATE_ACK_IGNORED,
+
+    /** DASH ENI INLINE_FLOW_UPDATE_REQ_SENT stat count */
+    SAI_ENI_STAT_INLINE_FLOW_UPDATE_REQ_SENT,
+
+    /** DASH ENI INLINE_FLOW_UPDATE_REQ_RECV stat count */
+    SAI_ENI_STAT_INLINE_FLOW_UPDATE_REQ_RECV,
+
+    /** DASH ENI INLINE_FLOW_UPDATE_REQ_FAILED stat count */
+    SAI_ENI_STAT_INLINE_FLOW_UPDATE_REQ_FAILED,
+
+    /** DASH ENI INLINE_FLOW_UPDATE_REQ_IGNORED stat count */
+    SAI_ENI_STAT_INLINE_FLOW_UPDATE_REQ_IGNORED,
+
+    /** DASH ENI INLINE_FLOW_UPDATE_ACK_RECV stat count */
+    SAI_ENI_STAT_INLINE_FLOW_UPDATE_ACK_RECV,
+
+    /** DASH ENI INLINE_FLOW_UPDATE_ACK_FAILED stat count */
+    SAI_ENI_STAT_INLINE_FLOW_UPDATE_ACK_FAILED,
+
+    /** DASH ENI INLINE_FLOW_UPDATE_ACK_IGNORED stat count */
+    SAI_ENI_STAT_INLINE_FLOW_UPDATE_ACK_IGNORED,
+
+    /** DASH ENI TIMED_FLOW_UPDATE_REQ_SENT stat count */
+    SAI_ENI_STAT_TIMED_FLOW_UPDATE_REQ_SENT,
+
+    /** DASH ENI TIMED_FLOW_UPDATE_REQ_RECV stat count */
+    SAI_ENI_STAT_TIMED_FLOW_UPDATE_REQ_RECV,
+
+    /** DASH ENI TIMED_FLOW_UPDATE_REQ_FAILED stat count */
+    SAI_ENI_STAT_TIMED_FLOW_UPDATE_REQ_FAILED,
+
+    /** DASH ENI TIMED_FLOW_UPDATE_REQ_IGNORED stat count */
+    SAI_ENI_STAT_TIMED_FLOW_UPDATE_REQ_IGNORED,
+
+    /** DASH ENI TIMED_FLOW_UPDATE_ACK_RECV stat count */
+    SAI_ENI_STAT_TIMED_FLOW_UPDATE_ACK_RECV,
+
+    /** DASH ENI TIMED_FLOW_UPDATE_ACK_FAILED stat count */
+    SAI_ENI_STAT_TIMED_FLOW_UPDATE_ACK_FAILED,
+
+    /** DASH ENI TIMED_FLOW_UPDATE_ACK_IGNORED stat count */
+    SAI_ENI_STAT_TIMED_FLOW_UPDATE_ACK_IGNORED,
+
+    /** DASH ENI INLINE_FLOW_DELETE_REQ_SENT stat count */
+    SAI_ENI_STAT_INLINE_FLOW_DELETE_REQ_SENT,
+
+    /** DASH ENI INLINE_FLOW_DELETE_REQ_RECV stat count */
+    SAI_ENI_STAT_INLINE_FLOW_DELETE_REQ_RECV,
+
+    /** DASH ENI INLINE_FLOW_DELETE_REQ_FAILED stat count */
+    SAI_ENI_STAT_INLINE_FLOW_DELETE_REQ_FAILED,
+
+    /** DASH ENI INLINE_FLOW_DELETE_REQ_IGNORED stat count */
+    SAI_ENI_STAT_INLINE_FLOW_DELETE_REQ_IGNORED,
+
+    /** DASH ENI INLINE_FLOW_DELETE_ACK_RECV stat count */
+    SAI_ENI_STAT_INLINE_FLOW_DELETE_ACK_RECV,
+
+    /** DASH ENI INLINE_FLOW_DELETE_ACK_FAILED stat count */
+    SAI_ENI_STAT_INLINE_FLOW_DELETE_ACK_FAILED,
+
+    /** DASH ENI INLINE_FLOW_DELETE_ACK_IGNORED stat count */
+    SAI_ENI_STAT_INLINE_FLOW_DELETE_ACK_IGNORED,
+
+    /** DASH ENI TIMED_FLOW_DELETE_REQ_SENT stat count */
+    SAI_ENI_STAT_TIMED_FLOW_DELETE_REQ_SENT,
+
+    /** DASH ENI TIMED_FLOW_DELETE_REQ_RECV stat count */
+    SAI_ENI_STAT_TIMED_FLOW_DELETE_REQ_RECV,
+
+    /** DASH ENI TIMED_FLOW_DELETE_REQ_FAILED stat count */
+    SAI_ENI_STAT_TIMED_FLOW_DELETE_REQ_FAILED,
+
+    /** DASH ENI TIMED_FLOW_DELETE_REQ_IGNORED stat count */
+    SAI_ENI_STAT_TIMED_FLOW_DELETE_REQ_IGNORED,
+
+    /** DASH ENI TIMED_FLOW_DELETE_ACK_RECV stat count */
+    SAI_ENI_STAT_TIMED_FLOW_DELETE_ACK_RECV,
+
+    /** DASH ENI TIMED_FLOW_DELETE_ACK_FAILED stat count */
+    SAI_ENI_STAT_TIMED_FLOW_DELETE_ACK_FAILED,
+
+    /** DASH ENI TIMED_FLOW_DELETE_ACK_IGNORED stat count */
+    SAI_ENI_STAT_TIMED_FLOW_DELETE_ACK_IGNORED,
+
+    /** DASH ENI OUTBOUND_ROUTING_ENTRY_MISS_DROP_PACKETS stat count */
+    SAI_ENI_STAT_OUTBOUND_ROUTING_ENTRY_MISS_DROP_PACKETS,
+
+    /** DASH ENI OUTBOUND_CA_PA_ENTRY_MISS_DROP_PACKETS stat count */
+    SAI_ENI_STAT_OUTBOUND_CA_PA_ENTRY_MISS_DROP_PACKETS,
+
+    /** DASH ENI INBOUND_ROUTING_ENTRY_MISS_DROP_PACKETS stat count */
+    SAI_ENI_STAT_INBOUND_ROUTING_ENTRY_MISS_DROP_PACKETS,
+
+    /** DASH ENI OUTBOUND_ROUTING_GROUP_MISS_DROP_PACKETS stat count */
+    SAI_ENI_STAT_OUTBOUND_ROUTING_GROUP_MISS_DROP_PACKETS,
+
+    /** DASH ENI OUTBOUND_ROUTING_GROUP_DISABLED_DROP_PACKETS stat count */
+    SAI_ENI_STAT_OUTBOUND_ROUTING_GROUP_DISABLED_DROP_PACKETS,
 
 } sai_eni_stat_t;
 
 /**
- * @brief Create dash_eni_eni_ether_address_map_entry
+ * @brief Create ENI ether address map entry
  *
  * @param[in] eni_ether_address_map_entry Entry
  * @param[in] attr_count Number of attributes
@@ -499,7 +787,7 @@ typedef sai_status_t (*sai_create_eni_ether_address_map_entry_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Remove dash_eni_eni_ether_address_map_entry
+ * @brief Remove ENI ether address map entry
  *
  * @param[in] eni_ether_address_map_entry Entry
  *
@@ -509,7 +797,7 @@ typedef sai_status_t (*sai_remove_eni_ether_address_map_entry_fn)(
         _In_ const sai_eni_ether_address_map_entry_t *eni_ether_address_map_entry);
 
 /**
- * @brief Set attribute for dash_eni_eni_ether_address_map_entry
+ * @brief Set attribute for ENI ether address map entry
  *
  * @param[in] eni_ether_address_map_entry Entry
  * @param[in] attr Attribute
@@ -521,7 +809,7 @@ typedef sai_status_t (*sai_set_eni_ether_address_map_entry_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get attribute for dash_eni_eni_ether_address_map_entry
+ * @brief Get attribute for ENI ether address map entry
  *
  * @param[in] eni_ether_address_map_entry Entry
  * @param[in] attr_count Number of attributes
@@ -535,7 +823,7 @@ typedef sai_status_t (*sai_get_eni_ether_address_map_entry_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Bulk create dash_eni_eni_ether_address_map_entry
+ * @brief Bulk create ENI ether address map entry
  *
  * @param[in] object_count Number of objects to create
  * @param[in] eni_ether_address_map_entry List of object to create
@@ -560,7 +848,7 @@ typedef sai_status_t (*sai_bulk_create_eni_ether_address_map_entry_fn)(
         _Out_ sai_status_t *object_statuses);
 
 /**
- * @brief Bulk remove dash_eni_eni_ether_address_map_entry
+ * @brief Bulk remove ENI ether address map entry
  *
  * @param[in] object_count Number of objects to remove
  * @param[in] eni_ether_address_map_entry List of objects to remove
@@ -580,7 +868,7 @@ typedef sai_status_t (*sai_bulk_remove_eni_ether_address_map_entry_fn)(
         _Out_ sai_status_t *object_statuses);
 
 /**
- * @brief Create dash_eni_eni
+ * @brief Create ENI
  *
  * @param[out] eni_id Entry id
  * @param[in] switch_id Switch id
@@ -596,7 +884,7 @@ typedef sai_status_t (*sai_create_eni_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Remove dash_eni_eni
+ * @brief Remove ENI
  *
  * @param[in] eni_id Entry id
  *
@@ -606,7 +894,7 @@ typedef sai_status_t (*sai_remove_eni_fn)(
         _In_ sai_object_id_t eni_id);
 
 /**
- * @brief Set attribute for dash_eni_eni
+ * @brief Set attribute for ENI
  *
  * @param[in] eni_id Entry id
  * @param[in] attr Attribute
@@ -618,7 +906,7 @@ typedef sai_status_t (*sai_set_eni_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get attribute for dash_eni_eni
+ * @brief Get attribute for ENI
  *
  * @param[in] eni_id Entry id
  * @param[in] attr_count Number of attributes
@@ -632,7 +920,7 @@ typedef sai_status_t (*sai_get_eni_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Get eni statistics counters. Deprecated for backward compatibility.
+ * @brief Get ENI statistics counters. Deprecated for backward compatibility.
  *
  * @param[in] eni_id Entry id
  * @param[in] number_of_counters Number of counters in the array
@@ -648,7 +936,7 @@ typedef sai_status_t (*sai_get_eni_stats_fn)(
         _Out_ uint64_t *counters);
 
 /**
- * @brief Get eni statistics counters extended.
+ * @brief Get ENI statistics counters extended.
  *
  * @param[in] eni_id Entry id
  * @param[in] number_of_counters Number of counters in the array
@@ -666,7 +954,7 @@ typedef sai_status_t (*sai_get_eni_stats_ext_fn)(
         _Out_ uint64_t *counters);
 
 /**
- * @brief Clear eni statistics counters.
+ * @brief Clear ENI statistics counters.
  *
  * @param[in] eni_id Entry id
  * @param[in] number_of_counters Number of counters in the array

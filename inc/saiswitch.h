@@ -310,6 +310,9 @@ typedef enum _sai_switch_type_t
     /** Switch type is Fabric switch device */
     SAI_SWITCH_TYPE_FABRIC,
 
+    /** Switch type is POE (Power over Ethernet) */
+    SAI_SWITCH_TYPE_POE,
+
 } sai_switch_type_t;
 
 /**
@@ -3001,6 +3004,51 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_AVAILABLE_SYSTEM_VOQS,
 
     /**
+     * @brief Pre-Ingress ACL stage.
+     *
+     * @type sai_acl_capability_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_ACL_STAGE_PRE_INGRESS,
+
+    /**
+     * @brief POE device list
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_POE_DEVICE
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_POE_DEVICE_LIST,
+
+    /**
+     * @brief Set Switch ICMP_ECHO session state change event notification callback function passed to the adapter.
+     *
+     * Use sai_icmp_echo_session_state_change_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_icmp_echo_session_state_change_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_ICMP_ECHO_SESSION_STATE_CHANGE_NOTIFY,
+
+    /**
+     * @brief Available ICMP ECHO sessions
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_ICMP_ECHO_SESSION,
+
+    /**
+     * @brief Max number of ICMP ECHO sessions supported
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_ICMP_ECHO_SESSION,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
@@ -3009,7 +3057,10 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /** End of custom range base */
-    SAI_SWITCH_ATTR_CUSTOM_RANGE_END
+    SAI_SWITCH_ATTR_CUSTOM_RANGE_END,
+
+    /** Extensions range base */
+    SAI_SWITCH_ATTR_EXTENSIONS_RANGE_BASE = 0x20000000
 
 } sai_switch_attr_t;
 

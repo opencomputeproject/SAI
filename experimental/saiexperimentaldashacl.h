@@ -19,16 +19,18 @@
  *
  * @file    saiexperimentaldashacl.h
  *
- * @brief   This module defines SAI P4 extension  interface
+ * @brief   This module defines SAI extensions for DASH ACL
+ *
+ * @warning This module is a SAI experimental module
  */
 
 #if !defined (__SAIEXPERIMENTALDASHACL_H_)
 #define __SAIEXPERIMENTALDASHACL_H_
 
-#include <saitypes.h>
+#include <saitypesextensions.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_ACL SAI - Extension specific API definitions
+ * @defgroup SAIEXPERIMENTALDASHACL SAI - Experimental: DASH ACL specific API definitions
  *
  * @{
  */
@@ -49,7 +51,7 @@ typedef enum _sai_dash_acl_rule_action_t
 } sai_dash_acl_rule_action_t;
 
 /**
- * @brief Attribute ID for dash_acl_dash_acl_group
+ * @brief Attribute ID for DASH ACL group
  */
 typedef enum _sai_dash_acl_group_attr_t
 {
@@ -59,7 +61,7 @@ typedef enum _sai_dash_acl_group_attr_t
     SAI_DASH_ACL_GROUP_ATTR_START,
 
     /**
-     * @brief Action set_acl_group_attrs parameter IP_ADDR_FAMILY
+     * @brief Action parameter IP address family
      *
      * @type sai_ip_addr_family_t
      * @flags CREATE_AND_SET
@@ -82,7 +84,7 @@ typedef enum _sai_dash_acl_group_attr_t
 } sai_dash_acl_group_attr_t;
 
 /**
- * @brief Attribute ID for dash_acl_dash_acl_rule
+ * @brief Attribute ID for DASH ACL rule
  */
 typedef enum _sai_dash_acl_rule_attr_t
 {
@@ -151,9 +153,7 @@ typedef enum _sai_dash_acl_rule_attr_t
     SAI_DASH_ACL_RULE_ATTR_DST_PORT,
 
     /**
-     * @brief Attach a counter
-     *
-     * When it is empty, then packet hits won't be counted
+     * @brief Attach a counter. When it is empty, then packet hits won't be counted.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -194,7 +194,7 @@ typedef enum _sai_dash_acl_rule_attr_t
 } sai_dash_acl_rule_attr_t;
 
 /**
- * @brief Create dash_acl_dash_acl_group
+ * @brief Create DASH ACL group
  *
  * @param[out] dash_acl_group_id Entry id
  * @param[in] switch_id Switch id
@@ -210,7 +210,7 @@ typedef sai_status_t (*sai_create_dash_acl_group_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Remove dash_acl_dash_acl_group
+ * @brief Remove DASH ACL group
  *
  * @param[in] dash_acl_group_id Entry id
  *
@@ -220,7 +220,7 @@ typedef sai_status_t (*sai_remove_dash_acl_group_fn)(
         _In_ sai_object_id_t dash_acl_group_id);
 
 /**
- * @brief Set attribute for dash_acl_dash_acl_group
+ * @brief Set attribute for DASH ACL group
  *
  * @param[in] dash_acl_group_id Entry id
  * @param[in] attr Attribute
@@ -232,7 +232,7 @@ typedef sai_status_t (*sai_set_dash_acl_group_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get attribute for dash_acl_dash_acl_group
+ * @brief Get attribute for DASH ACL group
  *
  * @param[in] dash_acl_group_id Entry id
  * @param[in] attr_count Number of attributes
@@ -246,7 +246,7 @@ typedef sai_status_t (*sai_get_dash_acl_group_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Create dash_acl_dash_acl_rule
+ * @brief Create DASH ACL rule
  *
  * @param[out] dash_acl_rule_id Entry id
  * @param[in] switch_id Switch id
@@ -262,7 +262,7 @@ typedef sai_status_t (*sai_create_dash_acl_rule_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Remove dash_acl_dash_acl_rule
+ * @brief Remove DASH ACL rule
  *
  * @param[in] dash_acl_rule_id Entry id
  *
@@ -272,7 +272,7 @@ typedef sai_status_t (*sai_remove_dash_acl_rule_fn)(
         _In_ sai_object_id_t dash_acl_rule_id);
 
 /**
- * @brief Set attribute for dash_acl_dash_acl_rule
+ * @brief Set attribute for DASH ACL rule
  *
  * @param[in] dash_acl_rule_id Entry id
  * @param[in] attr Attribute
@@ -284,7 +284,7 @@ typedef sai_status_t (*sai_set_dash_acl_rule_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get attribute for dash_acl_dash_acl_rule
+ * @brief Get attribute for DASH ACL rule
  *
  * @param[in] dash_acl_rule_id Entry id
  * @param[in] attr_count Number of attributes

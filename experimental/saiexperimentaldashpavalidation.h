@@ -19,16 +19,18 @@
  *
  * @file    saiexperimentaldashpavalidation.h
  *
- * @brief   This module defines SAI P4 extension  interface
+ * @brief   This module defines SAI extensions for DASH PA validation
+ *
+ * @warning This module is a SAI experimental module
  */
 
 #if !defined (__SAIEXPERIMENTALDASHPAVALIDATION_H_)
 #define __SAIEXPERIMENTALDASHPAVALIDATION_H_
 
-#include <saitypes.h>
+#include <saitypesextensions.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_PA_VALIDATION SAI - Extension specific API definitions
+ * @defgroup SAIEXPERIMENTALDASHPAVALIDATION SAI - Experimental: DASH PA validation specific API definitions
  *
  * @{
  */
@@ -69,7 +71,7 @@ typedef struct _sai_pa_validation_entry_t
 } sai_pa_validation_entry_t;
 
 /**
- * @brief Attribute ID for dash_pa_validation_pa_validation_entry
+ * @brief Attribute ID for PA validation entry
  */
 typedef enum _sai_pa_validation_entry_attr_t
 {
@@ -110,7 +112,7 @@ typedef enum _sai_pa_validation_entry_attr_t
 } sai_pa_validation_entry_attr_t;
 
 /**
- * @brief Create dash_pa_validation_pa_validation_entry
+ * @brief Create PA validation entry
  *
  * @param[in] pa_validation_entry Entry
  * @param[in] attr_count Number of attributes
@@ -124,7 +126,7 @@ typedef sai_status_t (*sai_create_pa_validation_entry_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Remove dash_pa_validation_pa_validation_entry
+ * @brief Remove PA validation entry
  *
  * @param[in] pa_validation_entry Entry
  *
@@ -134,7 +136,7 @@ typedef sai_status_t (*sai_remove_pa_validation_entry_fn)(
         _In_ const sai_pa_validation_entry_t *pa_validation_entry);
 
 /**
- * @brief Set attribute for dash_pa_validation_pa_validation_entry
+ * @brief Set attribute for PA validation entry
  *
  * @param[in] pa_validation_entry Entry
  * @param[in] attr Attribute
@@ -146,7 +148,7 @@ typedef sai_status_t (*sai_set_pa_validation_entry_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get attribute for dash_pa_validation_pa_validation_entry
+ * @brief Get attribute for PA validation entry
  *
  * @param[in] pa_validation_entry Entry
  * @param[in] attr_count Number of attributes
@@ -160,7 +162,7 @@ typedef sai_status_t (*sai_get_pa_validation_entry_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Bulk create dash_pa_validation_pa_validation_entry
+ * @brief Bulk create PA validation entry
  *
  * @param[in] object_count Number of objects to create
  * @param[in] pa_validation_entry List of object to create
@@ -185,7 +187,7 @@ typedef sai_status_t (*sai_bulk_create_pa_validation_entry_fn)(
         _Out_ sai_status_t *object_statuses);
 
 /**
- * @brief Bulk remove dash_pa_validation_pa_validation_entry
+ * @brief Bulk remove PA validation entry
  *
  * @param[in] object_count Number of objects to remove
  * @param[in] pa_validation_entry List of objects to remove

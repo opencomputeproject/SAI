@@ -791,8 +791,10 @@ typedef enum _sai_tam_int_attr_t
      * @brief Tam report type
      *
      * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @flags CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_TAM_REPORT
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_TAM_INT_ATTR_REPORT_ID,
 
@@ -1182,6 +1184,16 @@ typedef enum _sai_tam_report_type_t
      * @brief Report using vendor extensions
      */
     SAI_TAM_REPORT_TYPE_VENDOR_EXTN,
+
+    /**
+     * @brief Report using GENETLINK
+     */
+    SAI_TAM_REPORT_TYPE_GENETLINK,
+
+    /**
+     * @brief Custom range base value
+     */
+    SAI_TAM_REPORT_TYPE_CUSTOM_RANGE_BASE = 0x10000000,
 } sai_tam_report_type_t;
 
 /**
@@ -1782,6 +1794,18 @@ typedef enum _sai_tam_collector_attr_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
     SAI_TAM_COLLECTOR_ATTR_DSCP_VALUE,
+
+    /**
+     * @brief Hostif User Defined Trap object used to reach local host via GENETLINK
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_TAM_COLLECTOR_ATTR_LOCALHOST == true
+     */
+    SAI_TAM_COLLECTOR_ATTR_HOSTIF_TRAP,
 
     /**
      * @brief End of Attributes

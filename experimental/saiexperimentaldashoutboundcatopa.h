@@ -19,16 +19,18 @@
  *
  * @file    saiexperimentaldashoutboundcatopa.h
  *
- * @brief   This module defines SAI P4 extension  interface
+ * @brief   This module defines SAI extensions for DASH outbound CA to PA
+ *
+ * @warning This module is a SAI experimental module
  */
 
 #if !defined (__SAIEXPERIMENTALDASHOUTBOUNDCATOPA_H_)
 #define __SAIEXPERIMENTALDASHOUTBOUNDCATOPA_H_
 
-#include <saitypes.h>
+#include <saitypesextensions.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_OUTBOUND_CA_TO_PA SAI - Extension specific API definitions
+ * @defgroup SAIEXPERIMENTALDASHOUTBOUNDCATOPA SAI - Experimental: DASH outbound CA to PA specific API definitions
  *
  * @{
  */
@@ -71,7 +73,7 @@ typedef struct _sai_outbound_ca_to_pa_entry_t
 } sai_outbound_ca_to_pa_entry_t;
 
 /**
- * @brief Attribute ID for dash_outbound_ca_to_pa_outbound_ca_to_pa_entry
+ * @brief Attribute ID for outbound CA to PA entry
  */
 typedef enum _sai_outbound_ca_to_pa_entry_attr_t
 {
@@ -90,7 +92,7 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION = SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_START,
 
     /**
-     * @brief Action set_tunnel_mapping, set_private_link_mapping parameter UNDERLAY_DIP
+     * @brief Action parameter underlay dip
      *
      * @type sai_ip_address_t
      * @flags CREATE_AND_SET
@@ -100,17 +102,17 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_UNDERLAY_DIP,
 
     /**
-     * @brief Action set_tunnel_mapping parameter OVERLAY_DMAC
+     * @brief Action parameter overlay destination MAC
      *
      * @type sai_mac_t
      * @flags CREATE_AND_SET
-     * @default 0:0:0:0:0:0
+     * @default vendor
      * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_TUNNEL_MAPPING
      */
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_OVERLAY_DMAC,
 
     /**
-     * @brief Action set_tunnel_mapping parameter USE_DST_VNET_VNI
+     * @brief Action parameter use dst VNET VNI
      *
      * @type bool
      * @flags CREATE_AND_SET
@@ -120,28 +122,49 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_USE_DST_VNET_VNI,
 
     /**
-     * @brief Action set_tunnel_mapping, set_private_link_mapping parameter METER_CLASS
+     * @brief Action parameter meter class or
      *
-     * @type sai_uint16_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_TUNNEL_MAPPING or SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_PRIVATE_LINK_MAPPING
      */
-    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_METER_CLASS,
+    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_METER_CLASS_OR,
 
     /**
-     * @brief Action set_tunnel_mapping, set_private_link_mapping parameter METER_CLASS_OVERRIDE
+     * @brief Action parameter DASH tunnel id
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_DASH_TUNNEL
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_TUNNEL_MAPPING or SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_PRIVATE_LINK_MAPPING
+     */
+    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_DASH_TUNNEL_ID,
+
+    /**
+     * @brief Action parameter flow re-simulation requested
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
      * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_TUNNEL_MAPPING or SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_PRIVATE_LINK_MAPPING
      */
-    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_METER_CLASS_OVERRIDE,
+    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_FLOW_RESIMULATION_REQUESTED,
 
     /**
-     * @brief Action set_private_link_mapping parameter OVERLAY_SIP
+     * @brief Action parameter routing actions disabled in flow re-simulation
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_TUNNEL_MAPPING or SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_PRIVATE_LINK_MAPPING
+     */
+    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ROUTING_ACTIONS_DISABLED_IN_FLOW_RESIMULATION,
+
+    /**
+     * @brief Action parameter overlay sip
      *
      * @type sai_ip_address_t
      * @flags CREATE_AND_SET
@@ -151,7 +174,17 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_OVERLAY_SIP,
 
     /**
-     * @brief Action set_private_link_mapping parameter OVERLAY_DIP
+     * @brief Action parameter overlay sip mask
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_PRIVATE_LINK_MAPPING
+     */
+    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_OVERLAY_SIP_MASK,
+
+    /**
+     * @brief Action parameter overlay dip
      *
      * @type sai_ip_address_t
      * @flags CREATE_AND_SET
@@ -161,7 +194,17 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_OVERLAY_DIP,
 
     /**
-     * @brief Action set_private_link_mapping parameter DASH_ENCAPSULATION
+     * @brief Action parameter overlay dip mask
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     * @validonly SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_ACTION == SAI_OUTBOUND_CA_TO_PA_ENTRY_ACTION_SET_PRIVATE_LINK_MAPPING
+     */
+    SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_OVERLAY_DIP_MASK,
+
+    /**
+     * @brief Action parameter DASH encapsulation
      *
      * @type sai_dash_encapsulation_t
      * @flags CREATE_AND_SET
@@ -171,7 +214,7 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_DASH_ENCAPSULATION,
 
     /**
-     * @brief Action set_private_link_mapping parameter TUNNEL_KEY
+     * @brief Action parameter tunnel key
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -181,9 +224,7 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
     SAI_OUTBOUND_CA_TO_PA_ENTRY_ATTR_TUNNEL_KEY,
 
     /**
-     * @brief Attach a counter
-     *
-     * When it is empty, then packet hits won't be counted
+     * @brief Attach a counter. When it is empty, then packet hits won't be counted.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -216,7 +257,7 @@ typedef enum _sai_outbound_ca_to_pa_entry_attr_t
 } sai_outbound_ca_to_pa_entry_attr_t;
 
 /**
- * @brief Create dash_outbound_ca_to_pa_outbound_ca_to_pa_entry
+ * @brief Create outbound CA to PA entry
  *
  * @param[in] outbound_ca_to_pa_entry Entry
  * @param[in] attr_count Number of attributes
@@ -230,7 +271,7 @@ typedef sai_status_t (*sai_create_outbound_ca_to_pa_entry_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Remove dash_outbound_ca_to_pa_outbound_ca_to_pa_entry
+ * @brief Remove outbound CA to PA entry
  *
  * @param[in] outbound_ca_to_pa_entry Entry
  *
@@ -240,7 +281,7 @@ typedef sai_status_t (*sai_remove_outbound_ca_to_pa_entry_fn)(
         _In_ const sai_outbound_ca_to_pa_entry_t *outbound_ca_to_pa_entry);
 
 /**
- * @brief Set attribute for dash_outbound_ca_to_pa_outbound_ca_to_pa_entry
+ * @brief Set attribute for outbound CA to PA entry
  *
  * @param[in] outbound_ca_to_pa_entry Entry
  * @param[in] attr Attribute
@@ -252,7 +293,7 @@ typedef sai_status_t (*sai_set_outbound_ca_to_pa_entry_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get attribute for dash_outbound_ca_to_pa_outbound_ca_to_pa_entry
+ * @brief Get attribute for outbound CA to PA entry
  *
  * @param[in] outbound_ca_to_pa_entry Entry
  * @param[in] attr_count Number of attributes
@@ -266,7 +307,7 @@ typedef sai_status_t (*sai_get_outbound_ca_to_pa_entry_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Bulk create dash_outbound_ca_to_pa_outbound_ca_to_pa_entry
+ * @brief Bulk create outbound CA to PA entry
  *
  * @param[in] object_count Number of objects to create
  * @param[in] outbound_ca_to_pa_entry List of object to create
@@ -291,7 +332,7 @@ typedef sai_status_t (*sai_bulk_create_outbound_ca_to_pa_entry_fn)(
         _Out_ sai_status_t *object_statuses);
 
 /**
- * @brief Bulk remove dash_outbound_ca_to_pa_outbound_ca_to_pa_entry
+ * @brief Bulk remove outbound CA to PA entry
  *
  * @param[in] object_count Number of objects to remove
  * @param[in] outbound_ca_to_pa_entry List of objects to remove

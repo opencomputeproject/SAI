@@ -231,6 +231,9 @@ typedef enum _sai_port_breakout_mode_type_t
     /** 4 lanes breakout Mode */
     SAI_PORT_BREAKOUT_MODE_TYPE_4_LANE = 2,
 
+    /** 8 lanes breakout Mode */
+    SAI_PORT_BREAKOUT_MODE_TYPE_8_LANE = 3,
+
     /** Breakout mode max count */
     SAI_PORT_BREAKOUT_MODE_TYPE_MAX
 } sai_port_breakout_mode_type_t;
@@ -2281,22 +2284,26 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_ARS_PORT_LOAD_SCALING_FACTOR,
 
     /**
-     * @brief Enable historical or past port load quality measure in switch pipeline
+     * @brief Enable historical or past port load quality measure in switch pipeline.
+     * This attribute is deprecated and SAI_PORT_ATTR_ARS_PORT_LOAD_PAST_WEIGHT value will indicate if this metric is enabled or not.
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
      * @validonly SAI_PORT_ATTR_ARS_ENABLE == true
+     * @deprecated true
      */
     SAI_PORT_ATTR_ARS_PORT_LOAD_PAST_ENABLE,
 
     /**
      * @brief Enable future load quality measure in switch pipeline
+     * This attribute is deprecated and SAI_PORT_ATTR_ARS_PORT_LOAD_FUTURE_WEIGHT value will indicate if this metric is enabled or not.
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
      * @validonly SAI_PORT_ATTR_ARS_ENABLE == true
+     * @deprecated true
      */
     SAI_PORT_ATTR_ARS_PORT_LOAD_FUTURE_ENABLE,
 
@@ -2486,6 +2493,42 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_CABLE_TYPE,
 
     /**
+     * @brief Assign weight in percent to past port load quality measure in switch pipeline. All quality measures if add up to less then 100 then remaining value is used for vendor specific internal weights.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_ATTR_ARS_PORT_LOAD_PAST_WEIGHT,
+
+    /**
+     * @brief Assign weight in percent to future load quality measure in switch pipeline. All quality measures if add up to less then 100 then remaining value is used for vendor specific internal weights.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_ATTR_ARS_PORT_LOAD_FUTURE_WEIGHT,
+
+    /**
+     * @brief On NPUs that support POE, read the associated POE port ID
+     *
+     * @type sai_object_id_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_POE_PORT
+     * @allownull true
+     */
+    SAI_PORT_ATTR_POE_PORT_ID,
+
+    /**
+     * @brief The maximum size of SAI_PORT_ATTR_JSON_FORMATTED_DEBUG_DATA in bytes.
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_JSON_FORMATTED_DEBUG_DATA_SIZE,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
@@ -2494,7 +2537,10 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /** End of custom range base */
-    SAI_PORT_ATTR_CUSTOM_RANGE_END
+    SAI_PORT_ATTR_CUSTOM_RANGE_END,
+
+    /** Extensions range base */
+    SAI_PORT_ATTR_EXTENSIONS_RANGE_BASE = 0x20000000
 
 } sai_port_attr_t;
 
@@ -3221,7 +3267,10 @@ typedef enum _sai_port_stat_t
     SAI_PORT_STAT_OUT_DROP_REASON_RANGE_END = 0x00002fff,
 
     /** Port stat range end */
-    SAI_PORT_STAT_END
+    SAI_PORT_STAT_END,
+
+    /** Extensions range base */
+    SAI_PORT_STAT_EXTENSIONS_RANGE_BASE = 0x20000000
 
 } sai_port_stat_t;
 

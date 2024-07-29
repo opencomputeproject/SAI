@@ -914,13 +914,13 @@ typedef enum _sai_tunnel_term_table_entry_type_t
     /** Tunnel termination table point to point entry match on dst & src IP & tunnel type */
     SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2P,
 
-    /** Tunnel termination table point to multi point entry match on src IP & dst IP+mask & tunnel type */
+    /** Tunnel termination table destination point to multi point source entry match on dst IP & src IP+mask & tunnel type */
     SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2MP,
 
-    /** Tunnel termination table multi point to point entry match on src IP+mask & dst IP & tunnel type */
+    /** Tunnel termination table multi point destination to point source entry match on dst IP+mask & src IP & tunnel type */
     SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_MP2P,
 
-    /** Tunnel termination table multi point to multi point entry match on src IP+mask & dst IP+mask & tunnel type */
+    /** Tunnel termination table multi point to multi point entry match on dst IP+mask & src IP+mask & tunnel type */
     SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_MP2MP,
 
 } sai_tunnel_term_table_entry_type_t;
@@ -937,10 +937,13 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
 
     /**
      * @brief Tunnel virtual router id
+     * This attribute is deprecated and removed from
+     * the termination entry key
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_VIRTUAL_ROUTER
+     * @deprecated true
      */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_VR_ID = SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_START,
 
@@ -968,7 +971,7 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
      * @type sai_ip_address_t
      * @flags CREATE_ONLY
      * @default 0.0.0.0
-     * @validonly SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2MP or SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_MP2MP
+     * @validonly SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_MP2P or SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_MP2MP
      */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_DST_IP_MASK,
 
@@ -988,7 +991,7 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
      * @type sai_ip_address_t
      * @flags CREATE_ONLY
      * @default 0.0.0.0
-     * @validonly SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_MP2P or SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_MP2MP
+     * @validonly SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_P2MP or SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_TYPE == SAI_TUNNEL_TERM_TABLE_ENTRY_TYPE_MP2MP
      */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_SRC_IP_MASK,
 

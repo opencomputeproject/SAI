@@ -10,6 +10,7 @@ ASIC - Application Specific Integrated Circuit
 BFD - Bidirectional Forwarding Detection
 BFDV6 - Bidirectional Forwarding Detection for IPv6
 BGP - Border Gateway Protocol
+BMTOR - Behavioral Model Top-of-Rack
 BOS - Bottom Of Stack
 BW - Bandwidth
 CAM - Content Addressable Memory
@@ -33,6 +34,7 @@ DLR - Dead Lock Recovery
 DMA - Direct Memory Access
 DNAPT - Destination Network Address Port Translation
 DNAT - Destination Network Address Translation
+DPU - Data Processing Unit
 DSCP - Differentiated Services Code Point
 DTEL - Data Plane Telemetry
 ECC - Error Correction Code
@@ -42,6 +44,7 @@ ECN - Explicit Congestion Notification
 ECT - ECN Capable Transport
 EEE - Electrical and Electronics Engineering
 EEPROM - Electrically erasable programmable read-only memory
+ENI - Elastic Network Interface
 ERSPAN - Encapsulated Remote SPAN
 ESN - Extended Sequence Number
 EWMA - Exponentially Weighted Moving Average
@@ -52,6 +55,7 @@ FEC - Forward Error Correction
 FPGA - Field Programmable Gate Array
 FW  - Firmware
 GCM - Galois Counter Mode
+GENETLINK - Generic Nelink
 GMII - Gigabit Media-Independent Interface
 GNMI - gRPC Network Management Interface
 GPB - Google Protocol Buffers
@@ -86,6 +90,7 @@ LSP - Label Switched Path
 MAC - Medium Access Control
 MDIO - Management Data Input/Output
 MDIX - Medium Dependent Interface Crossover
+MILLI - milli (1/1000)
 MMU - Memory Management Unit
 MPLS - Multi Protocol Label Switching
 MTU - Maximum Transmission Unit
@@ -104,14 +109,17 @@ PAM4 - Pulse Amplitude Modulation 4-level
 PBS - Peak Burst Size
 PCI - Peripheral Component Interconnect
 PCS - Physical Coding Sublayer
+PD - Powered Device
 PFC - Priority Flow Control
 PHP - Penultimate Hop Pop
 PIR - Peak Information Rate
 PMD - Physical Medium Dependent
 PMOS - P-channel Metal Oxide Semiconductor
 PN - Packet Number
+POE - Power over Ethernet
 PRBS - Pseudorandom binary sequence
 PSC - PHB Scheduling Class
+PSE - Power Sourcing Equipment
 PSP - Penultimate Segment Pop
 PTP - Precision time protocol
 QOS - Quality of Service
@@ -153,11 +161,13 @@ TOS - Type Of Service
 TPID - Tag Protocol Identifier
 TTL - Time to Leave
 TWAMP - Two-Way Active Measurement Protocol
+UART - Universal Asynchronous Receiver/Transmitter
 UDF - User-Defined Field
 UDP - User Datagram Protocol
 USD - Ultimate Segment Decapsulation
 USP - Ultimate Segment Pop
 USXGMII - Universal Serial 10 Gigabit Media Independent Interface
+VNET - Virtual Network
 VNI - Virtual Network Interface
 VNID - Virtual Network Identifier
 VOQ - Virtual Output Queue
