@@ -2413,6 +2413,7 @@ sub ProcessSingleObjectType
         WriteSource ".isresourcetype                = $isresourcetype,";
         WriteSource ".isdeprecated                  = $isdeprecated,";
         WriteSource ".isconditionrelaxed            = $isrelaxed,";
+        WriteSource ".iscustom                      = ($attr >= 0x10000000) && ($attr < 0x20000000)";
 
         WriteSource "};";
 
@@ -2541,7 +2542,8 @@ sub CreateMetadataForAttributes
         WriteSource "};";
     }
 
-    WriteHeader "extern const sai_attr_metadata_t* const* const sai_metadata_attr_by_object_type[];";
+    # This is disabled since it's object type can't be used as index any more
+    # WriteHeader "extern const sai_attr_metadata_t* const* const sai_metadata_attr_by_object_type[];";
     WriteSource "const sai_attr_metadata_t* const* const sai_metadata_attr_by_object_type[] = {";
 
     for my $ot (@objects)
@@ -2564,10 +2566,6 @@ sub CreateMetadataForAttributes
 
     WriteHeader "extern const size_t sai_metadata_attr_by_object_type_count;";
     WriteSource "const size_t sai_metadata_attr_by_object_type_count = $count;";
-
-    WriteSectionComment "Define SAI_OBJECT_TYPE_EXTENSIONS_MAX";
-
-    WriteHeader "#define SAI_OBJECT_TYPE_EXTENSIONS_MAX ((sai_object_type_t)$count)";
 }
 
 sub CreateEnumHelperMethod
@@ -2621,6 +2619,7 @@ sub ProcessStructValueType
     return "SAI_ATTR_VALUE_TYPE_UINT32"           if $type eq "uint32_t";
     return "SAI_ATTR_VALUE_TYPE_UINT32"           if $type eq "sai_uint32_t";
     return "SAI_ATTR_VALUE_TYPE_INT32"            if $type =~ /^sai_\w+_type_t$/; # enum
+    return "SAI_ATTR_VALUE_TYPE_UINT32_RANGE"     if $type eq "sai_u32_range_t";
     return "SAI_ATTR_VALUE_TYPE_NAT_ENTRY_DATA"   if $type eq "sai_nat_entry_data_t";
     return "SAI_ATTR_VALUE_TYPE_ENCRYPT_KEY"      if $type eq "sai_encrypt_key_t";
     return "SAI_ATTR_VALUE_TYPE_AUTH_KEY"         if $type eq "sai_auth_key_t";
@@ -3244,10 +3243,6 @@ sub CreateApisStruct
     WriteHeader "} sai_apis_t;";
 
     my $count = scalar @apis;
-
-    WriteSectionComment "Define SAI_API_EXTENSIONS_MAX";
-
-    WriteHeader "#define SAI_API_EXTENSIONS_MAX ((sai_api_t)$count)";
 }
 
 sub CreateGlobalApis
@@ -4081,7 +4076,7 @@ sub ProcessSingleNonObjectId
 
         # allowed entries on object structs
 
-        if (not $type =~ /^sai_(nat_entry_data|mac|object_id|vlan_id|ip_address|ip_prefix|acl_chain|label_id|ip6|uint8|uint16|uint32|\w+_type)_t$/)
+        if (not $type =~ /^sai_(nat_entry_data|mac|object_id|vlan_id|ip_address|ip_prefix|acl_chain|label_id|ip6|uint8|uint16|uint32|u32_range|\w+_type)_t$/)
         {
             LogError "struct member $member type '$type' is not allowed on struct $structname";
             next;
@@ -4918,6 +4913,98 @@ sub CreateSwitchNotificationAttributesList
     WriteHeader "#define SAI_METADATA_SWITCH_NOTIFY_ATTR_COUNT $count";
 }
 
+sub CreateSwitchNotificationsUpdateMethods
+{
+    #
+    # This function will generate methods for populate switch notifications
+    # from attribute list, this will be handy when auto populating pointers
+    #
+
+    WriteSectionComment "SAI Update Switch Notification Pointers";
+
+    WriteHeader "sai_status_t sai_metadata_update_switch_notification_pointers(";
+    WriteHeader "    _Inout_ sai_switch_notifications_t *sn,";
+    WriteHeader "    _In_ uint32_t count,";
+    WriteHeader "    _In_ const sai_attribute_t* attrs);";
+
+    WriteSource "sai_status_t sai_metadata_update_switch_notification_pointers(";
+    WriteSource "    _Inout_ sai_switch_notifications_t *sn,";
+    WriteSource "    _In_ uint32_t count,";
+    WriteSource "    _In_ const sai_attribute_t* attrs)";
+    WriteSource "{";
+    WriteSource "if (sn == NULL || attrs == NULL)";
+    WriteSource "{";
+    WriteSource "SAI_META_LOG_ERROR(\"sn or attrs parameter is NULL\");";
+    WriteSource "return SAI_STATUS_INVALID_PARAMETER;";
+    WriteSource "}";
+    WriteSource "";
+    WriteSource "uint32_t idx = 0;";
+    WriteSource "";
+    WriteSource "for (; idx < count; idx++)";
+    WriteSource "{";
+    WriteSource "switch(attrs[idx].id)";
+    WriteSource "{";
+
+    for my $name (GetSwitchPointersInOrder(keys %NOTIFICATIONS))
+    {
+        next if not $name =~ /^sai_(\w+)_notification_fn/;
+
+        WriteSource "case SAI_SWITCH_ATTR_" . uc($1) . "_NOTIFY:";
+        WriteSource "    sn->on_$1 = (sai_$1_notification_fn)attrs[idx].value.ptr;";
+        WriteSource "    break;";
+    }
+
+    WriteSource "default:";
+    WriteSource "    break;";
+
+    WriteSource "}";
+    WriteSource "}";
+    WriteSource "return SAI_STATUS_SUCCESS;";
+    WriteSource "}";
+
+    WriteSectionComment "SAI Update Attribute Notification Pointers";
+
+    WriteHeader "sai_status_t sai_metadata_update_attribute_notification_pointers(";
+    WriteHeader "    _In_ const sai_switch_notifications_t *sn,";
+    WriteHeader "    _In_ uint32_t count,";
+    WriteHeader "    _Inout_ sai_attribute_t* attrs);";
+
+    WriteSource "sai_status_t sai_metadata_update_attribute_notification_pointers(";
+    WriteSource "    _In_ const sai_switch_notifications_t *sn,";
+    WriteSource "    _In_ uint32_t count,";
+    WriteSource "    _Inout_ sai_attribute_t* attrs)";
+    WriteSource "{";
+    WriteSource "if (sn == NULL || attrs == NULL)";
+    WriteSource "{";
+    WriteSource "SAI_META_LOG_ERROR(\"sn or attrs parameter is NULL\");";
+    WriteSource "return SAI_STATUS_INVALID_PARAMETER;";
+    WriteSource "}";
+    WriteSource "";
+    WriteSource "uint32_t idx = 0;";
+    WriteSource "";
+    WriteSource "for (; idx < count; idx++)";
+    WriteSource "{";
+    WriteSource "switch(attrs[idx].id)";
+    WriteSource "{";
+
+    for my $name (GetSwitchPointersInOrder(keys %NOTIFICATIONS))
+    {
+        next if not $name =~ /^sai_(\w+)_notification_fn/;
+
+        WriteSource "case SAI_SWITCH_ATTR_" . uc($1) . "_NOTIFY:";
+        WriteSource "    attrs[idx].value.ptr = (void*)sn->on_$1;";
+        WriteSource "    break;";
+    }
+
+    WriteSource "default:";
+    WriteSource "    break;";
+
+    WriteSource "}";
+    WriteSource "}";
+    WriteSource "return SAI_STATUS_SUCCESS;";
+    WriteSource "}";
+}
+
 sub CreateSwitchPointersStruct
 {
     #
@@ -5525,6 +5612,8 @@ CreateNotificationEnum();
 CreateNotificationNames();
 
 CreateSwitchNotificationAttributesList();
+
+CreateSwitchNotificationsUpdateMethods();
 
 CreateSwitchPointersStruct();
 

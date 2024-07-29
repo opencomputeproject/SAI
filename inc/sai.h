@@ -79,6 +79,8 @@
 #include "saigenericprogrammable.h"
 #include "saitwamp.h"
 #include "saiversion.h"
+#include "saipoe.h"
+#include "saiicmpecho.h"
 
 /**
  * @defgroup SAI SAI - Entry point specific API definitions.
@@ -146,13 +148,14 @@ typedef enum _sai_api_t
     SAI_API_ARS              = 48, /**<sai_ars_api_t */
     SAI_API_ARS_PROFILE      = 49, /**<sai_ars_api_profile_t */
     SAI_API_TWAMP            = 50, /**< sai_twamp_api_t */
+    SAI_API_POE              = 51, /**< sai_poe_api_t */
+    SAI_API_ICMP_ECHO        = 52, /**< sai_icmp_echo_api_t */
     SAI_API_MAX,                   /**< total number of APIs */
 
-    /** Custom range base value */
-    SAI_API_CUSTOM_RANGE_START = 256,
-
-    /** End of custom range base */
-    SAI_API_CUSTOM_RANGE_END
+    /**
+     * @brief Extensions range base
+     */
+    SAI_API_EXTENSIONS_RANGE_BASE = 0x20000000,
 } sai_api_t;
 
 /**

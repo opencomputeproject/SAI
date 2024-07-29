@@ -177,6 +177,7 @@ sub BuildCommitHistory
             next if $enumName eq "SAI_API_MAX";
             next if $enumName eq "SAI_OBJECT_TYPE_MAX";
             next if $enumName eq "SAI_PORT_INTERFACE_TYPE_MAX";
+            next if $enumName eq "SAI_PORT_BREAKOUT_MODE_TYPE_MAX";
 
             LogError "wrong initializer on $enumName $enumValue" if not $enumValue =~ /^0x[0-9a-f]{8}$/;
 
@@ -207,6 +208,7 @@ sub BuildCommitHistory
                 {
                     #print "elsif (defined $enumName $IGNORED{$enumName} and $IGNORED{$enumName} eq $HISTORY{$enumTypeName}{$enumName}{name})";
 
+                    next if $HISTORY{$enumTypeName}{$enumValue} eq "SAI_PORT_BREAKOUT_MODE_TYPE_MAX";
                     LogWarning "Both enums have the same value $enumName and $HISTORY{$enumTypeName}{$enumValue} = $enumValue";
                 }
             }
@@ -238,7 +240,7 @@ if (defined $optionHistoryFile)
 
     eval($history) or die "failed to eval history file: $optionHistoryFile";
 
-    die "history file $optionHistoryFile not complete, missing too many keys" if scalar keys %HISTORY < 280;
+    die "history file $optionHistoryFile not complete, missing too many keys" if scalar keys %HISTORY < 314;
 
     LogInfo "loaded history from $optionHistoryFile";
 }
