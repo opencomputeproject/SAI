@@ -772,7 +772,7 @@ can be queried on each fabric port retrieved from the fabric port list switch at
 ```c
 
 /**
-* @brief Fabric port reachability for all remote reachable switches
+* @brief List of switch id's of all remote reachable switches 
 *
 * @type sai_u16_list_t
 * @flags READ_ONLY
