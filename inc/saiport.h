@@ -587,6 +587,22 @@ typedef enum _sai_port_path_tracing_timestamp_type_t
 } sai_port_path_tracing_timestamp_type_t;
 
 /**
+ * @brief Attribute data for #SAI_PORT_ATTR_UNRELIABLE_LOSS_OF_SIGNAL
+ */
+typedef enum _sai_port_unreliable_loss_of_signal_t
+{
+    /**  Unreliable loss of signal is not enabled for transceiver */
+    SAI_PORT_UNRELIABLE_LOSS_OF_SIGNAL_DISABLE,
+
+    /**  Unreliable loss of signal is enabled for transceiver */
+    SAI_PORT_UNRELIABLE_LOSS_OF_SIGNAL_ENABLE,
+
+    /**  Unreliable loss of signal is enabled only for interested transceiver */
+    SAI_PORT_UNRELIABLE_LOSS_OF_SIGNAL_AUTO,
+
+} sai_port_unreliable_loss_of_signal_t;
+
+/**
  * @brief Attribute Id in sai_set_port_attribute() and
  * sai_get_port_attribute() calls
  */
@@ -2527,6 +2543,15 @@ typedef enum _sai_port_attr_t
      * @flags READ_ONLY
      */
     SAI_PORT_ATTR_JSON_FORMATTED_DEBUG_DATA_SIZE,
+
+    /**
+     * @brief Unreliable Loss of Signal
+     *
+     * @type sai_port_unreliable_loss_of_signal_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_UNRELIABLE_LOSS_OF_SIGNAL_DISABLE
+     */
+    SAI_PORT_ATTR_UNRELIABLE_LOSS_OF_SIGNAL,
 
     /**
      * @brief End of attributes
