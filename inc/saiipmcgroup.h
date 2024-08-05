@@ -94,7 +94,7 @@ typedef enum _sai_ipmc_group_member_attr_t
      *
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE, SAI_OBJECT_TYPE_TUNNEL
+     * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE, SAI_OBJECT_TYPE_TUNNEL, SAI_OBJECT_TYPE_NEXT_HOP
      */
     SAI_IPMC_GROUP_MEMBER_ATTR_IPMC_OUTPUT_ID,
 
