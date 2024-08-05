@@ -135,6 +135,7 @@ SAK - Secure Association Key
 SC - Secure Channel
 SCI - Secure Channel Identifier
 SDK - Software Development Kit
+SER - Soft Error Rate
 SFI - SerDes Framer Interface
 SFLOW - Sampled Flow
 SG - (S,G) Source-specific multicast
