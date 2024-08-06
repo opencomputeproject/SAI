@@ -519,6 +519,15 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_OUTBOUND_ROUTING_GROUP_ID,
 
     /**
+     * @brief Action parameter is HA flow owner
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_ENI_ATTR_IS_HA_FLOW_OWNER,
+
+    /**
      * @brief End of attributes
      */
     SAI_ENI_ATTR_END,
