@@ -74,6 +74,25 @@ typedef enum _sai_port_oper_status_t
 
 } sai_port_oper_status_t;
 
+typedef enum _sai_port_errors_status_t
+{
+    /** No errors */
+    SAI_PORT_ERROR_CLEAR=0x0,
+
+    SAI_PORT_ERROR_MAC_LOCAL_FAULT=0x1,
+
+    SAI_PORT_ERROR_MAC_REMOTE_FAULT=0x2,
+
+    SAI_PORT_ERROR_LINK_TRAINING_FAILED=0x4,
+
+    SAI_PORT_ERROR_AUTONEG_FAILED=0x8,
+
+    SAI_PORT_ERROR_LINK_TRAINING_FAILED=0x10,
+
+    SAI_PORT_ERROR_SET_SPEED_FAILED=0x20,
+
+} sai_port_errors_status_t;
+
 /**
  * @brief Defines the operational status of the port
  */
@@ -90,6 +109,23 @@ typedef struct _sai_port_oper_status_notification_t
     sai_port_oper_status_t port_state;
 
 } sai_port_oper_status_notification_t;
+
+typedef struct _sai_port_oper_status_extended_notification_t
+{
+    /**
+     * @brief Port id.
+     *
+     * @objects SAI_OBJECT_TYPE_PORT
+     */
+    sai_object_id_t port_id;
+
+    /** Port operational status */
+    sai_port_oper_status_t port_state;
+
+    /** Bitmask of various port error status */   
+    sai_port_errors_status_t port_error_status;
+
+} sai_port_oper_status_extended_notification_t;
 
 /**
  * @brief Attribute data for #SAI_PORT_ATTR_GLOBAL_FLOW_CONTROL_MODE
@@ -2529,6 +2565,18 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_JSON_FORMATTED_DEBUG_DATA_SIZE,
 
     /**
+     * @brief Various port error status
+     *
+     * It can be used to query the capability of the port to report
+     * various error and fault status
+     *
+     * @type sai_port_errors_status_t
+     * @flags READ_ONLY
+     * @default SAI_PORT_ERROR_CLEAR
+     */
+    SAI_PORT_ATTR_ERROR_STATUS,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
@@ -3397,6 +3445,20 @@ typedef sai_status_t (*sai_clear_port_all_stats_fn)(
 typedef void (*sai_port_state_change_notification_fn)(
         _In_ uint32_t count,
         _In_ const sai_port_oper_status_notification_t *data);
+
+/**
+ * @brief Port state change notification
+ *
+ * Passed as a parameter into sai_initialize_switch()
+ *
+ * @count data[count]
+ *
+ * @param[in] count Number of notifications
+ * @param[in] data Array of port operational status extended with error status
+ */
+typedef void (*sai_port_state_change_extended_notification_fn)(
+        _In_ uint32_t count,
+        _In_ const sai_port_oper_status_extended_notification_t *data);
 
 /**
  * @brief Port host tx ready notification
