@@ -93,6 +93,9 @@ defined_attr_t* defined_attributes = NULL;
 /* custom ranges start are the same for all objects */
 
 #define CUSTOM_ATTR_RANGE_START SAI_PORT_ATTR_CUSTOM_RANGE_START
+#define EXTENSION_RANGE_START (0x20000000)
+#define EXTENSION_OBJECT_TYPE_COUNT (SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END - SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START)
+#define TOTAL_OBJECT_TYPE_COUNT (EXTENSION_OBJECT_TYPE_COUNT + SAI_OBJECT_TYPE_MAX)
 
 bool is_extensions_enum(
         _In_ const sai_enum_metadata_t* emd)
@@ -108,7 +111,7 @@ void check_all_enums_name_pointers()
 
     size_t i = 0;
 
-    META_ASSERT_TRUE(sai_metadata_all_enums_count > 100, "we need to have some enums");
+    META_ASSERT_TRUE(sai_metadata_all_enums_count > 300, "we need to have some enums");
 
     for (; i < sai_metadata_all_enums_count; ++i)
     {
@@ -218,7 +221,17 @@ void check_all_enums_values()
                      * not flags, attribute value can't be used as array index.
                      */
 
-                    META_ENUM_LOG_WARN(emd, "contains custom range attibutes");
+                    META_ENUM_LOG_WARN(emd, "contains custom range attributes");
+                }
+                else if (value == EXTENSION_RANGE_START)
+                {
+                    /*
+                     * Object contains extensions attributes, they still needs
+                     * to be increasing by 1 but since those are not flags,
+                     * attribute value can't be used as array index.
+                     */
+
+                    META_ENUM_LOG_WARN(emd, "contains extensions range attributes");
                 }
                 else
                 {
@@ -237,9 +250,13 @@ void check_all_enums_values()
 
             last = emd->values[j];
 
-            if (value >= CUSTOM_ATTR_RANGE_START && value < (2 * CUSTOM_ATTR_RANGE_START))
+            if (value >= CUSTOM_ATTR_RANGE_START && value < EXTENSION_RANGE_START)
             {
                 /* value is in custom range */
+            }
+            else if (value >= EXTENSION_RANGE_START)
+            {
+                /* value is in extensions range */
             }
             else
             {
@@ -357,9 +374,36 @@ void check_object_type()
 
         int value = sai_metadata_enum_sai_object_type_t.values[i];
 
-        META_ASSERT_TRUE(value == last + 1, "object type values must be consecutive numbers");
+        if (last < value && value == EXTENSION_RANGE_START)
+        {
+            /* ok, but object type can't be used as array index any more */
+        }
+        else
+        {
+            META_ASSERT_TRUE(value == last + 1, "object type values must be consecutive numbers");
+        }
 
         last = value;
+    }
+
+    /*
+     * In long distance future this could be relaxed, but it will have impact
+     * on sonic and vendors.  As currently object type is encoded on a single
+     * byte, and with this extensions change it will be encoded on 9 bits in
+     * sonic:
+     * - 8 bits for object type under SAI_OBJECT_TYPE_MAX) and extensions bit equal to 0
+     * - 8 bits for extension object types reduced by 0x20000000 and extension bit seq to 1
+     * This approach will allow to encode 255 object type for each range.
+     */
+    META_ASSERT_TRUE(SAI_OBJECT_TYPE_MAX < 256, "object types must be able to encode on 1 byte");
+
+    i = SAI_OBJECT_TYPE_NULL;
+
+    for (; i < SAI_OBJECT_TYPE_MAX; i++)
+    {
+        int value = sai_metadata_enum_sai_object_type_t.values[i];
+
+        META_ASSERT_TRUE(value == (int)i, "values from SAI_OBJECT_TYPE_NULL to SAI_OBJECT_TYPE_MAX must increase by 1");
     }
 }
 
@@ -367,20 +411,21 @@ void check_attr_by_object_type()
 {
     META_LOG_ENTER();
 
-    META_ASSERT_TRUE(SAI_OBJECT_TYPE_EXTENSIONS_MAX - SAI_OBJECT_TYPE_MAX < 50, "too many experimental object types");
+    /*
+     * Extensions object types for now should be minimum, since it could be
+     * encoded on 1 byte in OID, but this could be later on relaxed.
+     */
+    META_ASSERT_TRUE(EXTENSION_OBJECT_TYPE_COUNT < 64, "too many experimental object types");
 
-    META_ASSERT_TRUE(SAI_OBJECT_TYPE_MAX <= SAI_OBJECT_TYPE_EXTENSIONS_MAX, "invalid object type count in metadata");
-    META_ASSERT_TRUE(sai_metadata_attr_by_object_type_count == SAI_OBJECT_TYPE_EXTENSIONS_MAX, "invalid object type count in metadata");
+    META_ASSERT_TRUE(sai_metadata_attr_by_object_type_count == (EXTENSION_OBJECT_TYPE_COUNT + SAI_OBJECT_TYPE_MAX), "invalid object type count in metadata");
 
-    size_t i = 0;
+    size_t idx = 1;
 
-    for (; i < sai_metadata_attr_by_object_type_count; ++i)
+    for (; sai_metadata_all_object_type_infos[idx]; idx++)
     {
-        META_LOG_DEBUG("processing %zu, %s", i, sai_metadata_get_object_type_name((sai_object_type_t)i));
+        META_LOG_DEBUG("processing %zu, %s", idx, sai_metadata_get_object_type_name(sai_metadata_all_object_type_infos[idx]->objecttype));
 
-        META_ASSERT_NOT_NULL(sai_metadata_attr_by_object_type[i]);
-
-        const sai_attr_metadata_t * const* const ot = sai_metadata_attr_by_object_type[i];
+        const sai_attr_metadata_t * const* const ot = sai_metadata_all_object_type_infos[idx]->attrmetadata;
 
         size_t index = 0;
 
@@ -388,7 +433,7 @@ void check_attr_by_object_type()
         {
             sai_object_type_t current = ot[index]->objecttype;
 
-            META_ASSERT_TRUE(current == i, "object type must be equal on object type list");
+            META_ASSERT_TRUE(current == sai_metadata_all_object_type_infos[idx]->objecttype, "object type must be equal on object type list");
 
             /*
              * For Switch Attribute we have crossed > 300 with Vendor extension
@@ -397,17 +442,29 @@ void check_attr_by_object_type()
 
             META_ASSERT_TRUE(index < 300, "object defines > 300 attributes, metadata bug?");
             META_ASSERT_TRUE(current > SAI_OBJECT_TYPE_NULL, "object type must be > NULL");
-            META_ASSERT_TRUE(current < SAI_OBJECT_TYPE_EXTENSIONS_MAX, "object type must be < MAX");
+
+            if (current > SAI_OBJECT_TYPE_NULL && current < SAI_OBJECT_TYPE_MAX)
+            {
+                /* ok */
+            }
+            else if (current >= (int)SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START && current < (int)SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END)
+            {
+                /* ok */
+            }
+            else
+            {
+                META_ASSERT_FAIL("invalid object type number: %d", current);
+            }
 
             /* META_LOG_DEBUG("processing indexer %lu", index); */
 
             index++;
         }
 
-        META_LOG_DEBUG("attr index %zu for %s", index, sai_metadata_get_object_type_name((sai_object_type_t)i));
+        META_LOG_DEBUG("attr index %zu for %s", index, sai_metadata_get_object_type_name(sai_metadata_all_object_type_infos[idx]->objecttype));
     }
 
-    META_ASSERT_NULL(sai_metadata_attr_by_object_type[i]);
+    META_ASSERT_NULL(sai_metadata_all_object_type_infos[idx]);
 }
 
 bool is_valid_object_type(
@@ -415,7 +472,15 @@ bool is_valid_object_type(
 {
     META_LOG_ENTER();
 
-    return (ot > SAI_OBJECT_TYPE_NULL) && (ot < SAI_OBJECT_TYPE_EXTENSIONS_MAX);
+    /* possible later to add custom range, iterate over all OT */
+
+    if (ot > SAI_OBJECT_TYPE_NULL && ot < SAI_OBJECT_TYPE_MAX)
+        return true;
+
+    if (ot >= (int)SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START && ot < (int)SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END)
+        return true;
+
+    return false;
 }
 
 void check_attr_object_type(
@@ -817,7 +882,7 @@ void check_attr_allowed_object_types(
             META_MD_ASSERT_FAIL(md, "invalid allowed object type: %d", ot);
         }
 
-        const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[ot];
+        const sai_object_type_info_t* info = sai_metadata_get_object_type_info(ot);
 
         META_ASSERT_NOT_NULL(info);
 
@@ -2220,7 +2285,7 @@ void check_attr_reverse_graph(
 
         sai_object_type_t depobjecttype = md->allowedobjecttypes[index];
 
-        const sai_object_type_info_t *oi = sai_metadata_all_object_type_infos[depobjecttype];
+        const sai_object_type_info_t *oi = sai_metadata_get_object_type_info(depobjecttype);
 
         META_ASSERT_NOT_NULL(oi->revgraphmembers);
 
@@ -2281,8 +2346,8 @@ void check_attr_reverse_graph(
                             rm->attrmetadata->attrid == md->attrid)
                     {
                         META_LOG_DEBUG("dep %s ot %s attr %s\n",
-                                sai_metadata_enum_sai_object_type_t.valuesnames[depobjecttype],
-                                sai_metadata_enum_sai_object_type_t.valuesnames[md->objecttype],
+                                sai_metadata_get_object_type_name(depobjecttype),
+                                sai_metadata_get_object_type_name(md->objecttype),
                                 md->attridname);
 
                         defined = true;
@@ -2461,7 +2526,7 @@ void check_attr_existing_objects(
      * not be NULL after creation.
      */
 
-    if (sai_metadata_all_object_type_infos[md->objecttype]->isnonobjectid)
+    if (sai_metadata_get_object_type_info(md->objecttype)->isnonobjectid)
     {
         if (md->storedefaultvalue)
         {
@@ -3231,8 +3296,7 @@ void check_attr_default_attrvalue(
         return;
     }
 
-    const sai_object_type_info_t* info =
-        sai_metadata_all_object_type_infos[md->objecttype];
+    const sai_object_type_info_t* info = sai_metadata_get_object_type_info(md->objecttype);
 
     /* search for attribute */
 
@@ -3272,12 +3336,12 @@ void check_attr_default_attrvalue(
     if (count == 0)
     {
         META_MD_ASSERT_FAIL(md, "oid attribute with %s is not present in %s",
-                sai_metadata_all_object_type_infos[md->defaultvalueobjecttype]->objecttypename,
-                sai_metadata_all_object_type_infos[md->objecttype]->objecttypename);
+                sai_metadata_get_object_type_info(md->defaultvalueobjecttype)->objecttypename,
+                sai_metadata_get_object_type_info(md->objecttype)->objecttypename);
     }
 
     META_MD_ASSERT_FAIL(md, "too many attributes with %s for default value attrvalue",
-            sai_metadata_all_object_type_infos[md->defaultvalueobjecttype]->objecttypename);
+            sai_metadata_get_object_type_info(md->defaultvalueobjecttype)->objecttypename);
 }
 
 void check_attr_fdb_flush(
@@ -3379,7 +3443,7 @@ void check_attr_extension_flag(
 
     const sai_object_type_info_t* oi = sai_metadata_get_object_type_info(md->objecttype);
 
-    if (md->attrid >= oi->attridend && md->attrid < CUSTOM_ATTR_RANGE_START)
+    if (md->attrid >= oi->attridend && md->attrid >= EXTENSION_RANGE_START)
     {
         META_ASSERT_TRUE(md->isextensionattr, "attribute %s expected to be extension", md->attridname);
     }
@@ -3478,18 +3542,13 @@ void check_stat_enums()
      * statistics (like PORT, etc) have stat enum values populated.
      */
 
-    size_t i = SAI_OBJECT_TYPE_NULL;
+    size_t i = 1;
 
     int count = 0;
 
-    for (; i <= SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++i)
+    for (; sai_metadata_all_object_type_infos[i] != NULL; ++i)
     {
         const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
-
-        if (info == NULL)
-        {
-            continue;
-        }
 
         if (info->statenum != NULL)
         {
@@ -3497,34 +3556,26 @@ void check_stat_enums()
         }
     }
 
-    META_ASSERT_TRUE(count > 10, "at least some sai_object_type_into_t->statenum must be populated");
+    META_ASSERT_TRUE(count > 20, "at least some sai_object_type_into_t->statenum must be populated");
 }
 
 void check_object_infos()
 {
     META_LOG_ENTER();
 
-    size_t i = SAI_OBJECT_TYPE_NULL;
+    size_t i = 1;
 
-    for (; i <= SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++i)
+    META_ASSERT_NULL(sai_metadata_all_object_type_infos[0]);
+
+    for (; sai_metadata_all_object_type_infos[i] != NULL; ++i)
     {
         const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
 
-        if (i == SAI_OBJECT_TYPE_NULL || i == SAI_OBJECT_TYPE_EXTENSIONS_MAX)
-        {
-            META_ASSERT_NULL(info);
-            continue;
-        }
-
         META_ASSERT_NOT_NULL(info->enummetadata);
-
-        META_ASSERT_TRUE(info->enummetadata->objecttype == i, "should be equal");
-
-        META_ASSERT_TRUE(info->objecttype == i, "object type mismatch");
 
         META_ASSERT_NOT_NULL(info->objecttypename);
 
-        META_LOG_DEBUG("processing object type: %s", sai_metadata_get_object_type_name((sai_object_type_t)i));
+        META_LOG_DEBUG("processing object type: %s", sai_metadata_get_object_type_name(info->objecttype));
 
         META_ASSERT_TRUE(info->attridstart == 0, "attribute enum start should be zero");
         META_ASSERT_TRUE(info->attridend > 0, "attribute enum end must be > 0");
@@ -3561,6 +3612,10 @@ void check_object_infos()
                      */
 
                     has_custom_range_attrs = true;
+                }
+                else if (am->attrid == EXTENSION_RANGE_START)
+                {
+                    has_extensions_attrs = true;
                 }
                 else
                 {
@@ -3626,33 +3681,31 @@ void check_object_infos()
             else
             {
                 META_ENUM_ASSERT_FAIL(info->enummetadata, "end of attributes don't match attr count on %s",
-                        sai_metadata_get_object_type_name((sai_object_type_t)i));
+                        sai_metadata_get_object_type_name(info->objecttype));
             }
         }
     }
+
+    /* guard */
+    META_ASSERT_NULL(sai_metadata_all_object_type_infos[i]);
 }
 
 void check_non_object_id_object_types()
 {
     META_LOG_ENTER();
 
-    size_t i = SAI_OBJECT_TYPE_NULL;
+    size_t idx = 1;
 
-    for (; i <= SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++i)
+    for (; sai_metadata_all_object_type_infos[idx]; ++idx)
     {
-        const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
-
-        if (info == NULL)
-        {
-            continue;
-        }
+        const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[idx];
 
         if (!info->isnonobjectid)
         {
             if (info->structmemberscount != 0 ||
                     info->structmembers != NULL)
             {
-                META_ASSERT_FAIL("object type %zu is non object id but struct members defined", i);
+                META_ASSERT_FAIL("object type %u is non object id but struct members defined", info->objecttype);
             }
 
             continue;
@@ -3768,7 +3821,7 @@ void check_non_object_id_object_types()
 
                         /* non object id struct can't contain object id which is also non object id */
 
-                        const sai_object_type_info_t* sinfo = sai_metadata_all_object_type_infos[ot];
+                        const sai_object_type_info_t* sinfo = sai_metadata_get_object_type_info(ot);
 
                         META_ASSERT_NOT_NULL(sinfo);
 
@@ -3804,13 +3857,13 @@ void check_non_object_id_object_attrs()
 {
     META_LOG_ENTER();
 
-    size_t i = SAI_OBJECT_TYPE_NULL;
+    size_t i = 1;
 
-    for (; i <= SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++i)
+    for (; sai_metadata_all_object_type_infos[i] != NULL; ++i)
     {
         const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
 
-        if (info == NULL || !info->isnonobjectid)
+        if (!info->isnonobjectid)
         {
             continue;
         }
@@ -3917,6 +3970,43 @@ void check_attr_sorted_by_id_name()
     META_ASSERT_NULL(sai_metadata_get_attr_metadata_by_attr_id_name_ext("ZZZ"));    /* after all attr names */
 }
 
+uint32_t ot2idx(
+        _In_ sai_object_type_t ot)
+{
+    /*
+     * This function will convert extension object type to object type number
+     * that will be defined after SAI_OBJECT_TYPE_MAX. This will be used to
+     * index in array
+     */
+
+    if (ot >= SAI_OBJECT_TYPE_NULL && ot < SAI_OBJECT_TYPE_MAX)
+        return ot;
+
+    if (ot >= (int)SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START && ot < (int)SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END)
+        return SAI_OBJECT_TYPE_MAX + (ot - SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START);
+
+    META_ASSERT_FAIL("invalid object type specified %d", ot);
+}
+
+sai_object_type_t idx2ot(
+        _In_ uint32_t idx)
+{
+    if (idx < SAI_OBJECT_TYPE_MAX)
+        return (sai_object_type_t)idx;
+
+    uint32_t i = 1;
+
+    for (; sai_metadata_all_object_type_infos[i]; i++)
+    {
+        if (i == idx)
+        {
+            return sai_metadata_all_object_type_infos[i]->objecttype;
+        }
+    }
+
+    META_ASSERT_FAIL("invalid index: %d", idx);
+}
+
 void list_loop(
         _In_ const sai_object_type_info_t* info,
         _In_ const sai_object_type_t *visited,
@@ -3927,20 +4017,20 @@ void list_loop(
     META_LOG_ENTER();
 
     META_LOG_WARN("LOOP DETECTED on object type: %s",
-            sai_metadata_enum_sai_object_type_t.valuesnames[info->objecttype]);
+            sai_metadata_get_object_type_name(info->objecttype));
 
     for (; levelidx < level; ++levelidx)
     {
         sai_object_type_t ot = visited[levelidx];
 
-        const char* ot_name = sai_metadata_enum_sai_object_type_t.valuesnames[ot];
+        const char* ot_name = sai_metadata_get_object_type_name(ot);
 
         const sai_attr_metadata_t* m = sai_metadata_get_attr_metadata(ot, attributes[levelidx]);
 
         META_LOG_WARN(" %s: %s", ot_name, m->attridname);
     }
 
-    META_LOG_WARN(" -> %s", sai_metadata_enum_sai_object_type_t.valuesnames[info->objecttype]);
+    META_LOG_WARN(" -> %s", sai_metadata_get_object_type_name(info->objecttype));
 
     if (level >= 0)
     {
@@ -4027,7 +4117,7 @@ void check_objects_for_loops_recursive(
 
         for (; j < m->allowedobjecttypeslength; ++j)
         {
-            const sai_object_type_info_t* next = sai_metadata_all_object_type_infos[ m->allowedobjecttypes[j] ];
+            const sai_object_type_info_t* next = sai_metadata_get_object_type_info(m->allowedobjecttypes[j]);
 
             check_objects_for_loops_recursive(next, visited, attributes, level + 1);
         }
@@ -4052,7 +4142,7 @@ void check_objects_for_loops_recursive(
 
             for (; k < m->allowedobjecttypeslength; k++)
             {
-                const sai_object_type_info_t* next = sai_metadata_all_object_type_infos[ m->allowedobjecttypes[k] ];
+                const sai_object_type_info_t* next = sai_metadata_get_object_type_info(m->allowedobjecttypes[k]);
 
                 check_objects_for_loops_recursive(next, visited, attributes, level + 1);
             }
@@ -4069,22 +4159,17 @@ void check_objects_for_loops()
 {
     META_LOG_ENTER();
 
-    sai_object_type_t visited_objects[SAI_OBJECT_TYPE_EXTENSIONS_MAX];
-    uint32_t visited_attributes[SAI_OBJECT_TYPE_EXTENSIONS_MAX];
+    sai_object_type_t visited_objects[TOTAL_OBJECT_TYPE_COUNT];
+    uint32_t visited_attributes[TOTAL_OBJECT_TYPE_COUNT];
 
-    size_t i = SAI_OBJECT_TYPE_NULL;
+    size_t i = 1;
 
-    for (; i <= SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++i)
+    for (; sai_metadata_all_object_type_infos[i] != NULL; ++i)
     {
         const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
 
-        if (info == NULL)
-        {
-            continue;
-        }
-
-        memset(visited_objects, 0, SAI_OBJECT_TYPE_EXTENSIONS_MAX * sizeof(sai_object_type_t));
-        memset(visited_attributes, 0, SAI_OBJECT_TYPE_EXTENSIONS_MAX * sizeof(uint32_t));
+        memset(visited_objects, 0, TOTAL_OBJECT_TYPE_COUNT * sizeof(sai_object_type_t));
+        memset(visited_attributes, 0, TOTAL_OBJECT_TYPE_COUNT * sizeof(uint32_t));
 
         check_objects_for_loops_recursive(info, visited_objects, visited_attributes, 0);
     }
@@ -4120,16 +4205,11 @@ void check_read_only_attributes()
      * object type defines at least 1 attribute.
      */
 
-    size_t i = SAI_OBJECT_TYPE_NULL;
+    size_t i = 1;
 
-    for (; i <= SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++i)
+    for (; sai_metadata_all_object_type_infos[i] != NULL; ++i)
     {
         const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
-
-        if (info == NULL)
-        {
-            continue;
-        }
 
         size_t index = 0;
 
@@ -4152,7 +4232,7 @@ void check_read_only_attributes()
         if (index < 1)
         {
             META_ASSERT_FAIL("object %s must define at least 1 attribute",
-                    sai_metadata_get_object_type_name((sai_object_type_t)i));
+                    sai_metadata_get_object_type_name(info->objecttype));
         }
 
         if (non_read_only_count == 0)
@@ -4164,7 +4244,7 @@ void check_read_only_attributes()
              */
 
             META_LOG_WARN("object %s has only READ_ONLY attributes",
-                    sai_metadata_enum_sai_object_type_t.valuesnames[i]);
+                    sai_metadata_get_object_type_name(info->objecttype));
         }
     }
 }
@@ -4286,7 +4366,7 @@ void check_single_non_object_id_for_rev_graph(
      * member.
      */
 
-    const sai_object_type_info_t *oi = sai_metadata_all_object_type_infos[depobjecttype];
+    const sai_object_type_info_t *oi = sai_metadata_get_object_type_info(depobjecttype);
 
     META_ASSERT_NOT_NULL(oi->revgraphmembers);
 
@@ -4347,8 +4427,8 @@ void check_single_non_object_id_for_rev_graph(
                 if (rm->structmember->allowedobjecttypes[i] == depobjecttype)
                 {
                     META_LOG_DEBUG("dep %s ot %s attr %s\n",
-                            sai_metadata_enum_sai_object_type_t.valuesnames[depobjecttype],
-                            sai_metadata_enum_sai_object_type_t.valuesnames[objecttype],
+                            sai_metadata_get_object_type_name(depobjecttype),
+                            sai_metadata_get_object_type_name(objecttype),
                             sm->membername);
 
                     defined = true;
@@ -4392,12 +4472,10 @@ void check_reverse_graph_for_non_object_id()
      * values are checked during standard loop of attribute above.
      */
 
-    size_t i = SAI_OBJECT_TYPE_NULL;
+    size_t i = 1;
 
-    for (; i <= SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++i)
+    for (; sai_metadata_all_object_type_infos[i] != NULL; ++i)
     {
-        sai_object_type_t objecttype = (sai_object_type_t)i;
-
         const sai_object_type_info_t* info = sai_metadata_all_object_type_infos[i];
 
         if (info == NULL || !info->isnonobjectid)
@@ -4438,7 +4516,7 @@ void check_reverse_graph_for_non_object_id()
 
                 sai_object_type_t depobjecttype = m->allowedobjecttypes[k];
 
-                check_single_non_object_id_for_rev_graph(m, objecttype, depobjecttype);
+                check_single_non_object_id_for_rev_graph(m, info->objecttype, depobjecttype);
             }
         }
     }
@@ -4887,7 +4965,8 @@ void check_object_ro_list(
             oi->objecttype == SAI_OBJECT_TYPE_DTEL_QUEUE_REPORT ||
             oi->objecttype == SAI_OBJECT_TYPE_DTEL_EVENT ||
             oi->objecttype == SAI_OBJECT_TYPE_GENERIC_PROGRAMMABLE ||
-            oi->objecttype == SAI_OBJECT_TYPE_TWAMP_SESSION)
+            oi->objecttype == SAI_OBJECT_TYPE_TWAMP_SESSION ||
+            oi->objecttype == SAI_OBJECT_TYPE_ICMP_ECHO_SESSION)
     {
         /*
          * We skip hostif table entry since there is no 1 object which can
@@ -5028,16 +5107,6 @@ void check_single_object_info(
     check_attr_end(oi);
 }
 
-void check_api_max()
-{
-    META_LOG_ENTER();
-
-    META_ASSERT_TRUE(SAI_API_MAX <= SAI_API_EXTENSIONS_MAX, "expected api MAX to be less equal than extensions MAX");
-
-    META_ASSERT_TRUE(sai_metadata_enum_sai_api_t.valuescount == SAI_API_EXTENSIONS_MAX,
-            "SAI_API_EXTENSIONS_MAX should be equal to number of SAI_API*");
-}
-
 void check_backward_comparibility_defines()
 {
     META_LOG_ENTER();
@@ -5059,14 +5128,14 @@ void helper_check_graph_connected(
 {
     META_LOG_ENTER();
 
-    if (visited[ot] == ot)
+    if (visited[ot2idx(ot)] == ot)
     {
         return;
     }
 
-    visited[ot] = ot;
+    visited[ot2idx(ot)] = ot;
 
-    const sai_object_type_info_t *oi = sai_metadata_all_object_type_infos[ot];
+    const sai_object_type_info_t *oi = sai_metadata_get_object_type_info(ot);
 
     size_t i = 0;
 
@@ -5122,17 +5191,17 @@ void check_graph_connected()
      * Check if all objects are used and are not "disconnected" from the graph.
      */
 
-    sai_object_type_t visited[SAI_OBJECT_TYPE_EXTENSIONS_MAX];
+    sai_object_type_t visited[TOTAL_OBJECT_TYPE_COUNT];
 
-    memset(visited, 0, SAI_OBJECT_TYPE_EXTENSIONS_MAX * sizeof(sai_object_type_t));
+    memset(visited, 0, TOTAL_OBJECT_TYPE_COUNT * sizeof(sai_object_type_t));
 
     helper_check_graph_connected(SAI_OBJECT_TYPE_PORT, visited);
 
-    size_t i = 0;
+    uint32_t i = 1;
 
-    for (; i < SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++i)
+    for (; sai_metadata_all_object_type_infos[i] != NULL; ++i)
     {
-        if (visited[i] == (sai_object_type_t)i)
+        if (visited[i] == sai_metadata_all_object_type_infos[i]->objecttype)
         {
             continue;
         }
@@ -5147,7 +5216,7 @@ void check_graph_connected()
             continue;
         }
 
-        if (SAI_OBJECT_TYPE_DEBUG_COUNTER == i)
+        if (SAI_OBJECT_TYPE_DEBUG_COUNTER == idx2ot(i))
         {
             /*
              * Allow debug counters to be disconnected from main graph
@@ -5171,18 +5240,18 @@ void check_get_attr_metadata()
 
     int count = 0;
 
-    size_t ot = 0;
+    size_t i = 1;
 
-    for (; ot < SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++ot)
+    for (; sai_metadata_all_object_type_infos[i]; ++i)
     {
-        const sai_attr_metadata_t* const* mda = sai_metadata_attr_by_object_type[ot];
+        const sai_attr_metadata_t* const* mda = sai_metadata_all_object_type_infos[i]->attrmetadata;
 
         int idx = 0;
 
         while (mda[idx])
         {
             const sai_attr_metadata_t* m = mda[idx++];
-            const sai_attr_metadata_t* md = sai_metadata_get_attr_metadata(ot, m->attrid);
+            const sai_attr_metadata_t* md = sai_metadata_get_attr_metadata(sai_metadata_all_object_type_infos[i]->objecttype, m->attrid);
 
             META_ASSERT_NOT_NULL(md);
             META_ASSERT_TRUE(m == md, "different attribute found, fatal");
@@ -5210,16 +5279,13 @@ void check_get_attr_metadata_custom_range()
 
     size_t count = 0;
 
-    size_t ot = 0;
+    int i = 1;
 
-    for (; ot < SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++ot)
+    for (; sai_metadata_all_object_type_infos[i]; i++)
     {
-        const sai_object_type_info_t* oti = sai_metadata_get_object_type_info(ot);
+        const sai_object_type_info_t* oti = sai_metadata_all_object_type_infos[i];
 
-        if (oti == NULL)
-            continue;
-
-        const sai_attr_metadata_t* const* mda = sai_metadata_attr_by_object_type[ot];
+        const sai_attr_metadata_t* const* mda = sai_metadata_all_object_type_infos[i]->attrmetadata;
 
         if (oti->enummetadata->containsflags)
         {
@@ -5229,7 +5295,7 @@ void check_get_attr_metadata_custom_range()
             {
                 const sai_attr_metadata_t* m = mda[idx++];
 
-                const sai_attr_metadata_t* md = sai_metadata_get_attr_metadata(ot, m->attrid);
+                const sai_attr_metadata_t* md = sai_metadata_get_attr_metadata(sai_metadata_all_object_type_infos[i]->objecttype, m->attrid);
 
                 META_ASSERT_NOT_NULL(md);
                 META_ASSERT_TRUE(m == md, "different attribute found, fatal");
@@ -5249,7 +5315,7 @@ void check_get_attr_metadata_custom_range()
         while (mda[idx])
         {
             const sai_attr_metadata_t* m = mda[idx];
-            const sai_attr_metadata_t* md = sai_metadata_get_attr_metadata(ot, m->attrid);
+            const sai_attr_metadata_t* md = sai_metadata_get_attr_metadata(sai_metadata_all_object_type_infos[i]->objecttype, m->attrid);
 
             META_ASSERT_NOT_NULL(md);
             META_ASSERT_TRUE(m == md, "different attribute found, fatal");
@@ -5284,7 +5350,32 @@ void check_attr_get_outside_range()
 
     int ot = -10;
 
-    for (; ot < (int)(SAI_OBJECT_TYPE_EXTENSIONS_MAX + 10); ++ot)
+    for (; ot < (int)(SAI_OBJECT_TYPE_MAX + 10); ++ot)
+    {
+        const sai_object_type_info_t* oti = sai_metadata_get_object_type_info(ot);
+
+        if (oti == NULL)
+            continue;
+
+        int idx = -10;
+
+        for (; idx < (int)(oti->attrmetadatalength + 10); idx++)
+        {
+            const sai_attr_metadata_t* md = sai_metadata_get_attr_metadata(ot, (sai_attr_id_t)idx);
+
+            if (md == NULL)
+                continue;
+
+            if ((int)md->attrid != idx)
+            {
+                META_MD_ASSERT_FAIL(md, "attr %u expected to be %u", md->attrid, idx);
+            }
+        }
+    }
+
+    ot = SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START -10 ;
+
+    for (; ot < (int)(SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END + 10); ++ot)
     {
         const sai_object_type_info_t* oti = sai_metadata_get_object_type_info(ot);
 
@@ -5314,22 +5405,22 @@ void check_custom_range_attributes()
 
     /* Checks whether attribute is correctly marked as custom */
 
-    size_t ot = 0;
+    size_t i = 1;
 
-    for (; ot < SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++ot)
+    for (; sai_metadata_all_object_type_infos[i]; i++)
     {
-        const sai_attr_metadata_t* const* mda = sai_metadata_attr_by_object_type[ot];
+        const sai_attr_metadata_t* const* mda = sai_metadata_all_object_type_infos[i]->attrmetadata;
 
         int idx = 0;
 
         while (mda[idx])
         {
             const sai_attr_metadata_t* m = mda[idx++];
-            const sai_attr_metadata_t* md = sai_metadata_get_attr_metadata(ot, m->attrid);
+            const sai_attr_metadata_t* md = sai_metadata_get_attr_metadata(sai_metadata_all_object_type_infos[i]->objecttype, m->attrid);
 
             META_ASSERT_NOT_NULL(md);
 
-            if (md->attrid >= CUSTOM_ATTR_RANGE_START)
+            if (md->attrid >= CUSTOM_ATTR_RANGE_START && md->attrid < (EXTENSION_RANGE_START))
             {
                 META_ASSERT_TRUE(md->iscustom, "expected to be marked as custom attribute, %s", md->attridname);
             }
@@ -5411,11 +5502,11 @@ void check_object_type_attributes()
 {
     META_LOG_ENTER();
 
-    size_t i = 0;
+    size_t i = 1;
 
-    for (; i < sai_metadata_attr_by_object_type_count; ++i)
+    for (; sai_metadata_all_object_type_infos[i]; i++)
     {
-        check_single_object_type_attributes(sai_metadata_attr_by_object_type[i]);
+        check_single_object_type_attributes(sai_metadata_all_object_type_infos[i]->attrmetadata);
     }
 }
 
@@ -5423,14 +5514,12 @@ void check_all_object_infos()
 {
     META_LOG_ENTER();
 
-    size_t i = SAI_OBJECT_TYPE_NULL + 1;
+    size_t i = 1;
 
-    for (; i < SAI_OBJECT_TYPE_EXTENSIONS_MAX; ++i)
+    for (; sai_metadata_all_object_type_infos[i] != NULL; ++i)
     {
         check_single_object_info(sai_metadata_all_object_type_infos[i]);
     }
-
-    META_ASSERT_TRUE((size_t)SAI_OBJECT_TYPE_EXTENSIONS_MAX == (size_t)SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END, "must be equal");
 }
 
 void check_ignored_attributes()
@@ -5525,7 +5614,14 @@ void check_enum_flags_type_ranges(
 
             /* this check can be relaxed, we allow now 16 types of ranges */
 
-            META_ASSERT_TRUE((val < (16*RANGE_BASE)), "range value 0x%x is too high on %s", val, name);
+            if (val < EXTENSION_RANGE_START)
+            {
+                META_ASSERT_TRUE((val < (16*RANGE_BASE)), "range value 0x%x is too high on %s", val, name);
+            }
+            else
+            {
+                META_ASSERT_TRUE((val < (16*RANGE_BASE + EXTENSION_RANGE_START)), "range value 0x%x is too high on %s", val, name);
+            }
 
             if ((val != prev + 1) && (val & 0xFFF) && ((val & ~0xFFF) == (prev & ~0xFFF)))
             {
@@ -5619,6 +5715,14 @@ void check_enum_flags_type_none(
                      * Object contains custom attributes in custom range, they
                      * still needs to be increasing by 1 but since those are
                      * not flags, attribute value can't be used as array index.
+                     */
+                }
+                else if (value == EXTENSION_RANGE_START)
+                {
+                    /*
+                     * Object contains extensions attributes, they still needs
+                     * to be increasing by 1 but since those are not flags,
+                     * attribute value can't be used as array index.
                      */
                 }
                 else
@@ -5723,6 +5827,8 @@ void check_max_conditions_len()
     META_ASSERT_TRUE(SAI_METADATA_MAX_CONDITIONS_LEN > 0, "must be positive");
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wsuggest-attribute=noreturn"
 void check_object_type_extension_max_value()
 {
     META_LOG_ENTER();
@@ -5731,12 +5837,27 @@ void check_object_type_extension_max_value()
      * It can be handy for vendors to encode object type value on single byte
      * in every object it for easy object identification. We assume that we
      * will have no more than 255 objects types on SAI right now.
+     *
+     * But since we are moving object type extensions to higher range to be
+     * backward compatible to not shift enums, vendor still may want to encode
+     * that in 1 byte, for example 127 id's for regular object types and 127
+     * for extended, or 191 for base, and 63 for extended.
+     *
+     * At the time this comment is made, we have 110 base and 20 extended.
+     * Allowing extra 32 on each range we can fit in 191 and 63 on 1 byte.
+     *
      */
 
-    META_ASSERT_TRUE(SAI_OBJECT_TYPE_EXTENSIONS_MAX < 256, "max object type can be 255 to be encoded on single byte");
+    META_LOG_INFO("SAI_OBJECT_TYPE_MAX = %d, EXTENSION_OBJECT_TYPE_COUNT = %d", SAI_OBJECT_TYPE_MAX, EXTENSION_OBJECT_TYPE_COUNT);
 
-    META_ASSERT_TRUE(SAI_OBJECT_TYPE_MAX < SAI_OBJECT_TYPE_EXTENSIONS_MAX, "max object must be less than max extensions");
+    /*
+     * This check may be removed, but it will need to be brought into attention on SAI meeting.
+     */
+    META_ASSERT_TRUE(SAI_OBJECT_TYPE_MAX < 192 && EXTENSION_OBJECT_TYPE_COUNT < 64, "exceeding this range will not allow to encode object types to single byte");
+
+    META_ASSERT_TRUE(TOTAL_OBJECT_TYPE_COUNT < 256, "TOTAL_OBJECT_TYPE_COUNT bust be < 256 if it should be possible to encode object type on single byte");
 }
+#pragma GCC diagnostic pop
 
 void check_global_apis()
 {
@@ -5901,6 +6022,41 @@ void check_json_type_size()
     META_ASSERT_TRUE(sizeof(sai_s8_list_t) == sizeof(sai_json_t), "json type is expected to have same size as s8 list");
 }
 
+void check_api_extensions()
+{
+    SAI_META_LOG_ENTER();
+
+    /*
+     * Check if defined extensions api can be fit into 1 byte.
+     * This check can be relaxed in the future.
+     */
+
+    if (SAI_API_EXTENSIONS_RANGE_END - SAI_API_EXTENSIONS_RANGE_START > 255)
+    {
+        META_ASSERT_FAIL("api extensions %d > 255", (SAI_API_EXTENSIONS_RANGE_END - SAI_API_EXTENSIONS_RANGE_START));
+    }
+
+    sai_api_t api = (sai_api_t)SAI_API_EXTENSIONS_RANGE_START;
+
+    META_ASSERT_TRUE(api == 0x20000000, "api should be correctly assigned");
+}
+
+void check_object_type_index()
+{
+    META_LOG_ENTER();
+
+    META_ASSERT_TRUE(ot2idx(0) == 0, "must be zero");
+    META_ASSERT_TRUE(idx2ot(0) == 0, "must be zero");
+
+    uint32_t i = 1;
+
+    for (; sai_metadata_all_object_type_infos[i]; i++)
+    {
+        META_ASSERT_TRUE(ot2idx(sai_metadata_all_object_type_infos[i]->objecttype) == i, "invalid ot2idx");
+        META_ASSERT_TRUE(idx2ot(i) == sai_metadata_all_object_type_infos[i]->objecttype, "invalid idx2ot");
+    }
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -5911,6 +6067,7 @@ int main(int argc, char **argv)
     check_all_enums_values();
     check_enums_ignore_values();
     check_sai_status();
+    check_object_type_index();
     check_object_type();
     check_attr_by_object_type();
     check_object_type_attributes();
@@ -5929,7 +6086,6 @@ int main(int argc, char **argv)
     check_reverse_graph_for_non_object_id();
     check_acl_table_fields_and_acl_entry_fields();
     check_acl_entry_actions();
-    check_api_max();
     check_backward_comparibility_defines();
     check_graph_connected();
     check_get_attr_metadata();
@@ -5951,6 +6107,7 @@ int main(int argc, char **argv)
     check_json_type_size();
     check_custom_range_attributes();
     check_attr_get_outside_range();
+    check_api_extensions();
 
     SAI_META_LOG_DEBUG("log test");
 

@@ -2521,6 +2521,14 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_POE_PORT_ID,
 
     /**
+     * @brief The maximum size of SAI_PORT_ATTR_JSON_FORMATTED_DEBUG_DATA in bytes.
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_JSON_FORMATTED_DEBUG_DATA_SIZE,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
@@ -2529,7 +2537,10 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /** End of custom range base */
-    SAI_PORT_ATTR_CUSTOM_RANGE_END
+    SAI_PORT_ATTR_CUSTOM_RANGE_END,
+
+    /** Extensions range base */
+    SAI_PORT_ATTR_EXTENSIONS_RANGE_BASE = 0x20000000
 
 } sai_port_attr_t;
 
@@ -3256,7 +3267,10 @@ typedef enum _sai_port_stat_t
     SAI_PORT_STAT_OUT_DROP_REASON_RANGE_END = 0x00002fff,
 
     /** Port stat range end */
-    SAI_PORT_STAT_END
+    SAI_PORT_STAT_END,
+
+    /** Extensions range base */
+    SAI_PORT_STAT_EXTENSIONS_RANGE_BASE = 0x20000000
 
 } sai_port_stat_t;
 

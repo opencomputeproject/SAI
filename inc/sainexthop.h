@@ -50,6 +50,8 @@ typedef enum _sai_next_hop_type_t
     /** SRV6 SID List */
     SAI_NEXT_HOP_TYPE_SRV6_SIDLIST,
 
+    /** IPMC next hop */
+    SAI_NEXT_HOP_TYPE_IPMC,
 } sai_next_hop_type_t;
 
 /**
@@ -76,7 +78,7 @@ typedef enum _sai_next_hop_attr_t
      *
      * @type sai_ip_address_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
-     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_IP or SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS or SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP
+     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_IP or SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS or SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_TUNNEL_ENCAP or SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_IPMC
      */
     SAI_NEXT_HOP_ATTR_IP,
 
@@ -86,7 +88,7 @@ typedef enum _sai_next_hop_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_ROUTER_INTERFACE
-     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_IP or SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS
+     * @condition SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_IP or SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_MPLS or SAI_NEXT_HOP_ATTR_TYPE == SAI_NEXT_HOP_TYPE_IPMC
      */
     SAI_NEXT_HOP_ATTR_ROUTER_INTERFACE_ID,
 

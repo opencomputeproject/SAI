@@ -34,6 +34,7 @@ DLR - Dead Lock Recovery
 DMA - Direct Memory Access
 DNAPT - Destination Network Address Port Translation
 DNAT - Destination Network Address Translation
+DPU - Data Processing Unit
 DSCP - Differentiated Services Code Point
 DTEL - Data Plane Telemetry
 ECC - Error Correction Code
@@ -134,6 +135,7 @@ SAK - Secure Association Key
 SC - Secure Channel
 SCI - Secure Channel Identifier
 SDK - Software Development Kit
+SER - Soft Error Rate
 SFI - SerDes Framer Interface
 SFLOW - Sampled Flow
 SG - (S,G) Source-specific multicast
