@@ -299,6 +299,8 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_POE_PSE                  = 109,
     SAI_OBJECT_TYPE_POE_PORT                 = 110,
     SAI_OBJECT_TYPE_ICMP_ECHO_SESSION        = 111,
+    SAI_OBJECT_TYPE_PREFIX_COMPRESSION_TABLE = 112,
+    SAI_OBJECT_TYPE_PREFIX_COMPRESSION_ENTRY = 113,
 
     /** Must remain in last position */
     SAI_OBJECT_TYPE_MAX,
