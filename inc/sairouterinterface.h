@@ -295,6 +295,19 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_ADMIN_MPLS_STATE,
 
     /**
+     * @brief Attribute used to specify if My MAC entry need not be created
+     * for this {port, vlan, MAC address}
+     *
+     * Typical use-case is to set this to true when a My MAC entry will be
+     * separately created or already exists.
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ROUTER_INTERFACE_ATTR_NO_MY_MAC,
+
+    /**
      * @brief End of attributes
      */
     SAI_ROUTER_INTERFACE_ATTR_END,
