@@ -53,13 +53,13 @@ typedef enum _sai_prefix_compression_table_attr_t
     SAI_PREFIX_COMPRESSION_TABLE_ATTR_LABEL = SAI_PREFIX_COMPRESSION_TABLE_ATTR_START,
 
     /**
-     * @brief Prefix Compression table default entry BINCODE.
-     * BINCODE applied to any address that does not match a prefix in the table
+     * @brief Prefix Compression table default entry META data.
+     * META data applied to any address that does not match a prefix in the table
      *
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
-    SAI_PREFIX_COMPRESSION_TABLE_ATTR_DEFAULT_ENTRY_BINCODE,
+    SAI_PREFIX_COMPRESSION_TABLE_ATTR_DEFAULT_ENTRY_META,
 
     /**
      * @brief End of attributes

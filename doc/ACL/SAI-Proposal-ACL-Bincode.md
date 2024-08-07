@@ -1,6 +1,6 @@
-#  ACL BINCODE Field Matching
+#  ACL META Field Matching
 -------------------------------------------------------------------------------
- Title       | ACL BINCODE Field Matching
+ Title       | ACL META Field Matching
 -------------|-----------------------------------------------------------------
  Authors     | Nader Shinouda, Cisco
  Status      | In review
@@ -12,35 +12,35 @@
 
 ## 1.0  Introduction ##
 
-This spec enhances the existing ACL spec to add support for bincode field matching. Bincode is part of prefix compression, where an IP prefix is mapped to Bincode.
+This spec enhances the existing ACL spec to add support for meta field matching. Meta data is part of prefix compression entry, where an IP prefix is mapped to a meta value.
 
-New table attributes allow setting a source and destination prefix compression tables on the creation of an ACL table. New field entry attributes allow for matching on a specific bincode from either the source or destionation prefix tables.
+New table attributes allow setting a source and destination prefix compression tables on the creation of an ACL table. New field entry attributes allow for matching on a specific meta-data from either the source or destionation prefix tables.
 
 ## 2.0 Specification ##
 
 New table attributes allow for setting both the source and destination prefix compression tables that will be used in field matching
 ```c
     /**
-     * @brief SRC BINCODE
+     * @brief SRC META data
      *
-     * This key is dedicated to matching on a SRC BINCODE
+     * This key is dedicated to matching on a SRC META data
      *
      * @type bool
      * @flags CREATE_ONLY
      * @default false
      */
-    SAI_ACL_TABLE_ATTR_FIELD_SRC_PREFIX_BINCODE
+    SAI_ACL_TABLE_ATTR_FIELD_SRC_PREFIX_META
 
     /**
-     * @brief DST BINCODE
+     * @brief DST META data
      *
-     * This key is dedicated to matching on a DST BINCODE
+     * This key is dedicated to matching on a DST META data
      *
      * @type bool
      * @flags CREATE_ONLY
      * @default false
      */
-    SAI_ACL_TABLE_ATTR_FIELD_DST_PREFIX_BINCODE
+    SAI_ACL_TABLE_ATTR_FIELD_DST_PREFIX_META
 
     /**
      * @brief SRC prefix Table Object ID
@@ -71,33 +71,33 @@ New table attributes allow for setting both the source and destination prefix co
     SAI_ACL_TABLE_ATTR_DST_PREFIX_COMPRESSION_TABLE,
 ```
 
-New field entry attributes allow for lookups based on a bincode value.
+New field entry attributes allow for lookups based on a meta value.
 
 ```c
    /**
-     * @brief SRC BINCODE
+     * @brief SRC META data
      *
      * @type sai_acl_field_data_t sai_uint32_t
      * @flags CREATE_AND_SET
      * @default disabled
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_SRC_PREFIX_BINCODE,
+    SAI_ACL_ENTRY_ATTR_FIELD_SRC_PREFIX_META,
 
     /**
-     * @brief DST BINCODE
+     * @brief DST META data
      *
      * @type sai_acl_field_data_t sai_uint32_t
      * @flags CREATE_AND_SET
      * @default disabled
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_DST_PREFIX_BINCODE,
+    SAI_ACL_ENTRY_ATTR_FIELD_DST_PREFIX_META,
 ```
 
 ## 3.0 Examples ##
 
 ```c
 // Example: Create Prefix Compression Table
-sai_attr_table_list[0].id = SAI_PREFIX_COMPRESSION_TABLE_ATTR_DEFAULT_ENTRY_BINCODE;
+sai_attr_table_list[0].id = SAI_PREFIX_COMPRESSION_TABLE_ATTR_DEFAULT_ENTRY_META;
 sai_attr_table_list[0].value.u32 = 9000;
 attr_table_count = 1;
 
@@ -116,7 +116,7 @@ entry_v4_src_1.prefix_table_id = src_prefix_compression_table_id;
 entry_v4_src_1.prefix.addr_family = SAI_IP_ADDR_FAMILY_IPV4;
 entry_v4_src_1.prefix.addr.ipv4 = "1.1.1.1";
 entry_v4_src_1.prefix_mask.ipv4 = "255.255.255.0";
-sai_attr_list_src[1].id = SAI_PREFIX_COMPRESSION_ENTRY_ATTR_BINCODE;
+sai_attr_list_src[1].id = SAI_PREFIX_COMPRESSION_ENTRY_ATTR_META;
 sai_attr_list_src[1].value.u32 = 500;
 
 entry_list_src = [entry_v4_src_1];
@@ -144,13 +144,13 @@ sai_create_acl_table_fn(
     sai_table_attr_count,
     sai_table_attr_list);
 
-sai_entry_attr_list[0].id = SAI_ACL_ENTRY_ATTR_FIELD_SRC_PREFIX_BINCODE;
+sai_entry_attr_list[0].id = SAI_ACL_ENTRY_ATTR_FIELD_SRC_PREFIX_META;
 sai_attr_list[1].value.aclfield.enable = true;
 sai_attr_list[1].value.aclfield.mask = 0xFFFFFF;
 sai_attr_list[1].value.aclfield.data = 500;
 sai_entry_attr_count = 1;
 
-// Create an Entry to match on Bincode 1
+// Create an Entry to match on META data of value 1
 sai_create_acl_entry_fn(
     &acl_entry_id,
     switch_id,

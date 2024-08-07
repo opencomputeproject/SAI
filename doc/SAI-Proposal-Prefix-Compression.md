@@ -12,13 +12,13 @@
 
 ## 1.0  Introduction ##
 
-This spec adds Prefix Compression. Prefix Compression allows mapping an IP prefix/mask to a bincode. These prefix/bincode mapping can be grouped together to form prefix compression table.  Tables can have both IPV4 and IPV6 entries.
+This spec adds Prefix Compression. Prefix Compression allows mapping an IP prefix/mask to a meta data value. These prefix/meta-data mapping can be grouped together to form a prefix compression table.  Tables can have both IPV4 and IPV6 entries.
 
-Prefix Compression tables can be used in features such as ACL to match on a specific bincode. This allows additional functionality to ACL or any feature that can take advantage of such groupings.
+Prefix Compression tables can be used in features such as ACL to match on a specific meta field. This allows additional functionality to ACL or any feature that can take advantage of such groupings.
 
 ## 1.1.0 Function Requirement of Prefix Compression
 - Enable the creation of a prefix compresison table as a SAI object
-- Enable adding IPV4/IPV6 Prefix mapping to a BINCODE value
+- Enable adding IPV4/IPV6 Prefix mapping to a META value
 
 ## 2.0 Specification ##
 
@@ -39,7 +39,7 @@ Two new types: SAI_OBJECT_TYPE_PREFIX_COMPRESSION_TABLE and SAI_OBJECT_TYPE_PREF
 #### sai_prefix_compression_table_attr_t ####
 This defines the prefix compression attributes table
 
-Tables are composed of prefix compression entries. These entries map a specific IP prefix to a bincode. Both IPV4 and IPV6 entries can be added to the same table. During a table creation a bincode must be provided for the default entry. A default entry bincode is a default bincode applied to any address that does not match a prefix in the table. A default entry is an entry where the prefix/length is zero
+Tables are composed of prefix compression entries. These entries map a specific IP prefix to a meta data value. Both IPV4 and IPV6 entries can be added to the same table. During a table creation a meta data value must be provided for the default entry. A default entry is an entry is when the prefix/length is zero.
 
 IPV4 defaulty entry: 0.0.0.0/0.0.0.0
 IPV6 default entry: ::/::
@@ -62,13 +62,13 @@ typedef enum _sai_prefix_compression_table_attr_t
     SAI_PREFIX_COMPRESSION_TABLE_ATTR_LABEL = SAI_PREFIX_COMPRESSION_TABLE_ATTR_START,
 
    /**
-     * @brief Prefix Compression table default entry bincode.
-     * Bincode applied to any address that does not match a prefix in the table
+     * @brief Prefix Compression table default entry META data.
+     * Meta data applied to any address that does not match a prefix in the table
      *
      * @type sai_uint32_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      */
-    SAI_PREFIX_COMPRESSION_TABLE_ATTR_DEFAULT_ENTRY_BINCODE,
+    SAI_PREFIX_COMPRESSION_TABLE_ATTR_DEFAULT_ENTRY_META,
 
 ```
 
@@ -88,12 +88,12 @@ Attributes structure for prefix compression entries
         SAI_PREFIX_COMPRESSION_ENTRY_ATTR_START,
 
         /**
-         * @brief Prefix Compression entry Bincode
+         * @brief Prefix Compression entry META data
          *
          * @type sai_uint32_t
          * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
          */
-        SAI_PREFIX_COMPRESSION_ENTRY_ATTR_BINCODE = SAI_PREFIX_COMPRESSION_ENTRY_ATTR_START,
+        SAI_PREFIX_COMPRESSION_ENTRY_ATTR_META = SAI_PREFIX_COMPRESSION_ENTRY_ATTR_START,
 ```
 
 #### sai_prefix_compression_entry_t ####
@@ -192,7 +192,7 @@ typedef struct _sai_prefix_compression_api_t
 
 ```c
 sai_attr_table_list[];
-sai_attr_table_list[0].id = SAI_PREFIX_COMPRESSION_TABLE_ATTR_DEFAULT_ENTRY_BINCODE;
+sai_attr_table_list[0].id = SAI_PREFIX_COMPRESSION_TABLE_ATTR_DEFAULT_ENTRY_META;
 sai_attr_table_list[0].value.u32 = 9000;
 attr_table_count = 0;
 sai_create_prefix_compression_table_fn(
@@ -209,7 +209,7 @@ entry_v4_1.prefix_table_id = src_prefix_compression_table_id;
 entry_v4_1.prefix.addr_family = SAI_IP_ADDR_FAMILY_IPV4;
 entry_v4_1.prefix.addr.ipv4 = "1.1.1.1";
 entry_v4_1.prefix_mask.ipv4 = "255.255.255.0";
-sai_entry_list[0].id = SAI_PREFIX_COMPRESSION_ENTRY_ATTR_BINCODE;
+sai_entry_list[0].id = SAI_PREFIX_COMPRESSION_ENTRY_ATTR_META;
 sai_entry_list[0].value.u32 = 2;
 
 // IPV4 Second Entry
@@ -219,7 +219,7 @@ entry_v4_1.prefix_table_id = src_prefix_compression_table_id;
 entry_v4_1.prefix.addr_family = SAI_IP_ADDR_FAMILY_IPV4;
 entry_v4_1.prefix.addr.ipv4 = "2.2.2.1";
 entry_v4_1.prefix_mask.ipv4 = "255.255.255.0";
-sai_entries_attribute_list[0].id = SAI_PREFIX_COMPRESSION_ENTRY_ATTR_BINCODE;
+sai_entries_attribute_list[0].id = SAI_PREFIX_COMPRESSION_ENTRY_ATTR_META;
 sai_entries_attribute_list[0].value.u32 = 800;
 
 // IPV6 Entry
@@ -229,7 +229,7 @@ entry_v6_1.prefix_table_id = src_prefix_compression_table_id;
 entry_v6_1.prefix.addr_family = SAI_IP_ADDR_FAMILY_IPV6;
 entry_v6_1.prefix.addr.ipv4 ="2001:1::4";
 entry_v6_1.prefix_mask = "ffff:ffff:ffff:ffff:ffff:ffff:ffff:fffc";
-sai_entries_attribute_list[1].id = SAI_PREFIX_COMPRESSION_ENTRY_ATTR_BINCODE;
+sai_entries_attribute_list[1].id = SAI_PREFIX_COMPRESSION_ENTRY_ATTR_META;
 sai_entries_attribute_list[1].value.u32 = 4;
 
 entries_list = [entry_v4_2, entry_v6_1];
