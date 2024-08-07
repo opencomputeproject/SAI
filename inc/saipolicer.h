@@ -210,6 +210,15 @@ typedef enum _sai_policer_attr_t
     SAI_POLICER_ATTR_OBJECT_STAGE = 0x0000000b,
 
     /**
+     * @brief Label attribute used to uniquely identify identical policer.
+     *
+     * @type char
+     * @flags CREATE_AND_SET
+     * @default ""
+     */
+    SAI_POLICER_ATTR_LABEL,
+
+    /**
      * @brief End of attributes
      */
     SAI_POLICER_ATTR_END,
