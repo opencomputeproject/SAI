@@ -2529,6 +2529,14 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_JSON_FORMATTED_DEBUG_DATA_SIZE,
 
     /**
+     * @brief List of switch id's of all remote reachable switches
+     *
+     * @type sai_u16_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_FABRIC_REACHABILITY_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
