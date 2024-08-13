@@ -295,6 +295,35 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_ADMIN_MPLS_STATE,
 
     /**
+     * @brief Generate User Defined Trap ID for trap/log actions
+     * Applicable when
+     * SAI_ROUTER_INTERFACE_ATTR_NEIGHBOR_MISS_PACKET_ACTION
+     * is trap/log.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP, SAI_OBJECT_TYPE_HOSTIF_TRAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ROUTER_INTERFACE_ATTR_NEIGHBOR_MISS_TRAP_ID,
+
+    /**
+     * @brief Trap to use when a packet ingress and gets routed on the same RIF
+     *
+     * Applicable when
+     * SAI_ROUTER_INTERFACE_ATTR_LOOPBACK_PACKET_ACTION
+     * is trap/log.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP, SAI_OBJECT_TYPE_HOSTIF_TRAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ROUTER_INTERFACE_ATTR_LOOPBACK_PACKET_TRAP_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_ROUTER_INTERFACE_ATTR_END,
