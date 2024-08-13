@@ -34,6 +34,7 @@
 #include "saiportextensions.h"
 
 /* new experimental object type includes */
+#include "saiexperimentaldashflow.h"
 #include "saiexperimentaldashtunnel.h"
 #include "saiexperimentaldashha.h"
 #include "saiexperimentaldashvip.h"
@@ -80,6 +81,8 @@ typedef enum _sai_api_extensions_t
     SAI_API_DASH_VIP,
 
     SAI_API_DASH_HA,
+
+    SAI_API_DASH_FLOW,
 
     SAI_API_DASH_TUNNEL,
 
