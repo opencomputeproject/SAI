@@ -38,8 +38,6 @@
 
 /* new experimental object type includes */
 #include <saiexperimentaldashflow.h>
-#include <saiexperimentaldashha.h>
-#include <saiexperimentaldashtunnel.h>
 #include <saiexperimentaldashmeter.h>
 #include <saiexperimentaldashvip.h>
 #include <saiexperimentaldashpavalidation.h>
