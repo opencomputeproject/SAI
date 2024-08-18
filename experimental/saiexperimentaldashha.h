@@ -152,7 +152,7 @@ typedef enum _sai_ha_set_attr_t
 } sai_ha_set_attr_t;
 
 /**
- * @brief Counter IDs for HA SET
+ * @brief Counter IDs for HA set
  */
 typedef enum _sai_ha_set_stat_t
 {
@@ -231,10 +231,11 @@ typedef enum _sai_ha_scope_attr_t
     /**
      * @brief Action parameter HA set id
      *
-     * @type sai_uint16_t
+     * @type sai_object_id_t
      * @flags CREATE_AND_SET
-     * @isvlan true
-     * @default 0
+     * @objects SAI_OBJECT_TYPE_HA_SET
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_HA_SCOPE_ATTR_HA_SET_ID = SAI_HA_SCOPE_ATTR_START,
 
