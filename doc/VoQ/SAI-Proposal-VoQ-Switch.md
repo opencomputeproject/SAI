@@ -764,6 +764,22 @@ typedef enum _sai_port_stat_t
 } sai_port_stat_t;
 ```
 
+### 2.3.9 Fabric Port Reachability List
+
+The port reachability list attribute returns a list, that has all the remote switch ID reachable through this fabric port. The reachability list attribute
+can be queried on each fabric port retrieved from the fabric port list switch attribute.
+
+```c
+
+/**
+* @brief List of switch id's of all remote reachable switches 
+*
+* @type sai_u16_list_t
+* @flags READ_ONLY
+*/
+SAI_PORT_ATTR_FABRIC_REACHABILITY_LIST,
+```
+
 ## 2.4 Queue Attributes, Types, and APIs
 
 ## 2.4.1 New Queue Types
