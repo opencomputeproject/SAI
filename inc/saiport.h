@@ -2529,6 +2529,15 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_JSON_FORMATTED_DEBUG_DATA_SIZE,
 
     /**
+     * @brief Unreliable Loss of Signal
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_UNRELIABLE_LOS,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
