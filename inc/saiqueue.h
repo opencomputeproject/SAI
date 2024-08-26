@@ -97,6 +97,28 @@ typedef enum _sai_queue_pfc_continuous_deadlock_state_t
 } sai_queue_pfc_continuous_deadlock_state_t;
 
 /**
+ * @brief Enum defining queue actions in case of packet discard.
+ */
+typedef enum _sai_queue_packet_discard_action_t
+{
+    /**
+     * @brief Do nothing.
+     *
+     * Default action. Packet has nowhere to go
+     * and will be dropped.
+     */
+    SAI_QUEUE_PACKET_DISCARD_ACTION_NONE = 0x00000000,
+
+    /**
+     * @brief Trim the packet.
+     *
+     * Try sending a shortened packet over a different
+     * queue.
+     */
+    SAI_QUEUE_PACKET_DISCARD_ACTION_TRIM = 0x00000001,
+} sai_queue_packet_discard_action_t
+
+/**
  * @brief Enum defining queue attributes.
  */
 typedef enum _sai_queue_attr_t
@@ -257,6 +279,19 @@ typedef enum _sai_queue_attr_t
      * @flags READ_ONLY
      */
     SAI_QUEUE_ATTR_PFC_CONTINUOUS_DEADLOCK_STATE,
+
+    /**
+     * @brief Queue discard action
+     *
+     * Action to be taken upon packet discard due to
+     * buffer profile configuration, WRED configuration
+     * or any other queue attribute.
+     *
+     * @type sai_queue_packet_discard_action_t
+     * @flags CREATE_AND_SET
+     * @default SAI_QUEUE_PACKET_DISCARD_ACTION_NONE
+     */
+    SAI_QUEUE_ATTR_PACKET_DISCARD_ACTION,
 
     /**
      * @brief End of attributes
