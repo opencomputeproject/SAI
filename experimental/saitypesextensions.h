@@ -74,6 +74,10 @@ typedef enum _sai_object_type_extensions_t
 
     SAI_OBJECT_TYPE_HA_SCOPE,
 
+    SAI_OBJECT_TYPE_DASH_TUNNEL,
+
+    SAI_OBJECT_TYPE_OUTBOUND_ROUTING_GROUP,
+
     SAI_OBJECT_TYPE_FLOW_TABLE,
 
     SAI_OBJECT_TYPE_FLOW_ENTRY,
@@ -81,11 +85,6 @@ typedef enum _sai_object_type_extensions_t
     SAI_OBJECT_TYPE_FLOW_ENTRY_BULK_GET_SESSION_FILTER,
 
     SAI_OBJECT_TYPE_FLOW_ENTRY_BULK_GET_SESSION,
-
-    SAI_OBJECT_TYPE_DASH_TUNNEL,
-
-    SAI_OBJECT_TYPE_OUTBOUND_ROUTING_GROUP,
-
     /* Add new experimental object types above this line */
 
     SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END
