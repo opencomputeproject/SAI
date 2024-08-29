@@ -159,7 +159,7 @@ typedef enum _sai_dash_ha_role_t
  */
 typedef enum _sai_dash_flow_enabled_key_t
 {
-    SAI_DASH_FLOW_ENABLED_KEY_ENI_ADDR = 1,
+    SAI_DASH_FLOW_ENABLED_KEY_ENI_MAC = 1,
 
     SAI_DASH_FLOW_ENABLED_KEY_VNI = 2,
 

@@ -68,7 +68,7 @@ typedef enum _sai_flow_table_attr_t
      *
      * @type sai_dash_flow_enabled_key_t
      * @flags CREATE_AND_SET
-     * @default SAI_DASH_FLOW_ENABLED_KEY_ENI_ADDR
+     * @default SAI_DASH_FLOW_ENABLED_KEY_ENI_MAC
      */
     SAI_FLOW_TABLE_ATTR_DASH_FLOW_ENABLED_KEY,
 
