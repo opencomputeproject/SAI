@@ -561,14 +561,15 @@ typedef void (*sai_queue_pfc_deadlock_notification_fn)(
  */
 typedef struct _sai_queue_api_t
 {
-    sai_create_queue_fn          create_queue;
-    sai_remove_queue_fn          remove_queue;
-    sai_set_queue_attribute_fn   set_queue_attribute;
-    sai_get_queue_attribute_fn   get_queue_attribute;
-    sai_get_queue_stats_fn       get_queue_stats;
-    sai_get_queue_stats_ext_fn   get_queue_stats_ext;
-    sai_clear_queue_stats_fn     clear_queue_stats;
-
+    sai_create_queue_fn              create_queue;
+    sai_remove_queue_fn              remove_queue;
+    sai_set_queue_attribute_fn       set_queue_attribute;
+    sai_get_queue_attribute_fn       get_queue_attribute;
+    sai_get_queue_stats_fn           get_queue_stats;
+    sai_get_queue_stats_ext_fn       get_queue_stats_ext;
+    sai_clear_queue_stats_fn         clear_queue_stats;
+    sai_bulk_object_set_attribute_fn set_queues_attribute;      
+    sai_bulk_object_get_attribute_fn get_queues_attribute;
 } sai_queue_api_t;
 
 /**
