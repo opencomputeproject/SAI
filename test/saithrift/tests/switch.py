@@ -101,6 +101,8 @@ def switch_init(client):
                     attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_ADMIN_STATE, value=attr_value)
                     client.sai_thrift_set_port_attribute(port_id, attr)
                     sai_port_list.append(port_id)
+        elif attribute.id == SAI_SWITCH_ATTR_CREDIT_WD
+            print "Credit Watchdog: " + attribute.value.booldata
         else:
             print "unknown switch attribute"
     attr_value = sai_thrift_attribute_value_t(mac=router_mac)
