@@ -204,6 +204,16 @@ typedef enum _sai_lag_attr_t
     SAI_LAG_ATTR_ARS_PORT_REASSIGNMENTS,
 
     /**
+     * @brief LAG hash algorithm
+     * Overrides value of SAI_SWITCH_ATTR_LAG_DEFAULT_HASH_ALGORITHM if not set to SAI_HASH_ALGORITHM_NONE
+     *
+     * @type sai_hash_algorithm_t
+     * @flags CREATE_ONLY
+     * @default SAI_HASH_ALGORITHM_NONE
+     */
+    SAI_LAG_ATTR_HASH_ALGORITHM,
+
+    /**
      * @brief End of attributes
      */
     SAI_LAG_ATTR_END,
