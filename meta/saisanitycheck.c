@@ -1319,6 +1319,7 @@ void check_attr_default_value_type(
 
             if ((md->objecttype == SAI_OBJECT_TYPE_PORT) ||
                 (md->objecttype == SAI_OBJECT_TYPE_PORT_SERDES) ||
+                (md->objecttype == SAI_OBJECT_TYPE_SAMPLEPACKET) ||
                 (md->objecttype == SAI_OBJECT_TYPE_NEIGHBOR_ENTRY))
             {
                 /*
