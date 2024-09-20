@@ -5498,13 +5498,22 @@ sub CreateSaiSwigApiStructs
     }
 
     my @headers = GetHeaderFiles();
+    my @metaheaders = GetMetaHeaderFiles();
     my @exheaders = GetExperimentalHeaderFiles();
 
-    my @merged = (@headers, @exheaders);
+    push(@metaheaders, "saimetadata.h");
+
+    my @merged = (@headers, @metaheaders, @exheaders);
+
+    WriteSwig "%ignore sai_metadata_log;";
+    WriteSwig "%ignore sai_metadata_log_level;";
+    WriteSwig "%ignore sai_free_attribute;";
 
     for my $header (sort @merged)
     {
+        WriteSwig "%nodefaultctor;" if $header =~ /saimetadatatypes\.h/;
         WriteSwig "%include \"$header\"";
+        WriteSwig "%clearnodefaultctor;" if $header =~ /saimetadatatypes\.h/;
     }
 }
 

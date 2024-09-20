@@ -78,6 +78,16 @@ typedef enum _sai_object_type_extensions_t
 
     SAI_OBJECT_TYPE_OUTBOUND_ROUTING_GROUP,
 
+    SAI_OBJECT_TYPE_FLOW_TABLE,
+
+    SAI_OBJECT_TYPE_FLOW_ENTRY,
+
+    SAI_OBJECT_TYPE_FLOW_ENTRY_BULK_GET_SESSION_FILTER,
+
+    SAI_OBJECT_TYPE_FLOW_ENTRY_BULK_GET_SESSION,
+
+    SAI_OBJECT_TYPE_DASH_APPLIANCE,
+
     /* Add new experimental object types above this line */
 
     SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END
@@ -146,6 +156,38 @@ typedef enum _sai_dash_ha_role_t
 } sai_dash_ha_role_t;
 
 /**
+ * @brief Defines a list of enums for dash_flow_enabled_key
+ *
+ * @flags strict
+ */
+typedef enum _sai_dash_flow_enabled_key_t
+{
+    SAI_DASH_FLOW_ENABLED_KEY_ENI_MAC = 1,
+
+    SAI_DASH_FLOW_ENABLED_KEY_VNI = 2,
+
+    SAI_DASH_FLOW_ENABLED_KEY_PROTOCOL = 4,
+
+    SAI_DASH_FLOW_ENABLED_KEY_SRC_IP = 8,
+
+    SAI_DASH_FLOW_ENABLED_KEY_DST_IP = 16,
+
+    SAI_DASH_FLOW_ENABLED_KEY_SRC_PORT = 32,
+
+    SAI_DASH_FLOW_ENABLED_KEY_DST_PORT = 64,
+
+} sai_dash_flow_enabled_key_t;
+
+/**
+ * @brief Defines a list of enums for dash_flow_action
+ */
+typedef enum _sai_dash_flow_action_t
+{
+    SAI_DASH_FLOW_ACTION_NONE,
+
+} sai_dash_flow_action_t;
+
+/**
  * @brief Defines a list of enums for dash_ha_state
  */
 typedef enum _sai_dash_ha_state_t
@@ -177,6 +219,65 @@ typedef enum _sai_dash_ha_state_t
     SAI_DASH_HA_STATE_SWITCHING_TO_STANDALONE,
 
 } sai_dash_ha_state_t;
+
+/**
+ * @brief Defines a list of enums for dash_flow_entry_bulk_get_session_op_key
+ */
+typedef enum _sai_dash_flow_entry_bulk_get_session_op_key_t
+{
+    SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_OP_KEY_FILTER_OP_INVALID,
+
+    SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_OP_KEY_FILTER_OP_EQUAL_TO,
+
+    SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_OP_KEY_FILTER_OP_GREATER_THAN,
+
+    SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_OP_KEY_FILTER_OP_GREATER_THAN_OR_EQUAL_TO,
+
+    SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_OP_KEY_FILTER_OP_LESS_THAN,
+
+    SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_OP_KEY_FILTER_OP_LESS_THAN_OR_EQUAL_TO,
+
+} sai_dash_flow_entry_bulk_get_session_op_key_t;
+
+/**
+ * @brief Defines a list of enums for dash_flow_entry_bulk_get_session_mode
+ */
+typedef enum _sai_dash_flow_entry_bulk_get_session_mode_t
+{
+    SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_MODE_SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_MODE_GRPC,
+
+    SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_MODE_SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_MODE_VENDOR,
+
+    SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_MODE_SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_MODE_EVENT,
+
+    SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_MODE_SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_MODE_EVENT_WITHOUT_FLOW_STATE,
+
+} sai_dash_flow_entry_bulk_get_session_mode_t;
+
+/**
+ * @brief Defines a list of enums for dash_flow_entry_bulk_get_session_filter_key
+ */
+typedef enum _sai_dash_flow_entry_bulk_get_session_filter_key_t
+{
+    SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_FILTER_KEY_INVAILD,
+
+    SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_FILTER_KEY_FLOW_TABLE_ID,
+
+    SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_FILTER_KEY_ENI_ADDR,
+
+    SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_FILTER_KEY_IP_PROTOCOL,
+
+    SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_FILTER_KEY_SRC_IP_ADDR,
+
+    SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_FILTER_KEY_DST_IP_ADDR,
+
+    SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_FILTER_KEY_SRC_L4_PORT,
+
+    SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_FILTER_KEY_DST_L4_PORT,
+
+    SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_FILTER_KEY_KEY_VERSION,
+
+} sai_dash_flow_entry_bulk_get_session_filter_key_t;
 
 #endif /* __SAITYPESEXTENSIONS_H_ */
 
