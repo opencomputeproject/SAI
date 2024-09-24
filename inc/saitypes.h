@@ -1373,7 +1373,9 @@ typedef struct _sai_fabric_port_reachability_t
 } sai_fabric_port_reachability_t;
 
 /**
- * @brief Port error status
+ * @brief Port error status. This attribute is to be deprecated. Use sai_port_error_status_t instead.
+ *
+ * @deprecated true
  */
 typedef enum _sai_port_err_status_t
 {
