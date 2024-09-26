@@ -268,7 +268,7 @@ This section describes the SAI object usage for different EVPN MH scenarios.
 
 ## 4.1 Known Unicast workflow
 
-![EVPN Multihoming](figures/sai_evpnmh_unicast.PNG "Figure 1: Known Unicast Packet Flow")
+![EVPN Multihoming](figures/sai_evpnmh_unicast.png "Figure 1: Known Unicast Packet Flow")
 __Figure 1: Known Unicast Packet Flow__
 
 At VTEP5 the following objects are created.
@@ -438,7 +438,7 @@ At VTEP5 the following objects are created.
   to achieve the split horizon functionality and do not need the attributes being introduced as part of this
   PR. It is being elaborated here for completeness.
 
-![EVPN Multihoming](figures/sai_evpnmh_splithorizon.PNG "Figure 1: Split Horizon")
+![EVPN Multihoming](figures/sai_evpnmh_splithorizon.png "Figure 1: Split Horizon")
 __Figure 2: Split Horizon Flow__
 
   At VTEP1 the following SAI objects with sub types are created.
@@ -491,7 +491,7 @@ __Figure 2: Split Horizon Flow__
 
 ## 4.3 DF workflow
 
-![EVPN Multihoming](figures/sai_evpnmh_df.PNG "Figure 1: Designated Forwarder")
+![EVPN Multihoming](figures/sai_evpnmh_df.png "Figure 1: Designated Forwarder")
 __Figure 3: Designated Forwarder Flow__
 
 - DF settings
@@ -510,7 +510,7 @@ __Figure 3: Designated Forwarder Flow__
  
 ## 4.4 Fast Failover workflow
 
-![EVPN Multihoming](figures/sai_evpnmh_failover.PNG "Figure 1: Failover")
+![EVPN Multihoming](figures/sai_evpnmh_failover.png "Figure 1: Failover")
 __Figure 4: Failover Flow__
 
 
