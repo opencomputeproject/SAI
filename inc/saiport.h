@@ -75,6 +75,57 @@ typedef enum _sai_port_oper_status_t
 } sai_port_oper_status_t;
 
 /**
+ * @brief Attribute data for #SAI_PORT_ATTR_ERROR_STATUS
+ * Note enum values must be powers of 2 to be used as Bit mask to query multiple errors
+ *
+ * @flags free
+ */
+typedef enum _sai_port_error_status_t
+{
+    /** No errors */
+    SAI_PORT_ERROR_STATUS_CLEAR = 0,
+
+    /** MAC Local fault asserted */
+    SAI_PORT_ERROR_STATUS_MAC_LOCAL_FAULT = 1 << 0,
+
+    /** MAC Remote fault asserted */
+    SAI_PORT_ERROR_STATUS_MAC_REMOTE_FAULT = 1 << 1,
+
+    /** FEC loss of sync asserted */
+    SAI_PORT_ERROR_STATUS_FEC_SYNC_LOSS = 1 << 2,
+
+    /** FEC loss of alignment marker asserted */
+    SAI_PORT_ERROR_STATUS_FEC_LOSS_ALIGNMENT_MARKER = 1 << 3,
+
+    /** High SER asserted */
+    SAI_PORT_ERROR_STATUS_HIGH_SER = 1 << 4,
+
+    /** High BER asserted */
+    SAI_PORT_ERROR_STATUS_HIGH_BER = 1 << 5,
+
+    /** Rate of data units with CRC errors passed its threshold */
+    SAI_PORT_ERROR_STATUS_CRC_RATE = 1 << 6,
+
+    /** Data Unit CRC Error */
+    SAI_PORT_ERROR_STATUS_DATA_UNIT_CRC_ERROR = 1 << 7,
+
+    /** Data Unit Size Error */
+    SAI_PORT_ERROR_STATUS_DATA_UNIT_SIZE = 1 << 8,
+
+    /** Data Unit Misalignment Error */
+    SAI_PORT_ERROR_STATUS_DATA_UNIT_MISALIGNMENT_ERROR = 1 << 9,
+
+    /** Uncorrectable RS-FEC code word error */
+    SAI_PORT_ERROR_STATUS_CODE_GROUP_ERROR = 1 << 10,
+
+    /** SerDes Signal is out of sync */
+    SAI_PORT_ERROR_STATUS_SIGNAL_LOCAL_ERROR = 1 << 11,
+
+    /** Port is not accepting reachability data units */
+    SAI_PORT_ERROR_STATUS_NO_RX_REACHABILITY = 1 << 12
+} sai_port_error_status_t;
+
+/**
  * @brief Defines the operational status of the port
  */
 typedef struct _sai_port_oper_status_notification_t
@@ -89,6 +140,8 @@ typedef struct _sai_port_oper_status_notification_t
     /** Port operational status */
     sai_port_oper_status_t port_state;
 
+    /** Bitmap of various port error or fault status */
+    sai_port_error_status_t port_error_status;
 } sai_port_oper_status_notification_t;
 
 /**
@@ -1935,6 +1988,7 @@ typedef enum _sai_port_attr_t
      *
      * @type sai_port_err_status_list_t
      * @flags READ_ONLY
+     * @deprecated true
      */
     SAI_PORT_ATTR_ERR_STATUS_LIST,
 
@@ -2527,6 +2581,27 @@ typedef enum _sai_port_attr_t
      * @flags READ_ONLY
      */
     SAI_PORT_ATTR_JSON_FORMATTED_DEBUG_DATA_SIZE,
+
+    /**
+     * @brief Unreliable Loss of Signal
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_UNRELIABLE_LOS,
+
+    /**
+     * @brief Various port error status
+     *
+     * Attribute to query the capability of the Switch to report
+     * various port error and fault status. The attribute can also
+     * be used to query the current port error and fault status.
+     *
+     * @type sai_port_error_status_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_ERROR_STATUS,
 
     /**
      * @brief End of attributes

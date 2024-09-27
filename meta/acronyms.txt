@@ -7,6 +7,7 @@ API - Application Program Interface
 ARP - Address Resolution Protocol
 ARS - Adaptiver Routing and Switching
 ASIC - Application Specific Integrated Circuit
+BER - Bit Error Rate
 BFD - Bidirectional Forwarding Detection
 BFDV6 - Bidirectional Forwarding Detection for IPv6
 BGP - Border Gateway Protocol
@@ -135,6 +136,7 @@ SAK - Secure Association Key
 SC - Secure Channel
 SCI - Secure Channel Identifier
 SDK - Software Development Kit
+SER - Soft Error Rate
 SFI - SerDes Framer Interface
 SFLOW - Sampled Flow
 SG - (S,G) Source-specific multicast
