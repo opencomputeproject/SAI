@@ -128,10 +128,10 @@ Trimming engine attributes are configured globally.
 
 If more granularity is needed (e.g. trim a specific protocol, or packets within protocol), ACL action is added to disable trimming even if the packet is eligible due to a queue with a buffer profile attached that has trimming enabled.
 ```
-   /**
+    /**
      * @brief Disable packet trimming for a given match condition.
      *
-     * This rule takes effect only when packet trimming is configured on a TC to which a packet belongs.
+     * This rule takes effect only when packet trimming is configured on a buffer profile of a queue to which a packet belongs.
      *
      * @type sai_acl_action_data_t bool
      * @flags CREATE_AND_SET
