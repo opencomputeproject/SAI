@@ -60,9 +60,9 @@ However, if all the ports are equally utilized, it makes sense to create a diffe
 A static trimming threshold may not be effective with shared buffer switches, where the buffer resources allocated to a queue or port can vary over time. Therefore, we propose adding a new attribute to a buffer profile to allow configuring packet trimming on such stricter profiles:
 ```
 /**
- * @brief Enum defining queue actions in case of packet discard.
+ * @brief Enum defining queue actions in case the packet fails to pass the admission control.
  */
-typedef enum _sai_buffer_profile_packet_discard_action_t
+typedef enum _sai_buffer_profile_packet_admission_fail_action_t
 {
     /**
      * @brief Drop the packet.
@@ -70,29 +70,30 @@ typedef enum _sai_buffer_profile_packet_discard_action_t
      * Default action. Packet has nowhere to go
      * and will be dropped.
      */
-    SAI_BUFFER_PROFILE_PACKET_DISCARD_ACTION_DROP = 0x00000000,
+    SAI_BUFFER_PROFILE_PACKET_ADMISSION_FAIL_ACTION_DROP = 0x00000000,
 
     /**
      * @brief Trim the packet.
      *
      * Try sending a shortened packet over a different
-     * queue.
+     * queue. SAI_QUEUE_STAT_DROPPED_PACKETS as well as SAI_QUEUE_STAT_DROPPED_BYTES
+     * will count the original discarded frames even if they will be trimmed afterwards.
      */
-    SAI_BUFFER_PROFILE_PACKET_DISCARD_ACTION_TRIM = 0x00000001,
-} sai_buffer_profile_packet_discard_action_t;
+    SAI_BUFFER_PROFILE_PACKET_ADMISSION_FAIL_ACTION_DROP_AND_TRIM = 0x00000001,
+} sai_buffer_profile_packet_admission_fail_action_t;
 
-   /**
+    /**
      * @brief Buffer profile discard action
      *
      * Action to be taken upon packet discard due to
      * buffer profile configuration. Applicable only
      * when attached to a queue.
      *
-     * @type sai_buffer_profile_packet_discard_action_t
+     * @type sai_buffer_profile_packet_admission_fail_action_t
      * @flags CREATE_AND_SET
-     * @default SAI_BUFFER_PROFILE_PACKET_DISCARD_ACTION_DROP
+     * @default SAI_BUFFER_PROFILE_PACKET_ADMISSION_FAIL_ACTION_DROP
      */
-    SAI_BUFFER_PROFILE_ATTR_PACKET_DISCARD_ACTION,
+    SAI_BUFFER_PROFILE_ATTR_PACKET_ADMISSION_FAIL_ACTION,
 ```
 
 Trimming engine attributes are configured globally.
@@ -138,6 +139,3 @@ If more granularity is needed (e.g. trim a specific protocol, or packets within 
      */
     SAI_ACL_ENTRY_ATTR_ACTION_DISABLE_TRIMMING = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x39,
 ```
-
-## Examples
-TBD
