@@ -697,11 +697,11 @@ typedef enum _sai_buffer_profile_attr_t
      * buffer profile configuration. Applicable only
      * when attached to a queue.
      *
-     * @type sai_buffer_profile_packet_discard_action_t
+     * @type sai_buffer_profile_packet_admission_fail_action_t
      * @flags CREATE_AND_SET
-     * @default SAI_BUFFER_PROFILE_PACKET_DISCARD_ACTION_DROP
+     * @default SAI_BUFFER_PROFILE_PACKET_ADMISSION_FAIL_ACTION_DROP
      */
-    SAI_BUFFER_PROFILE_ATTR_PACKET_DISCARD_ACTION,
+    SAI_BUFFER_PROFILE_ATTR_PACKET_ADMISSION_FAIL_ACTION,
 
     /**
      * @brief End of attributes
