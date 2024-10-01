@@ -563,9 +563,10 @@ typedef enum _sai_buffer_profile_packet_admission_fail_action_t
      * @brief Trim the packet.
      *
      * Try sending a shortened packet over a different
-     * queue.
+     * queue. SAI_QUEUE_STAT_DROPPED_PACKETS as well as SAI_QUEUE_STAT_DROPPED_BYTES
+     * will count the original discarded frames even if they will be trimmed afterwards.
      */
-    SAI_BUFFER_PROFILE_PACKET_ADMISSION_FAIL_ACTION_TRIM = 0x00000001,
+    SAI_BUFFER_PROFILE_PACKET_ADMISSION_FAIL_ACTION_DROP_AND_TRIM = 0x00000001,
 } sai_buffer_profile_packet_admission_fail_action_t;
 
 /**
