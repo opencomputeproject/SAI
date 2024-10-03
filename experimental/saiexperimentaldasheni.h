@@ -528,6 +528,24 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_IS_HA_FLOW_OWNER,
 
     /**
+     * @brief Action parameter enable reverse tunnel learning
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_ENI_ATTR_ENABLE_REVERSE_TUNNEL_LEARNING,
+
+    /**
+     * @brief Action parameter reverse tunnel sip
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     */
+    SAI_ENI_ATTR_REVERSE_TUNNEL_SIP,
+
+    /**
      * @brief End of attributes
      */
     SAI_ENI_ATTR_END,

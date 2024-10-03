@@ -279,5 +279,18 @@ typedef enum _sai_dash_flow_entry_bulk_get_session_filter_key_t
 
 } sai_dash_flow_entry_bulk_get_session_filter_key_t;
 
+/**
+ * @brief Defines a list of enums for dash_eni_mac_override_type
+ */
+typedef enum _sai_dash_eni_mac_override_type_t
+{
+    SAI_DASH_ENI_MAC_OVERRIDE_TYPE_NONE,
+
+    SAI_DASH_ENI_MAC_OVERRIDE_TYPE_SRC_MAC,
+
+    SAI_DASH_ENI_MAC_OVERRIDE_TYPE_DST_MAC,
+
+} sai_dash_eni_mac_override_type_t;
+
 #endif /* __SAITYPESEXTENSIONS_H_ */
 
