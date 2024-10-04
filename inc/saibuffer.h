@@ -547,6 +547,29 @@ typedef enum _sai_buffer_profile_threshold_mode_t
 } sai_buffer_profile_threshold_mode_t;
 
 /**
+ * @brief Enum defining queue actions in case the packet fails to pass the admission control.
+ */
+typedef enum _sai_buffer_profile_packet_admission_fail_action_t
+{
+    /**
+     * @brief Drop the packet.
+     *
+     * Default action. Packet has nowhere to go
+     * and will be dropped.
+     */
+    SAI_BUFFER_PROFILE_PACKET_ADMISSION_FAIL_ACTION_DROP = 0x00000000,
+
+    /**
+     * @brief Trim the packet.
+     *
+     * Try sending a shortened packet over a different
+     * queue. SAI_QUEUE_STAT_DROPPED_PACKETS as well as SAI_QUEUE_STAT_DROPPED_BYTES
+     * will count the original discarded frames even if they will be trimmed afterwards.
+     */
+    SAI_BUFFER_PROFILE_PACKET_ADMISSION_FAIL_ACTION_DROP_AND_TRIM = 0x00000001,
+} sai_buffer_profile_packet_admission_fail_action_t;
+
+/**
  * @brief Enum defining buffer profile attributes.
  */
 typedef enum _sai_buffer_profile_attr_t
@@ -666,6 +689,19 @@ typedef enum _sai_buffer_profile_attr_t
      * @default 0
      */
     SAI_BUFFER_PROFILE_ATTR_XON_OFFSET_TH,
+
+    /**
+     * @brief Buffer profile discard action
+     *
+     * Action to be taken upon packet discard due to
+     * buffer profile configuration. Applicable only
+     * when attached to a queue.
+     *
+     * @type sai_buffer_profile_packet_admission_fail_action_t
+     * @flags CREATE_AND_SET
+     * @default SAI_BUFFER_PROFILE_PACKET_ADMISSION_FAIL_ACTION_DROP
+     */
+    SAI_BUFFER_PROFILE_ATTR_PACKET_ADMISSION_FAIL_ACTION,
 
     /**
      * @brief End of attributes

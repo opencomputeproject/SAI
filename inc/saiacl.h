@@ -288,6 +288,9 @@ typedef enum _sai_acl_action_type_t
 
     /** Next Chain Group */
     SAI_ACL_ACTION_TYPE_CHAIN_REDIRECT = 0x00000038,
+
+    /** Disable packet trimming */
+    SAI_ACL_ACTION_TYPE_DISABLE_TRIMMING = 0x00000039,
 } sai_acl_action_type_t;
 
 /**
@@ -3222,9 +3225,20 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_CHAIN_REDIRECT = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x38,
 
     /**
+     * @brief Disable packet trimming for a given match condition.
+     *
+     * This rule takes effect only when packet trimming is configured on a buffer profile of a queue to which a packet belongs.
+     *
+     * @type sai_acl_action_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_DISABLE_TRIMMING = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x39,
+
+    /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_CHAIN_REDIRECT,
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_DISABLE_TRIMMING,
 
     /**
      * @brief End of ACL Entry attributes

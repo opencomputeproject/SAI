@@ -3049,6 +3049,33 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MAX_ICMP_ECHO_SESSION,
 
     /**
+     * @brief Maximum size of the packet after trimming
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 128
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIMMING_SIZE,
+
+    /**
+     * @brief New packet trimming DSCP value
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIMMING_DSCP_VALUE,
+
+    /**
+     * @brief New packet trimming queue index
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIMMING_QUEUE_INDEX,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
