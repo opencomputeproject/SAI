@@ -130,6 +130,15 @@ typedef enum _sai_scheduler_attr_t
     SAI_SCHEDULER_ATTR_MAX_BANDWIDTH_BURST_RATE = 0x00000006,
 
     /**
+     * @brief Label attribute used to uniquely identify scheduler.
+     *
+     * @type char
+     * @flags CREATE_AND_SET
+     * @default ""
+     */
+    SAI_SCHEDULER_ATTR_LABEL,
+
+    /**
      * @brief End of attributes
      */
     SAI_SCHEDULER_ATTR_END,
