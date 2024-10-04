@@ -76,9 +76,10 @@ typedef enum _sai_port_oper_status_t
 
 /**
  * @brief Attribute data for #SAI_PORT_ATTR_ERROR_STATUS
+ *
  * Note enum values must be powers of 2 to be used as Bit mask to query multiple errors
  *
- * @flags free
+ * @flags strict
  */
 typedef enum _sai_port_error_status_t
 {

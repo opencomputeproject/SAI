@@ -5574,6 +5574,13 @@ void check_enum_flags_type_strict(
 
         size_t i = 0;
 
+        if (emd->values[0] == 0)
+        {
+            /* first value in strict flags is zero (no flags, we allow this case) */
+
+            i = 1;
+        }
+
         for (; i < emd->valuescount; ++i)
         {
             int val = emd->values[i];
