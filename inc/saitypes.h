@@ -1799,6 +1799,22 @@ typedef struct _sai_stat_capability_list_t
 
 } sai_stat_capability_list_t;
 
+typedef enum _sai_stats_count_mode_t
+{
+    /** Count packet and byte */
+    SAI_STATS_COUNT_MODE_PACKET_AND_BYTE,
+
+    /** Count only packet */
+    SAI_STATS_COUNT_MODE_PACKET,
+
+    /** Count only byte */
+    SAI_STATS_COUNT_MODE_BYTE,
+
+    /** Counting is disabled */
+    SAI_STATS_COUNT_MODE_NONE
+
+} sai_stats_count_mode_t;
+
 typedef enum _sai_object_stage_t
 {
     /** Common stage */
