@@ -150,6 +150,12 @@ typedef enum _sai_ingress_priority_group_stat_t
     /** Get dropped packets count [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_DROPPED_PACKETS = 0x00000008,
 
+    /** Get current pg occupancy in cells [uint64_t] */
+    SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_CELLS = 0x00000009,
+
+    /** Get watermark pg occupancy in cells [uint64_t] */
+    SAI_INGRESS_PRIORITY_GROUP_STAT_WATERMARK_CELLS = 0x0000000a,
+
     /** Custom range base value */
     SAI_INGRESS_PRIORITY_GROUP_STAT_CUSTOM_RANGE_BASE = 0x10000000
 
