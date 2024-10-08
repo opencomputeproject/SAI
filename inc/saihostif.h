@@ -343,6 +343,13 @@ typedef enum _sai_hostif_trap_type_t
      */
     SAI_HOSTIF_TRAP_TYPE_ISIS = 0x00002014,
 
+    /**
+     * @brief Packets matching subnet routes with NH pointing to router interface
+     * i.e., no neighbor entry route is present
+     * (default packet action is trap)
+     */
+    SAI_HOSTIF_TRAP_TYPE_NEIGHBOR_MISS = 0x00002015,
+
     /** Router traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_ROUTER_CUSTOM_RANGE_BASE = 0x00003000,
 
