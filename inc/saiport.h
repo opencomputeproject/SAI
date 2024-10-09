@@ -3361,6 +3361,12 @@ typedef enum _sai_port_stat_t
     /** Get out port packet drops configured by debug counter API at index 7 */
     SAI_PORT_STAT_OUT_CONFIGURED_DROP_REASONS_7_DROPPED_PKTS,
 
+    /** SAI port stat if HW protection switchover events */
+    SAI_PORT_STAT_IF_IN_HW_PROTECTION_SWITCHOVER_EVENTS,
+
+    /** SAI port stat if HW protection switchover related packet drops */
+    SAI_PORT_STAT_IF_IN_HW_PROTECTION_SWITCHOVER_DROP_PKTS,
+
     /** Port stat out drop reasons range end */
     SAI_PORT_STAT_OUT_DROP_REASON_RANGE_END = 0x00002fff,
 
