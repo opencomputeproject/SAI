@@ -1335,6 +1335,30 @@ typedef enum _sai_tam_report_attr_t
     SAI_TAM_REPORT_ATTR_REPORT_INTERVAL_UNIT,
 
     /**
+     * @brief Set ID for IPFIX template
+     *
+     * According to the IPFIX spec, the available range should be 256-65535.
+     * The value 0 means the ID will be decided by the vendor's SAI.
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     * @validonly SAI_TAM_REPORT_ATTR_TYPE == SAI_TAM_REPORT_TYPE_IPFIX
+     */
+    SAI_TAM_REPORT_ATTR_REPORT_IPFIX_TEMPLATE_ID,
+
+    /**
+     * @brief Query IPFIX template
+     *
+     * Return the IPFIX template binary buffer
+     *
+     * @type sai_u8_list_t
+     * @flags READ_ONLY
+     */
+    SAI_TAM_REPORT_ATTR_IPFIX_TEMPLATE,
+
+    /**
      * @brief End of Attributes
      */
     SAI_TAM_REPORT_ATTR_END,
@@ -1427,6 +1451,23 @@ typedef enum _sai_tam_reporting_unit_t
 } sai_tam_reporting_unit_t;
 
 /**
+ * @brief TAM reporting type
+ */
+typedef enum _sai_tam_reporting_type_t
+{
+    /**
+     * @brief Report type is time based
+     */
+    SAI_TAM_REPORTING_TYPE_TIME_BASED,
+
+    /**
+     * @brief Report type is count based
+     */
+    SAI_TAM_REPORTING_TYPE_COUNT_BASED,
+
+} sai_tam_reporting_type_t;
+
+/**
  * @brief TAM telemetry attributes
  */
 typedef enum _sai_tam_telemetry_attr_t
@@ -1461,6 +1502,7 @@ typedef enum _sai_tam_telemetry_attr_t
      * @type sai_tam_reporting_unit_t
      * @flags CREATE_AND_SET
      * @default SAI_TAM_REPORTING_UNIT_SEC
+     * @validonly SAI_TAM_TELEMETRY_ATTR_TAM_REPORTING_TYPE == SAI_TAM_REPORTING_TYPE_TIME_BASED
      */
     SAI_TAM_TELEMETRY_ATTR_TAM_REPORTING_UNIT,
 
@@ -1472,8 +1514,43 @@ typedef enum _sai_tam_telemetry_attr_t
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 1
+     * @validonly SAI_TAM_TELEMETRY_ATTR_TAM_REPORTING_TYPE == SAI_TAM_REPORTING_TYPE_TIME_BASED
      */
     SAI_TAM_TELEMETRY_ATTR_REPORTING_INTERVAL,
+
+    /**
+     * @brief Tam telemetry reporting type
+     *
+     * @type sai_tam_reporting_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_TAM_REPORTING_TYPE_TIME_BASED
+     */
+    SAI_TAM_TELEMETRY_ATTR_TAM_REPORTING_TYPE,
+
+    /**
+     * @brief Tam telemetry reporting chunk size
+     *
+     * defines the size of reporting chunk, which means TAM will report to the collector every time
+     * if the report count reaches the chunk size.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 1
+     * @validonly SAI_TAM_TELEMETRY_ATTR_TAM_REPORTING_TYPE == SAI_TAM_REPORTING_TYPE_COUNT_BASED
+     */
+    SAI_TAM_TELEMETRY_ATTR_REPORTING_CHUNK_SIZE,
+
+    /**
+     * @brief Tam telemetry cache size
+     *
+     * If the collector isn't ready to receive the report, this value indicates how many
+     * reports that can be cached. 0 means no cache which is the default behavior.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_TAM_TELEMETRY_ATTR_CACHE_SIZE,
 
     /**
      * @brief End of Attributes
