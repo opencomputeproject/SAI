@@ -288,6 +288,10 @@ typedef enum _sai_acl_action_type_t
 
     /** Next Chain Group */
     SAI_ACL_ACTION_TYPE_CHAIN_REDIRECT = 0x00000038,
+
+    /** Set ECMP static member selection mode */
+    SAI_ACL_ACTION_TYPE_SET_ECMP_STATIC_MEMBER_SELECTION_MODE = 0x00000039,
+
 } sai_acl_action_type_t;
 
 /**
@@ -3222,9 +3226,18 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_CHAIN_REDIRECT = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x38,
 
     /**
+     * @brief Set ECMP static member selection mode
+     *
+     * @type sai_acl_action_data_t sai_static_member_selection_mode_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_ECMP_STATIC_MEMBER_SELECTION_MODE = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x39,
+
+    /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_CHAIN_REDIRECT,
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_ECMP_STATIC_MEMBER_SELECTION_MODE,
 
     /**
      * @brief End of ACL Entry attributes
