@@ -495,19 +495,19 @@ typedef enum _sai_tam_report_attr_t
      *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan false
      * @default 0
      * @validonly SAI_TAM_REPORT_ATTR_TYPE == SAI_TAM_REPORT_TYPE_IPFIX
      */
     SAI_TAM_REPORT_ATTR_REPORT_IPFIX_TEMPLATE_ID,
 
     /**
-     * @brief query IPFIX template
+     * @brief Query IPFIX template
      *
      * Return the IPFIX template binary buffer
      *
-     * @type sai_uint8_list_t
+     * @type sai_u8_list_t
      * @flags READ_ONLY
-     * @validonly SAI_TAM_REPORT_ATTR_TYPE == SAI_TAM_REPORT_TYPE_IPFIX
      */
     SAI_TAM_REPORT_ATTR_IPFIX_TEMPLATE,
 
@@ -574,6 +574,9 @@ Extern TAM telemetry attributes in SAI
 
 ``` c++
 
+/**
+ * @brief TAM reporting type
+ */
 typedef enum _sai_tam_reporting_type_t
 {
     /**
@@ -598,7 +601,7 @@ typedef enum _sai_tam_telemetry_attr_t
      * @type sai_tam_reporting_unit_t
      * @flags CREATE_AND_SET
      * @default SAI_TAM_REPORTING_UNIT_SEC
-     * @condition SAI_TAM_TELEMETRY_ATTR_REPORTING_TYPE == SAI_TAM_REPORTING_TYPE_TIME_BASED
+     * @validonly SAI_TAM_TELEMETRY_ATTR_TAM_REPORTING_TYPE == SAI_TAM_REPORTING_TYPE_TIME_BASED
      */
     SAI_TAM_TELEMETRY_ATTR_TAM_REPORTING_UNIT,
 
@@ -610,7 +613,7 @@ typedef enum _sai_tam_telemetry_attr_t
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 1
-     * @condition SAI_TAM_TELEMETRY_ATTR_REPORTING_TYPE == SAI_TAM_REPORTING_TYPE_TIME_BASED
+     * @validonly SAI_TAM_TELEMETRY_ATTR_TAM_REPORTING_TYPE == SAI_TAM_REPORTING_TYPE_TIME_BASED
      */
     SAI_TAM_TELEMETRY_ATTR_REPORTING_INTERVAL,
 
@@ -621,7 +624,7 @@ typedef enum _sai_tam_telemetry_attr_t
      * @flags CREATE_AND_SET
      * @default SAI_TAM_REPORTING_TYPE_TIME_BASED
      */
-    SAI_TAM_TELEMETRY_ATTR_REPORTING_TYPE,
+    SAI_TAM_TELEMETRY_ATTR_TAM_REPORTING_TYPE,
 
     /**
      * @brief Tam telemetry reporting chunk size
@@ -632,7 +635,7 @@ typedef enum _sai_tam_telemetry_attr_t
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 1
-     * @condition SAI_TAM_TELEMETRY_ATTR_REPORTING_TYPE == SAI_TAM_REPORTING_TYPE_COUNT_BASED
+     * @validonly SAI_TAM_TELEMETRY_ATTR_TAM_REPORTING_TYPE == SAI_TAM_REPORTING_TYPE_COUNT_BASED
      */
     SAI_TAM_TELEMETRY_ATTR_REPORTING_CHUNK_SIZE,
 
