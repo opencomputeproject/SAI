@@ -141,9 +141,48 @@ typedef struct _sai_port_oper_status_notification_t
     /** Port operational status */
     sai_port_oper_status_t port_state;
 
+} sai_port_oper_status_notification_t;
+
+/**
+ * @brief Defines the extended operational status of the port
+ *
+ * Any additional data will must be passed on attributes list. Usually that
+ * will be port attributes that are READ_ONLY and the value will represent the
+ * state of given attribute for port_id object at the time that notification
+ * was generated.
+ *
+ * @count attr_list[attr_count]
+ */
+typedef struct _sai_extended_port_oper_status_notification_t
+{
+    /**
+     * @brief Port id.
+     *
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_BRIDGE_PORT, SAI_OBJECT_TYPE_LAG
+     */
+    sai_object_id_t port_id;
+
+    /** Port operational status */
+    sai_port_oper_status_t port_state;
+
     /** Bitmap of various port error or fault status */
     sai_port_error_status_t port_error_status;
-} sai_port_oper_status_notification_t;
+
+    /** Attributes count */
+    uint32_t attr_count;
+
+    /**
+     * @brief Attributes
+     *
+     * Object type NULL specifies that attribute list is for object type
+     * specified in port_id field. For example if port_id field contains LAG
+     * object then list of attributes contains SAI_LAG_ATTR_* attributes.
+     *
+     * @objects SAI_OBJECT_TYPE_NULL
+     */
+    sai_attribute_t *attr_list;
+
+} sai_extended_port_oper_status_notification_t;
 
 /**
  * @brief Attribute data for #SAI_PORT_ATTR_GLOBAL_FLOW_CONTROL_MODE
@@ -3501,6 +3540,20 @@ typedef sai_status_t (*sai_clear_port_all_stats_fn)(
 typedef void (*sai_port_state_change_notification_fn)(
         _In_ uint32_t count,
         _In_ const sai_port_oper_status_notification_t *data);
+
+/**
+ * @brief Extended port state change notification
+ *
+ * Passed as a parameter into sai_initialize_switch()
+ *
+ * @count data[count]
+ *
+ * @param[in] count Number of notifications
+ * @param[in] data Array of port operational status
+ */
+typedef void (*sai_extended_port_state_change_notification_fn)(
+        _In_ uint32_t count,
+        _In_ const sai_extended_port_oper_status_notification_t *data);
 
 /**
  * @brief Port host tx ready notification
