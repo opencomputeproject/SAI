@@ -17,6 +17,7 @@ attrvaluetype
 AUTONEG
 bool
 boolean
+bounceback
 callee
 Callee
 chardata
