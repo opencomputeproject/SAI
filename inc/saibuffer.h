@@ -557,16 +557,19 @@ typedef enum _sai_buffer_profile_packet_admission_fail_action_t
      * Default action. Packet has nowhere to go
      * and will be dropped.
      */
-    SAI_BUFFER_PROFILE_PACKET_ADMISSION_FAIL_ACTION_DROP = 0x00000000,
+    SAI_BUFFER_PROFILE_PACKET_ADMISSION_FAIL_ACTION_DROP,
 
     /**
      * @brief Trim the packet.
      *
      * Try sending a shortened packet over a different
-     * queue. SAI_QUEUE_STAT_DROPPED_PACKETS as well as SAI_QUEUE_STAT_DROPPED_BYTES
+     * queue. Original packet will be dropped and shortened copy of the packet will be send.
+     * SAI_QUEUE_STAT_DROPPED_PACKETS as well as SAI_QUEUE_STAT_DROPPED_BYTES
      * will count the original discarded frames even if they will be trimmed afterwards.
+     * Interface statistics must show dropped packets.
+     * Interface statistics may show sent trimmed packets.
      */
-    SAI_BUFFER_PROFILE_PACKET_ADMISSION_FAIL_ACTION_DROP_AND_TRIM = 0x00000001,
+    SAI_BUFFER_PROFILE_PACKET_ADMISSION_FAIL_ACTION_DROP_AND_TRIM,
 } sai_buffer_profile_packet_admission_fail_action_t;
 
 /**
