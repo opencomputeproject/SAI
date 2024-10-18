@@ -45,6 +45,9 @@ typedef enum _sai_counter_type_t
     /** Regular */
     SAI_COUNTER_TYPE_REGULAR,
 
+    /** Selective Counter */
+    SAI_COUNTER_TYPE_SELECTIVE,
+
 } sai_counter_type_t;
 
 /**
@@ -77,6 +80,45 @@ typedef enum _sai_counter_attr_t
      * @default ""
      */
     SAI_COUNTER_ATTR_LABEL,
+
+    /**
+     * @brief Enable/disable packet count
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default true
+     */
+    SAI_COUNTER_ATTR_ENABLE_PACKET_COUNT,
+
+    /**
+     * @brief Enable/disable byte count
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default true
+     */
+    SAI_COUNTER_ATTR_ENABLE_BYTE_COUNT,
+
+    /**
+     * @brief Object Type of the stat-id
+     *
+     * @type sai_object_type_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_COUNTER_ATTR_TYPE == SAI_COUNTER_TYPE_SELECTIVE
+     */
+    SAI_COUNTER_ATTR_OBJECT_TYPE,
+
+    /**
+     * @brief Stat id list
+     *
+     * List of statistics enum mapped to this counter
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     * @validonly SAI_COUNTER_ATTR_TYPE == SAI_COUNTER_TYPE_SELECTIVE
+     */
+    SAI_COUNTER_ATTR_STAT_ID_LIST,
 
     /**
      * @brief End of attributes

@@ -83,6 +83,15 @@ typedef enum _sai_direction_lookup_entry_attr_t
     SAI_DIRECTION_LOOKUP_ENTRY_ATTR_ACTION = SAI_DIRECTION_LOOKUP_ENTRY_ATTR_START,
 
     /**
+     * @brief Action parameter DASH ENI MAC override type
+     *
+     * @type sai_dash_eni_mac_override_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_DASH_ENI_MAC_OVERRIDE_TYPE_NONE
+     */
+    SAI_DIRECTION_LOOKUP_ENTRY_ATTR_DASH_ENI_MAC_OVERRIDE_TYPE,
+
+    /**
      * @brief End of attributes
      */
     SAI_DIRECTION_LOOKUP_ENTRY_ATTR_END,

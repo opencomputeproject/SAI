@@ -115,6 +115,27 @@ typedef enum _sai_samplepacket_attr_t
     SAI_SAMPLEPACKET_ATTR_MODE,
 
     /**
+     * @brief Enable truncation of sampled packets
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_SAMPLEPACKET_ATTR_TRUNCATE_ENABLE,
+
+    /**
+     * @brief Truncate size. Truncate sampled packets to this size to reduce traffic bandwidth
+     *
+     * This value takes effect when SAI_SAMPLEPACKET_ATTR_TRUNCATE_ENABLE is True.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default internal
+     * @validonly SAI_SAMPLEPACKET_ATTR_TRUNCATE_ENABLE == true
+     */
+    SAI_SAMPLEPACKET_ATTR_TRUNCATE_SIZE,
+
+    /**
      * @brief End of attributes
      */
     SAI_SAMPLEPACKET_ATTR_END,

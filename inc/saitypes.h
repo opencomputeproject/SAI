@@ -1373,7 +1373,9 @@ typedef struct _sai_fabric_port_reachability_t
 } sai_fabric_port_reachability_t;
 
 /**
- * @brief Port error status
+ * @brief Port error status. This attribute is to be deprecated. Use sai_port_error_status_t instead.
+ *
+ * @deprecated true
  */
 typedef enum _sai_port_err_status_t
 {
@@ -1796,6 +1798,22 @@ typedef struct _sai_stat_capability_list_t
     sai_stat_capability_t *list;
 
 } sai_stat_capability_list_t;
+
+typedef enum _sai_stats_count_mode_t
+{
+    /** Count packet and byte */
+    SAI_STATS_COUNT_MODE_PACKET_AND_BYTE,
+
+    /** Count only packet */
+    SAI_STATS_COUNT_MODE_PACKET,
+
+    /** Count only byte */
+    SAI_STATS_COUNT_MODE_BYTE,
+
+    /** Counting is disabled */
+    SAI_STATS_COUNT_MODE_NONE
+
+} sai_stats_count_mode_t;
 
 typedef enum _sai_object_stage_t
 {

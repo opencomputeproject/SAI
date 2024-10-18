@@ -165,7 +165,8 @@ sub BuildCommitHistory
         # check is performed by sai sanity check
 
         if ($currCount != $histCount and not $structTypeName =~ /^sai_\w+_api_t$/
-                and $structTypeName ne "sai_switch_health_data_t")
+                and $structTypeName ne "sai_switch_health_data_t"
+                and $structTypeName ne "sai_port_oper_status_notification_t")
         {
             LogError "FATAL: struct $structTypeName member count differs, was $histCount but is $currCount on commit $commit" if $type eq "struct";
         }

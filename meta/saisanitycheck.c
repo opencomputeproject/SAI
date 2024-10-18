@@ -1319,6 +1319,7 @@ void check_attr_default_value_type(
 
             if ((md->objecttype == SAI_OBJECT_TYPE_PORT) ||
                 (md->objecttype == SAI_OBJECT_TYPE_PORT_SERDES) ||
+                (md->objecttype == SAI_OBJECT_TYPE_SAMPLEPACKET) ||
                 (md->objecttype == SAI_OBJECT_TYPE_NEIGHBOR_ENTRY))
             {
                 /*
@@ -5572,6 +5573,13 @@ void check_enum_flags_type_strict(
         int current = 1 << 0;
 
         size_t i = 0;
+
+        if (emd->values[0] == 0)
+        {
+            /* first value in strict flags is zero (no flags, we allow this case) */
+
+            i = 1;
+        }
 
         for (; i < emd->valuescount; ++i)
         {

@@ -7,6 +7,7 @@ API - Application Program Interface
 ARP - Address Resolution Protocol
 ARS - Adaptiver Routing and Switching
 ASIC - Application Specific Integrated Circuit
+BER - Bit Error Rate
 BFD - Bidirectional Forwarding Detection
 BFDV6 - Bidirectional Forwarding Detection for IPv6
 BGP - Border Gateway Protocol
