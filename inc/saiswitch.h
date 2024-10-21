@@ -3088,11 +3088,20 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PACKET_TRIMMING_DSCP_VALUE,
 
     /**
+     * @brief Is the new queue index for a trimmed packet mapped from DSCP
+     *
+     * @type sai_bool_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIMMING_QUEUE_INDEX_MAPPED_FROM_DSCP,
+
+    /**
      * @brief New packet trimming queue index
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 0
+     * @validonly SAI_SWITCH_ATTR_PACKET_TRIMMING_QUEUE_INDEX_MAPPED_FROM_DSCP == false
      */
     SAI_SWITCH_ATTR_PACKET_TRIMMING_QUEUE_INDEX,
 
