@@ -94,6 +94,7 @@ MDIX - Medium Dependent Interface Crossover
 MILLI - milli (1/1000)
 MMU - Memory Management Unit
 MPLS - Multi Protocol Label Switching
+MSTP - Multiple Spanning Tree Protocol
 MTU - Maximum Transmission Unit
 NAPT - Network Address Port Translation
 NHLFE - Next Hop Label Forwarding Entry
