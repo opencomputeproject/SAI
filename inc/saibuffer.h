@@ -607,7 +607,8 @@ typedef enum _sai_buffer_profile_packet_admission_fail_action_t
      * @brief Trim the packet.
      *
      * Try sending a shortened packet over a different
-     * queue. Original packet will be dropped and shortened copy of the packet will be send.
+     * queue. Original packet will be dropped and trimmed copy of the packet will be send.
+     * The IP length and checksum fields will be updated in a trimmed copy.
      * SAI_QUEUE_STAT_DROPPED_PACKETS as well as SAI_QUEUE_STAT_DROPPED_BYTES
      * will count the original discarded frames even if they will be trimmed afterwards.
      * Interface statistics must show dropped packets.
