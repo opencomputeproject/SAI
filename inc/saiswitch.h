@@ -3070,7 +3070,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_SELECTIVE_COUNTER_LIST,
     
     /**
-     * @brief Maximum size of the packet after trimming
+     * @brief Trim packets to this size to reduce bandwidth
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
