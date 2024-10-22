@@ -70,18 +70,23 @@ typedef enum _sai_buffer_profile_packet_admission_fail_action_t
      * Default action. Packet has nowhere to go
      * and will be dropped.
      */
-    SAI_BUFFER_PROFILE_PACKET_ADMISSION_FAIL_ACTION_DROP = 0x00000000,
+    SAI_BUFFER_PROFILE_PACKET_ADMISSION_FAIL_ACTION_DROP,
 
     /**
      * @brief Trim the packet.
      *
      * Try sending a shortened packet over a different
-     * queue. SAI_QUEUE_STAT_DROPPED_PACKETS as well as SAI_QUEUE_STAT_DROPPED_BYTES
+     * queue. Original packet will be dropped and trimmed copy of the packet will be send.
+     * The IP length and checksum fields will be updated in a trimmed copy.
+     * SAI_QUEUE_STAT_DROPPED_PACKETS as well as SAI_QUEUE_STAT_DROPPED_BYTES
      * will count the original discarded frames even if they will be trimmed afterwards.
+     * Interface statistics must show dropped packets.
+     * Interface statistics may show sent trimmed packets.
      */
-    SAI_BUFFER_PROFILE_PACKET_ADMISSION_FAIL_ACTION_DROP_AND_TRIM = 0x00000001,
+    SAI_BUFFER_PROFILE_PACKET_ADMISSION_FAIL_ACTION_DROP_AND_TRIM,
 } sai_buffer_profile_packet_admission_fail_action_t;
-
+```
+```
     /**
      * @brief Buffer profile discard action
      *
@@ -98,8 +103,8 @@ typedef enum _sai_buffer_profile_packet_admission_fail_action_t
 
 Trimming engine attributes are configured globally.
 ```
-   /**
-     * @brief Packet trimming size
+    /**
+     * @brief Trim packets to this size to reduce bandwidth
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -117,11 +122,20 @@ Trimming engine attributes are configured globally.
     SAI_SWITCH_ATTR_PACKET_TRIMMING_DSCP_VALUE,
 
     /**
+     * @brief Is the new queue index for a trimmed packet mapped from DSCP
+     *
+     * @type sai_bool_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIMMING_QUEUE_INDEX_MAPPED_FROM_DSCP,
+
+    /**
      * @brief New packet trimming queue index
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 0
+     * @validonly SAI_SWITCH_ATTR_PACKET_TRIMMING_QUEUE_INDEX_MAPPED_FROM_DSCP == false
      */
     SAI_SWITCH_ATTR_PACKET_TRIMMING_QUEUE_INDEX,
 ```
@@ -138,4 +152,14 @@ If more granularity is needed (e.g. trim a specific protocol, or packets within 
      * @default disabled
      */
     SAI_ACL_ENTRY_ATTR_ACTION_DISABLE_TRIMMING = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x39,
+```
+
+Both the queue and the port have the packet counter to reflect the number of trimmed packet.
+```
+    /** Packets trimmed due to failed admission [uint64_t] */
+    SAI_QUEUE_STAT_TRIMMED_PACKETS = 0x00000028,
+```
+```
+    /** Packets trimmed due to failed shared buffer admission [uint64_t] */
+    SAI_PORT_STAT_TRIMMED_PACKETS,
 ```
