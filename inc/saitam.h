@@ -1335,20 +1335,6 @@ typedef enum _sai_tam_report_attr_t
     SAI_TAM_REPORT_ATTR_REPORT_INTERVAL_UNIT,
 
     /**
-     * @brief Set ID for IPFIX template
-     *
-     * According to the IPFIX spec, the available range should be 256-65535.
-     * The value 0 means the ID will be decided by the vendor's SAI.
-     *
-     * @type sai_uint16_t
-     * @flags CREATE_AND_SET
-     * @isvlan false
-     * @default 0
-     * @validonly SAI_TAM_REPORT_ATTR_TYPE == SAI_TAM_REPORT_TYPE_IPFIX
-     */
-    SAI_TAM_REPORT_ATTR_REPORT_IPFIX_TEMPLATE_ID,
-
-    /**
      * @brief Query IPFIX template
      *
      * Return the IPFIX template binary buffer
@@ -1522,23 +1508,23 @@ typedef enum _sai_tam_telemetry_attr_t
      * @brief Tam telemetry reporting type
      *
      * @type sai_tam_reporting_type_t
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default SAI_TAM_REPORTING_TYPE_TIME_BASED
      */
     SAI_TAM_TELEMETRY_ATTR_TAM_REPORTING_TYPE,
 
     /**
-     * @brief Tam telemetry reporting chunk size
+     * @brief Tam telemetry reporting bulk count
      *
-     * defines the size of reporting chunk, which means TAM will report to the collector every time
-     * if the report count reaches the chunk size.
+     * Defines the count of reporting bulk, which means TAM will report to the collector every time
+     * if the report count reaches the bulk count.
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 1
      * @validonly SAI_TAM_TELEMETRY_ATTR_TAM_REPORTING_TYPE == SAI_TAM_REPORTING_TYPE_COUNT_BASED
      */
-    SAI_TAM_TELEMETRY_ATTR_REPORTING_CHUNK_SIZE,
+    SAI_TAM_TELEMETRY_ATTR_REPORTING_BULK_COUNT,
 
     /**
      * @brief Tam telemetry cache size
@@ -1550,7 +1536,7 @@ typedef enum _sai_tam_telemetry_attr_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_TAM_TELEMETRY_ATTR_CACHE_SIZE,
+    SAI_TAM_TELEMETRY_ATTR_CACHE_COUNT,
 
     /**
      * @brief End of Attributes
@@ -2269,12 +2255,22 @@ typedef enum _sai_tam_counter_subscription_attr_t
      * @brief Telemetry label
      *
      * Label to identify this counter in telemetry reports.
+     * If the report type is IPFIX, this label will be used as the element ID in the IPFIX template.
      *
      * @type sai_uint64_t
      * @flags CREATE_ONLY
      * @default 0
      */
     SAI_TAM_COUNTER_SUBSCRIPTION_ATTR_LABEL,
+
+    /**
+     * @brief Setting of read-clear or read-only for statistics read.
+     *
+     * @type sai_stats_mode_t
+     * @flags CREATE_ONLY
+     * @default SAI_STATS_MODE_READ
+     */
+    SAI_TAM_COUNTER_SUBSCRIPTION_ATTR_COUNTER_MODE,
 
     /**
      * @brief End of Attributes
