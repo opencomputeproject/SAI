@@ -1335,6 +1335,16 @@ typedef enum _sai_tam_report_attr_t
     SAI_TAM_REPORT_ATTR_REPORT_INTERVAL_UNIT,
 
     /**
+     * @brief Query IPFIX template
+     *
+     * Return a list of IPFIX templates
+     *
+     * @type sai_u8_list_t
+     * @flags READ_ONLY
+     */
+    SAI_TAM_REPORT_ATTR_IPFIX_TEMPLATES,
+
+    /**
      * @brief End of Attributes
      */
     SAI_TAM_REPORT_ATTR_END,
@@ -1427,6 +1437,23 @@ typedef enum _sai_tam_reporting_unit_t
 } sai_tam_reporting_unit_t;
 
 /**
+ * @brief TAM reporting type
+ */
+typedef enum _sai_tam_reporting_type_t
+{
+    /**
+     * @brief Report type is time based
+     */
+    SAI_TAM_REPORTING_TYPE_TIME_BASED,
+
+    /**
+     * @brief Report type is count based
+     */
+    SAI_TAM_REPORTING_TYPE_COUNT_BASED,
+
+} sai_tam_reporting_type_t;
+
+/**
  * @brief TAM telemetry attributes
  */
 typedef enum _sai_tam_telemetry_attr_t
@@ -1461,6 +1488,7 @@ typedef enum _sai_tam_telemetry_attr_t
      * @type sai_tam_reporting_unit_t
      * @flags CREATE_AND_SET
      * @default SAI_TAM_REPORTING_UNIT_SEC
+     * @validonly SAI_TAM_TELEMETRY_ATTR_TAM_REPORTING_TYPE == SAI_TAM_REPORTING_TYPE_TIME_BASED
      */
     SAI_TAM_TELEMETRY_ATTR_TAM_REPORTING_UNIT,
 
@@ -1472,8 +1500,31 @@ typedef enum _sai_tam_telemetry_attr_t
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 1
+     * @validonly SAI_TAM_TELEMETRY_ATTR_TAM_REPORTING_TYPE == SAI_TAM_REPORTING_TYPE_TIME_BASED
      */
     SAI_TAM_TELEMETRY_ATTR_REPORTING_INTERVAL,
+
+    /**
+     * @brief Tam telemetry reporting type
+     *
+     * @type sai_tam_reporting_type_t
+     * @flags CREATE_ONLY
+     * @default SAI_TAM_REPORTING_TYPE_TIME_BASED
+     */
+    SAI_TAM_TELEMETRY_ATTR_TAM_REPORTING_TYPE,
+
+    /**
+     * @brief Tam telemetry reporting bulk count
+     *
+     * Defines the count of reporting bulk, which means TAM will report to the collector every time
+     * if the report count reaches the bulk count.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 1
+     * @validonly SAI_TAM_TELEMETRY_ATTR_TAM_REPORTING_TYPE == SAI_TAM_REPORTING_TYPE_COUNT_BASED
+     */
+    SAI_TAM_TELEMETRY_ATTR_REPORTING_BULK_COUNT,
 
     /**
      * @brief End of Attributes
@@ -2192,12 +2243,22 @@ typedef enum _sai_tam_counter_subscription_attr_t
      * @brief Telemetry label
      *
      * Label to identify this counter in telemetry reports.
+     * If the report type is IPFIX, this label will be used as the element ID in the IPFIX template.
      *
      * @type sai_uint64_t
      * @flags CREATE_ONLY
      * @default 0
      */
     SAI_TAM_COUNTER_SUBSCRIPTION_ATTR_LABEL,
+
+    /**
+     * @brief Setting of read-clear or read-only for statistics read.
+     *
+     * @type sai_stats_mode_t
+     * @flags CREATE_ONLY
+     * @default SAI_STATS_MODE_READ
+     */
+    SAI_TAM_COUNTER_SUBSCRIPTION_ATTR_STATS_MODE,
 
     /**
      * @brief End of Attributes

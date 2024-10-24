@@ -3071,6 +3071,18 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_SELECTIVE_COUNTER_LIST,
 
     /**
+     * @brief Tam telemetry cache count
+     *
+     * If the collector isn't ready to receive the report, this value indicates how many
+     * reports that can be cached. 0 means no cache which is the default behavior.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_ONLY
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_TAM_CACHE_COUNT,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
