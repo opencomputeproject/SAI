@@ -3048,7 +3048,6 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_MAX_ICMP_ECHO_SESSION,
 
-    /**
      * @brief Set switch statistics counting mode
      *
      * @type sai_stats_count_mode_t
@@ -3069,6 +3068,42 @@ typedef enum _sai_switch_attr_t
      * @default empty
      */
     SAI_SWITCH_ATTR_SELECTIVE_COUNTER_LIST,
+    
+    /**
+     * @brief Trim packets to this size to reduce bandwidth
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 128
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIMMING_SIZE,
+
+    /**
+     * @brief New packet trimming DSCP value
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIMMING_DSCP_VALUE,
+
+    /**
+     * @brief Is the new queue index for a trimmed packet mapped from DSCP
+     *
+     * @type sai_bool_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIMMING_QUEUE_INDEX_MAPPED_FROM_DSCP,
+
+    /**
+     * @brief New packet trimming queue index
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_SWITCH_ATTR_PACKET_TRIMMING_QUEUE_INDEX_MAPPED_FROM_DSCP == false
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIMMING_QUEUE_INDEX,
 
     /**
      * @brief End of attributes
