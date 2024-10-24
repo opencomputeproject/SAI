@@ -17,120 +17,120 @@
  *    assistance with these files: Intel Corporation, Mellanox Technologies Ltd,
  *    Dell Products, L.P., Facebook, Inc., Marvell International Ltd.
  *
- * @file    saiexperimentaldashvnet.h
+ * @file    saiexperimentaldashappliance.h
  *
- * @brief   This module defines SAI extensions for DASH VNET
+ * @brief   This module defines SAI extensions for DASH appliance
  *
  * @warning This module is a SAI experimental module
  */
 
-#if !defined (__SAIEXPERIMENTALDASHVNET_H_)
-#define __SAIEXPERIMENTALDASHVNET_H_
+#if !defined (__SAIEXPERIMENTALDASHAPPLIANCE_H_)
+#define __SAIEXPERIMENTALDASHAPPLIANCE_H_
 
 #include <saitypesextensions.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASHVNET SAI - Experimental: DASH VNET specific API definitions
+ * @defgroup SAIEXPERIMENTALDASHAPPLIANCE SAI - Experimental: DASH appliance specific API definitions
  *
  * @{
  */
 
 /**
- * @brief Attribute ID for VNET
+ * @brief Attribute ID for DASH appliance
  */
-typedef enum _sai_vnet_attr_t
+typedef enum _sai_dash_appliance_attr_t
 {
     /**
      * @brief Start of attributes
      */
-    SAI_VNET_ATTR_START,
+    SAI_DASH_APPLIANCE_ATTR_START,
 
     /**
-     * @brief Action parameter VNI
+     * @brief Action parameter local region id
      *
-     * @type sai_uint32_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 0
      */
-    SAI_VNET_ATTR_VNI = SAI_VNET_ATTR_START,
+    SAI_DASH_APPLIANCE_ATTR_LOCAL_REGION_ID = SAI_DASH_APPLIANCE_ATTR_START,
 
     /**
      * @brief End of attributes
      */
-    SAI_VNET_ATTR_END,
+    SAI_DASH_APPLIANCE_ATTR_END,
 
     /** Custom range base value */
-    SAI_VNET_ATTR_CUSTOM_RANGE_START = 0x10000000,
+    SAI_DASH_APPLIANCE_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /** End of custom range base */
-    SAI_VNET_ATTR_CUSTOM_RANGE_END,
+    SAI_DASH_APPLIANCE_ATTR_CUSTOM_RANGE_END,
 
-} sai_vnet_attr_t;
+} sai_dash_appliance_attr_t;
 
 /**
- * @brief Create VNET
+ * @brief Create DASH appliance
  *
- * @param[out] vnet_id Entry id
+ * @param[out] dash_appliance_id Entry id
  * @param[in] switch_id Switch id
  * @param[in] attr_count Number of attributes
  * @param[in] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t (*sai_create_vnet_fn)(
-        _Out_ sai_object_id_t *vnet_id,
+typedef sai_status_t (*sai_create_dash_appliance_fn)(
+        _Out_ sai_object_id_t *dash_appliance_id,
         _In_ sai_object_id_t switch_id,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Remove VNET
+ * @brief Remove DASH appliance
  *
- * @param[in] vnet_id Entry id
+ * @param[in] dash_appliance_id Entry id
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t (*sai_remove_vnet_fn)(
-        _In_ sai_object_id_t vnet_id);
+typedef sai_status_t (*sai_remove_dash_appliance_fn)(
+        _In_ sai_object_id_t dash_appliance_id);
 
 /**
- * @brief Set attribute for VNET
+ * @brief Set attribute for DASH appliance
  *
- * @param[in] vnet_id Entry id
+ * @param[in] dash_appliance_id Entry id
  * @param[in] attr Attribute
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t (*sai_set_vnet_attribute_fn)(
-        _In_ sai_object_id_t vnet_id,
+typedef sai_status_t (*sai_set_dash_appliance_attribute_fn)(
+        _In_ sai_object_id_t dash_appliance_id,
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get attribute for VNET
+ * @brief Get attribute for DASH appliance
  *
- * @param[in] vnet_id Entry id
+ * @param[in] dash_appliance_id Entry id
  * @param[in] attr_count Number of attributes
  * @param[inout] attr_list Array of attributes
  *
  * @return #SAI_STATUS_SUCCESS on success Failure status code on error
  */
-typedef sai_status_t (*sai_get_vnet_attribute_fn)(
-        _In_ sai_object_id_t vnet_id,
+typedef sai_status_t (*sai_get_dash_appliance_attribute_fn)(
+        _In_ sai_object_id_t dash_appliance_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
 
-typedef struct _sai_dash_vnet_api_t
+typedef struct _sai_dash_appliance_api_t
 {
-    sai_create_vnet_fn           create_vnet;
-    sai_remove_vnet_fn           remove_vnet;
-    sai_set_vnet_attribute_fn    set_vnet_attribute;
-    sai_get_vnet_attribute_fn    get_vnet_attribute;
-    sai_bulk_object_create_fn    create_vnets;
-    sai_bulk_object_remove_fn    remove_vnets;
+    sai_create_dash_appliance_fn           create_dash_appliance;
+    sai_remove_dash_appliance_fn           remove_dash_appliance;
+    sai_set_dash_appliance_attribute_fn    set_dash_appliance_attribute;
+    sai_get_dash_appliance_attribute_fn    get_dash_appliance_attribute;
+    sai_bulk_object_create_fn              create_dash_appliances;
+    sai_bulk_object_remove_fn              remove_dash_appliances;
 
-} sai_dash_vnet_api_t;
+} sai_dash_appliance_api_t;
 
 /**
  * @}
  */
-#endif /** __SAIEXPERIMENTALDASHVNET_H_ */
+#endif /** __SAIEXPERIMENTALDASHAPPLIANCE_H_ */

@@ -1412,7 +1412,7 @@ void test_serialize_notifications()
     memset(&data1, 0, sizeof(data1));
 
     res = sai_serialize_port_state_change_notification(buf, 1, &data1);
-    ret = "{\"count\":1,\"data\":[{\"port_id\":\"oid:0x0\",\"port_state\":\"SAI_PORT_OPER_STATUS_UNKNOWN\"}]}";
+    ret = "{\"count\":1,\"data\":[{\"port_id\":\"oid:0x0\",\"port_state\":\"SAI_PORT_OPER_STATUS_UNKNOWN\",\"port_error_status\":\"SAI_PORT_ERROR_STATUS_CLEAR\"}]}";
     ASSERT_STR_EQ(buf, ret , res);
 
     sai_queue_deadlock_notification_data_t data2;
@@ -1683,7 +1683,7 @@ void test_serialize_attribute()
     sai_attribute_t attribute = {0};
     const sai_attr_metadata_t* amd;
 
-    amd = sai_metadata_attr_by_object_type[SAI_OBJECT_TYPE_SWITCH][0];
+    amd = sai_metadata_get_attr_metadata(SAI_OBJECT_TYPE_SWITCH, 0);
     attribute.id = SAI_SWITCH_ATTR_NUMBER_OF_ACTIVE_PORTS;
     attribute.value.u32 = 3;
 

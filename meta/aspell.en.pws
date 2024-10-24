@@ -17,6 +17,7 @@ attrvaluetype
 AUTONEG
 bool
 boolean
+bounceback
 callee
 Callee
 chardata
@@ -149,6 +150,7 @@ pre
 precursor
 PVID
 qos
+quantization
 reachability
 routable
 runtime
@@ -178,6 +180,7 @@ structs
 sublayer
 subnet
 subnets
+switchover
 SysFS
 syslog
 timespec

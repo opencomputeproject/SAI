@@ -27,10 +27,10 @@
 #if !defined (__SAIEXPERIMENTALDASHOUTBOUNDROUTING_H_)
 #define __SAIEXPERIMENTALDASHOUTBOUNDROUTING_H_
 
-#include <saitypes.h>
+#include <saitypesextensions.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_OUTBOUND_ROUTING SAI - Experimental: DASH outbound routing specific API definitions
+ * @defgroup SAIEXPERIMENTALDASHOUTBOUNDROUTING SAI - Experimental: DASH outbound routing specific API definitions
  *
  * @{
  */
@@ -65,21 +65,21 @@ typedef struct _sai_outbound_routing_entry_t
     sai_object_id_t switch_id;
 
     /**
-     * @brief Exact matched key eni_id
-     *
-     * @objects SAI_OBJECT_TYPE_ENI
-     */
-    sai_object_id_t eni_id;
-
-    /**
      * @brief LPM matched key destination
      */
     sai_ip_prefix_t destination;
 
+    /**
+     * @brief Exact matched key outbound_routing_group_id
+     *
+     * @objects SAI_OBJECT_TYPE_OUTBOUND_ROUTING_GROUP
+     */
+    sai_object_id_t outbound_routing_group_id;
+
 } sai_outbound_routing_entry_t;
 
 /**
- * @brief Attribute ID for dash_outbound_routing_outbound_routing_entry
+ * @brief Attribute ID for outbound routing entry
  */
 typedef enum _sai_outbound_routing_entry_attr_t
 {
@@ -98,7 +98,7 @@ typedef enum _sai_outbound_routing_entry_attr_t
     SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION = SAI_OUTBOUND_ROUTING_ENTRY_ATTR_START,
 
     /**
-     * @brief Action route_vnet, route_vnet_direct parameter DST_VNET_ID
+     * @brief Action parameter dst VNET id
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -110,28 +110,49 @@ typedef enum _sai_outbound_routing_entry_attr_t
     SAI_OUTBOUND_ROUTING_ENTRY_ATTR_DST_VNET_ID,
 
     /**
-     * @brief Action route_vnet, route_vnet_direct, route_direct, route_service_tunnel parameter METER_POLICY_EN
+     * @brief Action parameter DASH tunnel id
      *
-     * @type bool
+     * @type sai_object_id_t
      * @flags CREATE_AND_SET
-     * @default false
+     * @objects SAI_OBJECT_TYPE_DASH_TUNNEL
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      * @validonly SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_VNET or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_VNET_DIRECT or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_DIRECT or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_SERVICE_TUNNEL
      */
-    SAI_OUTBOUND_ROUTING_ENTRY_ATTR_METER_POLICY_EN,
+    SAI_OUTBOUND_ROUTING_ENTRY_ATTR_DASH_TUNNEL_ID,
 
     /**
-     * @brief Action route_vnet, route_vnet_direct, route_direct, route_service_tunnel parameter METER_CLASS
+     * @brief Action parameter meter class or
      *
-     * @type sai_uint16_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      * @validonly SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_VNET or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_VNET_DIRECT or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_DIRECT or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_SERVICE_TUNNEL
      */
-    SAI_OUTBOUND_ROUTING_ENTRY_ATTR_METER_CLASS,
+    SAI_OUTBOUND_ROUTING_ENTRY_ATTR_METER_CLASS_OR,
 
     /**
-     * @brief Action route_vnet_direct parameter OVERLAY_IP
+     * @brief Action parameter meter class and
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 4294967295
+     * @validonly SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_VNET or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_VNET_DIRECT or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_DIRECT or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_SERVICE_TUNNEL
+     */
+    SAI_OUTBOUND_ROUTING_ENTRY_ATTR_METER_CLASS_AND,
+
+    /**
+     * @brief Action parameter routing actions disabled in flow re-simulation
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_VNET or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_VNET_DIRECT or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_DIRECT or SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ACTION == SAI_OUTBOUND_ROUTING_ENTRY_ACTION_ROUTE_SERVICE_TUNNEL
+     */
+    SAI_OUTBOUND_ROUTING_ENTRY_ATTR_ROUTING_ACTIONS_DISABLED_IN_FLOW_RESIMULATION,
+
+    /**
+     * @brief Action parameter overlay IP
      *
      * @type sai_ip_address_t
      * @flags CREATE_AND_SET
@@ -141,7 +162,7 @@ typedef enum _sai_outbound_routing_entry_attr_t
     SAI_OUTBOUND_ROUTING_ENTRY_ATTR_OVERLAY_IP,
 
     /**
-     * @brief Action route_service_tunnel parameter OVERLAY_DIP
+     * @brief Action parameter overlay dip
      *
      * @type sai_ip_address_t
      * @flags CREATE_AND_SET
@@ -151,7 +172,7 @@ typedef enum _sai_outbound_routing_entry_attr_t
     SAI_OUTBOUND_ROUTING_ENTRY_ATTR_OVERLAY_DIP,
 
     /**
-     * @brief Action route_service_tunnel parameter OVERLAY_DIP_MASK
+     * @brief Action parameter overlay dip mask
      *
      * @type sai_ip_address_t
      * @flags CREATE_AND_SET
@@ -161,7 +182,7 @@ typedef enum _sai_outbound_routing_entry_attr_t
     SAI_OUTBOUND_ROUTING_ENTRY_ATTR_OVERLAY_DIP_MASK,
 
     /**
-     * @brief Action route_service_tunnel parameter OVERLAY_SIP
+     * @brief Action parameter overlay sip
      *
      * @type sai_ip_address_t
      * @flags CREATE_AND_SET
@@ -171,7 +192,7 @@ typedef enum _sai_outbound_routing_entry_attr_t
     SAI_OUTBOUND_ROUTING_ENTRY_ATTR_OVERLAY_SIP,
 
     /**
-     * @brief Action route_service_tunnel parameter OVERLAY_SIP_MASK
+     * @brief Action parameter overlay sip mask
      *
      * @type sai_ip_address_t
      * @flags CREATE_AND_SET
@@ -181,7 +202,7 @@ typedef enum _sai_outbound_routing_entry_attr_t
     SAI_OUTBOUND_ROUTING_ENTRY_ATTR_OVERLAY_SIP_MASK,
 
     /**
-     * @brief Action route_service_tunnel parameter UNDERLAY_DIP
+     * @brief Action parameter underlay dip
      *
      * @type sai_ip_address_t
      * @flags CREATE_AND_SET
@@ -191,7 +212,7 @@ typedef enum _sai_outbound_routing_entry_attr_t
     SAI_OUTBOUND_ROUTING_ENTRY_ATTR_UNDERLAY_DIP,
 
     /**
-     * @brief Action route_service_tunnel parameter UNDERLAY_SIP
+     * @brief Action parameter underlay sip
      *
      * @type sai_ip_address_t
      * @flags CREATE_AND_SET
@@ -201,7 +222,7 @@ typedef enum _sai_outbound_routing_entry_attr_t
     SAI_OUTBOUND_ROUTING_ENTRY_ATTR_UNDERLAY_SIP,
 
     /**
-     * @brief Action route_service_tunnel parameter DASH_ENCAPSULATION
+     * @brief Action parameter DASH encapsulation
      *
      * @type sai_dash_encapsulation_t
      * @flags CREATE_AND_SET
@@ -211,7 +232,7 @@ typedef enum _sai_outbound_routing_entry_attr_t
     SAI_OUTBOUND_ROUTING_ENTRY_ATTR_DASH_ENCAPSULATION,
 
     /**
-     * @brief Action route_service_tunnel parameter TUNNEL_KEY
+     * @brief Action parameter tunnel key
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -221,9 +242,7 @@ typedef enum _sai_outbound_routing_entry_attr_t
     SAI_OUTBOUND_ROUTING_ENTRY_ATTR_TUNNEL_KEY,
 
     /**
-     * @brief Attach a counter
-     *
-     * When it is empty, then packet hits won't be counted
+     * @brief Attach a counter. When it is empty, then packet hits won't be counted.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -256,7 +275,39 @@ typedef enum _sai_outbound_routing_entry_attr_t
 } sai_outbound_routing_entry_attr_t;
 
 /**
- * @brief Create dash_outbound_routing_outbound_routing_entry
+ * @brief Attribute ID for outbound routing group
+ */
+typedef enum _sai_outbound_routing_group_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_OUTBOUND_ROUTING_GROUP_ATTR_START,
+
+    /**
+     * @brief Action parameter disabled
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_OUTBOUND_ROUTING_GROUP_ATTR_DISABLED = SAI_OUTBOUND_ROUTING_GROUP_ATTR_START,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_OUTBOUND_ROUTING_GROUP_ATTR_END,
+
+    /** Custom range base value */
+    SAI_OUTBOUND_ROUTING_GROUP_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_OUTBOUND_ROUTING_GROUP_ATTR_CUSTOM_RANGE_END,
+
+} sai_outbound_routing_group_attr_t;
+
+/**
+ * @brief Create outbound routing entry
  *
  * @param[in] outbound_routing_entry Entry
  * @param[in] attr_count Number of attributes
@@ -270,7 +321,7 @@ typedef sai_status_t (*sai_create_outbound_routing_entry_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Remove dash_outbound_routing_outbound_routing_entry
+ * @brief Remove outbound routing entry
  *
  * @param[in] outbound_routing_entry Entry
  *
@@ -280,7 +331,7 @@ typedef sai_status_t (*sai_remove_outbound_routing_entry_fn)(
         _In_ const sai_outbound_routing_entry_t *outbound_routing_entry);
 
 /**
- * @brief Set attribute for dash_outbound_routing_outbound_routing_entry
+ * @brief Set attribute for outbound routing entry
  *
  * @param[in] outbound_routing_entry Entry
  * @param[in] attr Attribute
@@ -292,7 +343,7 @@ typedef sai_status_t (*sai_set_outbound_routing_entry_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get attribute for dash_outbound_routing_outbound_routing_entry
+ * @brief Get attribute for outbound routing entry
  *
  * @param[in] outbound_routing_entry Entry
  * @param[in] attr_count Number of attributes
@@ -306,7 +357,7 @@ typedef sai_status_t (*sai_get_outbound_routing_entry_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Bulk create dash_outbound_routing_outbound_routing_entry
+ * @brief Bulk create outbound routing entry
  *
  * @param[in] object_count Number of objects to create
  * @param[in] outbound_routing_entry List of object to create
@@ -331,7 +382,7 @@ typedef sai_status_t (*sai_bulk_create_outbound_routing_entry_fn)(
         _Out_ sai_status_t *object_statuses);
 
 /**
- * @brief Bulk remove dash_outbound_routing_outbound_routing_entry
+ * @brief Bulk remove outbound routing entry
  *
  * @param[in] object_count Number of objects to remove
  * @param[in] outbound_routing_entry List of objects to remove
@@ -350,6 +401,58 @@ typedef sai_status_t (*sai_bulk_remove_outbound_routing_entry_fn)(
         _In_ sai_bulk_op_error_mode_t mode,
         _Out_ sai_status_t *object_statuses);
 
+/**
+ * @brief Create outbound routing group
+ *
+ * @param[out] outbound_routing_group_id Entry id
+ * @param[in] switch_id Switch id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_create_outbound_routing_group_fn)(
+        _Out_ sai_object_id_t *outbound_routing_group_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Remove outbound routing group
+ *
+ * @param[in] outbound_routing_group_id Entry id
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_remove_outbound_routing_group_fn)(
+        _In_ sai_object_id_t outbound_routing_group_id);
+
+/**
+ * @brief Set attribute for outbound routing group
+ *
+ * @param[in] outbound_routing_group_id Entry id
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_set_outbound_routing_group_attribute_fn)(
+        _In_ sai_object_id_t outbound_routing_group_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Get attribute for outbound routing group
+ *
+ * @param[in] outbound_routing_group_id Entry id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success Failure status code on error
+ */
+typedef sai_status_t (*sai_get_outbound_routing_group_attribute_fn)(
+        _In_ sai_object_id_t outbound_routing_group_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
 typedef struct _sai_dash_outbound_routing_api_t
 {
     sai_create_outbound_routing_entry_fn           create_outbound_routing_entry;
@@ -358,6 +461,13 @@ typedef struct _sai_dash_outbound_routing_api_t
     sai_get_outbound_routing_entry_attribute_fn    get_outbound_routing_entry_attribute;
     sai_bulk_create_outbound_routing_entry_fn      create_outbound_routing_entries;
     sai_bulk_remove_outbound_routing_entry_fn      remove_outbound_routing_entries;
+
+    sai_create_outbound_routing_group_fn           create_outbound_routing_group;
+    sai_remove_outbound_routing_group_fn           remove_outbound_routing_group;
+    sai_set_outbound_routing_group_attribute_fn    set_outbound_routing_group_attribute;
+    sai_get_outbound_routing_group_attribute_fn    get_outbound_routing_group_attribute;
+    sai_bulk_object_create_fn                      create_outbound_routing_groups;
+    sai_bulk_object_remove_fn                      remove_outbound_routing_groups;
 
 } sai_dash_outbound_routing_api_t;
 

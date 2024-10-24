@@ -84,6 +84,28 @@ typedef enum _sai_ingress_priority_group_attr_t
     SAI_INGRESS_PRIORITY_GROUP_ATTR_INDEX,
 
     /**
+     * @brief Set ingress priority group statistics counting mode
+     *
+     * @type sai_stats_count_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_STATS_COUNT_MODE_PACKET_AND_BYTE
+     */
+    SAI_INGRESS_PRIORITY_GROUP_ATTR_STATS_COUNT_MODE,
+
+    /**
+     * @brief Attach counter object list
+     *
+     * Counter object should be of type Selective.
+     * Fill (#SAI_COUNTER_ATTR_TYPE with #SAI_COUNTER_TYPE_SELECTIVE).
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @default empty
+     */
+    SAI_INGRESS_PRIORITY_GROUP_ATTR_SELECTIVE_COUNTER_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_INGRESS_PRIORITY_GROUP_ATTR_END,
@@ -346,6 +368,28 @@ typedef enum _sai_buffer_pool_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_BUFFER_POOL_ATTR_WRED_PROFILE_ID,
+
+    /**
+     * @brief Set buffer pool statistics counting mode
+     *
+     * @type sai_stats_count_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_STATS_COUNT_MODE_PACKET_AND_BYTE
+     */
+    SAI_BUFFER_POOL_ATTR_STATS_COUNT_MODE,
+
+    /**
+     * @brief Attach counter object list
+     *
+     * Counter object should be of type Selective.
+     * Fill (#SAI_COUNTER_ATTR_TYPE with #SAI_COUNTER_TYPE_SELECTIVE).
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @default empty
+     */
+    SAI_BUFFER_POOL_ATTR_SELECTIVE_COUNTER_LIST,
 
     /**
      * @brief End of attributes
@@ -755,6 +799,8 @@ typedef struct _sai_buffer_api_t
     sai_remove_buffer_profile_fn                    remove_buffer_profile;
     sai_set_buffer_profile_attribute_fn             set_buffer_profile_attribute;
     sai_get_buffer_profile_attribute_fn             get_buffer_profile_attribute;
+    sai_bulk_object_set_attribute_fn                set_ingress_priority_groups_attribute;
+    sai_bulk_object_get_attribute_fn                get_ingress_priority_groups_attribute;
 } sai_buffer_api_t;
 
 /**

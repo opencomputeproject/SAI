@@ -1285,6 +1285,13 @@ typedef struct _sai_attr_metadata_t
      */
     bool                                        isconditionrelaxed;
 
+    /**
+     * @brief Indicates whether attribute is custom attribute.
+     *
+     * Custom attribute values begins with SAI_XXX_ATTR_CUSTOM_RANGE_START.
+     */
+    bool                                        iscustom;
+
 } sai_attr_metadata_t;
 
 /*

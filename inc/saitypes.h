@@ -298,15 +298,12 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_POE_DEVICE               = 108,
     SAI_OBJECT_TYPE_POE_PSE                  = 109,
     SAI_OBJECT_TYPE_POE_PORT                 = 110,
+    SAI_OBJECT_TYPE_ICMP_ECHO_SESSION        = 111,
 
     /** Must remain in last position */
     SAI_OBJECT_TYPE_MAX,
 
-    /** Custom range base value */
-    SAI_OBJECT_TYPE_CUSTOM_RANGE_START = 256,
-
-    /** End of custom range base */
-    SAI_OBJECT_TYPE_CUSTOM_RANGE_END
+    SAI_OBJECT_TYPE_EXTENSIONS_RANGE_BASE = 0x20000000,
 } sai_object_type_t;
 
 typedef struct _sai_u8_list_t
@@ -1376,7 +1373,9 @@ typedef struct _sai_fabric_port_reachability_t
 } sai_fabric_port_reachability_t;
 
 /**
- * @brief Port error status
+ * @brief Port error status. This attribute is to be deprecated. Use sai_port_error_status_t instead.
+ *
+ * @deprecated true
  */
 typedef enum _sai_port_err_status_t
 {
@@ -1800,6 +1799,22 @@ typedef struct _sai_stat_capability_list_t
 
 } sai_stat_capability_list_t;
 
+typedef enum _sai_stats_count_mode_t
+{
+    /** Count packet and byte */
+    SAI_STATS_COUNT_MODE_PACKET_AND_BYTE,
+
+    /** Count only packet */
+    SAI_STATS_COUNT_MODE_PACKET,
+
+    /** Count only byte */
+    SAI_STATS_COUNT_MODE_BYTE,
+
+    /** Counting is disabled */
+    SAI_STATS_COUNT_MODE_NONE
+
+} sai_stats_count_mode_t;
+
 typedef enum _sai_object_stage_t
 {
     /** Common stage */
@@ -1816,14 +1831,141 @@ typedef enum _sai_object_stage_t
 typedef enum _sai_health_data_type_t
 {
     /** General health data type */
-    SAI_HEALTH_DATA_TYPE_GENERAL
+    SAI_HEALTH_DATA_TYPE_GENERAL,
+
+    /** SER health data type */
+    SAI_HEALTH_DATA_TYPE_SER
 } sai_health_data_type_t;
+
+typedef enum _sai_ser_type_t
+{
+    /**
+     * @brief Unknown error type
+     */
+    SAI_SER_TYPE_UNKNOWN = 0,
+
+    /**
+     * @brief Parity error
+     */
+    SAI_SER_TYPE_PARITY = 1,
+
+    /**
+     * @brief ECC single bit error
+     */
+    SAI_SER_TYPE_ECC_SINGLE_BIT = 2,
+
+    /**
+     * @brief ECC double bit error
+     */
+    SAI_SER_TYPE_ECC_DOUBLE_BIT = 3,
+} sai_ser_type_t;
+
+typedef enum _sai_ser_correction_type_t
+{
+    /**
+     * @brief SW takes no action when error happens
+     */
+    SAI_SER_CORRECTION_TYPE_NO_ACTION = 0,
+
+    /**
+     * @brief SW tries to correct but fails
+     */
+    SAI_SER_CORRECTION_TYPE_FAIL_TO_CORRECT = 1,
+
+    /**
+     * @brief SW writes NULL entry to clear the error
+     */
+    SAI_SER_CORRECTION_TYPE_ENTRY_CLEAR = 2,
+
+    /**
+     * @brief Restore entry from SW cache
+     */
+    SAI_SER_CORRECTION_TYPE_SW_CACHE_RESTORE = 3,
+
+    /**
+     * @brief Restore entry from HW cache
+     */
+    SAI_SER_CORRECTION_TYPE_HW_CACHE_RESTORE = 4,
+
+    /**
+     * @brief Memory needs special correction handling
+     */
+    SAI_SER_CORRECTION_TYPE_SPECIAL = 5,
+} sai_ser_correction_type_t;
+
+/**
+ * @brief SAI SER log information type
+ *
+ * @flags strict
+ */
+typedef enum _sai_ser_log_type_t
+{
+    /**
+     * @brief Error happens on memory
+     */
+    SAI_SER_LOG_TYPE_MEM = 1 << 0,
+
+    /**
+     * @brief Error happens on register
+     */
+    SAI_SER_LOG_TYPE_REG = 1 << 1,
+
+    /**
+     * @brief Parity errors detected more than once
+     */
+    SAI_SER_LOG_TYPE_MULTI = 1 << 2,
+
+    /**
+     * @brief Error corrected by SW
+     */
+    SAI_SER_LOG_TYPE_CORRECTED = 1 << 3,
+
+    /**
+     * @brief Restore entry from HW cache
+     */
+    SAI_SER_LOG_TYPE_ENTRY_INFO = 1 << 4,
+
+    /**
+     * @brief Cache data is valid
+     */
+    SAI_SER_LOG_TYPE_CACHE = 1 << 5,
+} sai_ser_log_type_t;
+
+typedef struct _sai_ser_health_data_t
+{
+    /** SER type specific fields */
+    sai_ser_type_t type;
+
+    /** SER correction type specific fields */
+    sai_ser_correction_type_t correction_type;
+
+    /**
+     * @brief SER correction log info (sai_ser_log_type_t)
+     *
+     * For example, if entry info is present and is coming from cache
+     * SAI_SER_LOG_TYPE_ENTRY_INFO | SAI_SER_LOG_TYPE_CACHE
+     *
+     * @flags sai_ser_log_type_t
+     */
+    uint32_t ser_log_type;
+} sai_ser_health_data_t;
+
+/**
+ * @extraparam sai_health_data_type_t data_type
+ */
+typedef union _sai_health_data_t
+{
+    /** @validonly data_type == SAI_HEALTH_DATA_TYPE_SER */
+    sai_ser_health_data_t ser;
+} sai_health_data_t;
 
 typedef struct _sai_switch_health_data_t
 {
     /** Type of switch health data */
     sai_health_data_type_t data_type;
 
+    /** @passparam data_type */
+    sai_health_data_t data;
 } sai_switch_health_data_t;
 
 /**

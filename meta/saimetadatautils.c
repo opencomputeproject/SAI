@@ -78,32 +78,34 @@ const sai_attr_metadata_t* sai_metadata_get_attr_metadata(
         _In_ sai_object_type_t objecttype,
         _In_ sai_attr_id_t attrid)
 {
-    if (sai_metadata_is_object_type_valid(objecttype))
+    const sai_object_type_info_t* oi = sai_metadata_get_object_type_info(objecttype);
+
+    if (oi == NULL)
     {
-        const sai_attr_metadata_t* const* const md = sai_metadata_attr_by_object_type[objecttype];
+        return NULL;
+    }
 
-        /*
-         * Most object attributes are not flags, so we can use direct index to
-         * find attribute metadata, this should speed up search.
-         */
+    const sai_attr_metadata_t* const* const md = oi->attrmetadata;
 
-        const sai_object_type_info_t* oi = sai_metadata_all_object_type_infos[objecttype];
+    /*
+     * Most object attributes are not flags, so we can use direct index to
+     * find attribute metadata, this should speed up search.
+     */
 
-        if (!oi->enummetadata->containsflags && attrid < oi->enummetadata->valuescount)
+    if (!oi->enummetadata->containsflags && attrid < oi->attridend)
+    {
+        return md[attrid];
+    }
+
+    /* otherwise search one by one */
+
+    size_t index = 0;
+
+    for (; md[index] != NULL; index++)
+    {
+        if (md[index]->attrid == attrid)
         {
-            return md[attrid];
-        }
-
-        /* otherwise search one by one */
-
-        size_t index = 0;
-
-        for (; md[index] != NULL; index++)
-        {
-            if (md[index]->attrid == attrid)
-            {
-                return md[index];
-            }
+            return md[index];
         }
     }
 
@@ -227,21 +229,16 @@ const sai_attr_metadata_t* sai_metadata_get_ignored_attr_metadata_by_attr_id_nam
         return NULL;
     }
 
-    sai_object_type_t ot;
+    int idx = 1;
 
     /*
      * Since we don't have list of ignored attributes, enumerate all objects
      * and attribute enums to find ignored values.
      */
 
-    for (ot = SAI_OBJECT_TYPE_NULL; ot < SAI_OBJECT_TYPE_EXTENSIONS_MAX; ot++)
+    for (; sai_metadata_all_object_type_infos[idx]; idx++)
     {
-        const sai_object_type_info_t* oti = sai_metadata_get_object_type_info(ot);
-
-        if (oti == NULL)
-            continue;
-
-        const sai_enum_metadata_t* em = oti->enummetadata;
+        const sai_enum_metadata_t* em = sai_metadata_all_object_type_infos[idx]->enummetadata;
 
         if (em->ignorevaluesnames)
         {
@@ -284,6 +281,28 @@ const char* sai_metadata_get_enum_value_name(
     return NULL;
 }
 
+const char* sai_metadata_get_enum_value_short_name(
+        _In_ const sai_enum_metadata_t* metadata,
+        _In_ int value)
+{
+    if (metadata == NULL)
+    {
+        return NULL;
+    }
+
+    size_t i = 0;
+
+    for (; i < metadata->valuescount; ++i)
+    {
+        if (metadata->values[i] == value)
+        {
+            return metadata->valuesshortnames[i];
+        }
+    }
+
+    return NULL;
+}
+
 const sai_attribute_t* sai_metadata_get_attr_by_id(
         _In_ sai_attr_id_t id,
         _In_ uint32_t attr_count,
@@ -310,9 +329,19 @@ const sai_attribute_t* sai_metadata_get_attr_by_id(
 const sai_object_type_info_t* sai_metadata_get_object_type_info(
         _In_ sai_object_type_t object_type)
 {
-    if (sai_metadata_is_object_type_valid(object_type))
+    if (object_type >= SAI_OBJECT_TYPE_NULL && object_type < SAI_OBJECT_TYPE_MAX)
     {
         return sai_metadata_all_object_type_infos[object_type];
+    }
+
+    int idx = 1;
+
+    for (; sai_metadata_all_object_type_infos[idx]; idx++)
+    {
+        if (sai_metadata_all_object_type_infos[idx]->objecttype == object_type)
+        {
+            return sai_metadata_all_object_type_infos[idx];
+        }
     }
 
     return NULL;
@@ -334,7 +363,7 @@ bool sai_metadata_is_object_type_oid(
 bool sai_metadata_is_object_type_valid(
         _In_ sai_object_type_t object_type)
 {
-    return object_type > SAI_OBJECT_TYPE_NULL && object_type < SAI_OBJECT_TYPE_EXTENSIONS_MAX;
+    return sai_metadata_get_object_type_info(object_type) != NULL;
 }
 
 static bool sai_metadata_is_condition_value_eq(

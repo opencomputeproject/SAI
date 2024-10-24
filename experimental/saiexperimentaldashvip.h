@@ -27,10 +27,10 @@
 #if !defined (__SAIEXPERIMENTALDASHVIP_H_)
 #define __SAIEXPERIMENTALDASHVIP_H_
 
-#include <saitypes.h>
+#include <saitypesextensions.h>
 
 /**
- * @defgroup SAIEXPERIMENTALDASH_VIP SAI - Experimental: DASH VIP specific API definitions
+ * @defgroup SAIEXPERIMENTALDASHVIP SAI - Experimental: DASH VIP specific API definitions
  *
  * @{
  */
@@ -64,7 +64,7 @@ typedef struct _sai_vip_entry_t
 } sai_vip_entry_t;
 
 /**
- * @brief Attribute ID for dash_vip_vip_entry
+ * @brief Attribute ID for VIP entry
  */
 typedef enum _sai_vip_entry_attr_t
 {
@@ -105,7 +105,7 @@ typedef enum _sai_vip_entry_attr_t
 } sai_vip_entry_attr_t;
 
 /**
- * @brief Create dash_vip_vip_entry
+ * @brief Create VIP entry
  *
  * @param[in] vip_entry Entry
  * @param[in] attr_count Number of attributes
@@ -119,7 +119,7 @@ typedef sai_status_t (*sai_create_vip_entry_fn)(
         _In_ const sai_attribute_t *attr_list);
 
 /**
- * @brief Remove dash_vip_vip_entry
+ * @brief Remove VIP entry
  *
  * @param[in] vip_entry Entry
  *
@@ -129,7 +129,7 @@ typedef sai_status_t (*sai_remove_vip_entry_fn)(
         _In_ const sai_vip_entry_t *vip_entry);
 
 /**
- * @brief Set attribute for dash_vip_vip_entry
+ * @brief Set attribute for VIP entry
  *
  * @param[in] vip_entry Entry
  * @param[in] attr Attribute
@@ -141,7 +141,7 @@ typedef sai_status_t (*sai_set_vip_entry_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
- * @brief Get attribute for dash_vip_vip_entry
+ * @brief Get attribute for VIP entry
  *
  * @param[in] vip_entry Entry
  * @param[in] attr_count Number of attributes
@@ -155,7 +155,7 @@ typedef sai_status_t (*sai_get_vip_entry_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
- * @brief Bulk create dash_vip_vip_entry
+ * @brief Bulk create VIP entry
  *
  * @param[in] object_count Number of objects to create
  * @param[in] vip_entry List of object to create
@@ -180,7 +180,7 @@ typedef sai_status_t (*sai_bulk_create_vip_entry_fn)(
         _Out_ sai_status_t *object_statuses);
 
 /**
- * @brief Bulk remove dash_vip_vip_entry
+ * @brief Bulk remove VIP entry
  *
  * @param[in] object_count Number of objects to remove
  * @param[in] vip_entry List of objects to remove

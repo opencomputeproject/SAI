@@ -186,6 +186,7 @@ sub CheckHash
         {
             # ignore attributes end, since those will shift
             next if $key =~ /^SAI_\w+_ATTR_END$/;
+            next if $key =~ /^SAI_\w+_ATTR_CUSTOM_RANGE_END$/;
 
             next if $key eq "SAI_IN_DROP_REASON_END";
             next if $key eq "SAI_ACL_TABLE_ATTR_FIELD_END";
@@ -195,6 +196,7 @@ sub CheckHash
             next if $key eq "SAI_API_MAX";
             next if $key eq "SAI_PORT_INTERFACE_TYPE_MAX";
             next if $key eq "SAI_PORT_STAT_END";
+            next if $key eq "SAI_PORT_BREAKOUT_MODE_TYPE_MAX";
 
             # NOTE: some other attributes/enum with END range could be added
         }

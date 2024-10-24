@@ -3022,6 +3022,55 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_POE_DEVICE_LIST,
 
     /**
+     * @brief Set Switch ICMP_ECHO session state change event notification callback function passed to the adapter.
+     *
+     * Use sai_icmp_echo_session_state_change_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_icmp_echo_session_state_change_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_ICMP_ECHO_SESSION_STATE_CHANGE_NOTIFY,
+
+    /**
+     * @brief Available ICMP ECHO sessions
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_ICMP_ECHO_SESSION,
+
+    /**
+     * @brief Max number of ICMP ECHO sessions supported
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_ICMP_ECHO_SESSION,
+
+    /**
+     * @brief Set switch statistics counting mode
+     *
+     * @type sai_stats_count_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_STATS_COUNT_MODE_PACKET_AND_BYTE
+     */
+    SAI_SWITCH_ATTR_STATS_COUNT_MODE,
+
+    /**
+     * @brief Attach counter object list
+     *
+     * Counter object should be of type Selective.
+     * Fill (#SAI_COUNTER_ATTR_TYPE with #SAI_COUNTER_TYPE_SELECTIVE).
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_SELECTIVE_COUNTER_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
@@ -3030,7 +3079,10 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
     /** End of custom range base */
-    SAI_SWITCH_ATTR_CUSTOM_RANGE_END
+    SAI_SWITCH_ATTR_CUSTOM_RANGE_END,
+
+    /** Extensions range base */
+    SAI_SWITCH_ATTR_EXTENSIONS_RANGE_BASE = 0x20000000
 
 } sai_switch_attr_t;
 

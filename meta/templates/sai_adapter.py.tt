@@ -22,7 +22,7 @@
         [%- ELSIF function.operation == 'stats' %]
         Dict[str, [% function.rpc_return.type.subtype.python_name %]]: stats
         [%- ELSIF function.rpc_return.type.name == 'void' AND NOT function.rpc_return.is_list %]
-        status: the error code
+        sai_status: the error code
 	[%- ELSE %]
         [% function.rpc_return.type.python_name %]: [% function.rpc_return.name %]
 	[%- END -%]
@@ -34,7 +34,7 @@
         [%- ELSIF function.rpc_return.type.name == 'void' AND NOT function.rpc_return.is_list %]
 
     Returns:
-        status: the error code
+        sai_status: the error code
 	[%- END -%]
     [%- END %]
 
@@ -190,10 +190,10 @@ client.[% function.thrift_name %](
 
 [%- BLOCK catch_exception -%]
     except sai_thrift_exception as e:
-        status = e.status
-        if SKIP_TEST_ON_EXPECTED_ERROR and status in EXPECTED_ERROR_CODE:
+        sai_status = e.status
+        if SKIP_TEST_ON_EXPECTED_ERROR and sai_status in EXPECTED_ERROR_CODE:
             reason = "SkipTest on expected error. [% function.thrift_name %] with errorcode: {} error: {}".format(
-                status, e)
+                sai_status, e)
             print(reason)
             testutils.skipped_test_count=1
             raise SkipTest(reason)
@@ -207,7 +207,7 @@ client.[% function.thrift_name %](
     [%- ELSIF function.operation == 'create' %]
             pass
     [%- ELSE %]
-            return status
+            return sai_status
     [%- END %]
         else:
             raise e
@@ -275,8 +275,8 @@ client.[% function.thrift_name %](
     [%- # For 'set attr' function we just do call the funtion for first argument -%]
     [%- IF function.operation == 'set' -%]
     
-    global status
-    status = SAI_STATUS_SUCCESS
+    global sai_status
+    sai_status = SAI_STATUS_SUCCESS
 
 
         [%- WRAPPER try -%]
@@ -413,11 +413,11 @@ client.[% function.thrift_name %](
 [%- ######################################################################## -%]
 
 [%- BLOCK return_from_empty_function -%]
-    global status
-    status = SAI_STATUS_NOT_SUPPORTED
-    if SKIP_TEST_ON_EXPECTED_ERROR and status in EXPECTED_ERROR_CODE:
+    global sai_status
+    sai_status = SAI_STATUS_NOT_SUPPORTED
+    if SKIP_TEST_ON_EXPECTED_ERROR and sai_status in EXPECTED_ERROR_CODE:
         reason = "SkipTest on expected error. [% function.name %] with errorcode: {} error: {}".format(
-            status, e)
+            sai_status, e)
         print(reason)
         testutils.skipped_test_count=1
         raise SkipTest(reason)
@@ -426,12 +426,12 @@ client.[% function.thrift_name %](
     [%- IF function.operation == 'create' AND NOT function.rpc_return.is_list %]
         return SAI_NULL_OBJECT_ID
     [%- ELSIF function.operation != 'get' AND function.operation != 'stats' AND function.rpc_return.type.name == 'void' %]
-        return status
+        return sai_status
     [%- ELSE %]
         return None
     [%- END %]
     else:
-        raise sai_thrift_exception(status)
+        raise sai_thrift_exception(sai_status)
 [%- END -%]
 
 [%- ######################################################################## -%]
@@ -454,8 +454,8 @@ client.[% function.thrift_name %](
         [%- # Now, call the thrift function -%]
         [%- IF function.operation != 'set' -%]
 
-    global status
-    status = SAI_STATUS_SUCCESS
+    global sai_status
+    sai_status = SAI_STATUS_SUCCESS
 
 
             [%- WRAPPER try -%] 
@@ -468,7 +468,7 @@ client.[% function.thrift_name %](
 
         [%- # Return a status only if a function does not, and does not return something else -%]
         [%- IF function.operation != 'get' AND function.operation != 'stats' AND function.rpc_return.type.name == 'void' %]
-    return status
+    return sai_status
 
         [%- END -%]
 
@@ -523,7 +523,14 @@ CATCH_EXCEPTIONS = True
 EXPECTED_ERROR_CODE = [-2]
 # Skip test when hitting an expected error
 SKIP_TEST_ON_EXPECTED_ERROR = True
-status = 0
+sai_status = 0
+
+def __getattr__(name):
+    if name == 'status':
+        global sai_status
+        return sai_status
+    else:
+        raise AttributeError(f'module {__name__} has no attribute {name}')
 
 [%- PROCESS dev_utils IF dev_utils -%]
 [%- PROCESS invocation_logger IF adapter_logger -%]
