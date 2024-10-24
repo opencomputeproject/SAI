@@ -88,6 +88,10 @@ typedef enum _sai_object_type_extensions_t
 
     SAI_OBJECT_TYPE_DASH_APPLIANCE,
 
+    SAI_OBJECT_TYPE_DASH_TUNNEL_MEMBER,
+
+    SAI_OBJECT_TYPE_DASH_TUNNEL_NEXT_HOP,
+
     /* Add new experimental object types above this line */
 
     SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END
@@ -180,10 +184,32 @@ typedef enum _sai_dash_flow_enabled_key_t
 
 /**
  * @brief Defines a list of enums for dash_flow_action
+ *
+ * @flags strict
  */
 typedef enum _sai_dash_flow_action_t
 {
-    SAI_DASH_FLOW_ACTION_NONE,
+    SAI_DASH_FLOW_ACTION_NONE = 0,
+
+    SAI_DASH_FLOW_ACTION_ENCAP_U0 = 1,
+
+    SAI_DASH_FLOW_ACTION_ENCAP_U1 = 2,
+
+    SAI_DASH_FLOW_ACTION_SET_SMAC = 4,
+
+    SAI_DASH_FLOW_ACTION_SET_DMAC = 8,
+
+    SAI_DASH_FLOW_ACTION_SNAT = 16,
+
+    SAI_DASH_FLOW_ACTION_DNAT = 32,
+
+    SAI_DASH_FLOW_ACTION_NAT46 = 64,
+
+    SAI_DASH_FLOW_ACTION_NAT64 = 128,
+
+    SAI_DASH_FLOW_ACTION_SNAT_PORT = 256,
+
+    SAI_DASH_FLOW_ACTION_DNAT_PORT = 512,
 
 } sai_dash_flow_action_t;
 
@@ -291,6 +317,23 @@ typedef enum _sai_dash_eni_mac_override_type_t
     SAI_DASH_ENI_MAC_OVERRIDE_TYPE_DST_MAC,
 
 } sai_dash_eni_mac_override_type_t;
+
+/**
+ * @brief Defines a list of enums for dash_flow_sync_state
+ */
+typedef enum _sai_dash_flow_sync_state_t
+{
+    SAI_DASH_FLOW_SYNC_STATE_FLOW_MISS,
+
+    SAI_DASH_FLOW_SYNC_STATE_FLOW_CREATED,
+
+    SAI_DASH_FLOW_SYNC_STATE_FLOW_SYNCED,
+
+    SAI_DASH_FLOW_SYNC_STATE_FLOW_PENDING_DELETE,
+
+    SAI_DASH_FLOW_SYNC_STATE_FLOW_PENDING_RESIMULATION,
+
+} sai_dash_flow_sync_state_t;
 
 #endif /* __SAITYPESEXTENSIONS_H_ */
 
