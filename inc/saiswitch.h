@@ -3080,7 +3080,7 @@ typedef enum _sai_switch_attr_t
      * @flags CREATE_ONLY
      * @default 0
      */
-    SAI_SWITCH_ATTR_CACHE_COUNT,
+    SAI_SWITCH_ATTR_TAM_CACHE_COUNT,
 
     /**
      * @brief End of attributes

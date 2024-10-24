@@ -1801,7 +1801,6 @@ typedef struct _sai_stat_capability_list_t
 
 /**
  * @brief Stat capability under the stream telemetry mode
- * 
  */
 typedef struct _sai_stat_st_capability_t
 {

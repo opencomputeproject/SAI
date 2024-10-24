@@ -1337,12 +1337,12 @@ typedef enum _sai_tam_report_attr_t
     /**
      * @brief Query IPFIX template
      *
-     * Return the IPFIX template binary buffer
+     * Return a list of IPFIX templates
      *
      * @type sai_u8_list_t
      * @flags READ_ONLY
      */
-    SAI_TAM_REPORT_ATTR_IPFIX_TEMPLATE,
+    SAI_TAM_REPORT_ATTR_IPFIX_TEMPLATES,
 
     /**
      * @brief End of Attributes
@@ -1525,18 +1525,6 @@ typedef enum _sai_tam_telemetry_attr_t
      * @validonly SAI_TAM_TELEMETRY_ATTR_TAM_REPORTING_TYPE == SAI_TAM_REPORTING_TYPE_COUNT_BASED
      */
     SAI_TAM_TELEMETRY_ATTR_REPORTING_BULK_COUNT,
-
-    /**
-     * @brief Tam telemetry cache size
-     *
-     * If the collector isn't ready to receive the report, this value indicates how many
-     * reports that can be cached. 0 means no cache which is the default behavior.
-     *
-     * @type sai_uint32_t
-     * @flags CREATE_AND_SET
-     * @default 0
-     */
-    SAI_TAM_TELEMETRY_ATTR_CACHE_COUNT,
 
     /**
      * @brief End of Attributes
@@ -2270,7 +2258,7 @@ typedef enum _sai_tam_counter_subscription_attr_t
      * @flags CREATE_ONLY
      * @default SAI_STATS_MODE_READ
      */
-    SAI_TAM_COUNTER_SUBSCRIPTION_ATTR_COUNTER_MODE,
+    SAI_TAM_COUNTER_SUBSCRIPTION_ATTR_STATS_MODE,
 
     /**
      * @brief End of Attributes
