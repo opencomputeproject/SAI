@@ -740,6 +740,17 @@ typedef enum _sai_macsec_sc_attr_t
     SAI_MACSEC_SC_ATTR_ENCRYPTION_ENABLE,
 
     /**
+     * @brief Bind MACsec Port object id with MACsec Secure Channel
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_MACSEC_PORT
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_MACSEC_SC_ATTR_MACSEC_PORT_ID,
+
+    /**
      * @brief End of MACsec Secure Channel attributes
      */
     SAI_MACSEC_SC_ATTR_END,
