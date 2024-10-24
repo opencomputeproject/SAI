@@ -30,7 +30,8 @@
 
 | Rev  | Date       | Authors                                          | Change Description |
 | ---- | ---------  | ------------------------------------------------ | ------------------ |
-| 0.1  | Sep 23' 2024   | Jai Kumar, Rajesh Sankaran                       | Initial draft  |
+| 0.1  | Sep 23' 2024   | Jai Kumar, Rajesh Sankaran                   | Initial draft  |
+| 0.2  | Oct 23' 2024   | Rajesh Sankaran                              | Changed DF, single active attributes |
 
 
 # 1.0  Introduction
@@ -161,15 +162,15 @@ typedef enum _sai_bridge_port_attr_t
 ...
 
     /**
-     * @brief Indicates if the bridge port is set to drop the broadcast, unknown unicast and multicast traffic
+     * @brief Indicates if the bridge port is set to drop the Tunnel Terminated broadcast, unknown unicast and multicast traffic
      * When set to true, egress BUM traffic will be dropped
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
-     * @validonly SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_PORT
+     * @validonly SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_PORT or SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT or SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_TUNNEL
      */
-    SAI_BRIDGE_PORT_ATTR_BUM_TX_DROP,
+    SAI_BRIDGE_PORT_ATTR_TUNNEL_TERM_BUM_TX_DROP,
 ```
 
 To handle DF election per VLAN and when a dot1q bridge model is used the above attribute is defined as part of the Vlan Member. 
@@ -180,7 +181,7 @@ typedef enum _sai_vlan_member_attr_t
 ...
 
     /**
-     * @brief Indicates if the bridge port is set to drop the broadcast, unknown unicast and multicast traffic
+     * @brief Indicates if the bridge port is set to drop the Tunnel terminated broadcast, unknown unicast and multicast traffic
      * When set to true, egress BUM traffic will be dropped
      *  
      * Valid only when the SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID is of type PORT.
@@ -190,7 +191,7 @@ typedef enum _sai_vlan_member_attr_t
      * @default false
      * 
      */
-    SAI_VLAN_MEMBER_ATTR_BUM_TX_DROP,
+    SAI_VLAN_MEMBER_ATTR_TUNNEL_TERM_BUM_TX_DROP,
 
 ```
 
@@ -244,51 +245,28 @@ The following 4 parameters should be set to true to achieve the traffic drop.
 typedef enum _sai_bridge_port_attr_t
 {
 ...
+
     /**
-     * @brief Indicates if the bridge port is set to drop the broadcast, unknown unicast and multicast traffic
-     * When set to true, ingress BUM traffic will be dropped
+     * @brief Indicates if the bridge port is set to drop the ingress traffic
+     * When set to true, all ingress traffic will be dropped
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
-     * @validonly SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_PORT
+     * @validonly SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_PORT or SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT or SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_TUNNEL
      */
-    SAI_BRIDGE_PORT_ATTR_BUM_RX_DROP,
-
+    SAI_BRIDGE_PORT_ATTR_RX_DROP,
 
     /**
-     * @brief Indicates if the bridge port is set to drop the broadcast, unknown unicast and multicast traffic
-     * When set to true, egress BUM traffic will be dropped
+     * @brief Indicates if the bridge port is set to drop the egress traffic
+     * When set to true, all egress traffic will be dropped
      *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
-     * @validonly SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_PORT
+     * @validonly SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_PORT or SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT or SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_TUNNEL
      */
-    SAI_BRIDGE_PORT_ATTR_BUM_TX_DROP,
-
-
-    /**
-     * @brief Indicates if the bridge port is set to drop the unicast traffic
-     * When set to true, ingress unicast traffic will be dropped
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     * @validonly SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_PORT
-     */
-    SAI_BRIDGE_PORT_ATTR_UCAST_RX_DROP,
-
-    /**
-     * @brief Indicates if the bridge port is set to drop the unicast traffic
-     * When set to true, egress unicast traffic will be dropped
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     * @validonly SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_PORT
-     */
-    SAI_BRIDGE_PORT_ATTR_UCAST_TX_DROP,
+    SAI_BRIDGE_PORT_ATTR_TX_DROP,
 ...
 }
 ```
@@ -300,9 +278,9 @@ typedef enum _sai_vlan_member_attr_t
 {
 ...
 
-    /**
-     * @brief Indicates if the bridge port is set to drop the broadcast, unknown unicast and multicast traffic
-     * When set to true, ingress BUM traffic will be dropped
+   /**
+     * @brief Indicates if all ingress traffic for this vlan member will be dropped.
+     * When set to true, ingress traffic will be dropped
      *  
      * Valid only when the SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID is of type PORT.
      * 
@@ -311,36 +289,10 @@ typedef enum _sai_vlan_member_attr_t
      * @default false
      * 
      */
-    SAI_VLAN_MEMBER_ATTR_BUM_RX_DROP,
+    SAI_VLAN_MEMBER_ATTR_RX_DROP,
 
    /**
-     * @brief Indicates if the bridge port is set to drop the broadcast, unknown unicast and multicast traffic
-     * When set to true, egress BUM traffic will be dropped
-     *  
-     * Valid only when the SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID is of type PORT.
-     * 
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     * 
-     */
-    SAI_VLAN_MEMBER_ATTR_BUM_TX_DROP,
-
-   /**
-     * @brief Indicates if the vlan member is set to drop the known unicast traffic
-     * When set to true, ingress unicast traffic will be dropped
-     *  
-     * Valid only when the SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID is of type PORT.
-     * 
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     * 
-     */
-    SAI_VLAN_MEMBER_ATTR_UCAST_RX_DROP,
-
-   /**
-     * @brief Indicates if the vlan member is set to drop the known unicast traffic
+     * @brief Indicates if all egress traffic for this vlan member will be dropped.
      * When set to true, egress unicast traffic will be dropped
      *  
      * Valid only when the SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID is of type PORT.
@@ -350,7 +302,7 @@ typedef enum _sai_vlan_member_attr_t
      * @default false
      * 
      */
-    SAI_VLAN_MEMBER_ATTR_UCAST_TX_DROP,
+    SAI_VLAN_MEMBER_ATTR_TX_DROP,
 
 ```
 
@@ -595,8 +547,8 @@ __Figure 3: Designated Forwarder Flow__
 
 ```
     sai_attribute_t attr;
-    attr.id = SAI_BRIDGE_PORT_ATTR_BUM_TX_DROP;
-    attr.value.booldata  = true;
+    attr.id = SAI_BRIDGE_PORT_ATTR_TUNNEL_TERM_BUM_TX_DROP;
+    attr.value.booldata  = true; /* false for vtep3 and true for vtep 1,2,4 */
 
     status = sai_bridge_api->set_bridge_port_attribute(lag_bp_oid, &attr);
 
@@ -644,25 +596,13 @@ __Figure 5: Single Active Redundancy Flow__
 
 ```
     sai_attribute_t attr;
-    attr.id = SAI_BRIDGE_PORT_ATTR_BUM_TX_DROP;
-    attr.value.booldata  = true;
+    attr.id = SAI_BRIDGE_PORT_ATTR_TX_DROP;
+    attr.value.booldata  = true; /* false for vtep3 and true for vtep 1,2,4 */
 
     status = sai_bridge_api->set_bridge_port_attribute(lag_bp_oid, &attr);
 
     sai_attribute_t attr;
-    attr.id = SAI_BRIDGE_PORT_ATTR_BUM_RX_DROP;
-    attr.value.booldata  = true;
-
-    status = sai_bridge_api->set_bridge_port_attribute(lag_bp_oid, &attr);
-
-    sai_attribute_t attr;
-    attr.id = SAI_BRIDGE_PORT_ATTR_UCAST_TX_DROP;
-    attr.value.booldata  = true;
-
-    status = sai_bridge_api->set_bridge_port_attribute(lag_bp_oid, &attr);
-
-    sai_attribute_t attr;
-    attr.id = SAI_BRIDGE_PORT_ATTR_UCAST_RX_DROP;
+    attr.id = SAI_BRIDGE_PORT_ATTR_RX_DROP; /* false for vtep3 and true for vtep 1,2,4 */
     attr.value.booldata  = true;
 
     status = sai_bridge_api->set_bridge_port_attribute(lag_bp_oid, &attr);
