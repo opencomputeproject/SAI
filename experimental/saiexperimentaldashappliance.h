@@ -49,7 +49,7 @@ typedef enum _sai_dash_appliance_attr_t
      * @brief Action parameter local region id
      *
      * @type sai_uint8_t
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default 0
      */
     SAI_DASH_APPLIANCE_ATTR_LOCAL_REGION_ID = SAI_DASH_APPLIANCE_ATTR_START,
