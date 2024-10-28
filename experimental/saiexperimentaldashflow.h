@@ -436,6 +436,33 @@ typedef enum _sai_flow_entry_attr_t
     SAI_FLOW_ENTRY_ATTR_IP_ADDR_FAMILY,
 
     /**
+     * @brief Action parameter DASH flow sync state
+     *
+     * @type sai_dash_flow_sync_state_t
+     * @flags CREATE_AND_SET
+     * @default SAI_DASH_FLOW_SYNC_STATE_FLOW_MISS
+     */
+    SAI_FLOW_ENTRY_ATTR_DASH_FLOW_SYNC_STATE,
+
+    /**
+     * @brief Action parameter underlay0 source MAC
+     *
+     * @type sai_mac_t
+     * @flags CREATE_AND_SET
+     * @default vendor
+     */
+    SAI_FLOW_ENTRY_ATTR_UNDERLAY0_SMAC,
+
+    /**
+     * @brief Action parameter underlay0 destination MAC
+     *
+     * @type sai_mac_t
+     * @flags CREATE_AND_SET
+     * @default vendor
+     */
+    SAI_FLOW_ENTRY_ATTR_UNDERLAY0_DMAC,
+
+    /**
      * @brief End of attributes
      */
     SAI_FLOW_ENTRY_ATTR_END,
