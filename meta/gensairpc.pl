@@ -447,13 +447,14 @@ sub get_attr_type {
 
     # First, check if we have enum
     return 's32' if ( $attr->type->name ~~ $all_enums );
+    return 's32' if ( $attr->type->name eq "sai_object_type_t" ); # special case
 
     # Try to compare types of attribute and attr value otherwise
     for ( @{ $attr_types->members } ) {
         return $_->thrift_name if ( $type eq $_->type->thrift_name );
     }
 
-    carp colored( "Unknown type $type of attribute " . $attr->name, 'red' );
+    croak colored( "Unknown type $type of attribute " . $attr->name, 'red' );
     return;
 }
 
