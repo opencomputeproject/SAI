@@ -454,7 +454,7 @@ sub get_attr_type {
         return $_->thrift_name if ( $type eq $_->type->thrift_name );
     }
 
-    carp colored( "Unknown type $type of attribute " . $attr->name, 'red' );
+    croak colored( "Unknown type $type of attribute " . $attr->name, 'red' );
     return;
 }
 
