@@ -65,6 +65,7 @@ typedef enum _sai_prefix_compression_table_attr_t
      *
      * @type sai_prefix_compression_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @isresourcetype true
      */
     SAI_PREFIX_COMPRESSION_TABLE_ATTR_PREFIX_COMPRESSION_TYPE,
 

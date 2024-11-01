@@ -6,15 +6,15 @@
  Status      | In review
  Type        | Standards track
  Created     | 2024-07-1 - Initial Draft
- SAI-Version | 1.14
+ SAI-Version | 1.16
 -------------------------------------------------------------------------------
 
 
 ## 1.0  Introduction ##
 
-This spec adds Prefix Compression. Prefix Compression allows mapping an IP prefix/mask (longest prefix) to a meta data value. These prefix/meta-data mapping can be grouped together to form a prefix compression table.  Tables can have both IPV4 and IPV6 entries.
+This specification introduces Prefix Compression, which enables the mapping of an IP prefix/mask (longest prefix) to a meta-data value. These prefix/meta-data mappings can be grouped to form a prefix compression table. These tables can include both IPv4 and IPv6 entries.
 
-Prefix Compression tables can be used in features such as ACL to match on a specific meta field. This allows additional functionality to ACL or any feature that can take advantage of such groupings.
+Prefix compression tables can be utilized in features such as ACL to match specific meta fields, thereby enhancing the functionality of ACLs or any other feature that can benefit from these groupings.
 
 ## 1.1.0 Function Requirement of Prefix Compression
 - Enable the creation of a prefix compresison table as a SAI object
@@ -22,14 +22,17 @@ Prefix Compression tables can be used in features such as ACL to match on a spec
 
 ## 2.0 Specification ##
 
-A prefix compression tables is represented by an object of SAI_PREFIX_COMPRESSION_TABLE. The creation of this object will allocate an empty table that can be used later to add specific entries to it. Table creation requires a stage to be associated with the table and also requires the type of table that is getting created: source addresses, destionation addresses or both.
+Specficicaton covers prefix compression and ACL use of Prefix Compression
+
+## 2.1 Prefix Compression
+
+A prefix compression table is represented by an object of type SAI_PREFIX_COMPRESSION_TABLE. Creating this object allocates an empty table to which specific entries can be added later. The table creation process requires associating a stage with the table and specifying the type of table being created: source addresses, destination addresses, or both.
 
 ### sai.h ###
 New type SAI_API_PREFIX_COMPRESSION is added into sai_api_t
 
 ### saiobject.h ###
 New entry sai_prefix_compression_entry_t prefix_compression_entry.
-
 
 ### saitypes.h ###
 Two new types: SAI_OBJECT_TYPE_PREFIX_COMPRESSION_TABLE and SAI_OBJECT_TYPE_PREFIX_COMPRESSION_ENTRY
@@ -71,6 +74,7 @@ typedef enum _sai_prefix_compression_table_attr_t
      *
      * @type sai_prefix_compression_type_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @isresourcetype true
      */
     SAI_PREFIX_COMPRESSION_TABLE_ATTR_PREFIX_COMPRESSION_TYPE,
 
@@ -190,14 +194,82 @@ typedef struct _sai_prefix_compression_api_t
 } sai_prefix_compression_api_t;
 ```
 
+## 2.2 ACL with Prefix Compression
+
+Enhanced support for meta-data field matching in ACL. New table attributes enable the configuration of source and destination prefix compression tables during the creation of an ACL table. Additionally, new field entry attributes allow matching on specific meta-data from either the source or destination prefix tables.
+
+
+## 2.2.1 ACL with Prefix Compression
+
+New table attributes enable the configuration of both source and destination prefix compression tables, which are utilized in field matching. The prefix compression SAI object ID is stored within the ACL table. An ACL table can be configured to use different prefix compression tables for the source and destination, or the same table for both. This flexibility extends to different ACL tables as well, allowing the same prefix compression table to be reused across multiple ACL tables or unique tables to be created for each ACL table.
+
+When performing meta-data entry lookup in an ACL, the prefix compression object ID is retrieved from the ACL table and dereferenced for a separate lookup in the prefix compression table to obtain the meta-data. Ideally, this lookup is performed in hardware and occurs simultaneously with the ACL table lookup.
+
+Example: Two prefix compression tables, Table_1 and Table_2, are created. ACL Table_1 is then configured with the attributes SAI_ACL_TABLE_ATTR_SRC_PREFIX_COMPRESSION_TABLE set to Prefix Compression Table_1 and SAI_ACL_TABLE_ATTR_DST_PREFIX_COMPRESSION_TABLE set to Prefix Compression Table_2. Under ACL Table_1, two entries are created. Entry_1 references meta-data from Prefix Compression Table_1, and Entry_2 references meta-data from Prefix Compression Table_2. During the pipeline process for Entry_1, the ID of Prefix Compression Table_1 is dereferenced from ACL Table_1, and a lookup is performed on Prefix Compression Table_1, which is a separate table in the pipeline. The result of this lookup determines whether Entry_1 hits or misses in the ACL. The same process is applied to Entry_2, but the lookup is performed in Prefix Compression Table_2.
+
+```c
+    /**
+     * @brief SRC prefix Table Object ID
+     *
+     * An object pointer to a prefix table used for
+     * source prefix lookups
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_PREFIX_COMPRESSION_TABLE
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ACL_TABLE_ATTR_SRC_PREFIX_COMPRESSION_TABLE,
+    /**
+     * @brief DST prefix Table Object ID
+     *
+     * An object pointer to a prefix table used for
+     * destination prefix lookups
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_PREFIX_COMPRESSION_TABLE
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ACL_TABLE_ATTR_DST_PREFIX_COMPRESSION_TABLE,
+```
+
+New field entry attributes allow for lookups based on a meta-data value.
+
+```c
+   /**
+     * @brief SRC meta-data
+     *
+     * @type sai_acl_field_data_t sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_SRC_PREFIX_META = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x15b,
+
+    /**
+     * @brief DST meta-data
+     *
+     * @type sai_acl_field_data_t sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_DST_PREFIX_META = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x15c,
+```
+
 ## 3 Examples
 
 ## 3.0.1 Create Prefix Compression Table with entries
 
 ```c
+// Create Prefix Compression Table 1
 sai_attr_table_list[];
 sai_attr_table_list[0].id = SAI_ACL_TABLE_ATTR_PREFIX_COMPRESSION_STAGE;
 sai_attr_table_list[0].value.s32 = SAI_PREFIX_COMPRESSION_STAGE_INGRESS;
+sai_attr_table_list[0].id = SAI_PREFIX_COMPRESSION_TABLE_ATTR_PREFIX_COMPRESSION_TYPE;
+sai_attr_table_list[0].value.s32 = SAI_PREFIX_COMPRESSION_TYPE_SRC;
+
 attr_table_count = 0;
 sai_create_prefix_compression_table_fn(
     &src_prefix_compression_table_id,
@@ -205,7 +277,21 @@ sai_create_prefix_compression_table_fn(
     attr_table_count,
     sai_attr_table_list);
 
-// Example: Create Prefix Compression Entries
+// Create Prefix Compression Table 2
+sai_attr_table_list[];
+sai_attr_table_list[0].id = SAI_ACL_TABLE_ATTR_PREFIX_COMPRESSION_STAGE;
+sai_attr_table_list[0].value.s32 = SAI_PREFIX_COMPRESSION_STAGE_INGRESS;
+sai_attr_table_list[0].id = SAI_PREFIX_COMPRESSION_TABLE_ATTR_PREFIX_COMPRESSION_TYPE;
+sai_attr_table_list[0].value.s32 = SAI_PREFIX_COMPRESSION_TYPE_DST;
+
+attr_table_count = 0;
+sai_create_prefix_compression_table_fn(
+    &dst_prefix_compression_table_id,
+    switch_id,
+    attr_table_count,
+    sai_attr_table_list);
+
+// Example: Create Prefix Compression Entries in SRC table
 // IPV4 First Entry
 sai_prefix_compression_entry_t entry_v4_1;
 entry_v4_1.switch_id = switch_id;
@@ -217,12 +303,12 @@ sai_entry_list[0].id = SAI_PREFIX_COMPRESSION_ENTRY_ATTR_META;
 sai_entry_list[0].value.u32 = 2;
 
 // IPV4 Second Entry
-sai_prefix_compression_entry_t entry_v4_1;
-entry_v4_1.switch_id = switch_id;
-entry_v4_1.prefix_table_id = src_prefix_compression_table_id;
-entry_v4_1.prefix.addr_family = SAI_IP_ADDR_FAMILY_IPV4;
-entry_v4_1.prefix.addr.ipv4 = "2.2.2.1";
-entry_v4_1.prefix_mask.ipv4 = "255.255.255.0";
+sai_prefix_compression_entry_t entry_v4_2;
+entry_v4_2.switch_id = switch_id;
+entry_v4_2.prefix_table_id = src_prefix_compression_table_id;
+entry_v4_2.prefix.addr_family = SAI_IP_ADDR_FAMILY_IPV4;
+entry_v4_2.prefix.addr.ipv4 = "2.2.2.1";
+entry_v4_2.prefix_mask.ipv4 = "255.255.255.0";
 sai_entries_attribute_list[0].id = SAI_PREFIX_COMPRESSION_ENTRY_ATTR_META;
 sai_entries_attribute_list[0].value.u32 = 800;
 
@@ -236,7 +322,19 @@ entry_v6_1.prefix_mask = "ffff:ffff:ffff:ffff:ffff:ffff:ffff:fffc";
 sai_entries_attribute_list[1].id = SAI_PREFIX_COMPRESSION_ENTRY_ATTR_META;
 sai_entries_attribute_list[1].value.u32 = 4;
 
-entries_list = [entry_v4_2, entry_v6_1];
+
+// Example: Create Prefix Compression Entries in DST table
+// IPV4 Entry
+sai_prefix_compression_entry_t entry_v4_3;
+entry_v4_3.switch_id = switch_id;
+entry_v4_3.prefix_table_id = dst_prefix_compression_table_id;
+entry_v4_3.prefix.addr_family = SAI_IP_ADDR_FAMILY_IPV4;
+entry_v4_3.prefix.addr.ipv4 = "12.12.1.1";
+entry_v4_3.prefix_mask.ipv4 = "255.255.0.0";
+sai_entry_list[0].id = SAI_PREFIX_COMPRESSION_ENTRY_ATTR_META;
+sai_entry_list[0].value.u32 = 200;
+
+entries_list = [entry_v4_2, entry_v6_1, entry_v4_3];
 entries_list_size = 2;
 sai_status_t bulk_status;
 
@@ -261,6 +359,8 @@ sai_bulk_create_prefix_compression_entry_fn(
 // Create ACL table
 sai_table_attr_list[0].id = SAI_ACL_TABLE_ATTR_SRC_PREFIX_COMPRESSION_TABLE;
 sai_table_attr_list[0].value.oid = src_prefix_compression_table_id;
+sai_table_attr_list[0].id = SAI_ACL_TABLE_ATTR_DST_PREFIX_COMPRESSION_TABLE;
+sai_table_attr_list[0].value.oid = dst_prefix_compression_table_id;
 sai_table_attr_count = 1;
 
 sai_create_acl_table_fn(
@@ -269,6 +369,7 @@ sai_create_acl_table_fn(
     sai_table_attr_count,
     sai_table_attr_list);
 
+// Entry 1
 sai_entry_attr_list[0].id = SAI_ACL_ENTRY_ATTR_FIELD_SRC_PREFIX_META;
 sai_attr_list[1].value.aclfield.enable = true;
 sai_attr_list[1].value.aclfield.mask = 0xFFFFFF;
@@ -277,18 +378,32 @@ sai_entry_attr_count = 1;
 
 // Create an Entry to match on META data
 sai_create_acl_entry_fn(
-    &acl_entry_id,
+    &acl_entry_id_1,
+    switch_id,
+    sai_entry_attr_count,
+    sai_entry_attr_list);
+
+// Entry 2
+sai_entry_attr_list[0].id = SAI_ACL_ENTRY_ATTR_FIELD_DST_PREFIX_META;
+sai_attr_list[1].value.aclfield.enable = true;
+sai_attr_list[1].value.aclfield.mask = 0xFFFFFF;
+sai_attr_list[1].value.aclfield.data = 200;
+sai_entry_attr_count = 1;
+
+// Create an Entry to match on META data
+sai_create_acl_entry_fn(
+    &acl_entry_id_2,
     switch_id,
     sai_entry_attr_count,
     sai_entry_attr_list);
 
 // Remove ACL entry
-sai_create_acl_entry_fn(
-    acl_entry_id);
+sai_remove_acl_entry_fn(
+    acl_entry_id_1);
 
 // Remove ACL Table
-sai_create_acl_entry_fn(
-    acl_table_id);
+sai_remove_acl_entry_fn(
+    acl_table_id_2);
 
 // Remove Single Entry
 sai_remove_prefix_compression_entry_fn(
