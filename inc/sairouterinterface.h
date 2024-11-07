@@ -334,10 +334,6 @@ typedef enum _sai_router_interface_attr_t
      * can allow the incoming packets to be considered for L3 forwarding.
      * There is no change in the behavior for packets egressing the RIF.
      *
-     * Note that the other matching entries (programmed via RIF and/or My MAC)
-     * can allow the incoming packets to be considered for L3 forwarding.
-     * There is no change in the behavior for packets egressing the RIF.
-     *
      * @type sai_object_id_t
      * @flags CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_MY_MAC
