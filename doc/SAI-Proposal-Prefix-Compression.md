@@ -199,14 +199,6 @@ typedef struct _sai_prefix_compression_api_t
 Enhanced support for meta-data field matching in ACL. New table attributes enable the configuration of source and destination prefix compression tables during the creation of an ACL table. Additionally, new field entry attributes allow matching on specific meta-data from either the source or destination prefix tables.
 
 
-## 2.2.1 ACL with Prefix Compression
-
-New table attributes enable the configuration of both source and destination prefix compression tables, which are utilized in field matching. The prefix compression SAI object ID is stored within the ACL table. An ACL table can be configured to use different prefix compression tables for the source and destination, or the same table for both. This flexibility extends to different ACL tables as well, allowing the same prefix compression table to be reused across multiple ACL tables or unique tables to be created for each ACL table.
-
-When performing meta-data entry lookup in an ACL, the prefix compression object ID is retrieved from the ACL table and dereferenced for a separate lookup in the prefix compression table to obtain the meta-data. Ideally, this lookup is performed in hardware and occurs simultaneously with the ACL table lookup.
-
-Example: Two prefix compression tables, Table_1 and Table_2, are created. ACL Table_1 is then configured with the attributes SAI_ACL_TABLE_ATTR_SRC_PREFIX_COMPRESSION_TABLE set to Prefix Compression Table_1 and SAI_ACL_TABLE_ATTR_DST_PREFIX_COMPRESSION_TABLE set to Prefix Compression Table_2. Under ACL Table_1, two entries are created. Entry_1 references meta-data from Prefix Compression Table_1, and Entry_2 references meta-data from Prefix Compression Table_2. During the pipeline process for Entry_1, the ID of Prefix Compression Table_1 is dereferenced from ACL Table_1, and a lookup is performed on Prefix Compression Table_1, which is a separate table in the pipeline. The result of this lookup determines whether Entry_1 hits or misses in the ACL. The same process is applied to Entry_2, but the lookup is performed in Prefix Compression Table_2.
-
 ```c
     /**
      * @brief SRC prefix Table Object ID
@@ -257,6 +249,16 @@ New field entry attributes allow for lookups based on a meta-data value.
      */
     SAI_ACL_ENTRY_ATTR_FIELD_DST_PREFIX_META = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x15c,
 ```
+
+## 2.2.1 Prefix Compression packet pipeline
+
+New table attributes allow for the configuration of both source and destination prefix compression tables, which are used in field matching. The prefix compression SAI object ID is stored within the ACL table. An ACL table can be configured to use different prefix compression tables for the source and destination or the same table for both. This flexibility extends to different ACL tables as well, permitting the reuse of the same prefix compression table across multiple ACL tables or the creation of unique tables for each specific ACL table.
+
+During meta-data entry lookup in an ACL, the packet derives the associated prefix compression table from the ACL table configuration, either using SAI_ACL_TABLE_ATTR_SRC_PREFIX_COMPRESSION_TABLE or SAI_ACL_TABLE_ATTR_DST_PREFIX_COMPRESSION_TABLE. There is no match criteria to derive the source or destination compression tables; this is not an action. Subsequently, a lookup is performed on either the source or destination compression table, resulting in a "metadata" value. This "metadata" is then used as match criteria for the ACL entry, determining a hit or miss. Standard ACL actions for a hit or miss will then take effect.
+
+In hardware, there is no such derivation from the ACL tables; instead, there is an implicit pipeline behavior such that the prefix compression table lookup always occurs before the ACL table lookup. This ensures that the metadata from the compression table is available for matching in the ACL table.
+
+Example: Two prefix compression tables, Table_1 and Table_2, are created. ACL Table_1 is then configured with the attributes SAI_ACL_TABLE_ATTR_SRC_PREFIX_COMPRESSION_TABLE set to Prefix Compression Table_1 and SAI_ACL_TABLE_ATTR_DST_PREFIX_COMPRESSION_TABLE set to Prefix Compression Table_2. Under ACL Table_1, two entries are created. Entry_1 references metadata from Prefix Compression Table_1, and Entry_2 references metadata from Prefix Compression Table_2. During the pipeline process for Entry_1, the ID of Prefix Compression Table_1 is dereferenced from ACL Table_1. there is not a result of an action. A lookup is performed on Prefix Compression Table_1, which is a separate table in the pipeline. The result of this lookup determines whether Entry_1 hits or misses in the ACL. The same process applies to Entry_2, with the lookup performed in Prefix Compression Table_2.
 
 ## 3 Examples
 
