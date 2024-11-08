@@ -78,7 +78,7 @@ typedef enum _sai_my_sid_entry_endpoint_behavior_t
     /** Endpoint with decapsulation and specific IPv6 table lookup */
     SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_DT6,
 
-    /** Endpoint with decapsulation and specific IPv6 table lookup */
+    /** Endpoint with decapsulation and specific IPv4 table lookup */
     SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_DT4,
 
     /** Endpoint with decapsulation and specific IP table lookup */
@@ -101,6 +101,21 @@ typedef enum _sai_my_sid_entry_endpoint_behavior_t
 
     /** End.uA function for shift-and-xconnect behavior */
     SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_UA,
+
+    /** Endpoint with decapsulation and IPv4 Cross-connect for uSID */
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_UDX4,
+
+    /** Endpoint with decapsulation and IPv6 Cross-connect for uSID */
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_UDX6,
+
+    /** Endpoint with decapsulation and specific IPv4 Table lookup for uSID */
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_UDT4,
+
+    /** Endpoint with decapsulation and specific IPv4 Table lookup for uSID */
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_UDT6,
+
+    /** Endpoint with decapsulation and specific IP Table lookup for uSID */
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_UDT46,
 
     /** Custom range base value */
     SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_CUSTOM_RANGE_START = 0x10000000,
