@@ -121,10 +121,13 @@ xml: $(DEPS) Doxyfile Doxyfile.compat $(CONSTHEADERS)
 
 EXTRA = acronyms.txt aspell.en.pws *.pm *.cap
 
+saiattrversion.h: $(DEPS) attrversion.sh
+	./attrversion.sh
+
 saimetadatasize.h: $(DEPS)
 	./size.sh
 
-saimetadatatest.c saimetadata.c saimetadata.h: xml $(XMLDEPS) parse.pl $(CONSTHEADERS) $(EXTRA)
+saimetadatatest.c saimetadata.c saimetadata.h: xml $(XMLDEPS) parse.pl $(CONSTHEADERS) $(EXTRA) saiattrversion.h
 	perl -I. parse.pl
 
 RPC_MODULES=$(shell find rpc -type f -name "*.pm")
@@ -190,7 +193,7 @@ sai_rpc_frontend: rpc sai_rpc_frontend.cpp sai_rpc_frontend.main.cpp sai_rpc_ser
 
 clean:
 	rm -f *.o *~ .*~ *.tmp .*.swp .*.swo *.bak sai*.gv sai*.svg *.o.symbols doxygen*.db *.so
-	rm -f saimetadata.h saimetadatasize.h saimetadata.c saimetadatatest.c saiswig.i
+	rm -f saimetadata.h saimetadatasize.h saimetadata.c saimetadatatest.c saiswig.i saiattrversion.h
 	rm -f saisanitycheck saimetadatatest saiserializetest saidepgraphgen sai_rpc_frontend
 	rm -f sai.thrift sai_rpc_server.cpp sai_adapter.py
 	rm -f *.gcda *.gcno *.gcov

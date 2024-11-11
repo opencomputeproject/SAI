@@ -3470,6 +3470,27 @@ void check_attr_condition_relaxed(
     }
 }
 
+void check_attr_version(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    if (SAI_METADATA_HAVE_ATTR_VERSION)
+    {
+        META_ASSERT_TRUE(md->apiversion > SAI_VERSION(0,0,0), "expected version to be defined");
+
+        if (md->nextrelease)
+        {
+            META_LOG_DEBUG("%s: nextrelease == true", md->attridname);
+        }
+    }
+    else
+    {
+        META_ASSERT_TRUE(md->apiversion == SAI_VERSION(0,0,0), "expected version to be zero");
+        META_ASSERT_TRUE(md->nextrelease == false, "expected nextrelease to be false");
+    }
+}
+
 void check_single_attribute(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -3517,6 +3538,7 @@ void check_single_attribute(
     check_attr_mixed_condition(md);
     check_attr_mixed_validonly(md);
     check_attr_condition_relaxed(md);
+    check_attr_version(md);
 
     define_attr(md);
 }
