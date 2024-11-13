@@ -1542,9 +1542,31 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_TUNNEL_TERMINATED = SAI_ACL_TABLE_ATTR_FIELD_START + 0x15f,
 
     /**
+     * @brief SRC META data
+     *
+     * This key is dedicated to matching on a SRC META data
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_SRC_PREFIX_META = SAI_ACL_TABLE_ATTR_FIELD_START + 0x160,
+
+    /**
+     * @brief DST META data
+     *
+     * This key is dedicated to matching on a DST META data
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_DST_PREFIX_META = SAI_ACL_TABLE_ATTR_FIELD_START + 0x161,
+
+    /**
      * @brief End of ACL Table Match Field
      */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_TUNNEL_TERMINATED,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_DST_PREFIX_META,
 
     /**
      * @brief ACL table entries associated with this table.
@@ -1579,6 +1601,34 @@ typedef enum _sai_acl_table_attr_t
      * @default SAI_ACL_TABLE_MATCH_TYPE_TERNARY
      */
     SAI_ACL_TABLE_ATTR_ACL_TABLE_MATCH_TYPE,
+
+    /**
+     * @brief SRC prefix Table Object ID
+     *
+     * An object pointer to a prefix table used for
+     * source prefix lookups
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_PREFIX_COMPRESSION_TABLE
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ACL_TABLE_ATTR_SRC_PREFIX_COMPRESSION_TABLE,
+
+    /**
+     * @brief DST prefix Table Object ID
+     *
+     * An object pointer to a prefix table used for
+     * destination prefix lookups
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_PREFIX_COMPRESSION_TABLE
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ACL_TABLE_ATTR_DST_PREFIX_COMPRESSION_TABLE,
 
     /**
      * @brief Start of Table Match valid bits
@@ -2624,9 +2674,27 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_TUNNEL_TERMINATED = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x15f,
 
     /**
+     * @brief SRC META data
+     *
+     * @type sai_acl_field_data_t sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_SRC_PREFIX_META = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x160,
+
+    /**
+     * @brief DST META data
+     *
+     * @type sai_acl_field_data_t sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_DST_PREFIX_META = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x161,
+
+    /**
      * @brief End of Rule Match Fields
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_TUNNEL_TERMINATED,
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_DST_PREFIX_META,
 
     /*
      * Actions [sai_acl_action_data_t]
