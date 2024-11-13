@@ -35,6 +35,7 @@
 #include <saimpls.h>
 #include <sainat.h>
 #include <saisrv6.h>
+#include <saiprefixcompression.h>
 
 /* new experimental object type includes */
 #include <saiexperimentaldashtunnel.h>
@@ -115,6 +116,9 @@ typedef union _sai_object_key_entry_t
 
     /** @validonly object_type == SAI_OBJECT_TYPE_PA_VALIDATION_ENTRY */
     sai_pa_validation_entry_t pa_validation_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_PREFIX_COMPRESSION_ENTRY */
+    sai_prefix_compression_entry_t prefix_compression_entry;
 
     /** @validonly object_type == SAI_OBJECT_TYPE_VIP_ENTRY */
     sai_vip_entry_t vip_entry;

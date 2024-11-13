@@ -150,6 +150,7 @@ typedef enum _sai_api_t
     SAI_API_TWAMP            = 50, /**< sai_twamp_api_t */
     SAI_API_POE              = 51, /**< sai_poe_api_t */
     SAI_API_ICMP_ECHO        = 52, /**< sai_icmp_echo_api_t */
+    SAI_API_PREFIX_COMPRESSION = 53, /**< sai_prefix_compression_api_t */
     SAI_API_MAX,                   /**< total number of APIs */
 
     /**
