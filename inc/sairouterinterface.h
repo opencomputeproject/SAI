@@ -317,6 +317,19 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_SELECTIVE_COUNTER_LIST,
 
     /**
+     * @brief Attribute used to specify external My MAC entry that will
+     * be used in place of any implicit entry created during RIF processing
+     * for this {port, vlan, MAC address}
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_MY_MAC
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ROUTER_INTERFACE_ATTR_MY_MAC,
+
+    /**
      * @brief End of attributes
      */
     SAI_ROUTER_INTERFACE_ATTR_END,
