@@ -111,7 +111,7 @@ typedef enum _sai_my_sid_entry_endpoint_behavior_t
     /** Endpoint with decapsulation and specific IPv4 Table lookup for uSID */
     SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_UDT4,
 
-    /** Endpoint with decapsulation and specific IPv4 Table lookup for uSID */
+    /** Endpoint with decapsulation and specific IPv6 Table lookup for uSID */
     SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_UDT6,
 
     /** Endpoint with decapsulation and specific IP Table lookup for uSID */
