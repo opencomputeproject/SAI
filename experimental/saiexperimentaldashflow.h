@@ -285,18 +285,18 @@ typedef enum _sai_flow_entry_attr_t
     /**
      * @brief Action parameter underlay0 sip
      *
-     * @type sai_uint32_t
+     * @type sai_ip_address_t
      * @flags CREATE_AND_SET
-     * @default 0
+     * @default 0.0.0.0
      */
     SAI_FLOW_ENTRY_ATTR_UNDERLAY0_SIP,
 
     /**
      * @brief Action parameter underlay0 dip
      *
-     * @type sai_uint32_t
+     * @type sai_ip_address_t
      * @flags CREATE_AND_SET
-     * @default 0
+     * @default 0.0.0.0
      */
     SAI_FLOW_ENTRY_ATTR_UNDERLAY0_DIP,
 
@@ -321,18 +321,18 @@ typedef enum _sai_flow_entry_attr_t
     /**
      * @brief Action parameter underlay1 sip
      *
-     * @type sai_uint32_t
+     * @type sai_ip_address_t
      * @flags CREATE_AND_SET
-     * @default 0
+     * @default 0.0.0.0
      */
     SAI_FLOW_ENTRY_ATTR_UNDERLAY1_SIP,
 
     /**
      * @brief Action parameter underlay1 dip
      *
-     * @type sai_uint32_t
+     * @type sai_ip_address_t
      * @flags CREATE_AND_SET
-     * @default 0
+     * @default 0.0.0.0
      */
     SAI_FLOW_ENTRY_ATTR_UNDERLAY1_DIP,
 
