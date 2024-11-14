@@ -259,6 +259,15 @@ typedef enum _sai_udf_group_attr_t
     SAI_UDF_GROUP_ATTR_LENGTH,
 
     /**
+     * @brief Label attribute used to uniquely identify UDF group.
+     *
+     * @type char
+     * @flags CREATE_AND_SET
+     * @default ""
+     */
+    SAI_UDF_GROUP_ATTR_LABEL,
+
+    /**
      * @brief End of attributes
      */
     SAI_UDF_GROUP_ATTR_END,

@@ -317,6 +317,15 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_SELECTIVE_COUNTER_LIST,
 
     /**
+     * @brief Label attribute used to uniquely identify router interface.
+     *
+     * @type char
+     * @flags CREATE_AND_SET
+     * @default ""
+     */
+    SAI_ROUTER_INTERFACE_ATTR_LABEL,
+
+    /**
      * @brief End of attributes
      */
     SAI_ROUTER_INTERFACE_ATTR_END,

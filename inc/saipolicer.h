@@ -232,6 +232,15 @@ typedef enum _sai_policer_attr_t
     SAI_POLICER_ATTR_SELECTIVE_COUNTER_LIST,
 
     /**
+     * @brief Label attribute used to uniquely identify identical policers.
+     *
+     * @type char
+     * @flags CREATE_AND_SET
+     * @default ""
+     */
+    SAI_POLICER_ATTR_LABEL,
+
+    /**
      * @brief End of attributes
      */
     SAI_POLICER_ATTR_END,
