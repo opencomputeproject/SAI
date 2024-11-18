@@ -69,6 +69,7 @@ our @ALL_ENUMS = ();
 our %GLOBAL_APIS = ();
 our %OBJECT_TYPE_BULK_MAP = ();
 our %SAI_ENUMS_CUSTOM_RANGES = ();
+our %ATTR_API_VER = ();
 
 my $FLAGS = "MANDATORY_ON_CREATE|CREATE_ONLY|CREATE_AND_SET|READ_ONLY|KEY";
 my $ENUM_FLAGS_TYPES = "(none|strict|mixed|ranges|free)";
@@ -2294,6 +2295,46 @@ sub ProcessIsExtensionAttr
     return "false";
 }
 
+sub ProcessApiVersion
+{
+    my ($attr, $type) = @_;
+
+    # for those attributes use the same version as MIN, since those
+    # attributes are auto generated
+
+    $attr = "SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MIN"
+        if ($attr =~ /^SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_\d+$/);
+
+    $attr = "SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN"
+        if ($attr =~ /^SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_\d+$/);
+
+    if (not defined $ATTR_API_VER{$attr} and scalar(keys%ATTR_API_VER) != 0)
+    {
+        LogWarning "no version defined for $attr in saiattrversion.h";
+
+        return "SAI_VERSION(0,0,0)";
+    }
+
+    return "SAI_VERSION(0,0,0)" if not defined $ATTR_API_VER{$attr};
+
+    return "SAI_VERSION($1,$2,$3)" if $ATTR_API_VER{$attr} =~ /^v(\d+)\.(\d+)\.(\d+)$/;
+
+    LogInfo "Setting $attr version to SAI_API_VERSION (future release)";
+
+    return "SAI_API_VERSION";
+}
+
+sub ProcessNextRelease
+{
+    my ($attr, $type) = @_;
+
+    return "false" if not defined $ATTR_API_VER{$attr};
+
+    return "false" if $ATTR_API_VER{$attr} =~ /^v(\d+)\.(\d+)\.(\d+)$/;
+
+    return "true";
+}
+
 sub ProcessSingleObjectType
 {
     my ($typedef, $objecttype) = @_;
@@ -2355,6 +2396,8 @@ sub ProcessSingleObjectType
         my $isresourcetype  = ProcessIsResourceType($attr, $meta{isresourcetype});
         my $isdeprecated    = ProcessIsDeprecatedType($attr, $meta{deprecated});
         my $isrelaxed       = ProcessRelaxedType($attr, $meta{relaxed});
+        my $apiversion      = ProcessApiVersion($attr);
+        my $nextrelease     = ProcessNextRelease($attr);
 
         my $ismandatoryoncreate = ($flags =~ /MANDATORY/)       ? "true" : "false";
         my $iscreateonly        = ($flags =~ /CREATE_ONLY/)     ? "true" : "false";
@@ -2413,7 +2456,8 @@ sub ProcessSingleObjectType
         WriteSource ".isresourcetype                = $isresourcetype,";
         WriteSource ".isdeprecated                  = $isdeprecated,";
         WriteSource ".isconditionrelaxed            = $isrelaxed,";
-        WriteSource ".iscustom                      = ($attr >= 0x10000000) && ($attr < 0x20000000)";
+        WriteSource ".apiversion                    = $apiversion,";
+        WriteSource ".nextrelease                   = $nextrelease,";
 
         WriteSource "};";
 
@@ -2465,6 +2509,15 @@ sub CreateMetadata
 
         ProcessSingleObjectType($typedef, $objtype);
     }
+}
+
+sub ProcessAttrVersion
+{
+    WriteSectionComment "Have attr versions";
+
+    my $count = scalar(keys%ATTR_API_VER);
+
+    WriteHeader "#define SAI_METADATA_HAVE_ATTR_VERSION ($count)";
 }
 
 sub ProcessSaiStatus
@@ -4371,6 +4424,24 @@ sub ExtractObjectTypeBulkMap
     %OBJECT_TYPE_BULK_MAP = %otmap;
 }
 
+sub ExtractAttrApiVersion
+{
+    my $data = ReadHeaderFile("saiattrversion.h");
+
+    my @lines = split/\n/,$data;
+
+    for my $line (@lines)
+    {
+        if (not $line =~ /#define (SAI_\w+_ATTR_\w+) "(v\d+\.\d+\.\d+|HEAD)"/)
+        {
+            LogError "invalid line in saiattrversion.h: $line";
+            next;
+        }
+
+        $ATTR_API_VER{$1} = $2;
+    }
+}
+
 sub CheckObjectTypeStatitics
 {
     #
@@ -5534,6 +5605,8 @@ ExtractApiToObjectMap();
 
 ExtractStatsFunctionMap();
 
+ExtractAttrApiVersion();
+
 ExtractUnionsInfo();
 
 CheckHeadersStyle() if not defined $optionDisableStyleCheck;
@@ -5551,6 +5624,8 @@ CreateObjectTypeMap();
 ExtractObjectTypeBulkMap();
 
 WriteHeaderHeader();
+
+ProcessAttrVersion();
 
 ProcessSaiStatus();
 

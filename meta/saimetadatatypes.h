@@ -1292,6 +1292,29 @@ typedef struct _sai_attr_metadata_t
      */
     bool                                        iscustom;
 
+    /**
+     * @brief Specifies API version at which attribute was introduced.
+     *
+     * If no version is available, then this value will be SAI_VERSION(0,0,0).
+     *
+     * This field should be used with nextrelease field.
+     */
+    sai_api_version_t                           apiversion;
+
+    /**
+     * @brief Specified whether attribute will be present in next API release.
+     *
+     * It may happen that there are new attributes defined after stable release,
+     * and they will be part of next release. In this case API version will
+     * have value of current API version and nextrelease set to true.
+     *
+     * For example, if attr is defined between v1.14 and v1.15, then API
+     * version will be v1.15 and next release is false. If attr is defined on
+     * top of v1.15 and there is not next release defined, then API version
+     * will be v1.15 and next release set to true.
+     */
+    bool                                        nextrelease;
+
 } sai_attr_metadata_t;
 
 /*
