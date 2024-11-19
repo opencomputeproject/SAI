@@ -4432,7 +4432,7 @@ sub ExtractAttrApiVersion
 
     for my $line (@lines)
     {
-        if (not $line =~ /#define (SAI_\w+_ATTR_\w+) "(v\d+\.\d+\.\d+|HEAD)"/)
+        if (not $line =~ /#define SAI_METADATA_ATTR_VERSION_(SAI_\w+_ATTR_\w+) "(v\d+\.\d+\.\d+|HEAD)"/)
         {
             LogError "invalid line in saiattrversion.h: $line";
             next;
