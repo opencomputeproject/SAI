@@ -154,6 +154,11 @@ typedef enum _sai_api_t
     SAI_API_MAX,                   /**< total number of APIs */
 
     /**
+     * @brief Custom range base
+     */
+    SAI_API_CUSTOM_RANGE_BASE = 0x10000000,
+
+    /**
      * @brief Extensions range base
      */
     SAI_API_EXTENSIONS_RANGE_BASE = 0x20000000,

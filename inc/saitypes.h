@@ -305,6 +305,11 @@ typedef enum _sai_object_type_t
     /** Must remain in last position */
     SAI_OBJECT_TYPE_MAX,
 
+    /**
+     * @brief Custom range base
+     */
+    SAI_OBJECT_TYPE_CUSTOM_RANGE_BASE = 0x10000000,
+
     SAI_OBJECT_TYPE_EXTENSIONS_RANGE_BASE = 0x20000000,
 } sai_object_type_t;
 
