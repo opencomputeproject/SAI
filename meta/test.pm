@@ -149,7 +149,7 @@ sub CreateCustomRangeTest
     WriteTest "}";
 }
 
-sub CreateCustomRangeAll
+sub CreateCustomRangeAllTest
 {
     DefineTestName "custom_range_all_test";
 
@@ -166,14 +166,51 @@ sub CreateCustomRangeAll
 
         for my $enum (@all)
         {
-            # extepions and will be removed
-            next if $enum eq "SAI_API_CUSTOM_RANGE_START";
-            next if $enum eq "SAI_API_CUSTOM_RANGE_END";
-            next if $enum eq "SAI_OBJECT_TYPE_CUSTOM_RANGE_START";
-            next if $enum eq "SAI_OBJECT_TYPE_CUSTOM_RANGE_END";
-
             WriteTest "    TEST_ASSERT_TRUE($enum == 0x10000000, \"invalid custom range start for $enum\");" if $enum =~ /_START$/;
             WriteTest "    TEST_ASSERT_TRUE($enum < 0x20000000, \"invalid custom range end for $enum\");" if $enum =~ /_END$/;
+        }
+    }
+
+    WriteTest "}";
+}
+
+sub CreateCustomRangeBaseTest
+{
+    DefineTestName "custom_range_base_test";
+
+    WriteTest "{";
+
+    for my $key (sort keys %main::SAI_ENUMS)
+    {
+        next if not defined $main::SAI_ENUMS{$key}{ranges};
+
+        my @ranges = @{ $main::SAI_ENUMS{$key}{ranges} };
+
+        next if scalar @ranges == 0;
+
+        for my $range (@ranges)
+        {
+            next if $range eq "SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_CUSTOM_RANGE_BASE"; # TODO exception, to be remove
+
+            my $prefix = uc $1 if $key =~ /(sai_\w+)_t$/;
+
+            if ($range eq "${prefix}_CUSTOM_RANGE_BASE")
+            {
+                WriteTest "    TEST_ASSERT_TRUE_EXT($range == 0x10000000, \"invalid custom range base for $range = 0x%x\", $range);" ;
+                next;
+            }
+
+            if ($range eq "${prefix}_EXTENSIONS_RANGE_BASE")
+            {
+                WriteTest "    TEST_ASSERT_TRUE_EXT($range == 0x20000000, \"invalid extensions range base for $range: = 0x%x\", $range);" ;
+                next;
+            }
+
+            LogInfo "Skipping range base $range";
+
+            # currently any other range should be less than custom
+
+            WriteTest "    TEST_ASSERT_TRUE_EXT($range < 0x10000000 , \"invalid extensions range base for $range = 0x%x\", $range);" ;
         }
     }
 
@@ -742,7 +779,9 @@ sub CreateTests
 
     CreateStructUnionSizeCheckTest();
 
-    CreateCustomRangeAll();
+    CreateCustomRangeAllTest();
+
+    CreateCustomRangeBaseTest();
 
     CreateExtensionRangeTest();
 
