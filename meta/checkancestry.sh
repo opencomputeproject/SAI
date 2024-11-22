@@ -106,7 +106,7 @@ function create_commit_list()
 
 function check_enum_history()
 {
-    perl ancestry.pl -H "ancestry.825c835.history" $LIST
+    perl ancestry.pl -H "ancestry.5f75d99.history" $LIST
 }
 
 #
@@ -122,7 +122,7 @@ function check_enum_history()
 # the processing time will increase too much
 
 BEGIN_COMMIT=3132018 # from this commit we are backward compatible
-BEGIN_COMMIT=825c835 # to this commit we have history file
+BEGIN_COMMIT=5f75d99 # to this commit we have history file
 END_COMMIT=HEAD
 
 clean_temp_dir
