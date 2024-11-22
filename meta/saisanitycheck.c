@@ -5499,9 +5499,15 @@ void check_switch_pointers_list()
 
     size_t i;
 
+    sai_attr_id_t id = 0;
+
     for (i = 0; i < sai_metadata_switch_pointers_attr_count; ++i)
     {
         META_ASSERT_NOT_NULL(sai_metadata_switch_pointers_attr[i]);
+
+        META_ASSERT_TRUE(id <= sai_metadata_switch_pointers_attr[i]->attrid, "sai_metadata_switch_pointers_attr attr pointers expected to increase")
+
+        id = sai_metadata_switch_pointers_attr[i]->attrid;
     }
 
     /* check for NULL guard */
