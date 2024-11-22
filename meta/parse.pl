@@ -5188,7 +5188,7 @@ sub CreateSwitchPointersAttributesList
     my @pointers = keys %NOTIFICATIONS;
     push @pointers, values %ATTR_TO_CALLBACK;
 
-    for my $name (sort @pointers)
+    for my $name (GetSwitchPointersInOrder(@pointers))
     {
         next if not $name =~ /^sai_(\w+)_fn/;
 
