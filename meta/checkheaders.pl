@@ -196,6 +196,8 @@ sub CheckHash
             next if $key eq "SAI_API_MAX";
             next if $key eq "SAI_PORT_INTERFACE_TYPE_MAX";
             next if $key eq "SAI_PORT_BREAKOUT_MODE_TYPE_MAX";
+            next if $key eq "SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_CUSTOM_RANGE_BASE";
+            next if $key eq "SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_END";
 
             # NOTE: some other attributes/enum with END range could be added
         }
