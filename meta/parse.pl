@@ -1122,6 +1122,9 @@ sub ProcessFunctionSection
 
         $type = $1 if $def =~ /^(\w+) sai_\w+$/;
 
+        LogError "function $name return type should be sai_(status|object_type|object_id)_t, but is $type"
+            if not $type =~ /^sai_(status|object_type|object_id)_t$/;
+
         $GLOBAL_APIS{$name}{name} = $name;
         $GLOBAL_APIS{$name}{args} = $memberdef->{argsstring}[0];
         $GLOBAL_APIS{$name}{type} = $type;
