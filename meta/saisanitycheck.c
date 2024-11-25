@@ -1320,6 +1320,7 @@ void check_attr_default_value_type(
             if ((md->objecttype == SAI_OBJECT_TYPE_PORT) ||
                 (md->objecttype == SAI_OBJECT_TYPE_PORT_SERDES) ||
                 (md->objecttype == SAI_OBJECT_TYPE_SAMPLEPACKET) ||
+                (md->objecttype == SAI_OBJECT_TYPE_MIRROR_SESSION) ||
                 (md->objecttype == SAI_OBJECT_TYPE_NEIGHBOR_ENTRY))
             {
                 /*
@@ -1753,7 +1754,19 @@ void check_attr_validonly(
 
         if (cmd->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE)
         {
-            META_MD_ASSERT_FAIL(md, "conditional attribute is also conditional, not allowed");
+            if (md->objecttype == SAI_OBJECT_TYPE_MIRROR_SESSION && 
+			    (md->attrid == SAI_MIRROR_SESSION_ATTR_ERSPAN_SESSION_ID
+			     || md->attrid == SAI_MIRROR_SESSION_ATTR_GRE_HEADER_FIRST_16BIT))
+            {
+                /*
+                 * ERSPAN_SESSION_ID is valid for ERSPAN and when encap_type is ERSPAN_II or ERSPAN_III
+		 * GRE_HEADER_FIRST_16BIT is valid for ERSPAN encap_type GRE
+                 */
+            }
+            else
+            {
+                META_MD_ASSERT_FAIL(md, "conditional attribute is also conditional, not allowed");
+            }
         }
 
         switch ((int)cmd->flags)
