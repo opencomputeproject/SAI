@@ -2627,6 +2627,16 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_SELECTIVE_COUNTER_LIST,
 
     /**
+     * @brief Read supported port stat list
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     */
+    SAI_PORT_ATTR_PORT_STAT_EXTENDED,
+
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
