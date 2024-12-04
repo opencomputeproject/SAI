@@ -524,6 +524,18 @@ typedef enum _sai_bfd_session_attr_t
     SAI_BFD_SESSION_ATTR_SELECTIVE_COUNTER_LIST,
 
     /**
+     * @brief Next Hop ID for single hop BFD session
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_NEXT_HOP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @condition SAI_BFD_SESSION_ATTR_HW_LOOKUP_VALID == false
+     */
+    SAI_BFD_SESSION_ATTR_NEXT_HOP_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_BFD_SESSION_ATTR_END,
