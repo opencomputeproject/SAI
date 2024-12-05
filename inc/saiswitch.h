@@ -3071,6 +3071,20 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_SELECTIVE_COUNTER_LIST,
 
     /**
+     * @brief Extended port state change notification callback function passed to the adapter.
+     *
+     * In case driver does not support this attribute, The Host adapter should poll
+     * port status by SAI_PORT_ATTR_OPER_STATUS.
+     *
+     * Use sai_extended_port_state_change_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_extended_port_state_change_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_EXTENDED_PORT_STATE_CHANGE_NOTIFY,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
