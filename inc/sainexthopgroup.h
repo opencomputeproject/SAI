@@ -62,6 +62,9 @@ typedef enum _sai_next_hop_group_type_t
     /** Next hop group is ECMP, with members specified with the group */
     SAI_NEXT_HOP_GROUP_TYPE_ECMP_WITH_MEMBERS,
 
+    /** Next hop group is for bridge port */
+    SAI_NEXT_HOP_GROUP_TYPE_BRIDGE_PORT,
+
     /* Other types of next hop group to be defined in the future, e.g., WCMP */
 
 } sai_next_hop_group_type_t;
