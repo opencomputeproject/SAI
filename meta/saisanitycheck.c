@@ -6011,6 +6011,7 @@ void check_struct_and_union_size()
     CHECK_STRUCT_SIZE(sai_port_snr_list_t, 16);
     CHECK_STRUCT_SIZE(sai_port_snr_values_t, 8);
     CHECK_STRUCT_SIZE(sai_port_oper_status_notification_t, 16);
+    CHECK_STRUCT_SIZE(sai_extended_port_oper_status_notification_t, 32);
     CHECK_STRUCT_SIZE(sai_prbs_rx_state_t, 8);
     CHECK_STRUCT_SIZE(sai_qos_map_list_t, 16);
     CHECK_STRUCT_SIZE(sai_qos_map_params_t, 16);

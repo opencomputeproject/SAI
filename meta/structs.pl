@@ -173,8 +173,15 @@ sub BuildCommitHistory
 
         if ($histCount > $currCount)
         {
-            LogError "FATAL: $structTypeName members were removed on commit $commit, NOT ALLOWED!";
-            exit 1;
+            if ($structTypeName eq "sai_port_oper_status_notification_t")
+            {
+                # we allow this to change back backward compatibility
+            }
+            else
+            {
+                LogError "FATAL: $structTypeName members were removed on commit $commit, NOT ALLOWED!";
+                exit 1;
+            }
         }
 
         my $minCount = ($histCount > $currCount) ? $currCount : $histCount;
