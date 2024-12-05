@@ -288,6 +288,12 @@ typedef enum _sai_acl_action_type_t
 
     /** Next Chain Group */
     SAI_ACL_ACTION_TYPE_CHAIN_REDIRECT = 0x00000038,
+
+    /** Set Packet inner Src MAC Address */
+    SAI_ACL_ACTION_TYPE_SET_INNER_SRC_MAC = 0x00000039,
+
+    /** Set Packet inner Dst MAC Address */
+    SAI_ACL_ACTION_TYPE_SET_INNER_DST_MAC = 0x0000003a,
 } sai_acl_action_type_t;
 
 /**
@@ -3290,9 +3296,27 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_CHAIN_REDIRECT = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x38,
 
     /**
+     * @brief Set Packet Inner Src MAC Address
+     *
+     * @type sai_acl_action_data_t sai_mac_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_INNER_SRC_MAC = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x39,
+
+    /**
+     * @brief Set Packet Inner Dst MAC Address
+     *
+     * @type sai_acl_action_data_t sai_mac_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_INNER_DST_MAC = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x3a,
+
+    /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_CHAIN_REDIRECT,
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_INNER_DST_MAC,
 
     /**
      * @brief End of ACL Entry attributes
