@@ -3085,6 +3085,46 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_EXTENDED_PORT_STATE_CHANGE_NOTIFY,
 
     /**
+     * @brief Tam telemetry reporting byte size of chunk under the stream telemetry
+     *
+     * Defines the maximum number of bytes in a single report.
+     * The total number of bytes in a report should be as close as possible to this value.
+     * We can increase this value to reduce the number of sys calls.
+     * If the type of message is IPFIX, this value should not be less than 65535.
+     * Because we don't expect the IPFIX record to be fragmented.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_ONLY
+     * @default 65535
+     */
+    SAI_SWITCH_ATTR_TAM_ST_REPORT_CHUNK_SIZE,
+
+    /**
+     * @brief Tam telemetry chunk count under the stream telemetry
+     *
+     * This value indicates how many chunks of reports that can be restored in the buffer.
+     * If the data structure is a ring buffer, the byte size of ring buffer is chunk count * chunk size.
+     * The default value, 0, means that this value was determined by the vendor.
+     * If the buffer is full, new incoming data will be dropped.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_ONLY
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_TAM_ST_CHUNK_COUNT,
+
+    /**
+     * @brief Set TAM telemetry type config change event notification callback function passed to the adapter.
+     *
+     * Use sai_tam_tel_type_config_change_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_tam_tel_type_config_change_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_TAM_TEL_TYPE_CONFIG_CHANGE_NOTIFY,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
