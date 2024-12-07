@@ -2635,7 +2635,6 @@ typedef enum _sai_port_attr_t
      */
     SAI_PORT_ATTR_PORT_STAT_EXTENDED,
 
-
     /**
      * @brief End of attributes
      */
