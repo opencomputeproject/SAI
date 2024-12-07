@@ -2666,6 +2666,15 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_SELECTIVE_COUNTER_LIST,
 
     /**
+     * @brief Read supported port stat list
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     */
+    SAI_PORT_ATTR_PORT_STAT_EXTENDED,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
@@ -3408,6 +3417,24 @@ typedef enum _sai_port_stat_t
 
     /** Port stat out drop reasons range end */
     SAI_PORT_STAT_OUT_DROP_REASON_RANGE_END = 0x00002fff,
+
+    /** SAI port stat ether in pkts 1519 to 2500 octets */
+    SAI_PORT_STAT_ETHER_IN_PKTS_1519_TO_2500_OCTETS,
+
+    /** SAI port stat ether in pkts 2501 to 9000 octets */
+    SAI_PORT_STAT_ETHER_IN_PKTS_2501_TO_9000_OCTETS,
+
+    /** SAI port stat ether in pkts 9001 to 16383 octets */
+    SAI_PORT_STAT_ETHER_IN_PKTS_9001_TO_16383_OCTETS,
+
+    /** SAI port stat ether out pkts 1519 to 2500 octets */
+    SAI_PORT_STAT_ETHER_OUT_PKTS_1519_TO_2500_OCTETS,
+
+    /** SAI port stat ether out pkts 2501 to 9000 octets */
+    SAI_PORT_STAT_ETHER_OUT_PKTS_2501_TO_9000_OCTETS,
+
+    /** SAI port stat ether out pkts 9001 to 16383 octets */
+    SAI_PORT_STAT_ETHER_OUT_PKTS_9001_TO_16383_OCTETS,
 
     /** Port stat range end */
     SAI_PORT_STAT_END,
