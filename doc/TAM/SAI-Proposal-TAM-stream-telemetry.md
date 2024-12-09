@@ -732,7 +732,8 @@ typedef enum _sai_tam_tel_type_attr_t
      *
      * @type sai_tam_tel_type_mode_t
      * @flags CREATE_ONLY
-     * @default SAI_TAM_TEL_TYPE_MODE_SINGLE_TYPE
+     * @default 
+     * @validonly SAI_TAM_TEL_TYPE_ATTR_TAM_TELEMETRY_TYPE == SAI_TAM_TELEMETRY_TYPE_COUNTER_SUBSCRIPTION
      */
     SAI_TAM_TEL_TYPE_ATTR_MODE,
 
