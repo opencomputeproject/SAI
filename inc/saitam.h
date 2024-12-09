@@ -910,6 +910,51 @@ typedef enum _sai_tam_telemetry_type_t
 
 } sai_tam_telemetry_type_t;
 
+typedef enum _sai_tam_tel_type_mode_t
+{
+    /**
+     * @brief This TAM telemetry type supports to bound only one counter type
+     */
+    SAI_TAM_TEL_TYPE_MODE_SINGLE_TYPE,
+
+    /**
+     * @brief This TAM telemetry type supports to bound multiple counter types
+     */
+    SAI_TAM_TEL_TYPE_MODE_MIXED_TYPE,
+
+} sai_tam_tel_type_mode_t;
+
+/**
+ * @brief TAM telemetry type state of state machine
+ */
+typedef enum _sai_tam_tel_type_state_t
+{
+    /**
+     * @brief Telemetry type is stopped
+     *
+     * In this stage, the recording stream should be stopped,
+     * and the configuration should be cleared.
+     */
+    SAI_TAM_TEL_TYPE_STATE_STOP_STREAM,
+
+    /**
+     * @brief Telemetry type is started
+     *
+     * In this stage, the recording stream should be started,
+     * and the latest configuration should be applied.
+     */
+    SAI_TAM_TEL_TYPE_STATE_START_STREAM,
+
+    /**
+     * @brief Telemetry type configuration is prepared,
+     *
+     * We expect the configuration to be generated in the feature,
+     * And notify the user by sai_tam_tel_type_config_change_notification_fn
+     */
+    SAI_TAM_TEL_TYPE_STATE_CREATE_CONFIG,
+
+} sai_tam_tel_type_state_t;
+
 /**
  * @brief Telemetry type attributes
  */
@@ -1077,6 +1122,35 @@ typedef enum _sai_tam_tel_type_attr_t
     SAI_TAM_TEL_TYPE_ATTR_COUNTER_SUBSCRIPTION_LIST,
 
     /**
+     * @brief The mode of TAM telemetry type
+     *
+     * @type sai_tam_tel_type_mode_t
+     * @flags CREATE_ONLY
+     * @default SAI_TAM_TEL_TYPE_MODE_SINGLE_TYPE
+     * @validonly SAI_TAM_TEL_TYPE_ATTR_TAM_TELEMETRY_TYPE == SAI_TAM_TELEMETRY_TYPE_COUNTER_SUBSCRIPTION
+     */
+    SAI_TAM_TEL_TYPE_ATTR_MODE,
+
+    /**
+     * @brief TAM telemetry type state
+     *
+     * @type sai_tam_tel_type_state_t
+     * @flags CREATE_AND_SET
+     * @default SAI_TAM_TEL_TYPE_STATE_STOP_STREAM
+     */
+    SAI_TAM_TEL_TYPE_ATTR_STATE,
+
+    /**
+     * @brief Query IPFIX template
+     * SAI adapter will return error if COUNTER_SUBSCRIPTION_LIST and REPORT_ID is not configured.
+     * Return the IPFIX template for this telemetry type object.
+     *
+     * @type sai_u8_list_t
+     * @flags READ_ONLY
+     */
+    SAI_TAM_TEL_TYPE_ATTR_IPFIX_TEMPLATES,
+
+    /**
      * @brief End of Attributes
      */
     SAI_TAM_TEL_TYPE_ATTR_END,
@@ -1087,6 +1161,14 @@ typedef enum _sai_tam_tel_type_attr_t
     /** End of custom range base */
     SAI_TAM_TEL_TYPE_ATTR_CUSTOM_RANGE_END
 } sai_tam_tel_type_attr_t;
+
+/**
+ * @brief TAM telemetry state change callback
+ *
+ * @param[in] tam_tel_id Create Telemetry Object ID
+ */
+typedef void (*sai_tam_tel_type_config_change_notification_fn)(
+        _In_ sai_object_id_t tam_tel_id);
 
 /**
  * @brief Create and return a telemetry type object
@@ -2192,12 +2274,22 @@ typedef enum _sai_tam_counter_subscription_attr_t
      * @brief Telemetry label
      *
      * Label to identify this counter in telemetry reports.
+     * If the report type is IPFIX, this label will be used as the element ID in the IPFIX template.
      *
      * @type sai_uint64_t
      * @flags CREATE_ONLY
      * @default 0
      */
     SAI_TAM_COUNTER_SUBSCRIPTION_ATTR_LABEL,
+
+    /**
+     * @brief Setting of read-clear or read-only for statistics read.
+     *
+     * @type sai_stats_mode_t
+     * @flags CREATE_ONLY
+     * @default SAI_STATS_MODE_READ
+     */
+    SAI_TAM_COUNTER_SUBSCRIPTION_ATTR_STATS_MODE,
 
     /**
      * @brief End of Attributes
@@ -2370,6 +2462,8 @@ typedef struct _sai_tam_api_t
     sai_remove_tam_counter_subscription_fn         remove_tam_counter_subscription;
     sai_set_tam_counter_subscription_attribute_fn  set_tam_counter_subscription_attribute;
     sai_get_tam_counter_subscription_attribute_fn  get_tam_counter_subscription_attribute;
+    sai_bulk_object_create_fn                      create_tam_counter_subscriptions;
+    sai_bulk_object_remove_fn                      remove_tam_counter_subscriptions;
 } sai_tam_api_t;
 
 /**
