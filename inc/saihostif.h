@@ -712,13 +712,13 @@ typedef enum _sai_hostif_user_defined_trap_type_t
     /** Traps to be associated with TAM collector */
     SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_TAM,
 
-    /** Custom range base */
-    SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_CUSTOM_RANGE_BASE = 0x00001000,
-
     /**
      * @brief End of user defined trap types
      */
     SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_END,
+
+    /** Custom range base */
+    SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_CUSTOM_RANGE_BASE = 0x10000000,
 
 } sai_hostif_user_defined_trap_type_t;
 

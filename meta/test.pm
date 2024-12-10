@@ -190,8 +190,6 @@ sub CreateCustomRangeBaseTest
 
         for my $range (@ranges)
         {
-            next if $range eq "SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_CUSTOM_RANGE_BASE"; # TODO exception, to be remove
-
             my $prefix = uc $1 if $key =~ /(sai_\w+)_t$/;
 
             if ($range eq "${prefix}_CUSTOM_RANGE_BASE")
