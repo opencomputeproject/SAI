@@ -1799,6 +1799,32 @@ typedef struct _sai_stat_capability_list_t
 
 } sai_stat_capability_list_t;
 
+/**
+ * @brief Stat capability under the stream telemetry mode
+ */
+typedef struct _sai_stat_st_capability_t
+{
+    /**
+     * @brief Typical stat capability
+     */
+    sai_stat_capability_t capability;
+
+    /**
+     * @brief Minimal polling interval in nanoseconds
+     *
+     * If polling interval is less than this value, it will be unacceptable.
+     */
+    uint64_t minimal_polling_interval;
+
+} sai_stat_st_capability_t;
+
+typedef struct _sai_stat_st_capability_list_t
+{
+    uint32_t count;
+    sai_stat_st_capability_t *list;
+
+} sai_stat_st_capability_list_t;
+
 typedef enum _sai_stats_count_mode_t
 {
     /** Count packet and byte */
