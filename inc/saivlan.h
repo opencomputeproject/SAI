@@ -475,6 +475,47 @@ typedef enum _sai_vlan_member_attr_t
     SAI_VLAN_MEMBER_ATTR_VLAN_TAGGING_MODE,
 
     /**
+     * @brief Indicates if the bridge port is set to drop the Tunnel Terminated broadcast, unknown unicast and multicast traffic
+     *
+     * When set to true, egress BUM traffic will be dropped
+     * Valid only when the SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID is of type SAI_BRIDGE_PORT_TYPE_PORT.
+     * Valid only for .1Q bridge ports.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_VLAN_MEMBER_ATTR_TUNNEL_TERM_BUM_TX_DROP,
+
+    /**
+     * @brief Indicates if the vlan member is set to drop the ingress traffic
+     *
+     * When set to true, ingress traffic will be dropped
+     *
+     * Valid only when the SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID is of type SAI_BRIDGE_PORT_TYPE_PORT.
+     * Valid only for .1Q bridge ports.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_VLAN_MEMBER_ATTR_RX_DROP,
+
+    /**
+     * @brief Indicates if the vlan member is set to drop the egress traffic
+     *
+     * When set to true, egress traffic will be dropped
+     *
+     * Valid only when the SAI_VLAN_MEMBER_ATTR_BRIDGE_PORT_ID is of type SAI_BRIDGE_PORT_TYPE_PORT.
+     * Valid only for .1Q bridge ports.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_VLAN_MEMBER_ATTR_TX_DROP,
+
+    /**
      * @brief End of attributes
      */
     SAI_VLAN_MEMBER_ATTR_END,
