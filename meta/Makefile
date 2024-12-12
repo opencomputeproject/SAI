@@ -34,7 +34,6 @@ WARNINGS = \
 	-Wdisabled-optimization \
 	-Werror \
 	-Wextra \
-	-Wextra \
 	-Wfloat-equal \
 	-Wformat=2 \
 	-Wformat-nonliteral \
@@ -69,13 +68,13 @@ BINS = doxygen perl dot
 
 $(foreach bin,$(BINS),$(if $(shell which $(bin)),,$(error "Missing $(bin) in PATH")))
 
-CFLAGS += -I../inc -I../experimental -fPIC $(WARNINGS)
+CFLAGS += -I../inc -I../experimental -I../custom -fPIC $(WARNINGS)
 
 CC = $(CROSS_COMPILE)gcc
 CXX = $(CROSS_COMPILE)g++
 LD = $(CROSS_COMPILE)ld
 
-DEPS = $(wildcard ../inc/*.h) $(wildcard ../experimental/*.h)
+DEPS = $(wildcard ../inc/*.h) $(wildcard ../experimental/*.h) $(wildcard ../custom/*.h)
 XMLDEPS = $(wildcard xml/*.xml)
 
 OBJ = saimetadata.o saimetadatautils.o saiserialize.o

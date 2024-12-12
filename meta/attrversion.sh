@@ -42,7 +42,7 @@ set -e
 
 TAGS=$(git tag --sort=v:refname | grep -P "^v\d+\.\d+.\d+$" | sed -n -e '/'$BASE'/,$p'; echo HEAD)
 
-(for tag in $TAGS; do git grep -P "^\s+SAI_\w+_ATTR_" $tag ../inc ../experimental | cat; done;
- grep -P "^\s+SAI_\w+_ATTR_" ../inc/sai*h ../experimental/sai*h | perl -npe '$_.="HEAD:"' ) | \
+(for tag in $TAGS; do git grep -P "^\s+SAI_\w+_ATTR_" $tag ../inc ../experimental ../custom | cat; done;
+ grep -sP "^\s+SAI_\w+_ATTR_" ../inc/sai*h ../experimental/sai*h ../custom/sai*h | perl -npe '$_.="HEAD:"' ) | \
         perl -ne '/^(\S+):..\/(\S+)\/\S+.h:\s+(SAI_\w+_ATTR_\w+)/;
         print "#define SAI_METADATA_ATTR_VERSION_$3 \"$1\" /* $2 */\n" if not defined $h{$3};$h{$3}=1' > $OUTPUT
