@@ -331,6 +331,7 @@ sub get_api_name
     my $file = "$sai_dir/inc/$location";
 
     $file = "$sai_dir/experimental/$location" if $location =~ /experimental|extension/;
+    $file = "$sai_dir/custom/$location" if $location =~ /custom/;
 
     open(H, '<', $file) or die "Failed to open: $file: $!";
 
@@ -349,6 +350,13 @@ sub get_api_name
     }
 
     if ($location =~ /^sai\w*extensions.h$/)
+    {
+        $api_names{$location} = "common";
+
+        return "common";
+    }
+
+    if ($location =~ /^sai\w*custom.h$/)
     {
         $api_names{$location} = "common";
 
