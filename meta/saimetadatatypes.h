@@ -1648,6 +1648,11 @@ typedef struct _sai_object_type_info_t
      */
     const sai_enum_metadata_t* const                statenum;
 
+    /**
+     * @brief Indicates whether object type is custom.
+     */
+    bool                                            iscustom;
+
 } sai_object_type_info_t;
 
 /**
