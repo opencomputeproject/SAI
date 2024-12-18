@@ -204,6 +204,16 @@ typedef enum _sai_lag_attr_t
     SAI_LAG_ATTR_ARS_PORT_REASSIGNMENTS,
 
     /**
+     * @brief LAG static member selection mode
+     * Member can be selected based on hash, random or round robin.
+     *
+     * @type sai_static_member_selection_mode_t
+     * @flags CREATE_ONLY
+     * @default SAI_STATIC_MEMBER_SELECTION_MODE_HASH
+     */
+    SAI_LAG_ATTR_STATIC_MEMBER_SELECTION_MODE,
+
+    /**
      * @brief End of attributes
      */
     SAI_LAG_ATTR_END,
