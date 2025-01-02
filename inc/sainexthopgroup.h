@@ -280,6 +280,17 @@ typedef enum _sai_next_hop_group_attr_t
     SAI_NEXT_HOP_GROUP_ATTR_NEXT_HOP_MEMBER_COUNTER_LIST,
 
     /**
+     * @brief Nexthop group static member selection mode
+     * Member can be selected based on hash, random or round robin.
+     *
+     * @type sai_static_member_selection_mode_t
+     * @flags CREATE_ONLY
+     * @default SAI_STATIC_MEMBER_SELECTION_MODE_HASH
+     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_UNORDERED_ECMP or SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_ORDERED_ECMP
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_STATIC_MEMBER_SELECTION_MODE,
+
+    /**
      * @brief End of attributes
      */
     SAI_NEXT_HOP_GROUP_ATTR_END,
