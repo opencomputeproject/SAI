@@ -3047,6 +3047,31 @@ void check_attr_mixed_validonly(
     }
 }
 
+static void alter_condition_value(
+        _In_ const sai_attr_metadata_t* md, /* condition attribute metadata */
+        _Inout_ sai_attribute_value_t *cond)
+{
+    META_LOG_ENTER();
+
+    /* all operations must be reversible, hence xor ^ is used */
+
+    /* types used in conditions compare */
+
+    switch (md->attrvaluetype)
+    {
+        case SAI_ATTR_VALUE_TYPE_BOOL:
+            cond->booldata = !cond->booldata; /* flip */
+            break;
+
+        case SAI_ATTR_VALUE_TYPE_INT32:
+            cond->s32 ^= (int32_t)(-1);
+            break;
+
+        default:
+            META_ASSERT_FAIL("value type not supported: %d, FIXME!", md->attrvaluetype);
+    }
+}
+
 void check_attr_condition_met(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -3133,11 +3158,35 @@ void check_attr_condition_met(
              * SAI_PORT_ATTR_MEDIA_TYPE.
              */
 
-            attrs[idx].id ^= (uint32_t)(-1);
+            const sai_attr_metadata_t *a = sai_metadata_get_attr_metadata(md->objecttype, attrs[idx].id);
 
-            META_ASSERT_FALSE(sai_metadata_is_condition_met(md, count, attrs), "condition should be met");
+            if (a && a->defaultvalue)
+            {
+                /* alter passed value */
 
-            attrs[idx].id ^= (uint32_t)(-1);
+                /*
+                 * Since condition attribute have default value, this value
+                 * will be used when attribute is missing, so instead of
+                 * removing this attribute, let's change it's value for a
+                 * single check to force condition to fail.
+                 */
+
+                alter_condition_value(a, &attrs[idx].value);
+
+                META_ASSERT_FALSE(sai_metadata_is_condition_met(md, count, attrs), "condition should not be met, %s", md->attridname);
+
+                alter_condition_value(a, &attrs[idx].value);
+            }
+            else
+            {
+                /* condition should not be met if mandatory attribute is missing */
+
+                attrs[idx].id ^= (uint32_t)(-1);
+
+                META_ASSERT_FALSE(sai_metadata_is_condition_met(md, count, attrs), "condition should not be met");
+
+                attrs[idx].id ^= (uint32_t)(-1);
+            }
         }
     }
     else if (md->conditiontype == SAI_ATTR_CONDITION_TYPE_MIXED)
@@ -3244,11 +3293,11 @@ void check_attr_validonly_met(
             {
                 /* alter passed value */
 
-                attrs[idx].value.s32 ^= (int32_t)(-1);
+                alter_condition_value(a, &attrs[idx].value);
 
                 META_ASSERT_FALSE(sai_metadata_is_validonly_met(md, count, attrs), "validonly should be met, %s", md->attridname);
 
-                attrs[idx].value.s32 ^= (int32_t)(-1);
+                alter_condition_value(a, &attrs[idx].value);
             }
             else
             {
