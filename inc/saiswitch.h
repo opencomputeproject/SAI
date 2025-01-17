@@ -611,6 +611,30 @@ typedef enum _sai_switch_hostif_oper_status_update_mode_t
 } sai_switch_hostif_oper_status_update_mode_t;
 
 /**
+ * @brief Attribute data for SAI_SWITCH_ATTR_HOSTIF_OPER_STATUS_UPDATE_MODE.
+ */
+typedef enum _sai_packet_trim_queue_resolution_mode_t
+{
+    /**
+     * @brief Static queue resolution.
+     *
+     * In this mode, a new queue for the trimmed packet is set directly
+     * by the application.
+     */
+    SAI_PACKET_TRIM_QUEUE_RESOLUTION_MODE_STATIC,
+
+    /**
+     * @brief Dynamic queue resolution.
+     *
+     * In this mode, a new queue for the trimmed packet is resolved
+     * using QOS maps (DSCP value to TC to Queue), applied to a new
+     * DSCP value that was provided for a trimmed packet.
+     */
+    SAI_PACKET_TRIM_QUEUE_RESOLUTION_MODE_DYNAMIC,
+
+} sai_packet_trim_queue_resolution_mode_t;
+
+/**
  * @brief Attribute Id in sai_set_switch_attribute() and
  * sai_get_switch_attribute() calls.
  */
@@ -3123,6 +3147,43 @@ typedef enum _sai_switch_attr_t
      * @default NULL
      */
     SAI_SWITCH_ATTR_TAM_TEL_TYPE_CONFIG_CHANGE_NOTIFY,
+
+    /**
+     * @brief Trim packets to this size to reduce bandwidth
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 128
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIM_SIZE,
+
+    /**
+     * @brief New packet trim DSCP value
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIM_DSCP_VALUE,
+
+    /**
+     * @brief Queue mapping mode for a trimmed packet
+     *
+     * @type sai_packet_trim_queue_resolution_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PACKET_TRIM_QUEUE_RESOLUTION_MODE_STATIC
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIM_QUEUE_RESOLUTION_MODE,
+
+    /**
+     * @brief New packet trim queue index
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_SWITCH_ATTR_PACKET_TRIM_QUEUE_RESOLUTION_MODE == SAI_PACKET_TRIM_QUEUE_RESOLUTION_MODE_STATIC
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIM_QUEUE_INDEX,
 
     /**
      * @brief End of attributes
