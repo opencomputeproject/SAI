@@ -1533,6 +1533,71 @@ void check_attr_conditions(
     }
 }
 
+void check_attr_validonly_for_recursion_rec(
+        _In_ const sai_attr_metadata_t* md,
+        _Inout_ sai_attr_id_t* tab,
+        _Inout_ size_t* idx)
+{
+    META_LOG_ENTER();
+
+    /* check if i'm already on the table */
+
+    size_t i = 0;
+
+    for (; i < *idx; i++)
+    {
+        if (tab[i] == md->attrid)
+        {
+            META_MD_ASSERT_FAIL(md, "attribute have recursive validonly condition! INVALID!");
+        }
+    }
+
+    /* put me on the list */
+
+    tab[*idx] = md->attrid;
+
+    *idx += 1;
+
+    size_t index = 0;
+
+    for (; index < md->validonlylength; ++index)
+    {
+        const sai_attr_condition_t* c = md->validonly[index];
+
+        if (c->attrid == SAI_INVALID_ATTRIBUTE_ID)
+        {
+            /* skip mixed condition */
+            continue;
+        }
+
+        const sai_attr_metadata_t* cmd = sai_metadata_get_attr_metadata(md->objecttype, c->attrid);
+
+        META_ASSERT_NOT_NULL(cmd);
+
+        check_attr_validonly_for_recursion_rec(cmd, tab, idx);
+    }
+
+    *idx -= 1; /* take me off the list */
+}
+
+void check_attr_validonly_for_recursion(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    /*
+     * At this point attribute md is validonly and has condition attributes
+     * that are also validonly, check if there is possible dependency
+     * recursion.
+     */
+
+    sai_attr_id_t tab[0x1000]; /* max conditions */
+
+    size_t idx = 0;
+
+    check_attr_validonly_for_recursion_rec(md, tab, &idx);
+}
+
 void check_attr_validonly(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -1747,7 +1812,11 @@ void check_attr_validonly(
             }
             else
             {
-                META_MD_ASSERT_FAIL(md, "validonly attribute is also validonly attribute, not allowed");
+                /* check if there is recursion */
+
+                META_LOG_DEBUG("attr %s is validonly and depends on other validonly (%s)", md->attridname, cmd->attridname);
+
+                check_attr_validonly_for_recursion(md);
             }
         }
 
