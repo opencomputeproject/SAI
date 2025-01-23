@@ -3304,6 +3304,9 @@ typedef enum _sai_port_stat_t
     /** Count of total bits corrected by FEC. Counter will increment monotonically. */
     SAI_PORT_STAT_IF_IN_FEC_CORRECTED_BITS,
 
+    /** Packets trimmed due to failed shared buffer admission [uint64_t] */
+    SAI_PORT_STAT_TRIM_PACKETS,
+
     /** Port stat in drop reasons range start */
     SAI_PORT_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,
 
