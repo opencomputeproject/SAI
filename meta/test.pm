@@ -395,7 +395,13 @@ sub CreateApiNameTest
         WriteTest "    }";
     }
 
-    WriteTest "        int sum = SAI_OBJECT_TYPE_MAX + (SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END - SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START);";
+    WriteTest "        int sum = SAI_OBJECT_TYPE_MAX +";
+    WriteTest "                  (SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END - SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START) +";
+
+    (scalar(%main::CUSTOM_OBJECTS) == 0)
+        ? WriteTest "                  0;"
+        : WriteTest "                  (SAI_OBJECT_TYPE_CUSTOM_RANGE_END - SAI_OBJECT_TYPE_CUSTOM_RANGE_START);";
+
     WriteTest "        TEST_ASSERT_TRUE_EXT(sum == visited, \"not all objects were processed, expexted: %d, but got: %d\", sum, visited);";
 
     WriteTest "    PP(dummy);";
