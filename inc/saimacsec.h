@@ -964,31 +964,36 @@ typedef enum _sai_macsec_sa_stat_t
     SAI_MACSEC_SA_STAT_IN_PKTS_LATE,
 
     /**
-     * @brief IEEE 802.1ae defined InPktsInvalid.
+     * @brief The sum of this count over Secure Associations gives 802.1ae
+     * statistics InPktsInvalid.
      * Valid for ingress, always returns 0 for egress.
      */
     SAI_MACSEC_SA_STAT_IN_PKTS_INVALID,
 
     /**
-     * @brief IEEE 802.1ae defined InPktsNotValid.
+     * @brief The sum of this count over Secure Associations gives 802.1ae
+     * statistics InPktsNotValid.
      * Valid for ingress, always returns 0 for egress.
      */
     SAI_MACSEC_SA_STAT_IN_PKTS_NOT_VALID,
 
     /**
-     * @brief IEEE 802.1ae defined InPktsNotUsingSA.
+     * @brief The sum of this count over Secure Associations gives 802.1ae
+     * statistics InPktsNotUsingSA.
      * Valid for ingress, always returns 0 for egress.
      */
     SAI_MACSEC_SA_STAT_IN_PKTS_NOT_USING_SA,
 
     /**
-     * @brief IEEE 802.1ae defined InPktsUnusedSA.
+     * @brief The sum of this count over Secure Associations gives 802.1ae
+     * statistics InPktsUnusedSA.
      * Valid for ingress, always returns 0 for egress.
      */
     SAI_MACSEC_SA_STAT_IN_PKTS_UNUSED_SA,
 
     /**
-     * @brief IEEE 802.1ae defined InPktsOk.
+     * @brief The sum of this count over Secure Associations gives 802.1ae
+     * statistics InPktsOk.
      * Valid for ingress, always returns 0 for egress.
      */
     SAI_MACSEC_SA_STAT_IN_PKTS_OK,
