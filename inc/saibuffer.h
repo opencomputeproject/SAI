@@ -150,6 +150,24 @@ typedef enum _sai_ingress_priority_group_stat_t
     /** Get dropped packets count [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_DROPPED_PACKETS = 0x00000008,
 
+    /** Get current pg occupancy in cells [uint64_t] */
+    SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_CELLS = 0x00000009,
+
+    /** Get watermark pg occupancy in cells [uint64_t] */
+    SAI_INGRESS_PRIORITY_GROUP_STAT_WATERMARK_CELLS = 0x0000000a,
+
+    /** Get current pg shared occupancy in cells [uint64_t] */
+    SAI_INGRESS_PRIORITY_GROUP_STAT_SHARED_CURR_OCCUPANCY_CELLS = 0x0000000b,
+
+    /** Get watermark pg shared occupancy in cells [uint64_t] */
+    SAI_INGRESS_PRIORITY_GROUP_STAT_SHARED_WATERMARK_CELLS = 0x0000000c,
+
+    /** Get current pg XOFF room occupancy in cells [uint64_t] */
+    SAI_INGRESS_PRIORITY_GROUP_STAT_XOFF_ROOM_CURR_OCCUPANCY_CELLS = 0x0000000d,
+
+    /** Get watermark pg XOFF room occupancy in cells [uint64_t] */
+    SAI_INGRESS_PRIORITY_GROUP_STAT_XOFF_ROOM_WATERMARK_CELLS = 0x0000000e,
+
     /** Custom range base value */
     SAI_INGRESS_PRIORITY_GROUP_STAT_CUSTOM_RANGE_BASE = 0x10000000
 
@@ -471,6 +489,18 @@ typedef enum _sai_buffer_pool_stat_t
 
     /** Get headroom pool occupancy in bytes [uint64_t] */
     SAI_BUFFER_POOL_STAT_XOFF_ROOM_WATERMARK_BYTES = 0x00000014,
+
+    /** Get current headroom pool occupancy in cells [uint64_t] */
+    SAI_BUFFER_POOL_STAT_XOFF_ROOM_CURR_OCCUPANCY_CELLS = 0x00000015,
+
+    /** Get headroom pool occupancy in cells [uint64_t] */
+    SAI_BUFFER_POOL_STAT_XOFF_ROOM_WATERMARK_CELLS = 0x00000016,
+
+    /** Get current pool occupancy in cells [uint64_t] */
+    SAI_BUFFER_POOL_STAT_CURR_OCCUPANCY_CELLS = 0x00000017,
+
+    /** Get watermark pool occupancy in cells [uint64_t] */
+    SAI_BUFFER_POOL_STAT_WATERMARK_CELLS = 0x00000018,
 
     /** Custom range base value */
     SAI_BUFFER_POOL_STAT_CUSTOM_RANGE_BASE = 0x10000000
