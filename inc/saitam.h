@@ -1871,9 +1871,12 @@ typedef enum _sai_tam_collector_attr_t
 
     /**
      * @brief DSCP value
+     * If DSCP value cannot be set on the target transport protocol, such as GENETLINK,
+     * this value will be set to 0 and ignored.
      *
      * @type sai_uint8_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @flags CREATE_AND_SET
+     * @default 0
      */
     SAI_TAM_COLLECTOR_ATTR_DSCP_VALUE,
 
