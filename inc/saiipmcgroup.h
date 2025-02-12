@@ -61,6 +61,26 @@ typedef enum _sai_ipmc_group_attr_t
     SAI_IPMC_GROUP_ATTR_IPMC_MEMBER_LIST,
 
     /**
+     * @brief Flag indicating that the member list is specified at create time
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_IPMC_GROUP_ATTR_IPMC_GROUP_WITH_MEMBERS,
+
+    /**
+     * @brief IPMC output list
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_NEXT_HOP
+     * @default empty
+     * @validonly SAI_IPMC_GROUP_ATTR_IPMC_GROUP_WITH_MEMBERS == true
+     */
+    SAI_IPMC_GROUP_ATTR_IPMC_OUTPUT_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_IPMC_GROUP_ATTR_END,
