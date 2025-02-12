@@ -753,6 +753,7 @@ WARN_LOGFILE           =
 
 INPUT                  = ../inc/
 INPUT                  += ../experimental/
+INPUT                  += ../custom/
 INPUT                  += saimetadatatypes.h
 INPUT                  += saimetadatautils.h
 INPUT                  += saimetadatalogger.h

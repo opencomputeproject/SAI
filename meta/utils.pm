@@ -208,6 +208,11 @@ sub GetExperimentalHeaderFiles
     return GetHeaderFiles($main::EXPERIMENTAL_DIR);
 }
 
+sub GetCustomHeaderFiles
+{
+    return GetHeaderFiles($main::CUSTOM_DIR);
+}
+
 sub GetFilesByRegex
 {
     my ($dir,$regex) = @_;
@@ -247,6 +252,7 @@ sub ReadHeaderFile
 
     $filename = "$main::INCLUDE_DIR/$file" if not -e $filename;
     $filename = "$main::EXPERIMENTAL_DIR/$file" if not -e $filename;
+    $filename = "$main::CUSTOM_DIR/$file" if not -e $filename;
 
     open FILE, $filename or die "Couldn't open file $filename: $!";
 
@@ -263,7 +269,7 @@ sub GetNonObjectIdStructNames
 {
     my %structs;
 
-    my @headers = (GetHeaderFiles(), GetExperimentalHeaderFiles());
+    my @headers = (GetHeaderFiles(), GetExperimentalHeaderFiles(), GetCustomHeaderFiles());
 
     # TODO must support experimental extensions
 
@@ -295,7 +301,7 @@ sub GetNonObjectIdStructNamesWithBulkApi
 {
     my %structs;
 
-    my @headers = (GetHeaderFiles(), GetExperimentalHeaderFiles());
+    my @headers = (GetHeaderFiles(), GetExperimentalHeaderFiles(), GetCustomHeaderFiles());
 
     for my $header (@headers)
     {
@@ -441,6 +447,7 @@ sub ProcessEnumInitializers
     my ($arr_ref, $ini_ref, $enumTypeName, $SAI_DEFINES_REF) = @_;
 
     return if $enumTypeName =~ /_extensions_t$/; # ignore initializers on extensions
+    return if $enumTypeName =~ /_custom_t$/; # ignore initializers on custom attributes
 
     if (scalar(@$arr_ref) != scalar(@$ini_ref))
     {
@@ -613,7 +620,7 @@ BEGIN
     our @ISA    = qw(Exporter);
     our @EXPORT = qw/
     LogDebug LogInfo LogWarning LogError
-    WriteFile GetHeaderFiles GetMetaHeaderFiles GetExperimentalHeaderFiles GetMetadataSourceFiles ReadHeaderFile GetMetaSourceFiles
+    WriteFile GetHeaderFiles GetMetaHeaderFiles GetExperimentalHeaderFiles GetCustomHeaderFiles GetMetadataSourceFiles ReadHeaderFile GetMetaSourceFiles
     GetNonObjectIdStructNames GetNonObjectIdStructNamesWithBulkApi IsSpecialObject GetStructLists GetStructKeysInOrder
     Trim ExitOnErrors ExitOnErrorsOrWarnings ProcessEnumInitializers
     WriteHeader WriteSource WriteTest WriteSwig WriteMetaDataFiles WriteSectionComment WriteSourceSectionComment

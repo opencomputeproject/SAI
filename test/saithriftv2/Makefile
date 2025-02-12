@@ -86,7 +86,7 @@ $(PY_SOURCES): $(METADIR)sai.thrift
 # TODO should depend on ../../inc/sai*.h ../../experimental/sai*.h and not /usr/include/sai/sai*.h
 
 $(SAI_PY_HEADERS): $(SAI_HEADERS)
-	$(CTYPESGEN) --output-language=py32 -I/usr/include -I$(SAI_HEADER_DIR) -I../../experimental --include /usr/include/linux/limits.h $^ -o $@
+	$(CTYPESGEN) --output-language=py32 -I/usr/include -I$(SAI_HEADER_DIR) -I../../experimental -I../../custom --include /usr/include/linux/limits.h $^ -o $@
 	python3 convert_header.py -i $(SAI_PY_HEADERS) -o ./new_header.py
 	mv $(SAI_PY_HEADERS) ./sai_headers.py.bk
 	mv ./new_header.py $(SAI_PY_HEADERS)
@@ -98,10 +98,10 @@ $(ODIR)/%.o: gen-cpp/%.cpp
 	$(CXX) $(CPPFLAGS) -c $< -o $@
 
 $(ODIR)/sai_rpc_server.o: $(METADIR)sai_rpc_frontend.cpp $(METADIR)saimetadata.h
-	$(CXX) $(CPPFLAGS) -c $(METADIR)sai_rpc_frontend.cpp -o $@ -I$(METADIR) -I./gen-cpp -I../../inc -I../../experimental
+	$(CXX) $(CPPFLAGS) -c $(METADIR)sai_rpc_frontend.cpp -o $@ -I$(METADIR) -I./gen-cpp -I../../inc -I../../experimental -I../../custom
 
 $(ODIR)/saiserver.o: src/saiserver.cpp src/switch_sai_rpc_server.h $(CPP_SOURCES)
-	$(CXX) $(CPPFLAGS) -c src/saiserver.cpp -o $@ $(CDEFS) -I./gen-cpp -I../../inc -I../../experimental
+	$(CXX) $(CPPFLAGS) -c src/saiserver.cpp -o $@ $(CDEFS) -I./gen-cpp -I../../inc -I../../experimental -I../../custom
 
 $(ODIR)/librpcserver.a: $(ODIR)/sai_rpc.o $(ODIR)/sai_types.o $(ODIR)/sai_rpc_server.o
 	ar rcs $(ODIR)/librpcserver.a $^

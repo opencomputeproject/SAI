@@ -93,9 +93,20 @@ defined_attr_t* defined_attributes = NULL;
 /* custom ranges start are the same for all objects */
 
 #define CUSTOM_ATTR_RANGE_START SAI_PORT_ATTR_CUSTOM_RANGE_START
+#define CUSTOM_RANGE_START (0x10000000)
 #define EXTENSION_RANGE_START (0x20000000)
 #define EXTENSION_OBJECT_TYPE_COUNT (SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END - SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START)
-#define TOTAL_OBJECT_TYPE_COUNT (EXTENSION_OBJECT_TYPE_COUNT + SAI_OBJECT_TYPE_MAX)
+/* #define CUSTOM_OBJECT_TYPE_COUNT (SAI_OBJECT_TYPE_CUSTOM_RANGE_END - SAI_OBJECT_TYPE_CUSTOM_RANGE_START) */
+#define CUSTOM_OBJECT_TYPE_COUNT (SAI_METADATA_CUSTOM_OBJECT_COUNT)
+#define TOTAL_OBJECT_TYPE_COUNT (EXTENSION_OBJECT_TYPE_COUNT + CUSTOM_OBJECT_TYPE_COUNT + SAI_OBJECT_TYPE_MAX)
+
+#ifndef SAI_OBJECT_TYPE_CUSTOM_RANGE_START
+#define SAI_OBJECT_TYPE_CUSTOM_RANGE_START (CUSTOM_RANGE_START)
+#endif
+
+#ifndef SAI_OBJECT_TYPE_CUSTOM_RANGE_END
+#define SAI_OBJECT_TYPE_CUSTOM_RANGE_END (CUSTOM_RANGE_START + SAI_METADATA_CUSTOM_OBJECT_COUNT)
+#endif
 
 bool is_extensions_enum(
         _In_ const sai_enum_metadata_t* emd)
@@ -103,6 +114,14 @@ bool is_extensions_enum(
     META_LOG_ENTER();
 
     return strstr(emd->name, "_extensions_t") != NULL;
+}
+
+bool is_custom_enum(
+        _In_ const sai_enum_metadata_t* emd)
+{
+    META_LOG_ENTER();
+
+    return strstr(emd->name, "_custom_t") != NULL;
 }
 
 void check_all_enums_name_pointers()
@@ -133,9 +152,16 @@ void check_all_enums_name_pointers()
             if (emd->valuescount == 0)
                 META_LOG_WARN("enum %s has no values", emd->name);
         }
+        else if (is_custom_enum(emd))
+        {
+            /* allow empty custom enums */
+
+            if (emd->valuescount == 0)
+                META_LOG_WARN("enum %s has no values", emd->name);
+        }
         else
         {
-            META_ASSERT_TRUE(emd->valuescount > 0, "enum must have some values");
+            META_ASSERT_TRUE(emd->valuescount > 0, "enum must have some values: %s", emd->name);
         }
 
         size_t j = 0;
@@ -374,7 +400,11 @@ void check_object_type()
 
         int value = sai_metadata_enum_sai_object_type_t.values[i];
 
-        if (last < value && value == EXTENSION_RANGE_START)
+        if (last < value && value == CUSTOM_RANGE_START)
+        {
+            /* ok, but object type can't be used as array index any more */
+        }
+        else if (last < value && value == EXTENSION_RANGE_START)
         {
             /* ok, but object type can't be used as array index any more */
         }
@@ -417,7 +447,7 @@ void check_attr_by_object_type()
      */
     META_ASSERT_TRUE(EXTENSION_OBJECT_TYPE_COUNT < 64, "too many experimental object types");
 
-    META_ASSERT_TRUE(sai_metadata_attr_by_object_type_count == (EXTENSION_OBJECT_TYPE_COUNT + SAI_OBJECT_TYPE_MAX), "invalid object type count in metadata");
+    META_ASSERT_TRUE(sai_metadata_attr_by_object_type_count == (EXTENSION_OBJECT_TYPE_COUNT + CUSTOM_OBJECT_TYPE_COUNT + SAI_OBJECT_TYPE_MAX), "invalid object type count in metadata");
 
     size_t idx = 1;
 
@@ -444,6 +474,10 @@ void check_attr_by_object_type()
             META_ASSERT_TRUE(current > SAI_OBJECT_TYPE_NULL, "object type must be > NULL");
 
             if (current > SAI_OBJECT_TYPE_NULL && current < SAI_OBJECT_TYPE_MAX)
+            {
+                /* ok */
+            }
+            else if (current >= (int)SAI_OBJECT_TYPE_CUSTOM_RANGE_START && current < (int)SAI_OBJECT_TYPE_CUSTOM_RANGE_END)
             {
                 /* ok */
             }
@@ -478,6 +512,9 @@ bool is_valid_object_type(
         return true;
 
     if (ot >= (int)SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START && ot < (int)SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END)
+        return true;
+
+    if (ot >= (int)SAI_OBJECT_TYPE_CUSTOM_RANGE_START && ot < (int)SAI_OBJECT_TYPE_CUSTOM_RANGE_END)
         return true;
 
     return false;
@@ -744,6 +781,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_VLAN_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT32:
         case SAI_ATTR_VALUE_TYPE_UINT64:
+        case SAI_ATTR_VALUE_TYPE_INT64:
         case SAI_ATTR_VALUE_TYPE_MAC:
         case SAI_ATTR_VALUE_TYPE_POINTER:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
@@ -2913,6 +2951,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_UINT32:
         case SAI_ATTR_VALUE_TYPE_UINT32_RANGE:
         case SAI_ATTR_VALUE_TYPE_UINT64:
+        case SAI_ATTR_VALUE_TYPE_INT64:
         case SAI_ATTR_VALUE_TYPE_UINT8:
         case SAI_ATTR_VALUE_TYPE_TIMESPEC:
         case SAI_ATTR_VALUE_TYPE_IPV4:
@@ -4120,11 +4159,18 @@ uint32_t ot2idx(
      * index in array
      */
 
+    uint32_t i = 1;
+
     if (ot >= SAI_OBJECT_TYPE_NULL && ot < SAI_OBJECT_TYPE_MAX)
         return ot;
 
-    if (ot >= (int)SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START && ot < (int)SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END)
-        return SAI_OBJECT_TYPE_MAX + (ot - SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START);
+    for (; sai_metadata_all_object_type_infos[i]; i++)
+    {
+        if (sai_metadata_all_object_type_infos[i]->objecttype == ot)
+        {
+            return i;
+        }
+    }
 
     META_ASSERT_FAIL("invalid object type specified %d", ot);
 }
@@ -5155,6 +5201,12 @@ void check_object_ro_list(
         return;
     }
 
+    if (oi->iscustom)
+    {
+        META_LOG_DEBUG("custom object %s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
+        return;
+    }
+
     if (SAI_OBJECT_TYPE_DEBUG_COUNTER == oi->objecttype)
     {
         META_LOG_WARN("debug counter object %s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
@@ -5195,11 +5247,19 @@ void check_experimental_flag(
 
     if (oi->objecttype >= SAI_OBJECT_TYPE_MAX)
     {
-        META_ASSERT_TRUE(oi->isexperimental, "object %s is expected to be marked as experimental", oi->objecttypename);
+        if (oi->objecttype >= (int)SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START)
+        {
+            META_ASSERT_TRUE(oi->isexperimental, "object %s is expected to be marked as experimental", oi->objecttypename);
+        }
+        else if (oi->objecttype >= (int)SAI_OBJECT_TYPE_CUSTOM_RANGE_START)
+        {
+            META_ASSERT_TRUE(oi->iscustom, "object %s is expected to be marked as custom", oi->objecttypename);
+        }
     }
     else
     {
         META_ASSERT_FALSE(oi->isexperimental, "object %s is expected to not be marked as experimental", oi->objecttypename);
+        META_ASSERT_FALSE(oi->iscustom, "object %s is expected to not be marked as custom", oi->objecttypename);
     }
 }
 
@@ -5224,6 +5284,9 @@ void check_attr_end(
             continue;
 
         if (meta[index]->attrid < oi->attridend)
+            continue;
+
+        if (meta[index]->iscustom)
             continue;
 
         if (meta[index]->isextensionattr)
@@ -5352,6 +5415,16 @@ void check_graph_connected()
             /* allow experimental object types to be disconnected from main graph */
 
             META_LOG_WARN("experimental object %s is disconnected from graph",
+                    sai_metadata_all_object_type_infos[i]->objecttypename);
+
+            continue;
+        }
+
+        if (sai_metadata_all_object_type_infos[i]->iscustom)
+        {
+            /* allow custom object types to be disconnected from main graph */
+
+            META_LOG_WARN("custom object %s is disconnected from graph",
                     sai_metadata_all_object_type_infos[i]->objecttypename);
 
             continue;
@@ -5768,9 +5841,13 @@ void check_enum_flags_type_ranges(
 
             /* this check can be relaxed, we allow now 16 types of ranges */
 
-            if (val < EXTENSION_RANGE_START)
+            if (val < CUSTOM_RANGE_START)
             {
                 META_ASSERT_TRUE((val < (16*RANGE_BASE)), "range value 0x%x is too high on %s", val, name);
+            }
+            else if (val < EXTENSION_RANGE_START)
+            {
+                META_ASSERT_TRUE((val < (16*RANGE_BASE + CUSTOM_RANGE_START)), "range value 0x%x is too high on %s", val, name);
             }
             else
             {
@@ -6002,7 +6079,10 @@ void check_object_type_extension_max_value()
      *
      */
 
-    META_LOG_INFO("SAI_OBJECT_TYPE_MAX = %d, EXTENSION_OBJECT_TYPE_COUNT = %d", SAI_OBJECT_TYPE_MAX, EXTENSION_OBJECT_TYPE_COUNT);
+    META_LOG_INFO("SAI_OBJECT_TYPE_MAX = %d, EXTENSION_OBJECT_TYPE_COUNT = %d, CUSTOM_OBJECT_TYPE_COUNT = %d",
+            SAI_OBJECT_TYPE_MAX,
+            EXTENSION_OBJECT_TYPE_COUNT,
+            CUSTOM_OBJECT_TYPE_COUNT);
 
     /*
      * This check may be removed, but it will need to be brought into attention on SAI meeting.
