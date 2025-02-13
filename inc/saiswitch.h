@@ -3789,6 +3789,15 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_BRIDGE_PORT_HW_PROTECTION_SWITCHOVER_NOTIFY,
 
     /**
+     * @brief List of traffic classes on the switch
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_TC
+     */
+    SAI_SWITCH_ATTR_TC_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
