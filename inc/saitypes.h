@@ -309,6 +309,7 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_PERFMON                  = 119,
     SAI_OBJECT_TYPE_TAM_EVENT_LEARN_ENTRY    = 120,
     SAI_OBJECT_TYPE_FW                       = 121,
+    SAI_OBJECT_TYPE_TC                       = 122,
 
     /** Must remain in last position */
     SAI_OBJECT_TYPE_MAX,
@@ -1166,6 +1167,9 @@ typedef enum _sai_tam_bind_point_type_t
 
     /** Bind Point Type Buffer Service Pool */
     SAI_TAM_BIND_POINT_TYPE_BSP,
+
+    /** Bind Point Type Traffic Class */
+    SAI_TAM_BIND_POINT_TYPE_TC,
 
 } sai_tam_bind_point_type_t;
 
