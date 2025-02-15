@@ -57,7 +57,7 @@ has 'args' => (
 has 'api'      => ( is => 'rw', isa => 'Str' );
 has 'dbg_info' => ( is => 'ro', isa => 'Str' );
 
-with 'SAI::RPC::ThriftName', 'SAI::Utils::XMLLoader', 'SAI::RPC::Function';
+with 'SAI::RPC::ThriftName', 'SAI::Utils::XMLLoader', 'SAI::RPC::Function', 'SAI::RPC::ProtoBufName';
 
 ##################
 # Public methods #
@@ -163,12 +163,11 @@ sub _find_count_arg {
         }
         elsif (
             # Previous variable is uint32
-            $prev_arg->type->thrift_name =~ /uint32_t/
-
+            ($prev_arg->type->thrift_name =~ /uint32_t/)
             #  or list of uint32 (and we have pointer to pointer)
             or (    $arg->type->ptr == 2
                 and $prev_arg->is_list
-                and $prev_arg->type->subtype->thrift_name =~ /uint32_t/ )
+                and $prev_arg->type->subtype->thrift_name =~ /uint32_t/)
           )
         {
             # Note, that counter must be directly previous argument.
