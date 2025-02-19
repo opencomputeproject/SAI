@@ -4298,6 +4298,12 @@ void check_objects_for_loops_recursive(
             continue;
         }
 
+        if (m->objecttype == SAI_OBJECT_TYPE_TAM_COLLECTOR &&
+               m->attrid == SAI_TAM_COLLECTOR_ATTR_DESTINATION)
+        {
+            continue;
+        }
+
         attributes[level] = m->attrid;
 
         size_t j = 0;
