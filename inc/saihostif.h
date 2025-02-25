@@ -516,6 +516,13 @@ typedef enum _sai_hostif_trap_type_t
      */
     SAI_HOSTIF_TRAP_TYPE_MPLS_LABEL_LOOKUP_MISS = 0x00008002,
 
+    /**
+     * @brief ITU-T G.8264/Y.1364 Ethernet synchronization messaging channel protocol
+     * (Dst MAC = 01-80-C2-00-00-02 EtherType = 0x8809 Slow Protocol sub-type = 0xA)
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_ESMC = 0x00008003,
+
     /** Exception traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_CUSTOM_EXCEPTION_RANGE_BASE = 0x00009000,
 

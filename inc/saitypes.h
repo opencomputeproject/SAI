@@ -301,6 +301,8 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_ICMP_ECHO_SESSION        = 111,
     SAI_OBJECT_TYPE_PREFIX_COMPRESSION_TABLE = 112,
     SAI_OBJECT_TYPE_PREFIX_COMPRESSION_ENTRY = 113,
+    SAI_OBJECT_TYPE_SYNCE                    = 114,
+    SAI_OBJECT_TYPE_SYNCE_CLOCK              = 115,
 
     /** Must remain in last position */
     SAI_OBJECT_TYPE_MAX,

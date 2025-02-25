@@ -5212,6 +5212,12 @@ void check_object_ro_list(
         META_LOG_WARN("debug counter object %s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
         return;
     }
+    if (SAI_OBJECT_TYPE_SYNCE == oi->objecttype)
+    {
+        META_LOG_WARN("synce object %s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
+        return;
+    }
+
 
     META_ASSERT_FAIL("%s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
 }
