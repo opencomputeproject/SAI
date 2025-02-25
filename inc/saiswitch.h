@@ -3260,6 +3260,24 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_LAG_HASH_IPV6_RDMA,
 
     /**
+     * @brief Maximum number of synchronous ethernet clocks supported.
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_SYNCE_CLOCK_COUNT,
+
+    /**
+     * @brief Gets the synchronous ethernet clock object list
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_SYNCE_CLOCK
+     * @default internal
+     */
+    SAI_SWITCH_ATTR_SYNCE_CLOCK_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
