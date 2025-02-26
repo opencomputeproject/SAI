@@ -3186,6 +3186,18 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PACKET_TRIM_QUEUE_INDEX,
 
     /**
+     * @brief Size of a shared buffer cell
+     *
+     * Some counters related to shared buffer may be
+     * reported in cells instead of bytes for an
+     * improved performance.
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SHARED_BUFFER_CELL_SIZE,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
