@@ -92,6 +92,10 @@ typedef enum _sai_object_type_extensions_t
 
     SAI_OBJECT_TYPE_DASH_TUNNEL_NEXT_HOP,
 
+    SAI_OBJECT_TYPE_OUTBOUND_PORT_MAP,
+
+    SAI_OBJECT_TYPE_OUTBOUND_PORT_MAP_PORT_RANGE_ENTRY,
+
     /* Add new experimental object types above this line */
 
     SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END
