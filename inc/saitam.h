@@ -1289,6 +1289,12 @@ typedef enum _sai_tam_report_mode_t
     /** Report in a bulk mode */
     SAI_TAM_REPORT_MODE_BULK,
 
+    /** Report in a probabilistic sampling mode, one report is sent in n events */
+    SAI_TAM_REPORT_MODE_PROBABILISTIC_SAMPLING,
+
+    /** Report in a microburst mode, specifying report rate and max number of reports per microburst event */
+    SAI_TAM_REPORT_MODE_MICROBURST,
+
 } sai_tam_report_mode_t;
 
 /**
@@ -1415,6 +1421,33 @@ typedef enum _sai_tam_report_attr_t
      * @validonly SAI_TAM_REPORT_ATTR_REPORT_MODE == SAI_TAM_REPORT_MODE_BULK
      */
     SAI_TAM_REPORT_ATTR_REPORT_INTERVAL_UNIT,
+
+    /**
+     * @brief Probabilistic sampling rate 'n' for probabilistic sampling mode
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_TAM_REPORT_ATTR_REPORT_MODE == SAI_TAM_REPORT_MODE_PROBABILISTIC_SAMPLING
+     */
+    SAI_TAM_REPORT_ATTR_PROBABILISTIC_SAMPLE_RATE,
+
+    /**
+     * @brief Report rate in packets per second when in microburst mode
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_TAM_REPORT_ATTR_REPORT_MODE == SAI_TAM_REPORT_MODE_MICROBURST
+     */
+    SAI_TAM_REPORT_ATTR_MICROBURST_RATE,
+
+    /**
+     * @brief Maximum number of reports per burst when in microburst mode
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @condition SAI_TAM_REPORT_ATTR_REPORT_MODE == SAI_TAM_REPORT_MODE_MICROBURST
+     */
+    SAI_TAM_REPORT_ATTR_MAX_REPORTS_PER_MICROBURST,
 
     /**
      * @brief End of Attributes
@@ -1652,6 +1685,11 @@ typedef enum _sai_tam_transport_type_t
      * @brief Transport MIRROR session
      */
     SAI_TAM_TRANSPORT_TYPE_MIRROR,
+
+    /**
+     * @brief Transport GRE
+     */
+    SAI_TAM_TRANSPORT_TYPE_GRE,
 } sai_tam_transport_type_t;
 
 /**
@@ -1732,6 +1770,16 @@ typedef enum _sai_tam_transport_attr_t
      * @default 1500
      */
     SAI_TAM_TRANSPORT_ATTR_MTU,
+
+    /**
+     * @brief GRE protocol Id
+     *
+     * @type sai_uint16_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @isvlan false
+     * @condition SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE == SAI_TAM_TRANSPORT_TYPE_GRE
+     */
+    SAI_TAM_TRANSPORT_ATTR_GRE_PROTOCOL_TYPE,
 
     /**
      * @brief End of Attributes
@@ -1891,6 +1939,40 @@ typedef enum _sai_tam_collector_attr_t
      * @validonly SAI_TAM_COLLECTOR_ATTR_LOCALHOST == true
      */
     SAI_TAM_COLLECTOR_ATTR_HOSTIF_TRAP,
+
+    /**
+     * @brief Source MAC address
+     *
+     * Note: Applicable only when SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE != SAI_TAM_TRANSPORT_TYPE_NONE
+     *
+     * @type sai_mac_t
+     * @flags CREATE_AND_SET
+     * @default vendor
+     */
+    SAI_TAM_COLLECTOR_ATTR_SRC_MAC,
+
+    /**
+     * @brief Destination MAC address
+     *
+     * Note: Applicable only when SAI_TAM_TRANSPORT_ATTR_TRANSPORT_TYPE != SAI_TAM_TRANSPORT_TYPE_NONE
+     *
+     * @type sai_mac_t
+     * @flags CREATE_AND_SET
+     * @default vendor
+     */
+    SAI_TAM_COLLECTOR_ATTR_DST_MAC,
+
+    /**
+     * @brief Destination used to reach collector
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_SYSTEM_PORT
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     * @validonly SAI_TAM_COLLECTOR_ATTR_LOCALHOST == false
+     */
+    SAI_TAM_COLLECTOR_ATTR_DESTINATION,
 
     /**
      * @brief End of Attributes

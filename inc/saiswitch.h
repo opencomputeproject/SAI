@@ -3198,6 +3198,18 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_SHARED_BUFFER_CELL_SIZE,
 
     /**
+     * @brief TAM queue index List
+     *
+     * Apply the switch TAM object to the specific set of egress queues.
+     * If queue index list is empty, switch TAM policy applies to all queues.
+     *
+     * @type sai_u8_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_TAM_QUEUE_INDEX_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
