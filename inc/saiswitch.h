@@ -3197,6 +3197,18 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_SHARED_BUFFER_CELL_SIZE,
 
+/**
+     * @brief Global PTP configuration
+     *
+     * Global PTP configuration for the switch.
+     * Applies to all ports unless overridden by port-specific settings.
+     *
+     * @type sai_switch_ptp_config_t
+     * @flags CREATE_AND_SET
+     * @default SAI_SWITCH_PTP_MODE_NONE
+     */
+    SAI_SWITCH_ATTR_GLOBAL_PTP_CONFIG,
+
     /**
      * @brief End of attributes
      */
@@ -3228,6 +3240,22 @@ typedef enum _sai_switch_asic_sdk_health_severity_t
     SAI_SWITCH_ASIC_SDK_HEALTH_SEVERITY_NOTICE
 
 } sai_switch_asic_sdk_health_severity_t;
+
+/** 
+ * @brief Global PTP configuration
+ */
+typedef struct _sai_switch_ptp_config_t
+{
+    /** None - per-port configuration can be used to switch PTP on for a port */
+    SAI_SWITCH_PTP_MODE_NONE,
+
+    /** One-step - all ports use one-step PTP mode */
+    SAI_SWITCH_PTP_MODE_ONE_STEP,
+
+    /** Two-step - all ports use two-step PTP mode */
+    SAI_SWITCH_PTP_MODE_TWO_STEP
+    
+} sai_switch_ptp_config_t;
 
 /**
  * @brief Switch health categories
