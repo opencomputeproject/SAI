@@ -1412,7 +1412,7 @@ void test_serialize_notifications()
     memset(&data1, 0, sizeof(data1));
 
     res = sai_serialize_port_state_change_notification(buf, 1, &data1);
-    ret = "{\"count\":1,\"data\":[{\"port_id\":\"oid:0x0\",\"port_state\":\"SAI_PORT_OPER_STATUS_UNKNOWN\"}]}";
+    ret = "{\"count\":1,\"data\":[{\"port_id\":\"oid:0x0\",\"port_state\":\"SAI_PORT_OPER_STATUS_UNKNOWN\",\"port_error_status\":\"SAI_PORT_ERROR_STATUS_CLEAR\"}]}";
     ASSERT_STR_EQ(buf, ret , res);
 
     sai_extended_port_oper_status_notification_t data1e;

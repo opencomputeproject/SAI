@@ -141,6 +141,8 @@ typedef struct _sai_port_oper_status_notification_t
     /** Port operational status */
     sai_port_oper_status_t port_state;
 
+    /** Bitmap of various port error or fault status */
+    sai_port_error_status_t port_error_status;
 } sai_port_oper_status_notification_t;
 
 /**
