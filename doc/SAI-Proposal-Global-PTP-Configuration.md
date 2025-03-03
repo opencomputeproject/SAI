@@ -21,18 +21,18 @@ In addition, many existing switches have a configuration model which allows glob
 
 ### New Switch PTP Configuration Type
 ```c
-typedef struct _sai_switch_ptp_config_t
+typedef struct _sai_switch_ptp_mode_t
 {
     /** None - per-port configuration is used to switch on PTP for a port */
     SAI_SWITCH_PTP_MODE_NONE,
 
     /** One-step - all ports use one-step PTP mode */
-    SAI_SWITCH_PTP_MODE_ONE_STEP,
+    SAI_SWITCH_PTP_MODE_SINGLE_STEP_TIMESTAMP,
 
     /** Two-step - all ports use two-step PTP mode */
-    SAI_SWITCH_PTP_MODE_TWO_STEP
+    SAI_SWITCH_PTP_MODE_TWO_STEP_TIMESTAMP
     
-} sai_switch_ptp_config_t;
+} sai_switch_ptp_mode_t;
 ```
 
 ### New Switch Attribute
@@ -42,16 +42,16 @@ typedef enum _sai_switch_attr_t
     // ... existing attributes ...
 
     /**
-     * @brief Global PTP configuration
+     * @brief Global PTP mode configuration
      *
-     * Global PTP configuration for the switch.
+     * Global PTP mode configuration for the switch.
      * Applies to all ports unless overridden by port-specific settings.
      *
-     * @type sai_switch_ptp_config_t
+     * @type sai_switch_ptp_mode_t
      * @flags CREATE_AND_SET
      * @default SAI_SWITCH_PTP_MODE_NONE
      */
-    SAI_SWITCH_ATTR_GLOBAL_PTP_CONFIG,
+    SAI_SWITCH_ATTR_PTP_MODE,
 
     // ... existing attributes ...
 } sai_switch_attr_t;
@@ -61,15 +61,15 @@ typedef enum _sai_switch_attr_t
 ```c
 // Set global PTP configuration at switch level
 sai_attribute_t attr;
-attr.id = SAI_SWITCH_ATTR_GLOBAL_PTP_CONFIG;
-attr.value.s32 = SAI_SWITCH_PTP_MODE_ONE_STEP;
+attr.id = SAI_SWITCH_ATTR_PTP_MODE;
+attr.value.s32 = SAI_SWITCH_PTP_MODE_SINGLE_STEP_TIMESTAMP;
 
 sai_status_t status = sai_switch_api->set_switch_attribute(
     switch_id,
     &attr);
 
 // Get global PTP configuration
-attr.id = SAI_SWITCH_ATTR_GLOBAL_PTP_CONFIG;
+attr.id = SAI_SWITCH_ATTR_PTP_MODE;
 status = sai_switch_api->get_switch_attribute(
     switch_id,
     1,
