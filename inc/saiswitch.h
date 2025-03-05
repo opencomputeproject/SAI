@@ -3197,7 +3197,7 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_SHARED_BUFFER_CELL_SIZE,
 
-/**
+    /**
      * @brief Global PTP mode configuration
      *
      * Global PTP mode configuration for the switch.
