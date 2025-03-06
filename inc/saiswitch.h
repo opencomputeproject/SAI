@@ -637,7 +637,7 @@ typedef enum _sai_packet_trim_queue_resolution_mode_t
 /** 
  * @brief Global PTP configuration
  */
-typedef struct _sai_switch_ptp_mode_t
+typedef enum _sai_switch_ptp_mode_t
 {
     /** None - per-port configuration can be used to switch PTP on for a port */
     SAI_SWITCH_PTP_MODE_NONE,
