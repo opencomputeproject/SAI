@@ -280,6 +280,17 @@ typedef enum _sai_next_hop_group_attr_t
     SAI_NEXT_HOP_GROUP_ATTR_NEXT_HOP_MEMBER_COUNTER_LIST,
 
     /**
+     * @brief Next hop group hash algorithm
+     * Overrides value of SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_ALGORITHM if not set to SAI_HASH_ALGORITHM_NONE
+     *
+     * @type sai_hash_algorithm_t
+     * @flags CREATE_ONLY
+     * @default SAI_HASH_ALGORITHM_NONE
+     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_UNORDERED_ECMP or SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_ORDERED_ECMP
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_HASH_ALGORITHM,
+
+    /**
      * @brief End of attributes
      */
     SAI_NEXT_HOP_GROUP_ATTR_END,

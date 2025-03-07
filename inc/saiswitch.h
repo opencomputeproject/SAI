@@ -193,7 +193,7 @@ typedef enum _sai_hash_algorithm_t
     /** XOR-based hash algorithm */
     SAI_HASH_ALGORITHM_XOR = 1,
 
-    /** Random-based hash algorithm */
+    /** Random-based hash algorithm (per-packet random spraying) */
     SAI_HASH_ALGORITHM_RANDOM = 2,
 
     /** Lower 16-bits of CRC32 based hash algorithm */
@@ -207,6 +207,12 @@ typedef enum _sai_hash_algorithm_t
 
     /** Combination of CRC and XOR based hash algorithm */
     SAI_HASH_ALGORITHM_CRC_XOR = 6,
+
+    /** Hash algorithm not set */
+    SAI_HASH_ALGORITHM_NONE = 7,
+
+    /** Round-robin based hash algorithm (per-packet round-robin spraying) */
+    SAI_HASH_ALGORITHM_ROUND_ROBIN = 8,
 
 } sai_hash_algorithm_t;
 
