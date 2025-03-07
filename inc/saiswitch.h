@@ -640,6 +640,22 @@ typedef enum _sai_packet_trim_queue_resolution_mode_t
 
 } sai_packet_trim_queue_resolution_mode_t;
 
+/** 
+ * @brief Global PTP configuration
+ */
+typedef enum _sai_switch_ptp_mode_t
+{
+    /** None - per-port configuration can be used to switch PTP on for a port */
+    SAI_SWITCH_PTP_MODE_NONE,
+
+    /** One-step - all ports use one-step PTP mode */
+    SAI_SWITCH_PTP_MODE_SINGLE_STEP_TIMESTAMP,
+
+    /** Two-step - all ports use two-step PTP mode */
+    SAI_SWITCH_PTP_MODE_TWO_STEP_TIMESTAMP
+    
+} sai_switch_ptp_mode_t;
+
 /**
  * @brief Attribute Id in sai_set_switch_attribute() and
  * sai_get_switch_attribute() calls.
@@ -3202,6 +3218,18 @@ typedef enum _sai_switch_attr_t
      * @flags READ_ONLY
      */
     SAI_SWITCH_ATTR_SHARED_BUFFER_CELL_SIZE,
+
+    /**
+     * @brief Global PTP mode configuration
+     *
+     * Global PTP mode configuration for the switch.
+     * Applies to all ports unless overridden by port-specific settings.
+     *
+     * @type sai_switch_ptp_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_SWITCH_PTP_MODE_NONE
+     */
+    SAI_SWITCH_ATTR_PTP_MODE,
 
     /**
      * @brief End of attributes
