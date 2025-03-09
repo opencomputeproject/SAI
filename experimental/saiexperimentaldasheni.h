@@ -546,6 +546,17 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_REVERSE_TUNNEL_SIP,
 
     /**
+     * @brief Action parameter flow table id
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_FLOW_TABLE
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ENI_ATTR_FLOW_TABLE_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_ENI_ATTR_END,
