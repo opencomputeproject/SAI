@@ -230,6 +230,12 @@ typedef enum _sai_switch_restart_type_t
     /** Both planned and unplanned restart */
     SAI_SWITCH_RESTART_TYPE_ANY = 2,
 
+    /** Planned restart with chip hard reset */
+    SAI_SWITCH_RESTART_TYPE_HARD_RESET = 3,
+
+    /** Planned restart with chip soft reset */
+    SAI_SWITCH_RESTART_TYPE_SOFT_RESET = 4,
+
 } sai_switch_restart_type_t;
 
 /**
