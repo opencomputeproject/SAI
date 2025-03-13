@@ -62,6 +62,16 @@ typedef enum _sai_erspan_encapsulation_type_t
      */
     SAI_ERSPAN_ENCAPSULATION_TYPE_MIRROR_L3_GRE_TUNNEL,
 
+    /**
+     * @brief L3 GRE Tunnel Encapsulation | L2 Ethernet header | IP header | GRE header | ERSPAN (8B) | Original mirrored packet
+     */
+    SAI_ERSPAN_ENCAPSULATION_TYPE_II,
+
+    /**
+     * @brief L3 GRE Tunnel Encapsulation | L2 Ethernet header | IP header | GRE header | ERSPAN (12B) + optional headers | Original mirrored packet
+     */
+    SAI_ERSPAN_ENCAPSULATION_TYPE_III,
+
 } sai_erspan_encapsulation_type_t;
 
 /**
@@ -361,6 +371,28 @@ typedef enum _sai_mirror_session_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_MIRROR_SESSION_ATTR_COUNTER_ID,
+
+    /**
+     * @brief Unique identifier for each ERSPAN mirror session (10 bits).
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     * @validonly SAI_MIRROR_SESSION_ATTR_ERSPAN_ENCAPSULATION_TYPE == SAI_ERSPAN_ENCAPSULATION_TYPE_II or SAI_MIRROR_SESSION_ATTR_ERSPAN_ENCAPSULATION_TYPE == SAI_ERSPAN_ENCAPSULATION_TYPE_III
+     */
+    SAI_MIRROR_SESSION_ATTR_ERSPAN_SESSION_ID,
+
+    /**
+     * @brief The first 16 bits of the GRE header.
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     * @validonly SAI_MIRROR_SESSION_ATTR_TYPE == SAI_MIRROR_SESSION_TYPE_ENHANCED_REMOTE
+     */
+    SAI_MIRROR_SESSION_ATTR_GRE_HEADER_FIRST_16BIT,
 
     /**
      * @brief End of attributes
