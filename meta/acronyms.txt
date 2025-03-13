@@ -13,6 +13,7 @@ BFDV6 - Bidirectional Forwarding Detection for IPv6
 BGP - Border Gateway Protocol
 BMTOR - Behavioral Model Top-of-Rack
 BOS - Bottom Of Stack
+BTH - Base Transport Header
 BW - Bandwidth
 CAM - Content Addressable Memory
 CAUI - 100 Gigabit Attachment Unit Interface
@@ -125,6 +126,7 @@ PSP - Penultimate Segment Pop
 PTP - Precision time protocol
 QOS - Quality of Service
 RARP - Reverse Address Resolution Protocol
+RDMA - Remote Direct Memory Access
 RFC - Request For Comment
 RPC - Remote Procedure Call
 RPF - Reverse Path Forwarding
