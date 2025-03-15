@@ -164,7 +164,7 @@ typedef enum _sai_bfd_session_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_VIRTUAL_ROUTER
-     * @condition SAI_BFD_SESSION_ATTR_HW_LOOKUP_VALID == true
+     * @condition SAI_BFD_SESSION_ATTR_HW_LOOKUP_VALID == true and SAI_BFD_SESSION_ATTR_USE_NEXT_HOP == false
      */
     SAI_BFD_SESSION_ATTR_VIRTUAL_ROUTER,
 
@@ -500,6 +500,26 @@ typedef enum _sai_bfd_session_attr_t
      * @condition SAI_BFD_SESSION_ATTR_BFD_ENCAPSULATION_TYPE == SAI_BFD_ENCAPSULATION_TYPE_SRV6
      */
     SAI_BFD_SESSION_ATTR_SRV6_SIDLIST_ID,
+
+    /**
+     * @brief Use next hop
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_BFD_SESSION_ATTR_USE_NEXT_HOP,
+
+    /**
+     * @brief Next Hop ID for single hop BFD session
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_NEXT_HOP
+     * @allownull true
+     * @condition SAI_BFD_SESSION_ATTR_USE_NEXT_HOP == true
+     */
+    SAI_BFD_SESSION_ATTR_NEXT_HOP_ID,
 
     /**
      * @brief End of attributes
