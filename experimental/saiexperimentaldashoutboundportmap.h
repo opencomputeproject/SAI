@@ -104,11 +104,6 @@ typedef struct _sai_outbound_port_map_port_range_entry_t
      */
     sai_u32_range_t dst_port_range;
 
-    /**
-     * @brief Rule priority in table
-     */
-    sai_uint32_t priority;
-
 } sai_outbound_port_map_port_range_entry_t;
 
 /**
