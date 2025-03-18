@@ -1,6 +1,6 @@
-[%- unsupported_fields = '(list|data|range|string|time|capability|entry|status|session|event)' #TODO: all of them should be supported -%]
+[%- unsupported_fields = '(list|data|string|time|capability|entry|status|session|event)' #TODO: all of them should be supported -%]
 
-[%- helper_supported_fields = '(mac|address|ip4_t|prefix|nat_type)' -%]
+[%- helper_supported_fields = '(mac|address|ip4_t|prefix|nat_type|range)' -%]
 
 [%- helper_supported_vector_fields = '(ip6_t)' -%]
 
