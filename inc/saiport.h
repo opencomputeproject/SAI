@@ -4112,309 +4112,1314 @@ typedef enum _sai_port_serdes_attr_t
     /** Custom range base value */
     SAI_PORT_SERDES_ATTR_CUSTOM_RANGE_START = 0x10000000,
 
-    /** Custom port serdes attribute 1 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_1 = SAI_PORT_SERDES_ATTR_CUSTOM_RANGE_START,
-
-    /** Custom port serdes attribute 2 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_2,
-
-    /** Custom port serdes attribute 3 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_3,
-
-    /** Custom port serdes attribute 4 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_4,
-
-    /** Custom port serdes attribute 5 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_5,
-
-    /** Custom port serdes attribute 6 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_6,
-
-    /** Custom port serdes attribute 7 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_7,
-
-    /** Custom port serdes attribute 8 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_8,
-
-    /** Custom port serdes attribute 9 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_9,
-
-    /** Custom port serdes attribute 10 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_10,
-
-    /** Custom port serdes attribute 11 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_11,
-
-    /** Custom port serdes attribute 12 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_12,
-
-    /** Custom port serdes attribute 13 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_13,
-
-    /** Custom port serdes attribute 14 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_14,
-
-    /** Custom port serdes attribute 15 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_15,
-
-    /** Custom port serdes attribute 16 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_16,
-
-    /** Custom port serdes attribute 17 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_17,
-
-    /** Custom port serdes attribute 18 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_18,
-
-    /** Custom port serdes attribute 19 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_19,
-
-    /** Custom port serdes attribute 20 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_20,
-
-    /** Custom port serdes attribute 21 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_21,
-
-    /** Custom port serdes attribute 22 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_22,
-
-    /** Custom port serdes attribute 23 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_23,
-
-    /** Custom port serdes attribute 24 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_24,
-
-    /** Custom port serdes attribute 25 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_25,
-
-    /** Custom port serdes attribute 26 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_26,
-
-    /** Custom port serdes attribute 27 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_27,
-
-    /** Custom port serdes attribute 28 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_28,
-
-    /** Custom port serdes attribute 29 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_29,
-
-    /** Custom port serdes attribute 30 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_30,
-
-    /** Custom port serdes attribute 31 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_31,
-
-    /** Custom port serdes attribute 32 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_32,
-
-    /** Custom port serdes attribute 33 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_33,
-
-    /** Custom port serdes attribute 34 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_34,
-
-    /** Custom port serdes attribute 35 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_35,
-
-    /** Custom port serdes attribute 36 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_36,
-
-    /** Custom port serdes attribute 37 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_37,
-
-    /** Custom port serdes attribute 38 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_38,
-
-    /** Custom port serdes attribute 39 */
-
-    SAI_PORT_SERDES_ATTR_CUSTOM_39,
-
-    /** Custom port serdes attribute 40 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_40,
-
-    /** Custom port serdes attribute 41 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_41,
-
-    /** Custom port serdes attribute 42 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_42,
-
-    /** Custom port serdes attribute 43 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_43,
-
-    /** Custom port serdes attribute 44 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_44,
-
-    /** Custom port serdes attribute 45 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_45,
-
-    /** Custom port serdes attribute 46 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_46,
-
-    /** Custom port serdes attribute 47 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_47,
-
-    /** Custom port serdes attribute 48 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_48,
-
-    /** Custom port serdes attribute 49 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_49,
-
-    /** Custom port serdes attribute 50 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_50,
-
-    /** Custom port serdes attribute 51 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_51,
-
-    /** Custom port serdes attribute 52 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_52,
-
-    /** Custom port serdes attribute 53 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_53,
-
-    /** Custom port serdes attribute 54 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_54,
-
-    /** Custom port serdes attribute 55 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_55,
-
-    /** Custom port serdes attribute 56 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_56,
-
-    /** Custom port serdes attribute 57 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_57,
-
-    /** Custom port serdes attribute 58 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_58,
-
-    /** Custom port serdes attribute 59 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_59,
-
-    /** Custom port serdes attribute 60 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_60,
-
-    /** Custom port serdes attribute 61 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_61,
-
-    /** Custom port serdes attribute 62 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_62,
-
-    /** Custom port serdes attribute 63 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_63,
-
-    /** Custom port serdes attribute 64 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_64,
-
-    /** Custom port serdes attribute 65 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_65,
-
-    /** Custom port serdes attribute 66 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_66,
-
-    /** Custom port serdes attribute 67 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_67,
-
-    /** Custom port serdes attribute 68 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_68,
-
-    /** Custom port serdes attribute 69 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_69,
-
-    /** Custom port serdes attribute 70 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_70,
-
-    /** Custom port serdes attribute 71 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_71,
-
-    /** Custom port serdes attribute 72 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_72,
-
-    /** Custom port serdes attribute 73 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_73,
-
-    /** Custom port serdes attribute 74 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_74,
-
-    /** Custom port serdes attribute 75 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_75,
-
-    /** Custom port serdes attribute 76 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_76,
-
-    /** Custom port serdes attribute 77 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_77,
-
-    /** Custom port serdes attribute 78 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_78,
-
-    /** Custom port serdes attribute 79 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_79,
-
-    /** Custom port serdes attribute 80 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_80,
-
-    /** Custom port serdes attribute 81 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_81,
-
-    /** Custom port serdes attribute 82 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_82,
-
-    /** Custom port serdes attribute 83 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_83,
-
-    /** Custom port serdes attribute 84 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_84,
-
-    /** Custom port serdes attribute 85 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_85,
-
-    /** Custom port serdes attribute 86 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_86,
-
-    /** Custom port serdes attribute 87 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_87,
-
-    /** Custom port serdes attribute 88 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_88,
-
-    /** Custom port serdes attribute 89 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_89,
-
-    /** Custom port serdes attribute 90 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_90,
-
-    /** Custom port serdes attribute 91 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_91,
-
-    /** Custom port serdes attribute 92 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_92,
-
-    /** Custom port serdes attribute 93 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_93,
-
-    /** Custom port serdes attribute 94 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_94,
-
-    /** Custom port serdes attribute 95 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_95,
-
-    /** Custom port serdes attribute 96 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_96,
-
-    /** Custom port serdes attribute 97 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_97,
-
-    /** Custom port serdes attribute 98 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_98,
-
-    /** Custom port serdes attribute 99 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_99,
-
-    /** Custom port serdes attribute 100 */
-    SAI_PORT_SERDES_ATTR_CUSTOM_100,
-
     /** End of custom range base */
-    SAI_PORT_SERDES_ATTR_CUSTOM_RANGE_END
+    SAI_PORT_SERDES_ATTR_CUSTOM_RANGE_END,
+
+    /** Public custom range base value */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_RANGE_START = 0x20000000,
+
+    /**
+     * @brief Public custom port serdes attribute 1
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_1 = SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_RANGE_START,
+
+    /**
+     * @brief Public custom port serdes attribute 2
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_2,
+
+    /**
+     * @brief Public custom port serdes attribute 3
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_3,
+
+    /**
+     * @brief Public custom port serdes attribute 4
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_4,
+
+    /**
+     * @brief Public custom port serdes attribute 5
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_5,
+
+    /**
+     * @brief Public custom port serdes attribute 6
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_6,
+
+    /**
+     * @brief Public custom port serdes attribute 7
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_7,
+
+    /**
+     * @brief Public custom port serdes attribute 8
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_8,
+
+    /**
+     * @brief Public custom port serdes attribute 9
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_9,
+
+    /**
+     * @brief Public custom port serdes attribute 10
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_10,
+
+    /**
+     * @brief Public custom port serdes attribute 11
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_11,
+
+    /**
+     * @brief Public custom port serdes attribute 12
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_12,
+
+    /**
+     * @brief Public custom port serdes attribute 13
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_13,
+
+    /**
+     * @brief Public custom port serdes attribute 14
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_14,
+
+    /**
+     * @brief Public custom port serdes attribute 15
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_15,
+
+    /**
+     * @brief Public custom port serdes attribute 16
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_16,
+
+    /**
+     * @brief Public custom port serdes attribute 17
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_17,
+
+    /**
+     * @brief Public custom port serdes attribute 18
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_18,
+
+    /**
+     * @brief Public custom port serdes attribute 19
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_19,
+
+    /**
+     * @brief Public custom port serdes attribute 20
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_20,
+
+    /**
+     * @brief Public custom port serdes attribute 21
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_21,
+
+    /**
+     * @brief Public custom port serdes attribute 22
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_22,
+
+    /**
+     * @brief Public custom port serdes attribute 23
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_23,
+
+    /**
+     * @brief Public custom port serdes attribute 24
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_24,
+
+    /**
+     * @brief Public custom port serdes attribute 25
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_25,
+
+    /**
+     * @brief Public custom port serdes attribute 26
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_26,
+
+    /**
+     * @brief Public custom port serdes attribute 27
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_27,
+
+    /**
+     * @brief Public custom port serdes attribute 28
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_28,
+
+    /**
+     * @brief Public custom port serdes attribute 29
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_29,
+
+    /**
+     * @brief Public custom port serdes attribute 30
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_30,
+
+    /**
+     * @brief Public custom port serdes attribute 31
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_31,
+
+    /**
+     * @brief Public custom port serdes attribute 32
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_32,
+
+    /**
+     * @brief Public custom port serdes attribute 33
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_33,
+
+    /**
+     * @brief Public custom port serdes attribute 34
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_34,
+
+    /**
+     * @brief Public custom port serdes attribute 35
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_35,
+
+    /**
+     * @brief Public custom port serdes attribute 36
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_36,
+
+    /**
+     * @brief Public custom port serdes attribute 37
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_37,
+
+    /**
+     * @brief Public custom port serdes attribute 38
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_38,
+
+    /**
+     * @brief Public custom port serdes attribute 39
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_39,
+
+    /**
+     * @brief Public custom port serdes attribute 40
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_40,
+
+    /**
+     * @brief Public custom port serdes attribute 41
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_41,
+
+    /**
+     * @brief Public custom port serdes attribute 42
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_42,
+
+    /**
+     * @brief Public custom port serdes attribute 43
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_43,
+
+    /**
+     * @brief Public custom port serdes attribute 44
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_44,
+
+    /**
+     * @brief Public custom port serdes attribute 45
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_45,
+
+    /**
+     * @brief Public custom port serdes attribute 46
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_46,
+
+    /**
+     * @brief Public custom port serdes attribute 47
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_47,
+
+    /**
+     * @brief Public custom port serdes attribute 48
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_48,
+
+    /**
+     * @brief Public custom port serdes attribute 49
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_49,
+
+    /**
+     * @brief Public custom port serdes attribute 50
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_50,
+
+    /**
+     * @brief Public custom port serdes attribute 51
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_51,
+
+    /**
+     * @brief Public custom port serdes attribute 52
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_52,
+
+    /**
+     * @brief Public custom port serdes attribute 53
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_53,
+
+    /**
+     * @brief Public custom port serdes attribute 54
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_54,
+
+    /**
+     * @brief Public custom port serdes attribute 55
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_55,
+
+    /**
+     * @brief Public custom port serdes attribute 56
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_56,
+
+    /**
+     * @brief Public custom port serdes attribute 57
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_57,
+
+    /**
+     * @brief Public custom port serdes attribute 58
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_58,
+
+    /**
+     * @brief Public custom port serdes attribute 59
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_59,
+
+    /**
+     * @brief Public custom port serdes attribute 60
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_60,
+
+    /**
+     * @brief Public custom port serdes attribute 61
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_61,
+
+    /**
+     * @brief Public custom port serdes attribute 62
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_62,
+
+    /**
+     * @brief Public custom port serdes attribute 63
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_63,
+
+    /**
+     * @brief Public custom port serdes attribute 64
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_64,
+
+    /**
+     * @brief Public custom port serdes attribute 65
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_65,
+
+    /**
+     * @brief Public custom port serdes attribute 66
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_66,
+
+    /**
+     * @brief Public custom port serdes attribute 67
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_67,
+
+    /**
+     * @brief Public custom port serdes attribute 68
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_68,
+
+    /**
+     * @brief Public custom port serdes attribute 69
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_69,
+
+    /**
+     * @brief Public custom port serdes attribute 70
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_70,
+
+    /**
+     * @brief Public custom port serdes attribute 71
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_71,
+
+    /**
+     * @brief Public custom port serdes attribute 72
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_72,
+
+    /**
+     * @brief Public custom port serdes attribute 73
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_73,
+
+    /**
+     * @brief Public custom port serdes attribute 74
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_74,
+
+    /**
+     * @brief Public custom port serdes attribute 75
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_75,
+
+    /**
+     * @brief Public custom port serdes attribute 76
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_76,
+
+    /**
+     * @brief Public custom port serdes attribute 77
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_77,
+
+    /**
+     * @brief Public custom port serdes attribute 78
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_78,
+
+    /**
+     * @brief Public custom port serdes attribute 79
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_79,
+
+    /**
+     * @brief Public custom port serdes attribute 80
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_80,
+
+    /**
+     * @brief Public custom port serdes attribute 81
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_81,
+
+    /**
+     * @brief Public custom port serdes attribute 82
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_82,
+
+    /**
+     * @brief Public custom port serdes attribute 83
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_83,
+
+    /**
+     * @brief Public custom port serdes attribute 84
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_84,
+
+    /**
+     * @brief Public custom port serdes attribute 85
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_85,
+
+    /**
+     * @brief Public custom port serdes attribute 86
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_86,
+
+    /**
+     * @brief Public custom port serdes attribute 87
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_87,
+
+    /**
+     * @brief Public custom port serdes attribute 88
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_88,
+
+    /**
+     * @brief Public custom port serdes attribute 89
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_89,
+
+    /**
+     * @brief Public custom port serdes attribute 90
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_90,
+
+    /**
+     * @brief Public custom port serdes attribute 91
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_91,
+
+    /**
+     * @brief Public custom port serdes attribute 92
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_92,
+
+    /**
+     * @brief Public custom port serdes attribute 93
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_93,
+
+    /**
+     * @brief Public custom port serdes attribute 94
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_94,
+
+    /**
+     * @brief Public custom port serdes attribute 95
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_95,
+
+    /**
+     * @brief Public custom port serdes attribute 96
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_96,
+
+    /**
+     * @brief Public custom port serdes attribute 97
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_97,
+
+    /**
+     * @brief Public custom port serdes attribute 98
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_98,
+
+    /**
+     * @brief Public custom port serdes attribute 99
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_99,
+
+    /**
+     * @brief Public custom port serdes attribute 100
+     *
+     * List of custom port serdes values
+     * The values are of type sai_s32_list_t where the count is number lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     *
+     * @type sai_s32_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_100,
+
+    /** End of public custom range base */
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_RANGE_END
 
 } sai_port_serdes_attr_t;
 
