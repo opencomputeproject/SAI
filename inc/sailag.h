@@ -325,6 +325,15 @@ typedef enum _sai_lag_member_attr_t
     SAI_LAG_MEMBER_ATTR_INGRESS_DISABLE,
 
     /**
+     * @brief Member weights
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 1
+     */
+    SAI_LAG_MEMBER_ATTR_WEIGHT,
+
+    /**
      * @brief End of attributes
      */
     SAI_LAG_MEMBER_ATTR_END,
