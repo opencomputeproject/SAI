@@ -601,7 +601,10 @@ sub ProcessEnumInitializers
 
     my @sorted = sort { substr($a, 0, 10) cmp substr($b, 0, 10) } @joined;
 
+    my @sorted_ini = (@sorted);
+
     s/^0x[0-9a-f]{8}SAI/SAI/i for @sorted;
+    s/SAI.*//i for @sorted_ini;
 
     my $after = "@sorted";
 
@@ -612,8 +615,13 @@ sub ProcessEnumInitializers
     @$arr_ref = ();
 
     push @$arr_ref, @sorted;
-}
 
+    # initializers must be sorted as well
+
+    @$ini_ref = ();
+
+    push @$ini_ref, @sorted_ini;
+}
 
 BEGIN
 {
