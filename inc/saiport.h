@@ -397,6 +397,9 @@ typedef enum _sai_port_priority_flow_control_mode_t
 
 /**
  * @brief PTP mode
+ * These modes can be used at the port and switch level.
+ * All ports use the value set at the switch level unless explicitly configured
+ * at the port level to a value other than SAI_PORT_PTP_MODE_NONE.
  */
 typedef enum _sai_port_ptp_mode_t
 {
