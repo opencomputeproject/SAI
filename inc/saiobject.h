@@ -38,6 +38,7 @@
 #include <saiprefixcompression.h>
 
 /* new experimental object type includes */
+#include <saiexperimentaldashtrustedvni.h>
 #include <saiexperimentaldashtunnel.h>
 #include <saiexperimentaldashha.h>
 #include <saiexperimentaldashappliance.h>
@@ -128,6 +129,9 @@ typedef union _sai_object_key_entry_t
 
     /** @validonly object_type == SAI_OBJECT_TYPE_FLOW_ENTRY */
     sai_flow_entry_t flow_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_TRUSTED_VNI_ENTRY */
+    sai_trusted_vni_entry_t trusted_vni_entry;
 
     /* Add new experimental entries above this line */
 

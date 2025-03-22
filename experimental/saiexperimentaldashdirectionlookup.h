@@ -42,6 +42,8 @@ typedef enum _sai_direction_lookup_entry_action_t
 {
     SAI_DIRECTION_LOOKUP_ENTRY_ACTION_SET_OUTBOUND_DIRECTION,
 
+    SAI_DIRECTION_LOOKUP_ENTRY_ACTION_SET_INBOUND_DIRECTION,
+
 } sai_direction_lookup_entry_action_t;
 
 /**
@@ -88,6 +90,7 @@ typedef enum _sai_direction_lookup_entry_attr_t
      * @type sai_dash_eni_mac_override_type_t
      * @flags CREATE_AND_SET
      * @default SAI_DASH_ENI_MAC_OVERRIDE_TYPE_NONE
+     * @validonly SAI_DIRECTION_LOOKUP_ENTRY_ATTR_ACTION == SAI_DIRECTION_LOOKUP_ENTRY_ACTION_SET_OUTBOUND_DIRECTION or SAI_DIRECTION_LOOKUP_ENTRY_ATTR_ACTION == SAI_DIRECTION_LOOKUP_ENTRY_ACTION_SET_INBOUND_DIRECTION
      */
     SAI_DIRECTION_LOOKUP_ENTRY_ATTR_DASH_ENI_MAC_OVERRIDE_TYPE,
 
