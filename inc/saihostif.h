@@ -251,6 +251,13 @@ typedef enum _sai_hostif_trap_type_t
      */
     SAI_HOSTIF_TRAP_TYPE_DHCPV6_L2 = 0x00000013,
 
+    /**
+     * @brief ITU-T G.8264/Y.1364 Ethernet synchronization messaging channel protocol
+     * (Dst MAC = 01-80-C2-00-00-02 EtherType = 0x8809 Slow Protocol sub-type = 0xA)
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_ESMC = 0x00000014,
+
     /** Switch traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_SWITCH_CUSTOM_RANGE_BASE = 0x00001000,
 
