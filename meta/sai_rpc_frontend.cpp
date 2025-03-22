@@ -146,6 +146,28 @@ static void sai_thrift_ip_prefix_t_parse(
 }
 
 /**
+ * @brief Convert u32 range from Thrift to SAI format
+ */
+static void sai_thrift_u32_range_t_parse(
+        const sai_thrift_u32_range_t &thrift_u32_range,
+        sai_u32_range_t *u32_range)
+{
+    u32_range->min = thrift_u32_range.min;
+    u32_range->max = thrift_u32_range.max;
+}
+
+/**
+ * @brief Convert s32 range from Thrift to SAI format
+ */
+static void sai_thrift_s32_range_t_parse(
+        const sai_thrift_s32_range_t &thrift_s32_range,
+        sai_s32_range_t *s32_range)
+{
+    s32_range->min = thrift_s32_range.min;
+    s32_range->max = thrift_s32_range.max;
+}
+
+/**
  * @brief Convert attribute from Thrift to SAI format according to the type
  */
 void convert_attr_thrift_to_sai(
