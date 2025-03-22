@@ -557,6 +557,15 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_FLOW_TABLE_ID,
 
     /**
+     * @brief Action parameter DASH ENI mode
+     *
+     * @type sai_dash_eni_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_DASH_ENI_MODE_VM
+     */
+    SAI_ENI_ATTR_DASH_ENI_MODE,
+
+    /**
      * @brief End of attributes
      */
     SAI_ENI_ATTR_END,
