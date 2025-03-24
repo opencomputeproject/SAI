@@ -169,6 +169,12 @@ typedef enum _sai_native_hash_field_t
     /** Native hash field IPv6 flow label */
     SAI_NATIVE_HASH_FIELD_IPV6_FLOW_LABEL = 0x00000018,
 
+    /** Native hash field RDMA packet BTH(Base Transport Header) opcode */
+    SAI_NATIVE_HASH_FIELD_RDMA_BTH_OPCODE = 0x00000022,
+
+    /** Native hash field RDMA packet BTH destination queue pair */
+    SAI_NATIVE_HASH_FIELD_RDMA_BTH_DEST_QP = 0x00000023,
+
     /** No field - for compatibility, must be last */
     SAI_NATIVE_HASH_FIELD_NONE = 0x00000021,
 
