@@ -2680,6 +2680,14 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PORT_STAT_EXTENDED,
 
     /**
+     * @brief List of port's PAM4 lanes eye values
+     *
+     * @type sai_port_pam4_eye_values_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PAM4_EYE_VALUES,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
