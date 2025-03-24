@@ -640,6 +640,25 @@ typedef enum _sai_packet_trim_queue_resolution_mode_t
 
 } sai_packet_trim_queue_resolution_mode_t;
 
+typedef enum _sai_packet_trim_dscp_resolution_mode_t
+{
+    /**
+     * @brief Static DSCP resolution.
+     *
+     * In this mode, a new DSCP for the trimmed packet is set directly
+     * by the application.
+     */
+    SAI_PACKET_TRIM_DSCP_RESOLUTION_MODE_DSCP_VALUE,
+
+    /**
+     * @brief Dynamic DSCP resolution.
+     *
+     * In this mode, a new DSCP for the trimmed packet is resolved from the new TRIM_TC
+     * set by the application using per-port TC_TO_DSCP mapping
+     */
+    SAI_PACKET_TRIM_DSCP_RESOLUTION_MODE_FROM_TC
+} sai_packet_trim_dscp_resolution_mode_t;
+
 /**
  * @brief Attribute Id in sai_set_switch_attribute() and
  * sai_get_switch_attribute() calls.
@@ -3169,6 +3188,7 @@ typedef enum _sai_switch_attr_t
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 0
+     * @validonly SAI_SWITCH_ATTR_PACKET_TRIM_DSCP_RESOLUTION_MODE == SAI_PACKET_TRIM_DSCP_RESOLUTION_MODE_DSCP_VALUE
      */
     SAI_SWITCH_ATTR_PACKET_TRIM_DSCP_VALUE,
 
@@ -3276,6 +3296,25 @@ typedef enum _sai_switch_attr_t
      * @default internal
      */
     SAI_SWITCH_ATTR_SYNCE_CLOCK_LIST,
+
+    /**
+     * @brief New packet trim TC value
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_SWITCH_ATTR_PACKET_TRIM_DSCP_RESOLUTION_MODE == SAI_PACKET_TRIM_DSCP_RESOLUTION_MODE_FROM_TC
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIM_TC_VALUE,
+
+    /**
+     * @brief DSCP mapping mode for a trimmed packet
+     *
+     * @type sai_packet_trim_dscp_resolution_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PACKET_TRIM_DSCP_RESOLUTION_MODE_DSCP_VALUE
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIM_DSCP_RESOLUTION_MODE,
 
     /**
      * @brief End of attributes
