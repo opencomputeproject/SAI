@@ -82,6 +82,7 @@ IP2ME - IP packets to local router IP
 IPFIX - IP Flow Information Export
 IPG - Inter-Packet Gap
 IPMC - Intelligent Platform Management Controller
+ITU - International Telecommunication Union
 L2 - Layer 2
 L2MC - Layer 2 Multi Cast
 L3 - Layer 3
@@ -156,6 +157,7 @@ SSCI - Short Secure Channel Identifier
 SSH - Secure Shell
 SSL - Secure Socket Layer
 STP - Spanning Tree Protocol
+SYNCE - Synchronous Ethernet
 TC - Traffic Control
 TCAM - Ternary Content Addressable Memory
 TCP - Transmission Control Protocol
