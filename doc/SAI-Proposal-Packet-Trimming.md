@@ -164,3 +164,51 @@ Both the queue and the port have the packet counter to reflect the number of tri
     /** Packets trimmed due to failed admission [uint64_t] */
     SAI_QUEUE_STAT_TRIM_PACKETS = 0x00000028,
 ```
+
+It can also be beneficial to support multiple DSCP values for trimmed packets sent out via different ports. For example, trimmed packets sent to hosts will get DSCP 5 whereas trimmed packets sent to uplink/spine will have DSCP 7. It is to allow to the destination NIC to know where congestion happened - on downlinks to servers or in the fabric. Such information can be used for a better decision making on how to react to the state of network.
+
+![](figures/trim-TC.png)
+
+The diagram above shows the general concept - instead of setting a trim DSCP, we set a trim TC value, which, by applying a different TC to DSCP map per egres port, will yield a different DSCP value.
+
+```
+typedef enum _sai_packet_trim_dscp_resolution_mode_t
+{
+    /**
+     * @brief Static DSCP resolution.
+     *
+     * In this mode, a new DSCP for the trimmed packet is set directly
+     * by the application.
+     */
+    SAI_PACKET_TRIM_DSCP_RESOLUTION_MODE_DSCP_VALUE,
+
+    /**
+     * @brief Dynamic DSCP resolution.
+     *
+     * In this mode, a new DSCP for the trimmed packet is resolved from the new TRIM_TC
+     * set by the application using per-port TC_TO_DSCP mapping
+     */
+    SAI_PACKET_TRIM_DSCP_RESOLUTION_MODE_FROM_TC
+} sai_packet_trim_dscp_resolution_mode_t;
+```
+
+```
+    /**
+     * @brief New packet trim TC value
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_SWITCH_ATTR_PACKET_TRIM_DSCP_RESOLUTION_MODE == SAI_PACKET_TRIM_DSCP_RESOLUTION_MODE_FROM_TC
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIM_TC_VALUE,
+
+    /**
+     * @brief DSCP mapping mode for a trimmed packet
+     *
+     * @type sai_packet_trim_dscp_resolution_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PACKET_TRIM_DSCP_RESOLUTION_MODE_DSCP_VALUE
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIM_DSCP_RESOLUTION_MODE,
+```
