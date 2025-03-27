@@ -141,6 +141,11 @@ typedef struct _sai_flow_entry_t
      */
     sai_uint16_t dst_port;
 
+    /**
+     * @brief Exact matched key is_eni_mac_dst_mac
+     */
+    bool is_eni_mac_dst_mac;
+
 } sai_flow_entry_t;
 
 /**
