@@ -4116,7 +4116,7 @@ typedef enum _sai_port_serdes_attr_t
     SAI_PORT_SERDES_ATTR_CUSTOM_RANGE_END,
 
     /** Public custom range base value */
-    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_RANGE_START = 0x20000000,
+    SAI_PORT_SERDES_ATTR_PUBLIC_CUSTOM_RANGE_START = 0x30000000,
 
     /**
      * @brief Public custom port serdes attribute 1
