@@ -4105,24 +4105,37 @@ typedef enum _sai_port_serdes_attr_t
     SAI_PORT_SERDES_ATTR_RX_PRECODING,
 
      /**
-     * @brief A collection of custom serdes attributes represented as a string
+     * @brief A collection of custom serdes attributes
      *
-     * The value is a string that includes a JSON object with key-value pairs.
-     * Each pair's key represents the serdes attribute name, and each pair's
-     * value is a list of values for every serdes lane. This allows
-     * vendor-specific serdes attributes to be forwarded in a JSON string
-     * without the sender needing to know the details. The sender simply passes
-     * along the data, vendor-defined rules determine which key-value pairs to
-     * include, and the vendor SDK interprets the JSON accordingly.
+     * The value is of type sai_json_t, which can include multiple custom serdes
+     * attributes. This allows vendor-specific serdes attributes to be forwarded
+     * in a JSON string without the sender needing to know the details. The
+     * sender simply passes along the data, vendor-defined rules determine which
+     * attributes and values to include in different situations, and the vendor
+     * SDK interprets the JSON accordingly.
      *
      * Example of the JSON object:
-     *  {
-     *     "attr1": ["lane1_value", "lane2_value", "lane3_value", "lane4_value"],
-     *     "attr2": ["lane1_value", "lane2_value", "lane3_value", "lane4_value"],
-     *      ...
-     *  }
+     * {
+     *   "attributes": [
+     *     {
+     *       "attr_xyz": {
+     *         "sai_metadata": {
+     *           "sai_attr_value_type": "SAI_ATTR_VALUE_TYPE_INT32_LIST"
+     *         },
+     *         "value": [10, 10, 10, 10]
+     *       },
+     *       "attr_abc": {
+     *         "sai_metadata": {
+     *           "sai_attr_value_type": "SAI_ATTR_VALUE_TYPE_INT32_LIST"
+     *         },
+     *         "value": [20, 20, 20, 20]
+     *       },
+     *       ...
+     *     }
+     *   ]
+     * }
      *
-     * @type sai_u8_list_t
+     * @type sai_json_t
      * @flags CREATE_AND_SET
      * @default internal
      */
