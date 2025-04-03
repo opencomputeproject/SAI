@@ -38,6 +38,7 @@
 #include <saiprefixcompression.h>
 
 /* new experimental object type includes */
+#include <saiexperimentaldashtrustedvni.h>
 #include <saiexperimentaldashoutboundportmap.h>
 #include <saiexperimentaldashtunnel.h>
 #include <saiexperimentaldashha.h>
@@ -132,6 +133,12 @@ typedef union _sai_object_key_entry_t
 
     /** @validonly object_type == SAI_OBJECT_TYPE_OUTBOUND_PORT_MAP_PORT_RANGE_ENTRY */
     sai_outbound_port_map_port_range_entry_t outbound_port_map_port_range_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_GLOBAL_TRUSTED_VNI_ENTRY */
+    sai_global_trusted_vni_entry_t global_trusted_vni_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_ENI_TRUSTED_VNI_ENTRY */
+    sai_eni_trusted_vni_entry_t eni_trusted_vni_entry;
 
     /* Add new experimental entries above this line */
 

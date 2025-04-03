@@ -557,6 +557,15 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_FLOW_TABLE_ID,
 
     /**
+     * @brief Action parameter DASH ENI mode
+     *
+     * @type sai_dash_eni_mode_t
+     * @flags CREATE_ONLY
+     * @default SAI_DASH_ENI_MODE_VM
+     */
+    SAI_ENI_ATTR_DASH_ENI_MODE,
+
+    /**
      * @brief End of attributes
      */
     SAI_ENI_ATTR_END,
@@ -813,6 +822,9 @@ typedef enum _sai_eni_stat_t
 
     /** DASH ENI OUTBOUND_PORT_MAP_PORT_RANGE_ENTRY_MISS_DROP_PACKETS stat count */
     SAI_ENI_STAT_OUTBOUND_PORT_MAP_PORT_RANGE_ENTRY_MISS_DROP_PACKETS,
+
+    /** DASH ENI ENI_TRUSTED_VNI_ENTRY_MISS_DROP_PACKETS stat count */
+    SAI_ENI_STAT_ENI_TRUSTED_VNI_ENTRY_MISS_DROP_PACKETS,
 
 } sai_eni_stat_t;
 
