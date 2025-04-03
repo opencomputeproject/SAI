@@ -43,6 +43,7 @@ use cap;
 our $XMLDIR = "xml";
 our $INCLUDE_DIR = "../inc/";
 our $EXPERIMENTAL_DIR = "../experimental/";
+our $CUSTOM_DIR = "../custom/";
 
 our $MAX_CONDITIONS_LEN = 1;
 
@@ -61,6 +62,9 @@ our %REVGRAPH = ();
 our %EXTENSIONS_ENUMS = ();
 our %EXTENSIONS_ATTRS = ();
 our %EXPERIMENTAL_OBJECTS = ();
+our %CUSTOM_ENUMS = ();
+our %CUSTOM_ATTRS = ();
+our %CUSTOM_OBJECTS = ();
 our %OBJECT_TYPE_TO_STATS_MAP = ();
 our %ATTR_TO_CALLBACK = ();
 our %PRIMITIVE_TYPES = ();
@@ -69,6 +73,7 @@ our @ALL_ENUMS = ();
 our %GLOBAL_APIS = ();
 our %OBJECT_TYPE_BULK_MAP = ();
 our %SAI_ENUMS_CUSTOM_RANGES = ();
+our %ATTR_API_VER = ();
 
 my $FLAGS = "MANDATORY_ON_CREATE|CREATE_ONLY|CREATE_AND_SET|READ_ONLY|KEY";
 my $ENUM_FLAGS_TYPES = "(none|strict|mixed|ranges|free)";
@@ -134,7 +139,7 @@ sub ProcessTagType
 
     return $val if $val =~ /^(bool|char)$/;
 
-    return $val if $val =~ /^sai_\w+_t$/ and not $val =~ /_attr_(extensions_)?t/;
+    return $val if $val =~ /^sai_\w+_t$/ and not $val =~ /_attr_(extensions_|custom_)?t/;
 
     return $val if $val =~ /^sai_pointer_t sai_\w+_notification_fn$/;
 
@@ -572,6 +577,16 @@ sub ProcessEnumSection
             $EXTENSIONS_ENUMS{$enumtypename} = "${enumprefix}_t";
         }
 
+        if ($enumtypename =~ /_custom_t$/)
+        {
+            LogDebug "removing custom prefix from $enumtypename";
+
+            # remove custom suffix on all custom since they will be merged together
+            $enumprefix =~ s/CUSTOM_$//;
+
+            $CUSTOM_ENUMS{$enumtypename} = "${enumprefix}_t";
+        }
+
         if (defined $SAI_ENUMS{$enumtypename})
         {
             LogError "duplicated enum $enumtypename";
@@ -669,7 +684,7 @@ sub ProcessEnumSection
             my $valuescount = @values;
 
             # allow empty enum on extensions
-            if ($valuescount == 0 and not $enumtypename =~ /_extensions_t$/)
+            if ($valuescount == 0 and not $enumtypename =~ /_(extensions|custom)_t$/)
             {
                 LogError "enum $enumtypename is empty, after removing suffixed entries _START/_END/_RANGE_BASE";
                 LogError "  those suffixes are reserved for range markers and are removed by metadata parser, don't use them";
@@ -695,7 +710,7 @@ sub ProcessEnumSection
 
         $SAI_ENUMS{$enumtypename}{values} = \@values;
 
-        if (not $enumtypename =~ /^(sai_(\w+)_attr_(extensions_)?)t$/)
+        if (not $enumtypename =~ /^(sai_(\w+)_attr_(extensions_|custom_)?)t$/)
         {
             for my $ev (@{ $memberdef->{enumvalue} })
             {
@@ -884,7 +899,7 @@ sub ProcessTypedefSection
             next;
         }
 
-        next if not $typedefname =~ /^sai_(\w+)_attr_(extensions_)?t$/;
+        next if not $typedefname =~ /^sai_(\w+)_attr_(extensions_|custom_)?t$/;
 
         # this enum is attribute definition for object
 
@@ -1121,6 +1136,9 @@ sub ProcessFunctionSection
 
         $type = $1 if $def =~ /^(\w+) sai_\w+$/;
 
+        LogError "function $name return type should be sai_(status|object_type|object_id)_t, but is $type"
+            if not $type =~ /^sai_(status|object_type|object_id)_t$/;
+
         $GLOBAL_APIS{$name}{name} = $name;
         $GLOBAL_APIS{$name}{args} = $memberdef->{argsstring}[0];
         $GLOBAL_APIS{$name}{type} = $type;
@@ -1168,6 +1186,7 @@ sub ProcessSingleEnum
     my ($key, $typedef, $prefix) = @_;
 
     $prefix =~ s/EXTENSIONS_$// if ($typedef =~ /_extensions_t$/);
+    $prefix =~ s/CUSTOM_$// if ($typedef =~ /_custom_t$/);
 
     my $enum = $SAI_ENUMS{$key};
 
@@ -2294,6 +2313,46 @@ sub ProcessIsExtensionAttr
     return "false";
 }
 
+sub ProcessApiVersion
+{
+    my ($attr, $type) = @_;
+
+    # for those attributes use the same version as MIN, since those
+    # attributes are auto generated
+
+    $attr = "SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_MIN"
+        if ($attr =~ /^SAI_ACL_ENTRY_ATTR_USER_DEFINED_FIELD_GROUP_\d+$/);
+
+    $attr = "SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_MIN"
+        if ($attr =~ /^SAI_ACL_TABLE_ATTR_USER_DEFINED_FIELD_GROUP_\d+$/);
+
+    if (not defined $ATTR_API_VER{$attr} and scalar(keys%ATTR_API_VER) != 0)
+    {
+        LogWarning "no version defined for $attr in saiattrversion.h";
+
+        return "SAI_VERSION(0,0,0)";
+    }
+
+    return "SAI_VERSION(0,0,0)" if not defined $ATTR_API_VER{$attr};
+
+    return "SAI_VERSION($1,$2,$3)" if $ATTR_API_VER{$attr} =~ /^v(\d+)\.(\d+)\.(\d+)$/;
+
+    LogInfo "Setting $attr version to SAI_API_VERSION (future release)";
+
+    return "SAI_API_VERSION";
+}
+
+sub ProcessNextRelease
+{
+    my ($attr, $type) = @_;
+
+    return "false" if not defined $ATTR_API_VER{$attr};
+
+    return "false" if $ATTR_API_VER{$attr} =~ /^v(\d+)\.(\d+)\.(\d+)$/;
+
+    return "true";
+}
+
 sub ProcessSingleObjectType
 {
     my ($typedef, $objecttype) = @_;
@@ -2355,6 +2414,8 @@ sub ProcessSingleObjectType
         my $isresourcetype  = ProcessIsResourceType($attr, $meta{isresourcetype});
         my $isdeprecated    = ProcessIsDeprecatedType($attr, $meta{deprecated});
         my $isrelaxed       = ProcessRelaxedType($attr, $meta{relaxed});
+        my $apiversion      = ProcessApiVersion($attr);
+        my $nextrelease     = ProcessNextRelease($attr);
 
         my $ismandatoryoncreate = ($flags =~ /MANDATORY/)       ? "true" : "false";
         my $iscreateonly        = ($flags =~ /CREATE_ONLY/)     ? "true" : "false";
@@ -2413,7 +2474,9 @@ sub ProcessSingleObjectType
         WriteSource ".isresourcetype                = $isresourcetype,";
         WriteSource ".isdeprecated                  = $isdeprecated,";
         WriteSource ".isconditionrelaxed            = $isrelaxed,";
-        WriteSource ".iscustom                      = ($attr >= 0x10000000) && ($attr < 0x20000000)";
+        WriteSource ".iscustom                      = ($attr >= 0x10000000) && ($attr < 0x20000000),";
+        WriteSource ".apiversion                    = $apiversion,";
+        WriteSource ".nextrelease                   = $nextrelease,";
 
         WriteSource "};";
 
@@ -2465,6 +2528,24 @@ sub CreateMetadata
 
         ProcessSingleObjectType($typedef, $objtype);
     }
+}
+
+sub ProcessAttrVersion
+{
+    WriteSectionComment "Have attr versions";
+
+    my $count = scalar(keys%ATTR_API_VER);
+
+    WriteHeader "#define SAI_METADATA_HAVE_ATTR_VERSION ($count)";
+}
+
+sub ProcessCustomObjectCount
+{
+    WriteSectionComment "Custom object count";
+
+    my $count = scalar(keys%CUSTOM_OBJECTS);
+
+    WriteHeader "#define SAI_METADATA_CUSTOM_OBJECT_COUNT ($count)";
 }
 
 sub ProcessSaiStatus
@@ -2590,7 +2671,7 @@ sub CreateEnumHelperMethods
 
     for my $key (sort keys %SAI_ENUMS)
     {
-        next if $key =~ /_attr_(extensions_)?t$/;
+        next if $key =~ /_attr_(extensions_|custom_)?t$/;
 
         CreateEnumHelperMethod($key);
     }
@@ -3898,6 +3979,15 @@ sub ProcessIsExperimental
     return "false";
 }
 
+sub ProcessIsCustom
+{
+    my $ot = shift;
+
+    return "true" if defined $CUSTOM_OBJECTS{$ot};
+
+    return "false";
+}
+
 sub ProcessStatEnum
 {
     my $shortot = shift;
@@ -3957,6 +4047,7 @@ sub CreateObjectInfo
         my $revgraphcount       = ProcessRevGraphCount($ot);
         my $isexperimental      = ProcessIsExperimental($ot);
         my $statenum            = ProcessStatEnum($shortot);
+        my $iscustom            = ProcessIsCustom($ot);
         my $attrmetalength      = @{ $SAI_ENUMS{$type}{values} };
 
         my $create      = ProcessCreate($struct, $ot);
@@ -3994,6 +4085,7 @@ sub CreateObjectInfo
         WriteSource ".clearstats           = $clearstats,";
         WriteSource ".isexperimental       = $isexperimental,";
         WriteSource ".statenum             = $statenum,";
+        WriteSource ".iscustom             = $iscustom,";
 
         WriteSource "};";
     }
@@ -4270,8 +4362,9 @@ sub ExtractStatsFunctionMap
 
     my @headers = GetHeaderFiles();
     my @exheaders = GetExperimentalHeaderFiles();
+    my @cuheaders = GetCustomHeaderFiles();
 
-    my @merged = (@headers, @exheaders);
+    my @merged = (@headers, @exheaders, @cuheaders);
 
     my %otmap = ();
 
@@ -4320,8 +4413,9 @@ sub ExtractObjectTypeBulkMap
 
     my @headers = GetHeaderFiles();
     my @exheaders = GetExperimentalHeaderFiles();
+    my @cuheaders = GetCustomHeaderFiles();
 
-    my @merged = (@headers, @exheaders);
+    my @merged = (@headers, @exheaders, @cuheaders);
 
     my %otmap = ();
 
@@ -4369,6 +4463,24 @@ sub ExtractObjectTypeBulkMap
     }
 
     %OBJECT_TYPE_BULK_MAP = %otmap;
+}
+
+sub ExtractAttrApiVersion
+{
+    my $data = ReadHeaderFile("saiattrversion.h");
+
+    my @lines = split/\n/,$data;
+
+    for my $line (@lines)
+    {
+        if (not $line =~ /#define SAI_METADATA_ATTR_VERSION_(SAI_\w+_ATTR_\w+) "(v\d+\.\d+\.\d+|HEAD)"/)
+        {
+            LogError "invalid line in saiattrversion.h: $line";
+            next;
+        }
+
+        $ATTR_API_VER{$1} = $2;
+    }
 }
 
 sub CheckObjectTypeStatitics
@@ -4469,10 +4581,12 @@ sub ExtractApiToObjectMap
 
     my @headers = GetHeaderFiles();
     my @exheaders = GetExperimentalHeaderFiles();
+    my @cuheaders = GetCustomHeaderFiles();
 
     my %exh = map { $_ => 1 } @exheaders;
+    my %cuh = map { $_ => 1 } @cuheaders;
 
-    my @merged = (@headers, @exheaders);
+    my @merged = (@headers, @exheaders, @cuheaders);
 
     for my $header (@merged)
     {
@@ -4517,20 +4631,23 @@ sub ExtractApiToObjectMap
 
         $shortapi =~ s/_//g;
 
-        my $correct = (defined $exh{$header}) ? "saiexperimental$shortapi.h" : "sai$shortapi.h";
+        my $correct = (defined $exh{$header})
+            ? "saiexperimental$shortapi.h"
+            : ((defined $cuh{$header}) ? "saicustom$shortapi.h" : "sai$shortapi.h");
 
         if ($header ne $correct)
         {
             LogWarning "File $header should be named '$correct'";
         }
 
-        # NOTE: those maps will include experimental extensions
+        # NOTE: those maps will include experimental extensions and custom attributes
 
         for my $obj(@objects)
         {
             $OBJTOAPIMAP{$obj} = $api;
 
             $EXPERIMENTAL_OBJECTS{uc($obj)} = 1 if $correct =~ /^saiexperimental/;
+            $CUSTOM_OBJECTS{uc($obj)} = 1 if $correct =~ /^saicustom/;
         }
 
         $APITOOBJMAP{$api} = \@objects;
@@ -5116,7 +5233,7 @@ sub CreateSwitchPointersAttributesList
     my @pointers = keys %NOTIFICATIONS;
     push @pointers, values %ATTR_TO_CALLBACK;
 
-    for my $name (sort @pointers)
+    for my $name (GetSwitchPointersInOrder(@pointers))
     {
         next if not $name =~ /^sai_(\w+)_fn/;
 
@@ -5151,12 +5268,14 @@ sub WriteHeaderHeader
 {
     WriteSectionComment "AUTOGENERATED FILE! DO NOT EDIT";
 
+    my @ch = GetCustomHeaderFiles();
+
     WriteHeader "#ifndef __SAI_METADATA_H__";
     WriteHeader "#define __SAI_METADATA_H__";
 
     WriteHeader "#include <sai.h>";
     WriteHeader "#include <saiextensions.h>";
-
+    WriteHeader "#include <saicustom.h>" if scalar@ch; # only if exists
     WriteHeader "#include \"saimetadatatypes.h\"";
     WriteHeader "#include \"saimetadatautils.h\"";
     WriteHeader "#include \"saimetadatalogger.h\"";
@@ -5275,6 +5394,43 @@ sub ExtractUnionsInfo
 sub LoadCapabilities
 {
     %CAPABILITIES = %{ GetCapabilities() };
+}
+
+sub MergeCustomEnums
+{
+    for my $exenum (sort keys%CUSTOM_ENUMS)
+    {
+        if (not $exenum =~ /^(sai_\w+)_custom_t$/)
+        {
+            LogError "Enum $exenum is not custom enum";
+            next;
+        }
+
+        my $enum = "$1_t";
+
+        if (not defined $SAI_ENUMS{$enum})
+        {
+            LogError "Enum $exenum is extending not existing enum $enum";
+            next;
+        }
+
+        my @exvalues = @{ $SAI_ENUMS{$exenum}{values} };
+
+        my @values = @{ $SAI_ENUMS{$enum}{values} };
+
+        push@values,@exvalues;
+
+        $SAI_ENUMS{$enum}{values} = \@values;
+
+        next if not $exenum =~ /_attr_custom_t/;
+
+        for my $exvalue (@exvalues)
+        {
+            $CUSTOM_ATTRS{$exvalue} = 1;
+
+            $METADATA{$enum}{$exvalue} = $METADATA{$exenum}{$exvalue};
+        }
+    }
 }
 
 sub MergeExtensionsEnums
@@ -5500,10 +5656,11 @@ sub CreateSaiSwigApiStructs
     my @headers = GetHeaderFiles();
     my @metaheaders = GetMetaHeaderFiles();
     my @exheaders = GetExperimentalHeaderFiles();
+    my @cuheaders = GetCustomHeaderFiles();
 
     push(@metaheaders, "saimetadata.h");
 
-    my @merged = (@headers, @metaheaders, @exheaders);
+    my @merged = (@headers, @metaheaders, @exheaders, @cuheaders);
 
     WriteSwig "%ignore sai_metadata_log;";
     WriteSwig "%ignore sai_metadata_log_level;";
@@ -5534,6 +5691,8 @@ ExtractApiToObjectMap();
 
 ExtractStatsFunctionMap();
 
+ExtractAttrApiVersion();
+
 ExtractUnionsInfo();
 
 CheckHeadersStyle() if not defined $optionDisableStyleCheck;
@@ -5544,6 +5703,8 @@ PopulateValueTypes();
 
 ProcessXmlFiles();
 
+MergeCustomEnums();
+
 MergeExtensionsEnums();
 
 CreateObjectTypeMap();
@@ -5551,6 +5712,10 @@ CreateObjectTypeMap();
 ExtractObjectTypeBulkMap();
 
 WriteHeaderHeader();
+
+ProcessAttrVersion();
+
+ProcessCustomObjectCount();
 
 ProcessSaiStatus();
 

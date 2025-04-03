@@ -288,6 +288,22 @@ typedef enum _sai_acl_action_type_t
 
     /** Next Chain Group */
     SAI_ACL_ACTION_TYPE_CHAIN_REDIRECT = 0x00000038,
+
+    /** Disable packet trim */
+    SAI_ACL_ACTION_TYPE_PACKET_TRIM_DISABLE = 0x00000039,
+
+    /** Set Packet inner Src MAC Address */
+    SAI_ACL_ACTION_TYPE_SET_INNER_SRC_MAC = 0x0000003a,
+
+    /** Set Packet inner Dst MAC Address */
+    SAI_ACL_ACTION_TYPE_SET_INNER_DST_MAC = 0x0000003b,
+
+    /** Set ECMP hash algorithm */
+    SAI_ACL_ACTION_TYPE_SET_ECMP_HASH_ALGORITHM = 0x0000003c,
+
+    /** Bind a TAM object */
+    SAI_ACL_ACTION_TYPE_TAM_OBJECT = 0x0000003d,
+
 } sai_acl_action_type_t;
 
 /**
@@ -1542,9 +1558,31 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_TUNNEL_TERMINATED = SAI_ACL_TABLE_ATTR_FIELD_START + 0x15f,
 
     /**
+     * @brief SRC META data
+     *
+     * This key is dedicated to matching on a SRC META data
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_SRC_PREFIX_META = SAI_ACL_TABLE_ATTR_FIELD_START + 0x160,
+
+    /**
+     * @brief DST META data
+     *
+     * This key is dedicated to matching on a DST META data
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_DST_PREFIX_META = SAI_ACL_TABLE_ATTR_FIELD_START + 0x161,
+
+    /**
      * @brief End of ACL Table Match Field
      */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_TUNNEL_TERMINATED,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_DST_PREFIX_META,
 
     /**
      * @brief ACL table entries associated with this table.
@@ -1579,6 +1617,34 @@ typedef enum _sai_acl_table_attr_t
      * @default SAI_ACL_TABLE_MATCH_TYPE_TERNARY
      */
     SAI_ACL_TABLE_ATTR_ACL_TABLE_MATCH_TYPE,
+
+    /**
+     * @brief SRC prefix Table Object ID
+     *
+     * An object pointer to a prefix table used for
+     * source prefix lookups
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_PREFIX_COMPRESSION_TABLE
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ACL_TABLE_ATTR_SRC_PREFIX_COMPRESSION_TABLE,
+
+    /**
+     * @brief DST prefix Table Object ID
+     *
+     * An object pointer to a prefix table used for
+     * destination prefix lookups
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_PREFIX_COMPRESSION_TABLE
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ACL_TABLE_ATTR_DST_PREFIX_COMPRESSION_TABLE,
 
     /**
      * @brief Start of Table Match valid bits
@@ -2624,9 +2690,27 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_TUNNEL_TERMINATED = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x15f,
 
     /**
+     * @brief SRC META data
+     *
+     * @type sai_acl_field_data_t sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_SRC_PREFIX_META = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x160,
+
+    /**
+     * @brief DST META data
+     *
+     * @type sai_acl_field_data_t sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_DST_PREFIX_META = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x161,
+
+    /**
      * @brief End of Rule Match Fields
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_TUNNEL_TERMINATED,
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_DST_PREFIX_META,
 
     /*
      * Actions [sai_acl_action_data_t]
@@ -3222,9 +3306,60 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_CHAIN_REDIRECT = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x38,
 
     /**
+     * @brief Disable packet trim for a given match condition.
+     *
+     * This rule takes effect only when packet trim is configured on a buffer profile of a queue to which a packet belongs.
+     *
+     * @type sai_acl_action_data_t bool
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_PACKET_TRIM_DISABLE = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x39,
+
+    /**
+     * @brief Set Packet Inner Src MAC Address
+     *
+     * @type sai_acl_action_data_t sai_mac_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_INNER_SRC_MAC = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x3a,
+
+    /**
+     * @brief Set Packet Inner Dst MAC Address
+     *
+     * @type sai_acl_action_data_t sai_mac_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_INNER_DST_MAC = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x3b,
+
+    /**
+     * @brief Set ECMP hash algorithm
+     *
+     * @type sai_acl_action_data_t sai_hash_algorithm_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_ECMP_HASH_ALGORITHM = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x3c,
+
+    /**
+     * @brief ACL bind point for TAM object
+     *
+     * Bind (or unbind) a TAM object.
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM
+     * @allownull true
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_TAM_OBJECT = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x3d,
+
+    /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_CHAIN_REDIRECT,
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_TAM_OBJECT,
 
     /**
      * @brief End of ACL Entry attributes

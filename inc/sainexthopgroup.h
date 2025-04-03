@@ -59,6 +59,12 @@ typedef enum _sai_next_hop_group_type_t
     /** Next hop hardware protection group. This is the group backing up the primary in the protection group type and is managed by hardware */
     SAI_NEXT_HOP_GROUP_TYPE_HW_PROTECTION,
 
+    /** Next hop group is ECMP, with members specified with the group */
+    SAI_NEXT_HOP_GROUP_TYPE_ECMP_WITH_MEMBERS,
+
+    /** Next hop group is for bridge port */
+    SAI_NEXT_HOP_GROUP_TYPE_BRIDGE_PORT,
+
     /* Other types of next hop group to be defined in the future, e.g., WCMP */
 
 } sai_next_hop_group_type_t;
@@ -109,6 +115,8 @@ typedef enum _sai_next_hop_group_attr_t
 
     /**
      * @brief Next hop member list
+     *
+     * Not valid when SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_ECMP_WITH_MEMBERS
      *
      * @type sai_object_list_t
      * @flags READ_ONLY
@@ -234,6 +242,62 @@ typedef enum _sai_next_hop_group_attr_t
      * @flags READ_ONLY
      */
     SAI_NEXT_HOP_GROUP_ATTR_ARS_PORT_REASSIGNMENTS,
+
+    /**
+     * @brief Next hop member list in the order specified by the application
+     *
+     * NH OID list length should match weight list length
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_NEXT_HOP
+     * @default empty
+     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_ECMP_WITH_MEMBERS
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_NEXT_HOP_LIST,
+
+    /**
+     * @brief Next hop member weight list
+     *
+     * @type sai_u32_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_ECMP_WITH_MEMBERS
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_NEXT_HOP_MEMBER_WEIGHT_LIST,
+
+    /**
+     * @brief Next hop member counter list
+     *
+     * When it is empty, then packet hits won't be counted
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     * @default empty
+     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_ECMP_WITH_MEMBERS
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_NEXT_HOP_MEMBER_COUNTER_LIST,
+
+    /**
+     * @brief Next hop group hash algorithm
+     * Overrides value of SAI_SWITCH_ATTR_ECMP_DEFAULT_HASH_ALGORITHM if not set to SAI_HASH_ALGORITHM_NONE
+     *
+     * @type sai_hash_algorithm_t
+     * @flags CREATE_ONLY
+     * @default SAI_HASH_ALGORITHM_NONE
+     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_UNORDERED_ECMP or SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_ORDERED_ECMP
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_HASH_ALGORITHM,
+
+    /**
+     * @brief Label attribute used to uniquely identify next-hop-group.
+     *
+     * @type char
+     * @flags CREATE_AND_SET
+     * @default ""
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_LABEL,
 
     /**
      * @brief End of attributes
@@ -610,6 +674,11 @@ typedef struct _sai_next_hop_group_api_t
     sai_get_next_hop_group_map_attribute_fn    get_next_hop_group_map_attribute;
     sai_bulk_object_set_attribute_fn           set_next_hop_group_members_attribute;
     sai_bulk_object_get_attribute_fn           get_next_hop_group_members_attribute;
+    sai_bulk_object_create_fn                  create_next_hop_groups;
+    sai_bulk_object_remove_fn                  remove_next_hop_groups;
+    sai_bulk_object_set_attribute_fn           set_next_hop_groups_attribute;
+    sai_bulk_object_get_attribute_fn           get_next_hop_groups_attribute;
+
 } sai_next_hop_group_api_t;
 
 /**

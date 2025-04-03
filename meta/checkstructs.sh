@@ -108,7 +108,7 @@ function create_commit_list()
 
 function check_structs_history()
 {
-    perl structs.pl -H "structs.825c835.history" $LIST
+    perl structs.pl -H "structs.5f75d99.history" $LIST
 }
 
 #
@@ -124,7 +124,7 @@ function check_structs_history()
 # the processing time will increase too much
 
 BEGIN_COMMIT=97a1e02 # v1.11.0
-BEGIN_COMMIT=825c835 # to this commit we have history file
+BEGIN_COMMIT=5f75d99 # to this commit we have history file
 END_COMMIT=HEAD
 
 clean_temp_dir

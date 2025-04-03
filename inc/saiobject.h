@@ -35,8 +35,10 @@
 #include <saimpls.h>
 #include <sainat.h>
 #include <saisrv6.h>
+#include <saiprefixcompression.h>
 
 /* new experimental object type includes */
+#include <saiexperimentaldashoutboundportmap.h>
 #include <saiexperimentaldashtunnel.h>
 #include <saiexperimentaldashha.h>
 #include <saiexperimentaldashappliance.h>
@@ -116,6 +118,9 @@ typedef union _sai_object_key_entry_t
     /** @validonly object_type == SAI_OBJECT_TYPE_PA_VALIDATION_ENTRY */
     sai_pa_validation_entry_t pa_validation_entry;
 
+    /** @validonly object_type == SAI_OBJECT_TYPE_PREFIX_COMPRESSION_ENTRY */
+    sai_prefix_compression_entry_t prefix_compression_entry;
+
     /** @validonly object_type == SAI_OBJECT_TYPE_VIP_ENTRY */
     sai_vip_entry_t vip_entry;
 
@@ -124,6 +129,9 @@ typedef union _sai_object_key_entry_t
 
     /** @validonly object_type == SAI_OBJECT_TYPE_FLOW_ENTRY */
     sai_flow_entry_t flow_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_OUTBOUND_PORT_MAP_PORT_RANGE_ENTRY */
+    sai_outbound_port_map_port_range_entry_t outbound_port_map_port_range_entry;
 
     /* Add new experimental entries above this line */
 
@@ -295,6 +303,20 @@ sai_status_t sai_query_stats_capability(
         _In_ sai_object_id_t switch_id,
         _In_ sai_object_type_t object_type,
         _Inout_ sai_stat_capability_list_t *stats_capability);
+
+/**
+ * @brief Query statistics capability for statistics bound at object level under the stream telemetry mode
+ *
+ * @param[in] switch_id SAI Switch object id
+ * @param[in] object_type SAI object type
+ * @param[inout] stats_capability List of implemented enum values, the statistics modes (bit mask) supported and minimal polling interval per value
+ *
+ * @return #SAI_STATUS_SUCCESS on success, #SAI_STATUS_BUFFER_OVERFLOW if lists size insufficient, failure status code on error
+ */
+sai_status_t sai_query_stats_st_capability(
+        _In_ sai_object_id_t switch_id,
+        _In_ sai_object_type_t object_type,
+        _Inout_ sai_stat_st_capability_list_t *stats_capability);
 
 /**
  * @brief Bulk objects get statistics.

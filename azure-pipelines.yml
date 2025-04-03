@@ -45,6 +45,13 @@ stages:
     - script: |
         set -ex
         export ANSI_COLORS_DISABLED=1
+        cp doc/custom-headers/sai*.h custom/
+        cd meta
+        make
+      displayName: "Metadata check with custom"
+    - script: |
+        set -ex
+        export ANSI_COLORS_DISABLED=1
         export GEN_SAIRPC_OPTS="-ve"
         cd meta
         make rpc

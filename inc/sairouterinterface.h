@@ -317,6 +317,15 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_SELECTIVE_COUNTER_LIST,
 
     /**
+     * @brief Label attribute used to uniquely identify router interface.
+     *
+     * @type char
+     * @flags CREATE_AND_SET
+     * @default ""
+     */
+    SAI_ROUTER_INTERFACE_ATTR_LABEL,
+
+    /**
      * @brief Attribute used to specify external My MAC entry that will
      * be used in place of any implicit entry created during RIF processing
      * for this {port, vlan, MAC address}

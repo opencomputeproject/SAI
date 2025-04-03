@@ -139,6 +139,15 @@ typedef enum _sai_ha_set_attr_t
     SAI_HA_SET_ATTR_DPU_DRIVEN_HA_SWITCHOVER_WAIT_TIME_MS,
 
     /**
+     * @brief Action parameter peer bounceback IP
+     *
+     * @type sai_ip_address_t
+     * @flags CREATE_AND_SET
+     * @default 0.0.0.0
+     */
+    SAI_HA_SET_ATTR_PEER_BOUNCEBACK_IP,
+
+    /**
      * @brief End of attributes
      */
     SAI_HA_SET_ATTR_END,

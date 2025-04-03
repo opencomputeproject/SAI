@@ -418,6 +418,21 @@ typedef enum _sai_queue_stat_t
     /** Queue delay watermark in nanoseconds [uint64_t] */
     SAI_QUEUE_STAT_DELAY_WATERMARK_NS = 0x00000027,
 
+    /** Packets trimmed due to failed admission [uint64_t] */
+    SAI_QUEUE_STAT_TRIM_PACKETS = 0x00000028,
+
+    /** Get current queue occupancy in cells [uint64_t] */
+    SAI_QUEUE_STAT_CURR_OCCUPANCY_CELLS = 0x00000029,
+
+    /** Get watermark queue occupancy in cells [uint64_t] */
+    SAI_QUEUE_STAT_WATERMARK_CELLS = 0x0000002a,
+
+    /** Get current queue shared occupancy in cells [uint64_t] */
+    SAI_QUEUE_STAT_SHARED_CURR_OCCUPANCY_CELLS = 0x0000002b,
+
+    /** Get watermark queue shared occupancy in cells [uint64_t] */
+    SAI_QUEUE_STAT_SHARED_WATERMARK_CELLS = 0x0000002c,
+
     /** Custom range base value */
     SAI_QUEUE_STAT_CUSTOM_RANGE_BASE = 0x10000000
 

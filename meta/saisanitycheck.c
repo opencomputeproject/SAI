@@ -93,9 +93,20 @@ defined_attr_t* defined_attributes = NULL;
 /* custom ranges start are the same for all objects */
 
 #define CUSTOM_ATTR_RANGE_START SAI_PORT_ATTR_CUSTOM_RANGE_START
+#define CUSTOM_RANGE_START (0x10000000)
 #define EXTENSION_RANGE_START (0x20000000)
 #define EXTENSION_OBJECT_TYPE_COUNT (SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END - SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START)
-#define TOTAL_OBJECT_TYPE_COUNT (EXTENSION_OBJECT_TYPE_COUNT + SAI_OBJECT_TYPE_MAX)
+/* #define CUSTOM_OBJECT_TYPE_COUNT (SAI_OBJECT_TYPE_CUSTOM_RANGE_END - SAI_OBJECT_TYPE_CUSTOM_RANGE_START) */
+#define CUSTOM_OBJECT_TYPE_COUNT (SAI_METADATA_CUSTOM_OBJECT_COUNT)
+#define TOTAL_OBJECT_TYPE_COUNT (EXTENSION_OBJECT_TYPE_COUNT + CUSTOM_OBJECT_TYPE_COUNT + SAI_OBJECT_TYPE_MAX)
+
+#ifndef SAI_OBJECT_TYPE_CUSTOM_RANGE_START
+#define SAI_OBJECT_TYPE_CUSTOM_RANGE_START (CUSTOM_RANGE_START)
+#endif
+
+#ifndef SAI_OBJECT_TYPE_CUSTOM_RANGE_END
+#define SAI_OBJECT_TYPE_CUSTOM_RANGE_END (CUSTOM_RANGE_START + SAI_METADATA_CUSTOM_OBJECT_COUNT)
+#endif
 
 bool is_extensions_enum(
         _In_ const sai_enum_metadata_t* emd)
@@ -103,6 +114,14 @@ bool is_extensions_enum(
     META_LOG_ENTER();
 
     return strstr(emd->name, "_extensions_t") != NULL;
+}
+
+bool is_custom_enum(
+        _In_ const sai_enum_metadata_t* emd)
+{
+    META_LOG_ENTER();
+
+    return strstr(emd->name, "_custom_t") != NULL;
 }
 
 void check_all_enums_name_pointers()
@@ -133,9 +152,16 @@ void check_all_enums_name_pointers()
             if (emd->valuescount == 0)
                 META_LOG_WARN("enum %s has no values", emd->name);
         }
+        else if (is_custom_enum(emd))
+        {
+            /* allow empty custom enums */
+
+            if (emd->valuescount == 0)
+                META_LOG_WARN("enum %s has no values", emd->name);
+        }
         else
         {
-            META_ASSERT_TRUE(emd->valuescount > 0, "enum must have some values");
+            META_ASSERT_TRUE(emd->valuescount > 0, "enum must have some values: %s", emd->name);
         }
 
         size_t j = 0;
@@ -374,7 +400,11 @@ void check_object_type()
 
         int value = sai_metadata_enum_sai_object_type_t.values[i];
 
-        if (last < value && value == EXTENSION_RANGE_START)
+        if (last < value && value == CUSTOM_RANGE_START)
+        {
+            /* ok, but object type can't be used as array index any more */
+        }
+        else if (last < value && value == EXTENSION_RANGE_START)
         {
             /* ok, but object type can't be used as array index any more */
         }
@@ -417,7 +447,7 @@ void check_attr_by_object_type()
      */
     META_ASSERT_TRUE(EXTENSION_OBJECT_TYPE_COUNT < 64, "too many experimental object types");
 
-    META_ASSERT_TRUE(sai_metadata_attr_by_object_type_count == (EXTENSION_OBJECT_TYPE_COUNT + SAI_OBJECT_TYPE_MAX), "invalid object type count in metadata");
+    META_ASSERT_TRUE(sai_metadata_attr_by_object_type_count == (EXTENSION_OBJECT_TYPE_COUNT + CUSTOM_OBJECT_TYPE_COUNT + SAI_OBJECT_TYPE_MAX), "invalid object type count in metadata");
 
     size_t idx = 1;
 
@@ -444,6 +474,10 @@ void check_attr_by_object_type()
             META_ASSERT_TRUE(current > SAI_OBJECT_TYPE_NULL, "object type must be > NULL");
 
             if (current > SAI_OBJECT_TYPE_NULL && current < SAI_OBJECT_TYPE_MAX)
+            {
+                /* ok */
+            }
+            else if (current >= (int)SAI_OBJECT_TYPE_CUSTOM_RANGE_START && current < (int)SAI_OBJECT_TYPE_CUSTOM_RANGE_END)
             {
                 /* ok */
             }
@@ -478,6 +512,9 @@ bool is_valid_object_type(
         return true;
 
     if (ot >= (int)SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START && ot < (int)SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END)
+        return true;
+
+    if (ot >= (int)SAI_OBJECT_TYPE_CUSTOM_RANGE_START && ot < (int)SAI_OBJECT_TYPE_CUSTOM_RANGE_END)
         return true;
 
     return false;
@@ -744,6 +781,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_VLAN_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT32:
         case SAI_ATTR_VALUE_TYPE_UINT64:
+        case SAI_ATTR_VALUE_TYPE_INT64:
         case SAI_ATTR_VALUE_TYPE_MAC:
         case SAI_ATTR_VALUE_TYPE_POINTER:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
@@ -761,6 +799,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_PAM4_EYE_VALUES_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_FREQUENCY_OFFSET_PPM_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST:
         case SAI_ATTR_VALUE_TYPE_LATCH_STATUS:
@@ -1067,6 +1106,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_PAM4_EYE_VALUES_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_FREQUENCY_OFFSET_PPM_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_LANE_LATCH_STATUS_LIST:
@@ -1279,6 +1319,7 @@ void check_attr_default_value_type(
                 case SAI_ATTR_VALUE_TYPE_MAP_LIST:
                 case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
                 case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
+                case SAI_ATTR_VALUE_TYPE_PORT_PAM4_EYE_VALUES_LIST:
                 case SAI_ATTR_VALUE_TYPE_PORT_FREQUENCY_OFFSET_PPM_LIST:
                 case SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST:
                 case SAI_ATTR_VALUE_TYPE_PORT_LANE_LATCH_STATUS_LIST:
@@ -1533,6 +1574,136 @@ void check_attr_conditions(
     }
 }
 
+void check_attr_validonly_for_recursion_rec(
+        _In_ const sai_attr_metadata_t* md,
+        _Inout_ sai_attr_id_t* tab,
+        _Inout_ size_t* idx)
+{
+    META_LOG_ENTER();
+
+    /* check if i'm already on the table */
+
+    size_t i = 0;
+
+    for (; i < *idx; i++)
+    {
+        if (tab[i] == md->attrid)
+        {
+            META_MD_ASSERT_FAIL(md, "attribute have recursive validonly condition! INVALID!");
+        }
+    }
+
+    /* put me on the list */
+
+    tab[*idx] = md->attrid;
+
+    *idx += 1;
+
+    size_t index = 0;
+
+    for (; index < md->validonlylength; ++index)
+    {
+        const sai_attr_condition_t* c = md->validonly[index];
+
+        if (c->attrid == SAI_INVALID_ATTRIBUTE_ID)
+        {
+            /* skip mixed condition */
+            continue;
+        }
+
+        const sai_attr_metadata_t* cmd = sai_metadata_get_attr_metadata(md->objecttype, c->attrid);
+
+        META_ASSERT_NOT_NULL(cmd);
+
+        check_attr_validonly_for_recursion_rec(cmd, tab, idx);
+    }
+
+    *idx -= 1; /* take me off the list */
+}
+
+void check_attr_validonly_for_recursion(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    /*
+     * At this point attribute md is validonly and has condition attributes
+     * that are also validonly, check if there is possible dependency
+     * recursion.
+     */
+
+    sai_attr_id_t tab[0x1000]; /* max conditions */
+
+    size_t idx = 0;
+
+    check_attr_validonly_for_recursion_rec(md, tab, &idx);
+}
+
+void check_attr_condition_for_recursion_rec(
+        _In_ const sai_attr_metadata_t* md,
+        _Inout_ sai_attr_id_t* tab,
+        _Inout_ size_t* idx)
+{
+    META_LOG_ENTER();
+
+    /* check if i'm already on the table */
+
+    size_t i = 0;
+
+    for (; i < *idx; i++)
+    {
+        if (tab[i] == md->attrid)
+        {
+            META_MD_ASSERT_FAIL(md, "attribute have recursive condition! INVALID!");
+        }
+    }
+
+    /* put me on the list */
+
+    tab[*idx] = md->attrid;
+
+    *idx += 1;
+
+    size_t index = 0;
+
+    for (; index < md->conditionslength; ++index)
+    {
+        const sai_attr_condition_t* c = md->conditions[index];
+
+        if (c->attrid == SAI_INVALID_ATTRIBUTE_ID)
+        {
+            /* skip mixed condition */
+            continue;
+        }
+
+        const sai_attr_metadata_t* cmd = sai_metadata_get_attr_metadata(md->objecttype, c->attrid);
+
+        META_ASSERT_NOT_NULL(cmd);
+
+        check_attr_condition_for_recursion_rec(cmd, tab, idx);
+    }
+
+    *idx -= 1; /* take me off the list */
+}
+
+void check_attr_condition_for_recursion(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    /*
+     * At this point attribute md is validonly and has condition attributes
+     * that also has condition, check if there is possible dependency
+     * recursion.
+     */
+
+    sai_attr_id_t tab[0x1000]; /* max conditions */
+
+    size_t idx = 0;
+
+    check_attr_condition_for_recursion_rec(md, tab, &idx);
+}
+
 void check_attr_validonly(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -1747,13 +1918,21 @@ void check_attr_validonly(
             }
             else
             {
-                META_MD_ASSERT_FAIL(md, "validonly attribute is also validonly attribute, not allowed");
+                /* check if there is recursion */
+
+                META_LOG_DEBUG("attr %s is validonly and depends on other validonly (%s)", md->attridname, cmd->attridname);
+
+                check_attr_validonly_for_recursion(md);
             }
         }
 
         if (cmd->conditiontype != SAI_ATTR_CONDITION_TYPE_NONE)
         {
-            META_MD_ASSERT_FAIL(md, "conditional attribute is also conditional, not allowed");
+            /* check if there is recursion */
+
+            META_LOG_DEBUG("attr %s is validonly and depends on other condition (%s)", md->attridname, cmd->attridname);
+
+            check_attr_condition_for_recursion(md);
         }
 
         switch ((int)cmd->flags)
@@ -1895,6 +2074,7 @@ void check_attr_allow_flags(
             case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
             case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
             case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
+            case SAI_ATTR_VALUE_TYPE_PORT_PAM4_EYE_VALUES_LIST:
             case SAI_ATTR_VALUE_TYPE_PORT_FREQUENCY_OFFSET_PPM_LIST:
             case SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST:
             case SAI_ATTR_VALUE_TYPE_PORT_LANE_LATCH_STATUS_LIST:
@@ -2788,6 +2968,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_SEGMENT_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_EYE_VALUES_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_PAM4_EYE_VALUES_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_FREQUENCY_OFFSET_PPM_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_SNR_LIST:
         case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
@@ -2844,6 +3025,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_UINT32:
         case SAI_ATTR_VALUE_TYPE_UINT32_RANGE:
         case SAI_ATTR_VALUE_TYPE_UINT64:
+        case SAI_ATTR_VALUE_TYPE_INT64:
         case SAI_ATTR_VALUE_TYPE_UINT8:
         case SAI_ATTR_VALUE_TYPE_TIMESPEC:
         case SAI_ATTR_VALUE_TYPE_IPV4:
@@ -3047,6 +3229,31 @@ void check_attr_mixed_validonly(
     }
 }
 
+static void alter_condition_value(
+        _In_ const sai_attr_metadata_t* md, /* condition attribute metadata */
+        _Inout_ sai_attribute_value_t *cond)
+{
+    META_LOG_ENTER();
+
+    /* all operations must be reversible, hence xor ^ is used */
+
+    /* types used in conditions compare */
+
+    switch (md->attrvaluetype)
+    {
+        case SAI_ATTR_VALUE_TYPE_BOOL:
+            cond->booldata = !cond->booldata; /* flip */
+            break;
+
+        case SAI_ATTR_VALUE_TYPE_INT32:
+            cond->s32 ^= (int32_t)(-1);
+            break;
+
+        default:
+            META_ASSERT_FAIL("value type not supported: %d, FIXME!", md->attrvaluetype);
+    }
+}
+
 void check_attr_condition_met(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -3133,11 +3340,35 @@ void check_attr_condition_met(
              * SAI_PORT_ATTR_MEDIA_TYPE.
              */
 
-            attrs[idx].id ^= (uint32_t)(-1);
+            const sai_attr_metadata_t *a = sai_metadata_get_attr_metadata(md->objecttype, attrs[idx].id);
 
-            META_ASSERT_FALSE(sai_metadata_is_condition_met(md, count, attrs), "condition should be met");
+            if (a && a->defaultvalue)
+            {
+                /* alter passed value */
 
-            attrs[idx].id ^= (uint32_t)(-1);
+                /*
+                 * Since condition attribute have default value, this value
+                 * will be used when attribute is missing, so instead of
+                 * removing this attribute, let's change it's value for a
+                 * single check to force condition to fail.
+                 */
+
+                alter_condition_value(a, &attrs[idx].value);
+
+                META_ASSERT_FALSE(sai_metadata_is_condition_met(md, count, attrs), "condition should not be met, %s", md->attridname);
+
+                alter_condition_value(a, &attrs[idx].value);
+            }
+            else
+            {
+                /* condition should not be met if mandatory attribute is missing */
+
+                attrs[idx].id ^= (uint32_t)(-1);
+
+                META_ASSERT_FALSE(sai_metadata_is_condition_met(md, count, attrs), "condition should not be met");
+
+                attrs[idx].id ^= (uint32_t)(-1);
+            }
         }
     }
     else if (md->conditiontype == SAI_ATTR_CONDITION_TYPE_MIXED)
@@ -3244,11 +3475,11 @@ void check_attr_validonly_met(
             {
                 /* alter passed value */
 
-                attrs[idx].value.s32 ^= (int32_t)(-1);
+                alter_condition_value(a, &attrs[idx].value);
 
                 META_ASSERT_FALSE(sai_metadata_is_validonly_met(md, count, attrs), "validonly should be met, %s", md->attridname);
 
-                attrs[idx].value.s32 ^= (int32_t)(-1);
+                alter_condition_value(a, &attrs[idx].value);
             }
             else
             {
@@ -3470,6 +3701,27 @@ void check_attr_condition_relaxed(
     }
 }
 
+void check_attr_version(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    if (SAI_METADATA_HAVE_ATTR_VERSION)
+    {
+        META_ASSERT_TRUE(md->apiversion > SAI_VERSION(0,0,0), "expected version to be defined");
+
+        if (md->nextrelease)
+        {
+            META_LOG_DEBUG("%s: nextrelease == true", md->attridname);
+        }
+    }
+    else
+    {
+        META_ASSERT_TRUE(md->apiversion == SAI_VERSION(0,0,0), "expected version to be zero");
+        META_ASSERT_TRUE(md->nextrelease == false, "expected nextrelease to be false");
+    }
+}
+
 void check_single_attribute(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -3517,6 +3769,7 @@ void check_single_attribute(
     check_attr_mixed_condition(md);
     check_attr_mixed_validonly(md);
     check_attr_condition_relaxed(md);
+    check_attr_version(md);
 
     define_attr(md);
 }
@@ -3980,11 +4233,18 @@ uint32_t ot2idx(
      * index in array
      */
 
+    uint32_t i = 1;
+
     if (ot >= SAI_OBJECT_TYPE_NULL && ot < SAI_OBJECT_TYPE_MAX)
         return ot;
 
-    if (ot >= (int)SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START && ot < (int)SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END)
-        return SAI_OBJECT_TYPE_MAX + (ot - SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START);
+    for (; sai_metadata_all_object_type_infos[i]; i++)
+    {
+        if (sai_metadata_all_object_type_infos[i]->objecttype == ot)
+        {
+            return i;
+        }
+    }
 
     META_ASSERT_FAIL("invalid object type specified %d", ot);
 }
@@ -4108,6 +4368,12 @@ void check_objects_for_loops_recursive(
 
         if (m->objecttype == SAI_OBJECT_TYPE_SCHEDULER_GROUP &&
                 m->attrid == SAI_SCHEDULER_GROUP_ATTR_PARENT_NODE)
+        {
+            continue;
+        }
+
+        if (m->objecttype == SAI_OBJECT_TYPE_TAM_COLLECTOR &&
+               m->attrid == SAI_TAM_COLLECTOR_ATTR_DESTINATION)
         {
             continue;
         }
@@ -5015,6 +5281,12 @@ void check_object_ro_list(
         return;
     }
 
+    if (oi->iscustom)
+    {
+        META_LOG_DEBUG("custom object %s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
+        return;
+    }
+
     if (SAI_OBJECT_TYPE_DEBUG_COUNTER == oi->objecttype)
     {
         META_LOG_WARN("debug counter object %s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
@@ -5055,11 +5327,19 @@ void check_experimental_flag(
 
     if (oi->objecttype >= SAI_OBJECT_TYPE_MAX)
     {
-        META_ASSERT_TRUE(oi->isexperimental, "object %s is expected to be marked as experimental", oi->objecttypename);
+        if (oi->objecttype >= (int)SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START)
+        {
+            META_ASSERT_TRUE(oi->isexperimental, "object %s is expected to be marked as experimental", oi->objecttypename);
+        }
+        else if (oi->objecttype >= (int)SAI_OBJECT_TYPE_CUSTOM_RANGE_START)
+        {
+            META_ASSERT_TRUE(oi->iscustom, "object %s is expected to be marked as custom", oi->objecttypename);
+        }
     }
     else
     {
         META_ASSERT_FALSE(oi->isexperimental, "object %s is expected to not be marked as experimental", oi->objecttypename);
+        META_ASSERT_FALSE(oi->iscustom, "object %s is expected to not be marked as custom", oi->objecttypename);
     }
 }
 
@@ -5084,6 +5364,9 @@ void check_attr_end(
             continue;
 
         if (meta[index]->attrid < oi->attridend)
+            continue;
+
+        if (meta[index]->iscustom)
             continue;
 
         if (meta[index]->isextensionattr)
@@ -5212,6 +5495,16 @@ void check_graph_connected()
             /* allow experimental object types to be disconnected from main graph */
 
             META_LOG_WARN("experimental object %s is disconnected from graph",
+                    sai_metadata_all_object_type_infos[i]->objecttypename);
+
+            continue;
+        }
+
+        if (sai_metadata_all_object_type_infos[i]->iscustom)
+        {
+            /* allow custom object types to be disconnected from main graph */
+
+            META_LOG_WARN("custom object %s is disconnected from graph",
                     sai_metadata_all_object_type_infos[i]->objecttypename);
 
             continue;
@@ -5477,9 +5770,15 @@ void check_switch_pointers_list()
 
     size_t i;
 
+    sai_attr_id_t id = 0;
+
     for (i = 0; i < sai_metadata_switch_pointers_attr_count; ++i)
     {
         META_ASSERT_NOT_NULL(sai_metadata_switch_pointers_attr[i]);
+
+        META_ASSERT_TRUE(id <= sai_metadata_switch_pointers_attr[i]->attrid, "sai_metadata_switch_pointers_attr attr pointers expected to increase")
+
+        id = sai_metadata_switch_pointers_attr[i]->attrid;
     }
 
     /* check for NULL guard */
@@ -5622,9 +5921,13 @@ void check_enum_flags_type_ranges(
 
             /* this check can be relaxed, we allow now 16 types of ranges */
 
-            if (val < EXTENSION_RANGE_START)
+            if (val < CUSTOM_RANGE_START)
             {
                 META_ASSERT_TRUE((val < (16*RANGE_BASE)), "range value 0x%x is too high on %s", val, name);
+            }
+            else if (val < EXTENSION_RANGE_START)
+            {
+                META_ASSERT_TRUE((val < (16*RANGE_BASE + CUSTOM_RANGE_START)), "range value 0x%x is too high on %s", val, name);
             }
             else
             {
@@ -5856,7 +6159,10 @@ void check_object_type_extension_max_value()
      *
      */
 
-    META_LOG_INFO("SAI_OBJECT_TYPE_MAX = %d, EXTENSION_OBJECT_TYPE_COUNT = %d", SAI_OBJECT_TYPE_MAX, EXTENSION_OBJECT_TYPE_COUNT);
+    META_LOG_INFO("SAI_OBJECT_TYPE_MAX = %d, EXTENSION_OBJECT_TYPE_COUNT = %d, CUSTOM_OBJECT_TYPE_COUNT = %d",
+            SAI_OBJECT_TYPE_MAX,
+            EXTENSION_OBJECT_TYPE_COUNT,
+            CUSTOM_OBJECT_TYPE_COUNT);
 
     /*
      * This check may be removed, but it will need to be brought into attention on SAI meeting.
@@ -5976,6 +6282,8 @@ void check_struct_and_union_size()
     CHECK_STRUCT_SIZE(sai_port_err_status_list_t, 16);
     CHECK_STRUCT_SIZE(sai_port_eye_values_list_t, 16);
     CHECK_STRUCT_SIZE(sai_port_lane_eye_values_t, 20);
+    CHECK_STRUCT_SIZE(sai_port_pam4_lane_eye_values_t, 28);
+    CHECK_STRUCT_SIZE(sai_port_pam4_eye_values_list_t, 16);
     CHECK_STRUCT_SIZE(sai_port_lane_latch_status_list_t, 16);
     CHECK_STRUCT_SIZE(sai_port_lane_latch_status_t, 8);
     CHECK_STRUCT_SIZE(sai_port_frequency_offset_ppm_list_t, 16);
@@ -5983,6 +6291,7 @@ void check_struct_and_union_size()
     CHECK_STRUCT_SIZE(sai_port_snr_list_t, 16);
     CHECK_STRUCT_SIZE(sai_port_snr_values_t, 8);
     CHECK_STRUCT_SIZE(sai_port_oper_status_notification_t, 16);
+    CHECK_STRUCT_SIZE(sai_extended_port_oper_status_notification_t, 32);
     CHECK_STRUCT_SIZE(sai_prbs_rx_state_t, 8);
     CHECK_STRUCT_SIZE(sai_qos_map_list_t, 16);
     CHECK_STRUCT_SIZE(sai_qos_map_params_t, 16);

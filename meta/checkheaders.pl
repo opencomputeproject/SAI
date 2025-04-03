@@ -149,7 +149,7 @@ sub GetValues
 
     my ($fhb, $bin) = tempfile( SUFFIX => '.bin', UNLINK => 1  );
 
-    system("gcc $src -I. -I '$dir'/../experimental -I '$dir' -o $bin") == 0 or die "gcc failed! $!";
+    system("gcc $src -I. -I '$dir'/../experimental -I '$dir/../custom/' -I '$dir' -o $bin") == 0 or die "gcc failed! $!";
 
     close $fhs;
     close $fhb;
@@ -195,7 +195,10 @@ sub CheckHash
             next if $key eq "SAI_OBJECT_TYPE_MAX";
             next if $key eq "SAI_API_MAX";
             next if $key eq "SAI_PORT_INTERFACE_TYPE_MAX";
+            next if $key eq "SAI_PORT_STAT_END";
             next if $key eq "SAI_PORT_BREAKOUT_MODE_TYPE_MAX";
+            next if $key eq "SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_CUSTOM_RANGE_BASE";
+            next if $key eq "SAI_HOSTIF_USER_DEFINED_TRAP_TYPE_END";
 
             # NOTE: some other attributes/enum with END range could be added
         }

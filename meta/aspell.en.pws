@@ -128,7 +128,9 @@ netdevs
 netlink
 nexthop
 nexthopgroup
+nextrelease
 NPUs
+NRZ
 objlist
 offsetof
 oid
@@ -144,10 +146,12 @@ PGs
 PHY
 pkts
 policer
+policers
 Policer
 postcursor
 pre
 precursor
+psec
 PVID
 qos
 quantization
@@ -202,6 +206,7 @@ Uninitialize
 unordered
 untagged
 Untagged
+uSID
 Utils
 validonly
 validonlys
@@ -219,3 +224,5 @@ Wildcard
 www
 xconnect
 TWAMP
+config
+sys

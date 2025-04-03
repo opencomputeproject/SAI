@@ -193,7 +193,7 @@ typedef enum _sai_hash_algorithm_t
     /** XOR-based hash algorithm */
     SAI_HASH_ALGORITHM_XOR = 1,
 
-    /** Random-based hash algorithm */
+    /** Random-based hash algorithm (per-packet random spraying) */
     SAI_HASH_ALGORITHM_RANDOM = 2,
 
     /** Lower 16-bits of CRC32 based hash algorithm */
@@ -207,6 +207,12 @@ typedef enum _sai_hash_algorithm_t
 
     /** Combination of CRC and XOR based hash algorithm */
     SAI_HASH_ALGORITHM_CRC_XOR = 6,
+
+    /** Hash algorithm not set */
+    SAI_HASH_ALGORITHM_NONE = 7,
+
+    /** Round-robin based hash algorithm (per-packet round-robin spraying) */
+    SAI_HASH_ALGORITHM_ROUND_ROBIN = 8,
 
 } sai_hash_algorithm_t;
 
@@ -609,6 +615,30 @@ typedef enum _sai_switch_hostif_oper_status_update_mode_t
     SAI_SWITCH_HOSTIF_OPER_STATUS_UPDATE_MODE_SAI_ADAPTER = 1,
 
 } sai_switch_hostif_oper_status_update_mode_t;
+
+/**
+ * @brief Attribute data for SAI_SWITCH_ATTR_HOSTIF_OPER_STATUS_UPDATE_MODE.
+ */
+typedef enum _sai_packet_trim_queue_resolution_mode_t
+{
+    /**
+     * @brief Static queue resolution.
+     *
+     * In this mode, a new queue for the trimmed packet is set directly
+     * by the application.
+     */
+    SAI_PACKET_TRIM_QUEUE_RESOLUTION_MODE_STATIC,
+
+    /**
+     * @brief Dynamic queue resolution.
+     *
+     * In this mode, a new queue for the trimmed packet is resolved
+     * using QOS maps (DSCP value to TC to Queue), applied to a new
+     * DSCP value that was provided for a trimmed packet.
+     */
+    SAI_PACKET_TRIM_QUEUE_RESOLUTION_MODE_DYNAMIC,
+
+} sai_packet_trim_queue_resolution_mode_t;
 
 /**
  * @brief Attribute Id in sai_set_switch_attribute() and
@@ -3069,6 +3099,183 @@ typedef enum _sai_switch_attr_t
      * @default empty
      */
     SAI_SWITCH_ATTR_SELECTIVE_COUNTER_LIST,
+
+    /**
+     * @brief Extended port state change notification callback function passed to the adapter.
+     *
+     * In case driver does not support this attribute, The Host adapter should poll
+     * port status by SAI_PORT_ATTR_OPER_STATUS.
+     *
+     * Use sai_extended_port_state_change_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_extended_port_state_change_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_EXTENDED_PORT_STATE_CHANGE_NOTIFY,
+
+    /**
+     * @brief Tam telemetry reporting byte size of chunk under the stream telemetry
+     *
+     * Defines the maximum number of bytes in a single report.
+     * The total number of bytes in a report should be as close as possible to this value.
+     * We can increase this value to reduce the number of sys calls.
+     * If the type of message is IPFIX, this value should not be less than 65535.
+     * Because we don't expect the IPFIX record to be fragmented.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_ONLY
+     * @default 65535
+     */
+    SAI_SWITCH_ATTR_TAM_ST_REPORT_CHUNK_SIZE,
+
+    /**
+     * @brief Tam telemetry chunk count under the stream telemetry
+     *
+     * This value indicates how many chunks of reports that can be restored in the buffer.
+     * If the data structure is a ring buffer, the byte size of ring buffer is chunk count * chunk size.
+     * The default value, 0, means that this value was determined by the vendor.
+     * If the buffer is full, new incoming data will be dropped.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_ONLY
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_TAM_ST_CHUNK_COUNT,
+
+    /**
+     * @brief Set TAM telemetry type config change event notification callback function passed to the adapter.
+     *
+     * Use sai_tam_tel_type_config_change_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_tam_tel_type_config_change_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_TAM_TEL_TYPE_CONFIG_CHANGE_NOTIFY,
+
+    /**
+     * @brief Trim packets to this size to reduce bandwidth
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 128
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIM_SIZE,
+
+    /**
+     * @brief New packet trim DSCP value
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIM_DSCP_VALUE,
+
+    /**
+     * @brief Queue mapping mode for a trimmed packet
+     *
+     * @type sai_packet_trim_queue_resolution_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PACKET_TRIM_QUEUE_RESOLUTION_MODE_STATIC
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIM_QUEUE_RESOLUTION_MODE,
+
+    /**
+     * @brief New packet trim queue index
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_SWITCH_ATTR_PACKET_TRIM_QUEUE_RESOLUTION_MODE == SAI_PACKET_TRIM_QUEUE_RESOLUTION_MODE_STATIC
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIM_QUEUE_INDEX,
+
+    /**
+     * @brief Size of a shared buffer cell
+     *
+     * Some counters related to shared buffer may be
+     * reported in cells instead of bytes for an
+     * improved performance.
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_SHARED_BUFFER_CELL_SIZE,
+
+    /**
+     * @brief Global PTP mode configuration
+     *
+     * Global PTP mode configuration for the switch.
+     * Applies to all ports unless overridden by port-specific settings.
+     *
+     * @type sai_port_ptp_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_PTP_MODE_NONE
+     */
+    SAI_SWITCH_ATTR_PORT_PTP_MODE,
+
+    /**
+     * @brief The hash object for IPv4 RDMA packets going through ECMP
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_HASH
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_ECMP_HASH_IPV4_RDMA,
+
+    /**
+     * @brief The hash object for IPv6 RDMA packets going through ECMP
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_HASH
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_ECMP_HASH_IPV6_RDMA,
+
+    /**
+     * @brief The hash object for IPv4 RDMA packets going through LAG
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_HASH
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_LAG_HASH_IPV4_RDMA,
+
+    /**
+     * @brief The hash object for IPv6 RDMA packets going through LAG
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_HASH
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_LAG_HASH_IPV6_RDMA,
+
+    /**
+     * @brief Maximum number of synchronous ethernet clocks supported.
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_SYNCE_CLOCK_COUNT,
+
+    /**
+     * @brief Gets the synchronous ethernet clock object list
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_SYNCE_CLOCK
+     * @default internal
+     */
+    SAI_SWITCH_ATTR_SYNCE_CLOCK_LIST,
 
     /**
      * @brief End of attributes

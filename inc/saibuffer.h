@@ -150,6 +150,24 @@ typedef enum _sai_ingress_priority_group_stat_t
     /** Get dropped packets count [uint64_t] */
     SAI_INGRESS_PRIORITY_GROUP_STAT_DROPPED_PACKETS = 0x00000008,
 
+    /** Get current pg occupancy in cells [uint64_t] */
+    SAI_INGRESS_PRIORITY_GROUP_STAT_CURR_OCCUPANCY_CELLS = 0x00000009,
+
+    /** Get watermark pg occupancy in cells [uint64_t] */
+    SAI_INGRESS_PRIORITY_GROUP_STAT_WATERMARK_CELLS = 0x0000000a,
+
+    /** Get current pg shared occupancy in cells [uint64_t] */
+    SAI_INGRESS_PRIORITY_GROUP_STAT_SHARED_CURR_OCCUPANCY_CELLS = 0x0000000b,
+
+    /** Get watermark pg shared occupancy in cells [uint64_t] */
+    SAI_INGRESS_PRIORITY_GROUP_STAT_SHARED_WATERMARK_CELLS = 0x0000000c,
+
+    /** Get current pg XOFF room occupancy in cells [uint64_t] */
+    SAI_INGRESS_PRIORITY_GROUP_STAT_XOFF_ROOM_CURR_OCCUPANCY_CELLS = 0x0000000d,
+
+    /** Get watermark pg XOFF room occupancy in cells [uint64_t] */
+    SAI_INGRESS_PRIORITY_GROUP_STAT_XOFF_ROOM_WATERMARK_CELLS = 0x0000000e,
+
     /** Custom range base value */
     SAI_INGRESS_PRIORITY_GROUP_STAT_CUSTOM_RANGE_BASE = 0x10000000
 
@@ -472,6 +490,18 @@ typedef enum _sai_buffer_pool_stat_t
     /** Get headroom pool occupancy in bytes [uint64_t] */
     SAI_BUFFER_POOL_STAT_XOFF_ROOM_WATERMARK_BYTES = 0x00000014,
 
+    /** Get current headroom pool occupancy in cells [uint64_t] */
+    SAI_BUFFER_POOL_STAT_XOFF_ROOM_CURR_OCCUPANCY_CELLS = 0x00000015,
+
+    /** Get headroom pool occupancy in cells [uint64_t] */
+    SAI_BUFFER_POOL_STAT_XOFF_ROOM_WATERMARK_CELLS = 0x00000016,
+
+    /** Get current pool occupancy in cells [uint64_t] */
+    SAI_BUFFER_POOL_STAT_CURR_OCCUPANCY_CELLS = 0x00000017,
+
+    /** Get watermark pool occupancy in cells [uint64_t] */
+    SAI_BUFFER_POOL_STAT_WATERMARK_CELLS = 0x00000018,
+
     /** Custom range base value */
     SAI_BUFFER_POOL_STAT_CUSTOM_RANGE_BASE = 0x10000000
 
@@ -589,6 +619,33 @@ typedef enum _sai_buffer_profile_threshold_mode_t
     SAI_BUFFER_PROFILE_THRESHOLD_MODE_DYNAMIC,
 
 } sai_buffer_profile_threshold_mode_t;
+
+/**
+ * @brief Enum defining queue actions in case the packet fails to pass the admission control.
+ */
+typedef enum _sai_buffer_profile_packet_admission_fail_action_t
+{
+    /**
+     * @brief Drop the packet.
+     *
+     * Default action. Packet has nowhere to go
+     * and will be dropped.
+     */
+    SAI_BUFFER_PROFILE_PACKET_ADMISSION_FAIL_ACTION_DROP,
+
+    /**
+     * @brief Trim the packet.
+     *
+     * Try sending a shortened packet over a different
+     * queue. Original packet will be dropped and trimmed copy of the packet will be send.
+     * The IP length and checksum fields will be updated in a trimmed copy.
+     * SAI_QUEUE_STAT_DROPPED_PACKETS as well as SAI_QUEUE_STAT_DROPPED_BYTES
+     * will count the original discarded frames even if they will be trimmed afterwards.
+     * Interface statistics must show dropped packets.
+     * Interface statistics may show sent trimmed packets.
+     */
+    SAI_BUFFER_PROFILE_PACKET_ADMISSION_FAIL_ACTION_DROP_AND_TRIM,
+} sai_buffer_profile_packet_admission_fail_action_t;
 
 /**
  * @brief Enum defining buffer profile attributes.
@@ -710,6 +767,19 @@ typedef enum _sai_buffer_profile_attr_t
      * @default 0
      */
     SAI_BUFFER_PROFILE_ATTR_XON_OFFSET_TH,
+
+    /**
+     * @brief Buffer profile discard action
+     *
+     * Action to be taken upon packet discard due to
+     * buffer profile configuration. Applicable only
+     * when attached to a queue.
+     *
+     * @type sai_buffer_profile_packet_admission_fail_action_t
+     * @flags CREATE_AND_SET
+     * @default SAI_BUFFER_PROFILE_PACKET_ADMISSION_FAIL_ACTION_DROP
+     */
+    SAI_BUFFER_PROFILE_ATTR_PACKET_ADMISSION_FAIL_ACTION,
 
     /**
      * @brief End of attributes

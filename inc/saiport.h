@@ -146,6 +146,47 @@ typedef struct _sai_port_oper_status_notification_t
 } sai_port_oper_status_notification_t;
 
 /**
+ * @brief Defines the extended operational status of the port
+ *
+ * Any additional data will must be passed on attributes list. Usually that
+ * will be port attributes that are READ_ONLY and the value will represent the
+ * state of given attribute for port_id object at the time that notification
+ * was generated.
+ *
+ * @count attr_list[attr_count]
+ */
+typedef struct _sai_extended_port_oper_status_notification_t
+{
+    /**
+     * @brief Port id.
+     *
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_BRIDGE_PORT, SAI_OBJECT_TYPE_LAG
+     */
+    sai_object_id_t port_id;
+
+    /** Port operational status */
+    sai_port_oper_status_t port_state;
+
+    /** Bitmap of various port error or fault status */
+    sai_port_error_status_t port_error_status;
+
+    /** Attributes count */
+    uint32_t attr_count;
+
+    /**
+     * @brief Attributes
+     *
+     * Object type NULL specifies that attribute list is for object type
+     * specified in port_id field. For example if port_id field contains LAG
+     * object then list of attributes contains SAI_LAG_ATTR_* attributes.
+     *
+     * @objects SAI_OBJECT_TYPE_NULL
+     */
+    sai_attribute_t *attr_list;
+
+} sai_extended_port_oper_status_notification_t;
+
+/**
  * @brief Attribute data for #SAI_PORT_ATTR_GLOBAL_FLOW_CONTROL_MODE
  */
 typedef enum _sai_port_flow_control_mode_t
@@ -356,6 +397,9 @@ typedef enum _sai_port_priority_flow_control_mode_t
 
 /**
  * @brief PTP mode
+ * These modes can be used at the port and switch level.
+ * All ports use the value set at the switch level unless explicitly configured
+ * at the port level to a value other than SAI_PORT_PTP_MODE_NONE.
  */
 typedef enum _sai_port_ptp_mode_t
 {
@@ -2627,6 +2671,23 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_SELECTIVE_COUNTER_LIST,
 
     /**
+     * @brief Read supported port stat list
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_COUNTER
+     */
+    SAI_PORT_ATTR_PORT_STAT_EXTENDED,
+
+    /**
+     * @brief List of port's PAM4 lanes eye values
+     *
+     * @type sai_port_pam4_eye_values_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PAM4_EYE_VALUES,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
@@ -3304,6 +3365,9 @@ typedef enum _sai_port_stat_t
     /** Count of total bits corrected by FEC. Counter will increment monotonically. */
     SAI_PORT_STAT_IF_IN_FEC_CORRECTED_BITS,
 
+    /** Packets trimmed due to failed shared buffer admission [uint64_t] */
+    SAI_PORT_STAT_TRIM_PACKETS,
+
     /** Port stat in drop reasons range start */
     SAI_PORT_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,
 
@@ -3370,8 +3434,28 @@ typedef enum _sai_port_stat_t
     /** Port stat out drop reasons range end */
     SAI_PORT_STAT_OUT_DROP_REASON_RANGE_END = 0x00002fff,
 
+    /** SAI port stat ether in pkts 1519 to 2500 octets */
+    SAI_PORT_STAT_ETHER_IN_PKTS_1519_TO_2500_OCTETS,
+
+    /** SAI port stat ether in pkts 2501 to 9000 octets */
+    SAI_PORT_STAT_ETHER_IN_PKTS_2501_TO_9000_OCTETS,
+
+    /** SAI port stat ether in pkts 9001 to 16383 octets */
+    SAI_PORT_STAT_ETHER_IN_PKTS_9001_TO_16383_OCTETS,
+
+    /** SAI port stat ether out pkts 1519 to 2500 octets */
+    SAI_PORT_STAT_ETHER_OUT_PKTS_1519_TO_2500_OCTETS,
+
+    /** SAI port stat ether out pkts 2501 to 9000 octets */
+    SAI_PORT_STAT_ETHER_OUT_PKTS_2501_TO_9000_OCTETS,
+
+    /** SAI port stat ether out pkts 9001 to 16383 octets */
+    SAI_PORT_STAT_ETHER_OUT_PKTS_9001_TO_16383_OCTETS,
+
     /** Port stat range end */
     SAI_PORT_STAT_END,
+
+    SAI_PORT_STAT_CUSTOM_RANGE_BASE = 0x10000000,
 
     /** Extensions range base */
     SAI_PORT_STAT_EXTENSIONS_RANGE_BASE = 0x20000000
@@ -3501,6 +3585,20 @@ typedef sai_status_t (*sai_clear_port_all_stats_fn)(
 typedef void (*sai_port_state_change_notification_fn)(
         _In_ uint32_t count,
         _In_ const sai_port_oper_status_notification_t *data);
+
+/**
+ * @brief Extended port state change notification
+ *
+ * Passed as a parameter into sai_initialize_switch()
+ *
+ * @count data[count]
+ *
+ * @param[in] count Number of notifications
+ * @param[in] data Array of port operational status
+ */
+typedef void (*sai_extended_port_state_change_notification_fn)(
+        _In_ uint32_t count,
+        _In_ const sai_extended_port_oper_status_notification_t *data);
 
 /**
  * @brief Port host tx ready notification
