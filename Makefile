@@ -34,7 +34,7 @@ GEN_SAIRPC_OPTS?=
 # Passed to meta/Makefile via "make saithrift-build, can specify add'l libraries along with libsai
 SAIRPC_EXTRA_LIBS?=
 
-SAI_HEADER_DIR=../../inc
+SAI_HEADER_DIR?=../../inc
 
 .PHONY: test doc clean
 
