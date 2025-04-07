@@ -95,6 +95,36 @@ typedef struct _sai_ipsec_sa_status_notification_t
 } sai_ipsec_sa_status_notification_t;
 
 /**
+ * @brief Attribute data for #SAI_IPSEC_ATTR_POST_STATUS,
+ */
+typedef enum _sai_ipsec_post_status_t
+{
+    /** Unknown */
+    SAI_IPSEC_POST_STATUS_UNKNOWN,
+
+    /** Pass */
+    SAI_IPSEC_POST_STATUS_PASS,
+
+    /** In Progress */
+    SAI_IPSEC_POST_STATUS_IN_PROGRESS,
+
+    /** Fail */
+    SAI_IPSEC_POST_STATUS_FAIL,
+} sai_ipsec_post_status_t;
+
+/**
+ * @brief IPSEC post status notification
+ *
+ * @objects switch_id SAI_OBJECT_TYPE_IPSEC
+ *
+ * @param[in] ipsec_id IPSEC Id
+ * @param[in] ipsec_post_status IPSEC post status
+ */
+typedef void (*sai_ipsec_post_status_notification_fn)(
+        _In_ sai_object_id_t ipsec_id,
+        _In_ sai_ipsec_post_status_t ipsec_post_status);
+
+/**
  * @brief Attribute Id for sai_ipsec
  */
 typedef enum _sai_ipsec_attr_t
@@ -288,6 +318,24 @@ typedef enum _sai_ipsec_attr_t
     SAI_IPSEC_ATTR_SA_LIST,
 
     /**
+     * @brief IPSEC POST status
+     * Attribute to query the status of POST for an IPSEC engine
+     *
+     * @type sai_ipsec_post_status_t
+     * @flags READ_ONLY
+     */
+    SAI_IPSEC_ATTR_POST_STATUS,
+
+    /**
+     * @brief Setting the value to true will start the post on all the ports serviced by this IPSEC engine
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_IPSEC_ATTR_ENABLE_POST,
+
+    /**
      * @brief End of IPsec attributes
      */
     SAI_IPSEC_ATTR_END,
@@ -302,6 +350,22 @@ typedef enum _sai_ipsec_attr_t
      */
     SAI_IPSEC_ATTR_CUSTOM_RANGE_END
 } sai_ipsec_attr_t;
+
+/**
+ * @brief Attribute data for #SAI_IPSEC_PORT_ATTR_POST_STATUS
+ */
+typedef enum _sai_ipsec_port_post_status_t
+{
+    /** Unknown */
+    SAI_IPSEC_PORT_POST_STATUS_UNKNOWN,
+
+    /** Pass */
+    SAI_IPSEC_PORT_POST_STATUS_PASS,
+
+    /** Fail */
+    SAI_IPSEC_PORT_POST_STATUS_FAIL,
+
+} sai_ipsec_port_post_status_t;
 
 /**
  * @brief Attribute Id for sai_ipsec_port
@@ -393,6 +457,16 @@ typedef enum _sai_ipsec_port_attr_t
      * @default empty
      */
     SAI_IPSEC_PORT_ATTR_SELECTIVE_COUNTER_LIST,
+
+    /**
+     * @brief IPSEC Port POST completion status
+     *
+     * Attribute to query the status of POST for a IPSEC port
+     *
+     * @type sai_ipsec_port_post_status_t
+     * @flags READ_ONLY
+     */
+    SAI_IPSEC_PORT_ATTR_POST_STATUS,
 
     /**
      * @brief End of IPsec Port attributes
