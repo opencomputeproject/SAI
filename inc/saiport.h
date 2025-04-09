@@ -4136,7 +4136,7 @@ typedef enum _sai_port_serdes_attr_t
      * }
      *
      * @type sai_json_t
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default internal
      */
     SAI_PORT_SERDES_ATTR_CUSTOM_COLLECTION,
