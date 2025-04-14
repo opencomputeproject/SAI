@@ -99,16 +99,12 @@ typedef struct _sai_ipsec_sa_status_notification_t
  */
 typedef enum _sai_ipsec_post_status_t
 {
-    /** Unknown */
     SAI_IPSEC_POST_STATUS_UNKNOWN,
 
-    /** Pass */
     SAI_IPSEC_POST_STATUS_PASS,
 
-    /** In Progress */
     SAI_IPSEC_POST_STATUS_IN_PROGRESS,
 
-    /** Fail */
     SAI_IPSEC_POST_STATUS_FAIL,
 } sai_ipsec_post_status_t;
 
@@ -356,13 +352,10 @@ typedef enum _sai_ipsec_attr_t
  */
 typedef enum _sai_ipsec_port_post_status_t
 {
-    /** Unknown */
     SAI_IPSEC_PORT_POST_STATUS_UNKNOWN,
 
-    /** Pass */
     SAI_IPSEC_PORT_POST_STATUS_PASS,
 
-    /** Fail */
     SAI_IPSEC_PORT_POST_STATUS_FAIL,
 
 } sai_ipsec_port_post_status_t;

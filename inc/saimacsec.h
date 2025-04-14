@@ -72,16 +72,12 @@ typedef enum _sai_macsec_max_secure_associations_per_sc_t
  */
 typedef enum _sai_macsec_post_status_t
 {
-    /** Unknown */
     SAI_MACSEC_POST_STATUS_UNKNOWN,
 
-    /** Pass */
     SAI_MACSEC_POST_STATUS_PASS,
 
-    /** In Progress */
     SAI_MACSEC_POST_STATUS_IN_PROGRESS,
 
-    /** Fail */
     SAI_MACSEC_POST_STATUS_FAIL,
 } sai_macsec_post_status_t;
 
@@ -370,13 +366,10 @@ typedef enum _sai_macsec_attr_t
  */
 typedef enum _sai_macsec_port_post_status_t
 {
-    /** Unknown */
     SAI_MACSEC_PORT_POST_STATUS_UNKNOWN,
 
-    /** Pass */
     SAI_MACSEC_PORT_POST_STATUS_PASS,
 
-    /** Fail */
     SAI_MACSEC_PORT_POST_STATUS_FAIL,
 
 } sai_macsec_port_post_status_t;
