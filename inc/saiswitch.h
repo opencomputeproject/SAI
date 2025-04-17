@@ -726,7 +726,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MAX_VIRTUAL_ROUTERS,
 
     /**
-     * @brief The size of the FDB Table in bytes
+     * @brief The FDB Table size
      *
      * @type sai_uint32_t
      * @flags READ_ONLY
