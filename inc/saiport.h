@@ -4122,6 +4122,45 @@ typedef enum _sai_port_serdes_attr_t
     SAI_PORT_SERDES_ATTR_RX_PRECODING,
 
     /**
+     * @brief A collection of custom serdes attributes
+     *
+     * The value is of type sai_json_t, which can include multiple custom serdes
+     * attributes. This allows vendor-specific serdes attributes to be forwarded
+     * in a JSON string without the sender needing to know the details. The
+     * sender simply passes along the data, vendor-defined rules determine which
+     * attributes and values to include in different situations, and the vendor
+     * SDK interprets the JSON accordingly.
+     *
+     * Example of the JSON object:
+     * {
+     * "attributes": [
+     * {
+     *    "attr_xyz": {
+     *        "sai_metadata": {
+     *        "sai_attr_value_type": "SAI_ATTR_VALUE_TYPE_INT32_LIST"
+     *        },
+     *        "value": [10, 10, 10, 10]
+     *    }
+     * },
+     * {
+     *    "attr_abc": {
+     *        "sai_metadata": {
+     *        "sai_attr_value_type": "SAI_ATTR_VALUE_TYPE_INT32_LIST"
+     *        },
+     *        "value": [20, 20, 20, 20]
+     *    }
+     * },
+     * ...
+     * ]
+     * }
+     *
+     * @type sai_json_t
+     * @flags CREATE_AND_SET
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_CUSTOM_COLLECTION,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_SERDES_ATTR_END,
