@@ -326,6 +326,23 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_LABEL,
 
     /**
+     * @brief Attribute used to specify external My MAC entry that will
+     * be used in place of any implicit entry created during RIF processing
+     * for this {port, vlan, MAC address}
+     *
+     * Note that the other matching entries (programmed via RIF and/or My MAC)
+     * can allow the incoming packets to be considered for L3 forwarding.
+     * There is no change in the behavior for packets egressing the RIF.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_MY_MAC
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ROUTER_INTERFACE_ATTR_MY_MAC,
+
+    /**
      * @brief End of attributes
      */
     SAI_ROUTER_INTERFACE_ATTR_END,
