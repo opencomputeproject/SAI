@@ -54,6 +54,7 @@ FCS - Frame Check Sequence
 FD - File Descriptor
 FDB - Forwarding Data Base
 FEC - Forward Error Correction
+FIPS - Federal Information Processing Standard
 FPGA - Field Programmable Gate Array
 FW  - Firmware
 GCM - Galois Counter Mode
