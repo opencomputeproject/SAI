@@ -16,11 +16,11 @@ This document describes the SAI API interaction and enhancements for triggering 
 
 Networking Operating System (NOS) need to have cryptographic software components. "Library" which is a module providing cryptographic algorithms implies “FIPS inside” approach in the NOS. The “FIPS inside” is a way of designating one or more crypto modules with smaller boundaries, instead of one product-wise perimeter, which would encompass non-cryptographic components inside, all of them having code freeze caveat. 
 
-This document proposes a SAI specification that will be at the MACSec/IPSec engine boundary where a single engine may be serving multiple MACSec/IPSec ports or there may be a one to one binding of the engine to the MACSec/IPSec port.
+POST trigger is defined at the switch,  MACSEC, and, IPSEC engine level. This is done to support different hardware architectures where POST can be run during the switch init or it can be run during the MACSEC, IPSEC engine init.
 
-POST trigger is defined at the switch,  MACSEC, and, IPSEC engine level. This is done to support different hardware architectures where POST can be run during the switch init or it can be run during the MACSEC, IPSEC egnine init.
+Existing MACSec/IPSec SAI specification already supports the concept of MACSec and IPSec objects and MACSec/IPSec ports. It supports the concept of single logical instance of MACSEc/IPSec in each direction and abstracts out the number of hardware engines present.
 
-Existing SAI specification already supports the concept of MACSec and IPSec objects and MACSec/IPSec ports. It also supports the concept of one to one binding of engine to MACSec/IPSec port and/or engine servicing more than one ports, where engine is the MACSec/IPSec module and the port is the corresponding MACSec/IPSec port.
+This document proposes a SAI specification that maintains the current MACSec/IPSec SAI spec construct of single logical engine.
 
 Bring up sequence of MACSec and IPSec engine without FIPS compliance at a object boundary is as follows
 
@@ -31,9 +31,10 @@ Bring up sequence of MACSec and IPSec engine without FIPS compliance at a object
 
 This document introduces a trigger called as Pre-Operational Self-Test "POST" before the MACSec/IPSec engine enables the MACSec/IPSec port for forwarding traffic.
 
-FIPS-103 compliance requires that POST is executed on each MACSec/IPSec port and only if POST completes with ‘success’, the MACSec/IPSec port must be enabled for admitting traffic.
+FIPS-103 compliance requires that POST is executed on each MACSec/IPSec port and only if POST completes with ‘success’, the MACSec/IPSec port must be enabled for admitting traffic. 
+Note that this specification will provide POST at the MACSec/IPSec single logical instance level or at the switch level.
 
-There are two variations of MACSec/IPSec engine and ports
+As shown in Fig-1, there are two physical security engines and are represented by single logical instance in SAI. Enabling of POST happens at the logical intance level and in turn will trigger POST for all the physical instances present in a given hardware.
 1. Each MACSec/IPSec serving ‘n’ number of ports (1:n)
 2. Each port has its corresponding MACSec/IPSec engine (1:1)
 
@@ -53,24 +54,24 @@ SAI_OBJECT_TYPE_SWITCH -> SAI_SWITCH_ATTR_IPSEC_OBJECT_LIST[x] -> SAI_IPSEC_ATTR
 Following sections describes the attributes for MACSec engine
 
 #### 2.1.1 MACSec Engine
-Each MACSec engine is represented by a MACSec SAI object id. Single MACSec object id can be serving one or more MACSec ports.
+All physical MACSec engines are represented by a single MACSec SAI object id. Single SAI  MACSec object id can be serving one or more physical MACSec engines and ports.
 
-New attribute is introduced to trigger POST at the MACSec engine granularity.
-Setting the attribute to true will start POST on all the MACSec ports associated with the MACSec engine id.
+New attribute is introduced to trigger POST at the SAI MACSec engine id.
+Setting the attribute to true will start POST on all the physical MACSec engines and ports associated with the MACSec engine id.
 
 ```
     /**
      * @brief Setting the value to true will start the post on all the ports serviced by this MACSEC engine
      *
      * @type bool
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default false
      */
     SAI_MACSEC_ATTR_ENABLE_POST,
 ```
 
-Status of the POST can be queried using SAI_MACSEC_ATTR_POST_STATUS attribute.  Note that status reflects the aggregate status of all the ports services by this MACSec object id. Even if a single MACSec port fails the POST, status of the MACSec object will be returned as SAI_MACSEC_POST_STATUS_FAIL.
-Subsequently NOS has to query individual MACSec ports serviced by the MACSec object id to figure out which MACSec port has failed the POST. This approach works for both, one engine to one port and one engine to many ports, kinds of MACSec engines.
+Status of the POST can be queried using SAI_MACSEC_ATTR_POST_STATUS attribute.  Note that status reflects the aggregate status of all the engines and ports serviced by this MACSec object id. Even if a single MACSec port fails the POST, status of the MACSec object will be returned as SAI_MACSEC_POST_STATUS_FAIL.
+Subsequently NOS has to query individual MACSec engines/ports serviced by the MACSec object id to figure out which MACSec engine/port has failed the POST. 
 
 ```
     /**
@@ -187,10 +188,9 @@ typedef enum _sai_switch_attr_t
 ### 2.2 IPSec
 Following sections describes the attributes for IPSec engine.
 It is identical in the specification as MACSec.
+SAI IPSec specification makes and assumption that there is only single physical IPSec engine. This specifications maintians the assumption and if there is a need to support more than one physical IPSec engines then the IPSEc SAI specification will be enhanced accordingly.
 
 #### 2.2.1 IPSec Engine
-Each IPSec engine is represented by a IPSec SAI object id. Single IPSec object id can be serving one or more IPSec ports.
-
 New attribute is introduced to trigger POST at the IPSec engine granularity.
 Setting the attribute to true will start POST on all the IPSec ports associated with the IPSec engine id.
 ```
@@ -198,7 +198,7 @@ Setting the attribute to true will start POST on all the IPSec ports associated 
      * @brief Setting the value to true will start the post on all the ports serviced by this IPSEC engine
      *
      * @type bool
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default false
      */
     SAI_IPSEC_ATTR_ENABLE_POST,
@@ -318,14 +318,11 @@ typedef enum _sai_switch_attr_t
 
 ### 2.3 Switch
 
-POST can be trigerred at the switch level. This is done by setting the SAI_SWITCH_ATTR_MACSEC_ENABLE_POST for MACSec engine and SAI_SWITCH_ATTR_IPSEC_ENABLE_POST for IPSec engine. Setting this attribute to true will trigger POST for all the instance of MACSec/IPSec engine in hardware.
+POST can be trigerred at the switch level. This is done by setting the SAI_SWITCH_ATTR_MACSEC_ENABLE_POST for MACSec engine and SAI_SWITCH_ATTR_IPSEC_ENABLE_POST for IPSec engine. Setting this attribute to true will trigger POST for all the instances of MACSec/IPSec engine in a given hardware.
 
 Completion status is reported by a callback as an aggregate status for the switch. Callback need to be registered for MACSec and IPSec POST status. 
 
-New READ ONLY attributes SAI_SWITCH_ATTR_IPSEC_FIPS_COMPLIANT and SAI_SWITCH_ATTR_MACSEC_FIPS_COMPLIANT are introduced to determine if the system is FIPS compliant or not. NOS will read these attributes and if the read value is true, then will trigger the POST.
-
-System can be queried using capability APIs to figure out if the systen support POST at the switch level or at the engine level.
-
+System can be queried using capability APIs to figure out if the systen support POST at the switch level or at the engine level or not at all.
 
 ```
     /**
@@ -350,7 +347,7 @@ System can be queried using capability APIs to figure out if the systen support 
      * @brief Setting the value to true will start the post on all MACSEC engines
      *
      * @type bool
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default false
      */
     SAI_SWITCH_ATTR_MACSEC_ENABLE_POST,
@@ -359,26 +356,10 @@ System can be queried using capability APIs to figure out if the systen support 
      * @brief Setting the value to true will start the post on all IPSEC engines
      *
      * @type bool
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default false
      */
     SAI_SWITCH_ATTR_IPSEC_ENABLE_POST,
-
-    /**
-     * @brief This attribute will return true if the IPSEC system is FIPS compliant
-     *
-     * @type bool
-     * @flags READ_ONLY
-     */
-    SAI_SWITCH_ATTR_IPSEC_FIPS_COMPLIANT,
-
-    /**
-     * @brief This attribute will return true if the MACSEC system is FIPS compliant
-     *
-     * @type bool
-     * @flags READ_ONLY
-     */
-    SAI_SWITCH_ATTR_MACSEC_FIPS_COMPLIANT,
 
     /**
      * @brief Callback for completion status of all the MACSEC engines on the switch
@@ -403,7 +384,10 @@ System can be queried using capability APIs to figure out if the systen support 
     SAI_SWITCH_ATTR_SWITCH_IPSEC_POST_STATUS_NOTIFY,
 ```
 ### 3.0 Capability Query
-Switch can be queried to find out if the system is IPSec and/or MACSec compliant. This is done using simple GET APIs for attributes SAI_SWITCH_ATTR_IPSEC_FIPS_COMPLIANT and SAI_SWITCH_ATTR_MACSEC_FIPS_COMPLIANT.
+Switch attributes SAI_SWITCH_ATTR_MACSEC_ENABLE_POST and SAI_SWITCH_ATTR_IPSEC_ENABLE_POST, can be queried to find out if the system supports IPSec and/or MACSec compliance at a switch level or not. 
+Similarly MACSec/IPSec SAI attributes SAI_MACSEC_ATTR_ENABLE_POST and SAI_IPEC_ATTR_ENABLE_POST, can be queried to find out if the MACSec/IPSec engine support IPSec and/or MACSec compliance at a engine level or not.
+
+If both the querires return as unsupported, this means that system does not support FIPS compliance.
 
 Query API is used to determine if POST is supported at switch level or engine level granuarity.
 ```
@@ -431,8 +415,8 @@ Following steps are completed before enabling POST on the MACSec engine.
 
 **Step 1:** 
 Switch create is complete and POST completion callback registraton SAI_SWITCH_ATTR_MACSEC_POST_STATUS_NOTIFY is done.
-GET API is called to find out if system is FIPS compliant.
-Query API us called to find out if POST is supported at switch or engine level. Subsequent steps are for engine level POST.
+Query API us called to find out if POST is supported at switch or engine level. 
+Subsequent steps are captured as an example for engine level POST.
 
 **Step 2: **
 MACSec Object creation is complete

@@ -340,7 +340,7 @@ typedef enum _sai_macsec_attr_t
      * @brief Setting the value to true will start the post on all the ports serviced by this MACSEC engine
      *
      * @type bool
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default false
      */
     SAI_MACSEC_ATTR_ENABLE_POST,

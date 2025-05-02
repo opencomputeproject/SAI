@@ -3349,7 +3349,7 @@ typedef enum _sai_switch_attr_t
      * @brief Setting the value to true will start the post on all MACSEC engines
      *
      * @type bool
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default false
      */
     SAI_SWITCH_ATTR_MACSEC_ENABLE_POST,
@@ -3358,26 +3358,10 @@ typedef enum _sai_switch_attr_t
      * @brief Setting the value to true will start the post on all IPSEC engines
      *
      * @type bool
-     * @flags CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @default false
      */
     SAI_SWITCH_ATTR_IPSEC_ENABLE_POST,
-
-    /**
-     * @brief This attribute will return true if the IPSEC system is FIPS compliant
-     *
-     * @type bool
-     * @flags READ_ONLY
-     */
-    SAI_SWITCH_ATTR_IPSEC_FIPS_COMPLIANT,
-
-    /**
-     * @brief This attribute will return true if the MACSEC system is FIPS compliant
-     *
-     * @type bool
-     * @flags READ_ONLY
-     */
-    SAI_SWITCH_ATTR_MACSEC_FIPS_COMPLIANT,
 
     /**
      * @brief Callback for completion status of all the MACSEC engines on the switch
