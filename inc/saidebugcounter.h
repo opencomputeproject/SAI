@@ -322,6 +322,15 @@ typedef enum _sai_in_drop_reason_t
      */
     SAI_IN_DROP_REASON_SRV6_LOCAL_SID_DROP,
 
+    /** Source MAC address is zero **/ 
+    SAI_IN_DROP_REASON_SMAC_ZERO,
+    
+    /** Destination MAC address is zero **/ 
+    SAI_IN_DROP_REASON_DMAC_ZERO,
+
+    /** IPv4 or IPv6 Routing table (LPM) unicast miss */
+    SAI_IN_DROP_REASON_LPM_MISS,
+    
     /** End of in drop reasons */
     SAI_IN_DROP_REASON_END,
 
