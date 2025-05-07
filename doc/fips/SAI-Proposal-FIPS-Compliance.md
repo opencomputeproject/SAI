@@ -31,7 +31,7 @@ Bring up sequence of MACSec and IPSec engine without FIPS compliance at a object
 
 This document introduces a trigger called as Pre-Operational Self-Test "POST" before the MACSec/IPSec engine enables the MACSec/IPSec port for forwarding traffic.
 
-FIPS-103 compliance requires that POST is executed on each MACSec/IPSec port and only if POST completes with ‘success’, the MACSec/IPSec port must be enabled for admitting traffic. 
+FIPS 140-3 compliance requires that POST is executed on each MACSec/IPSec port and only if POST completes with ‘success’, the MACSec/IPSec port must be enabled for admitting traffic. 
 Note that this specification will provide POST at the MACSec/IPSec single logical instance level or at the switch level.
 
 As shown in Fig-1, there are two physical security engines and are represented by single logical instance in SAI. Enabling of POST happens at the logical intance level and in turn will trigger POST for all the physical instances present in a given hardware.
@@ -415,7 +415,7 @@ Following steps are completed before enabling POST on the MACSec engine.
 
 **Step 1:** 
 Switch create is complete and POST completion callback registraton SAI_SWITCH_ATTR_MACSEC_POST_STATUS_NOTIFY is done.
-Query API us called to find out if POST is supported at switch or engine level. 
+Query API is called to find out if POST is supported at switch or engine level. 
 Subsequent steps are captured as an example for engine level POST.
 
 **Step 2: **
