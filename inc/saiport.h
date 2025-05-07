@@ -3395,6 +3395,30 @@ typedef enum _sai_port_stat_t
     /** Get in port packet drops configured by debug counter API at index 7 */
     SAI_PORT_STAT_IN_CONFIGURED_DROP_REASONS_7_DROPPED_PKTS,
 
+    /** Get in port packet drops configured by debug counter API at index 8 */
+    SAI_PORT_STAT_IN_CONFIGURED_DROP_REASONS_8_DROPPED_PKTS,
+
+    /** Get in port packet drops configured by debug counter API at index 9 */
+    SAI_PORT_STAT_IN_CONFIGURED_DROP_REASONS_9_DROPPED_PKTS,
+
+    /** Get in port packet drops configured by debug counter API at index 10 */
+    SAI_PORT_STAT_IN_CONFIGURED_DROP_REASONS_10_DROPPED_PKTS,
+
+    /** Get in port packet drops configured by debug counter API at index 11 */
+    SAI_PORT_STAT_IN_CONFIGURED_DROP_REASONS_11_DROPPED_PKTS,
+
+    /** Get in port packet drops configured by debug counter API at index 12 */
+    SAI_PORT_STAT_IN_CONFIGURED_DROP_REASONS_12_DROPPED_PKTS,
+
+    /** Get in port packet drops configured by debug counter API at index 13 */
+    SAI_PORT_STAT_IN_CONFIGURED_DROP_REASONS_13_DROPPED_PKTS,
+
+    /** Get in port packet drops configured by debug counter API at index 14 */
+    SAI_PORT_STAT_IN_CONFIGURED_DROP_REASONS_14_DROPPED_PKTS,
+
+    /** Get in port packet drops configured by debug counter API at index 15 */
+    SAI_PORT_STAT_IN_CONFIGURED_DROP_REASONS_15_DROPPED_PKTS,
+
     /** Port stat in drop reasons range end */
     SAI_PORT_STAT_IN_DROP_REASON_RANGE_END = 0x00001fff,
 

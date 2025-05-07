@@ -124,10 +124,16 @@ typedef enum _sai_in_drop_reason_t
     /** Packet size is larger than the L2 (Port) MTU */
     SAI_IN_DROP_REASON_EXCEEDS_L2_MTU,
 
+    /** Source MAC address is zero */
+    SAI_IN_DROP_REASON_SMAC_ZERO = 0x00000037,
+
+    /** Destination MAC address is zero */
+    SAI_IN_DROP_REASON_DMAC_ZERO,
+
     /* L3 reasons */
 
     /** Any L3 pipeline drop */
-    SAI_IN_DROP_REASON_L3_ANY,
+    SAI_IN_DROP_REASON_L3_ANY = 0x0000000b,
 
     /** Packet size is larger than the L3 (Router Interface) MTU */
     SAI_IN_DROP_REASON_EXCEEDS_L3_MTU,
@@ -321,6 +327,9 @@ typedef enum _sai_in_drop_reason_t
      * Segments Left value is not 0 when received packet is destined to S and S is a local SID of type End.D*
      */
     SAI_IN_DROP_REASON_SRV6_LOCAL_SID_DROP,
+
+    /** IPv4 or IPv6 Routing table (LPM) unicast miss */
+    SAI_IN_DROP_REASON_LPM_MISS = 0x00000039,
 
     /** End of in drop reasons */
     SAI_IN_DROP_REASON_END,
