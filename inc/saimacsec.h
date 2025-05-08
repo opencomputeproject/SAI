@@ -68,6 +68,20 @@ typedef enum _sai_macsec_max_secure_associations_per_sc_t
 } sai_macsec_max_secure_associations_per_sc_t;
 
 /**
+ * @brief Attribute data for #SAI_MACSEC_ATTR_POST_STATUS,
+ */
+typedef enum _sai_macsec_post_status_t
+{
+    SAI_MACSEC_POST_STATUS_UNKNOWN,
+
+    SAI_MACSEC_POST_STATUS_PASS,
+
+    SAI_MACSEC_POST_STATUS_IN_PROGRESS,
+
+    SAI_MACSEC_POST_STATUS_FAIL,
+} sai_macsec_post_status_t;
+
+/**
  * @brief Attribute Id for sai_macsec
  */
 typedef enum _sai_macsec_attr_t
@@ -314,6 +328,24 @@ typedef enum _sai_macsec_attr_t
     SAI_MACSEC_ATTR_MAX_SECURE_ASSOCIATIONS_PER_SC,
 
     /**
+     * @brief MACSEC POST status
+     * Attribute to query the status of POST for a MACSEC engine
+     *
+     * @type sai_macsec_post_status_t
+     * @flags READ_ONLY
+     */
+    SAI_MACSEC_ATTR_POST_STATUS,
+
+    /**
+     * @brief Setting the value to true will start the post on all the ports serviced by this MACSEC engine
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_MACSEC_ATTR_ENABLE_POST,
+
+    /**
      * @brief End of MACsec attributes
      */
     SAI_MACSEC_ATTR_END,
@@ -328,6 +360,19 @@ typedef enum _sai_macsec_attr_t
      */
     SAI_MACSEC_ATTR_CUSTOM_RANGE_END
 } sai_macsec_attr_t;
+
+/**
+ * @brief Attribute data for #SAI_MACSEC_PORT_ATTR_POST_STATUS
+ */
+typedef enum _sai_macsec_port_post_status_t
+{
+    SAI_MACSEC_PORT_POST_STATUS_UNKNOWN,
+
+    SAI_MACSEC_PORT_POST_STATUS_PASS,
+
+    SAI_MACSEC_PORT_POST_STATUS_FAIL,
+
+} sai_macsec_port_post_status_t;
 
 /**
  * @brief Attribute Id for sai_macsec_port
@@ -406,6 +451,16 @@ typedef enum _sai_macsec_port_attr_t
      * @default empty
      */
     SAI_MACSEC_PORT_ATTR_SELECTIVE_COUNTER_LIST,
+
+    /**
+     * @brief MACSEC Port POST completion status
+     *
+     * Attribute to query the status of POST for a MACSEC port
+     *
+     * @type sai_macsec_port_post_status_t
+     * @flags READ_ONLY
+     */
+    SAI_MACSEC_PORT_ATTR_POST_STATUS,
 
     /**
      * @brief End of MACsec Port attributes
@@ -993,6 +1048,18 @@ typedef enum _sai_macsec_sa_stat_t
      */
     SAI_MACSEC_SA_STAT_IN_PKTS_OK,
 } sai_macsec_sa_stat_t;
+
+/**
+ * @brief MACSEC post status notification
+ *
+ * @objects switch_id SAI_OBJECT_TYPE_MACSEC
+ *
+ * @param[in] macsec_id MACSEC Id
+ * @param[in] macsec_post_status MACSEC post status
+ */
+typedef void (*sai_macsec_post_status_notification_fn)(
+        _In_ sai_object_id_t macsec_id,
+        _In_ sai_macsec_post_status_t macsec_post_status);
 
 /**
  * @brief Create a MACsec object

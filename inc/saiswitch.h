@@ -660,6 +660,34 @@ typedef enum _sai_packet_trim_dscp_resolution_mode_t
 } sai_packet_trim_dscp_resolution_mode_t;
 
 /**
+ * @brief Attribute data for #SAI_SWITCH_ATTR_MACSEC_POST_STATUS,
+ */
+typedef enum _sai_switch_macsec_post_status_t
+{
+    SAI_SWITCH_MACSEC_POST_STATUS_UNKNOWN,
+
+    SAI_SWITCH_MACSEC_POST_STATUS_PASS,
+
+    SAI_SWITCH_MACSEC_POST_STATUS_IN_PROGRESS,
+
+    SAI_SWITCH_MACSEC_POST_STATUS_FAIL,
+} sai_switch_macsec_post_status_t;
+
+/**
+ * @brief Attribute data for #SAI_SWITCH_ATTR_IPSEC_POST_STATUS,
+ */
+typedef enum _sai_switch_ipsec_post_status_t
+{
+    SAI_SWITCH_IPSEC_POST_STATUS_UNKNOWN,
+
+    SAI_SWITCH_IPSEC_POST_STATUS_PASS,
+
+    SAI_SWITCH_IPSEC_POST_STATUS_IN_PROGRESS,
+
+    SAI_SWITCH_IPSEC_POST_STATUS_FAIL,
+} sai_switch_ipsec_post_status_t;
+
+/**
  * @brief Attribute Id in sai_set_switch_attribute() and
  * sai_get_switch_attribute() calls.
  */
@@ -3317,6 +3345,86 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PACKET_TRIM_DSCP_RESOLUTION_MODE,
 
     /**
+     * @brief Callback for completion status of all the MACSEC ports serviced by this MACSEC engine
+     *
+     * Use sai_macsec_post_status_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_macsec_post_status_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_MACSEC_POST_STATUS_NOTIFY,
+
+    /**
+     * @brief Callback for completion status of all the IPSEC ports serviced by this IPSEC engine
+     *
+     * Use sai_ipsec_post_status_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_ipsec_post_status_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_IPSEC_POST_STATUS_NOTIFY,
+
+    /**
+     * @brief MACSEC POST status
+     * Attribute to query the status of POST for all the MACSEC engines
+     *
+     * @type sai_switch_macsec_post_status_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MACSEC_POST_STATUS,
+
+    /**
+     * @brief IPSEC POST status
+     * Attribute to query the status of POST for all the IPSEC engines
+     *
+     * @type sai_switch_ipsec_post_status_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_IPSEC_POST_STATUS,
+
+    /**
+     * @brief Setting the value to true will start the post on all MACSEC engines
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_SWITCH_ATTR_MACSEC_ENABLE_POST,
+
+    /**
+     * @brief Setting the value to true will start the post on all IPSEC engines
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_SWITCH_ATTR_IPSEC_ENABLE_POST,
+
+    /**
+     * @brief Callback for completion status of all the MACSEC engines on the switch
+     *
+     * Use sai_switch_macsec_post_status_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_switch_macsec_post_status_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_SWITCH_MACSEC_POST_STATUS_NOTIFY,
+
+    /**
+     * @brief Callback for completion status of all the IPSEC engines on the switch
+     *
+     * Use sai_switch_ipsec_post_status_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_switch_ipsec_post_status_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_SWITCH_IPSEC_POST_STATUS_NOTIFY,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
@@ -3624,6 +3732,30 @@ typedef void (*sai_switch_shutdown_request_notification_fn)(
 typedef void (*sai_switch_state_change_notification_fn)(
         _In_ sai_object_id_t switch_id,
         _In_ sai_switch_oper_status_t switch_oper_status);
+
+/**
+ * @brief Switch MACSEC post status notification
+ *
+ * @objects switch_id SAI_OBJECT_TYPE_SWITCH
+ *
+ * @param[in] switch_id Switch Id
+ * @param[in] switch_macsec_post_status Switch MACSEC post status
+ */
+typedef void (*sai_switch_macsec_post_status_notification_fn)(
+        _In_ sai_object_id_t switch_id,
+        _In_ sai_switch_macsec_post_status_t switch_macsec_post_status);
+
+/**
+ * @brief Switch IPSEC post status notification
+ *
+ * @objects switch_id SAI_OBJECT_TYPE_SWITCH
+ *
+ * @param[in] switch_id Switch Id
+ * @param[in] switch_ipsec_post_status Switch IPSEC post status
+ */
+typedef void (*sai_switch_ipsec_post_status_notification_fn)(
+        _In_ sai_object_id_t switch_id,
+        _In_ sai_switch_ipsec_post_status_t switch_ipsec_post_status);
 
 /**
  * @brief Platform specific device register read access
