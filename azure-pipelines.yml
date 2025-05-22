@@ -14,7 +14,7 @@ pr:
     - master
 
 pool:
-  vmImage: ubuntu-20.04
+  vmImage: ubuntu-latest
 
 stages:
 - stage: Build
@@ -23,8 +23,6 @@ stages:
 
     container:
       image: sonicdev-microsoft.azurecr.io:443/sonic-slave-bullseye:latest
-    pool:
-      vmImage: 'ubuntu-20.04'
 
     displayName: "build"
     timeoutInMinutes: 60
