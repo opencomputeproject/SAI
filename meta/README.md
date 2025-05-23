@@ -1,4 +1,4 @@
-[![Build Status](https://sonic-jenkins.westus2.cloudapp.azure.com/buildStatus/icon?job=sai-meta-build)](https://sonic-jenkins.westus2.cloudapp.azure.com/job/sai-meta-build)
+[![Build Status](https://dev.azure.com/mssonic/build/_apis/build/status%2Fopencomputeproject.SAI?branchName=refs%2Fpull%2F2166%2Fmerge)](https://dev.azure.com/mssonic/build/_build/latest?definitionId=131&branchName=refs%2Fpull%2F2166%2Fmerge)
 
 Metadata for SAI
 ================
