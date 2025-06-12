@@ -3425,6 +3425,42 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_SWITCH_IPSEC_POST_STATUS_NOTIFY,
 
     /**
+     * @brief Default Ingress Buffer Pool for CPU Port usage.
+     *
+     * This object id references an internal SAI-managed default buffer
+     * pool for the CPU Port. It may be used to configure the buffer pool
+     * attributes or reference the buffer pool from other QOS objects.
+     *
+     * The object id is read only, while the object attributes can be modified.
+     * Must return #SAI_NULL_OBJECT_ID if no such internal default buffer pool exists.
+     *
+     * @type sai_object_id_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_BUFFER_POOL
+     * @allownull true
+     * @default internal
+     */
+    SAI_SWITCH_ATTR_DEFAULT_CPU_INGRESS_BUFFER_POOL,
+
+    /**
+     * @brief Default Egress Buffer Pool for CPU Port usage.
+     *
+     * This object id references an internal SAI-managed default buffer
+     * pool for the CPU Port. It may be used to configure the buffer pool
+     * attributes or reference the buffer pool from other QOS objects.
+     *
+     * The object id is read only, while the object attributes can be modified.
+     * Must return #SAI_NULL_OBJECT_ID if no such internal default buffer pool exists.
+     *
+     * @type sai_object_id_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_BUFFER_POOL
+     * @allownull true
+     * @default internal
+     */
+    SAI_SWITCH_ATTR_DEFAULT_CPU_EGRESS_BUFFER_POOL,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
