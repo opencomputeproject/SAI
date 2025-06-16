@@ -4452,6 +4452,13 @@ sub ExtractObjectTypeBulkMap
 
             my $OT = "SAI_OBJECT_TYPE_" . uc($ot);
 
+            # Object type is extracted from name like "routes" -> "route", and then
+            # from "switches" -> "switche" which fails due to invalid type.
+            # Map "switche" to "switch" to avoid this error.
+            if ($OT eq "SAI_OBJECT_TYPE_SWITCHE") {
+               $OT = "SAI_OBJECT_TYPE_SWITCH";
+            }
+
             if (not defined $OBJECT_TYPE_MAP{$OT})
             {
                 LogError "invalid object type $OT extracted from bulk definition: $fn";
