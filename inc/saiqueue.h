@@ -433,6 +433,12 @@ typedef enum _sai_queue_stat_t
     /** Get watermark queue shared occupancy in cells [uint64_t] */
     SAI_QUEUE_STAT_SHARED_WATERMARK_CELLS = 0x0000002c,
 
+    /** Packets trimmed but failed to be admitted on a new queue due to congestion. Counted on the original trimming-eligible queue [uint64_t] */
+    SAI_QUEUE_STAT_TRIM_DROPPED_PACKETS = 0x0000002d,
+
+    /** Packets trimmed and successfully transmitted on a new queue. Counted on the original trimming-eligible queue [uint64_t] */
+    SAI_QUEUE_STAT_TRIM_SENT_PACKETS = 0x0000002e,
+
     /** Custom range base value */
     SAI_QUEUE_STAT_CUSTOM_RANGE_BASE = 0x10000000
 
