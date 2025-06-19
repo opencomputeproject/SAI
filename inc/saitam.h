@@ -1292,6 +1292,9 @@ typedef enum _sai_tam_report_mode_t
     /** Report in a sampling mode, one report is sent for every n reports */
     SAI_TAM_REPORT_MODE_SAMPLING,
 
+    /** Custom range base value */
+    SAI_TAM_REPORT_MODE_CUSTOM_RANGE_BASE = 0x10000000
+
 } sai_tam_report_mode_t;
 
 /**
