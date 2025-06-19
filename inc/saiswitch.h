@@ -3599,6 +3599,9 @@ typedef enum _sai_switch_stat_t
     /** Switch stat fabric drop reasons range end */
     SAI_SWITCH_STAT_FABRIC_DROP_REASON_RANGE_END = 0x00003fff,
 
+    /** Custom range base value */
+    SAI_SWITCH_STAT_CUSTOM_RANGE_BASE = 0x10000000
+
 } sai_switch_stat_t;
 
 /**
