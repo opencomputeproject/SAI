@@ -3518,6 +3518,15 @@ typedef enum _sai_switch_asic_sdk_health_category_t
  */
 typedef enum _sai_switch_stat_t
 {
+    /** Switch stat range start */
+    SAI_SWITCH_STAT_START,
+
+    /** Global (switch-wise) counter of packets trimmed but dropped due to failed shared buffer admission on a trim queue */
+    SAI_SWITCH_STAT_DROPPED_TRIM_PACKETS = SAI_SWITCH_STAT_START,
+
+    /** Global (switch-wise) counter of packets trimmed and successfully sent on a trim queue */
+    SAI_SWITCH_STAT_TX_TRIM_PACKETS,
+
     /** Switch stat in drop reasons range start */
     SAI_SWITCH_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,
 
@@ -3598,6 +3607,9 @@ typedef enum _sai_switch_stat_t
 
     /** Switch stat fabric drop reasons range end */
     SAI_SWITCH_STAT_FABRIC_DROP_REASON_RANGE_END = 0x00003fff,
+
+    /** Switch stat range end */
+    SAI_SWITCH_STAT_END,
 
 } sai_switch_stat_t;
 
