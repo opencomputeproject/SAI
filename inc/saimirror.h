@@ -395,6 +395,15 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_GRE_HEADER_FIRST_16BIT,
 
     /**
+     * @brief Label attribute used to uniquely identify mirror session.
+     *
+     * @type char
+     * @flags CREATE_AND_SET
+     * @default ""
+     */
+    SAI_MIRROR_SESSION_ATTR_LABEL,
+
+    /**
      * @brief End of attributes
      */
     SAI_MIRROR_SESSION_ATTR_END,
