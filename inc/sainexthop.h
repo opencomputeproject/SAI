@@ -259,6 +259,17 @@ typedef enum _sai_next_hop_attr_t
     SAI_NEXT_HOP_ATTR_DISABLE_VLAN_REWRITE,
 
     /**
+     * @brief User based Meta Data
+     *
+     * Value Range #SAI_SWITCH_ATTR_NEXT_HOP_USER_META_DATA_RANGE
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_NEXT_HOP_ATTR_META_DATA,
+
+    /**
      * @brief End of attributes
      */
     SAI_NEXT_HOP_ATTR_END,
