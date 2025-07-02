@@ -813,6 +813,9 @@ typedef enum _sai_acl_table_supported_match_type_t
     /** Exact */
     SAI_ACL_TABLE_SUPPORTED_MATCH_TYPE_EXACT,
 
+    /** Custom range base value */
+    SAI_ACL_TABLE_SUPPORTED_MATCH_TYPE_CUSTOM_RANGE_BASE = 0x10000000
+
 } sai_acl_table_supported_match_type_t;
 
 /**
