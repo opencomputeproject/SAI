@@ -3368,6 +3368,12 @@ typedef enum _sai_port_stat_t
     /** Packets trimmed due to failed shared buffer admission [uint64_t] */
     SAI_PORT_STAT_TRIM_PACKETS,
 
+    /** Packets trimmed but dropped due to failed shared buffer admission on a trim queue */
+    SAI_PORT_STAT_DROPPED_TRIM_PACKETS,
+
+    /** Packets trimmed and successfully transmitted on port */
+    SAI_PORT_STAT_TX_TRIM_PACKETS,
+
     /** Port stat in drop reasons range start */
     SAI_PORT_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,
 
