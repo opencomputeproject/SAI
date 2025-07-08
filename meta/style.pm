@@ -459,7 +459,9 @@ sub CheckFunctionNaming
     switch_mdio_cl22_read
     switch_mdio_cl22_write
     switch_register_read
-    switch_register_write);
+    switch_register_write
+    set_switches_attribute
+    get_switches_attribute);
 
     my $REG = "(" . (join"|",@listex) . ")";
 
