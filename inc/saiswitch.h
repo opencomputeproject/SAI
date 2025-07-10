@@ -3611,6 +3611,9 @@ typedef enum _sai_switch_stat_t
     /** Switch stat range end */
     SAI_SWITCH_STAT_END,
 
+    /** Custom range base value */
+    SAI_SWITCH_STAT_CUSTOM_RANGE_BASE = 0x10000000
+
 } sai_switch_stat_t;
 
 /**
