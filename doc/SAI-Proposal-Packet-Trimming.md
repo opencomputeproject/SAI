@@ -212,3 +212,15 @@ typedef enum _sai_packet_trim_dscp_resolution_mode_t
      */
     SAI_SWITCH_ATTR_PACKET_TRIM_DSCP_RESOLUTION_MODE,
 ```
+
+## Counter
+|Header file|SAI attribute|Description|
+|-----------|-------------|-----------|
+|saiswitch.h|SAI_SWITCH_STAT_DROPPED_TRIM_PACKETS|Global counter (aggregated value of all ports) of packets trimmed but dropped due to failed shared buffer admission on a trim queue|
+|           |SAI_SWITCH_STAT_TX_TRIM_PACKETS|Global counter (aggregated value of all ports) of packets trimmed and successfully sent via a trim queue|
+|saiport.h  |SAI_PORT_STAT_TRIM_PACKETS|Per-port counter of packets trimmed due to failed shared buffer admission|
+|           |SAI_PORT_STAT_DROPPED_TRIM_PACKETS|Per-port counter of packets trimmed but dropped due to failed shared buffer admission on a trim queue|
+|           |SAI_PORT_STAT_TX_TRIM_PACKETS|Per-port counter of packets trimmed and successfully sent via a trim queue|
+|saiqueue.h |SAI_QUEUE_STAT_TRIM_PACKETS|Per-queue counter of packets trimmed on trimming-eligible queue due to failed shared buffer admission|
+|           |SAI_QUEUE_STAT_DROPPED_TRIM_PACKETS|Per-queue counter of packets trimmed on trimming-eligible queue but dropped due to failed shared buffer admission on a trim queue|
+|           |SAI_QUEUE_STAT_TX_TRIM_PACKETS|Per-queue counter of packets trimmed on trimming-eligible queue and successfully sent via a trim queue|
