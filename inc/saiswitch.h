@@ -3694,6 +3694,8 @@ typedef enum _sai_switch_stat_t
 
 /**
  * @def SAI_KEY_NHG_HIERARCHICAL_NEXTHOP
+ * true: Nexthop groups consists of tunnel and IP nexthop
+ * false: Nexthop groups consists of IP nexthop only
  */
 #define SAI_KEY_NHG_HIERARCHICAL_NEXTHOP          "SAI_NHG_HIERARCHICAL_NEXTHOP"
 
