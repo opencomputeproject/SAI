@@ -3482,7 +3482,7 @@ typedef enum _sai_switch_stat_t
  * @note This value needs to be incremented whenever a new switch attribute key
  * is added.
  */
-#define SAI_SWITCH_ATTR_MAX_KEY_COUNT         16
+#define SAI_SWITCH_ATTR_MAX_KEY_COUNT         17
 
 /*
  * List of switch attributes keys that can be set using key=value
@@ -3547,6 +3547,13 @@ typedef enum _sai_switch_stat_t
  * @def SAI_KEY_INIT_CONFIG_FILE
  */
 #define SAI_KEY_INIT_CONFIG_FILE                  "SAI_INIT_CONFIG_FILE"
+
+/**
+ * @def SAI_KEY_NHG_HIERARCHICAL_NEXTHOP
+ * true: Nexthop groups consists of tunnel and IP nexthop
+ * false: Nexthop groups consists of IP nexthop only
+ */
+#define SAI_KEY_NHG_HIERARCHICAL_NEXTHOP          "SAI_NHG_HIERARCHICAL_NEXTHOP"
 
 /**
  * @def SAI_KEY_BOOT_TYPE
