@@ -71,7 +71,7 @@ typedef enum _sai_scheduler_attr_t
     /**
      * @brief Scheduling algorithm weight
      *
-     * Range [1 - 100].
+     * Range [1 - 255].
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
