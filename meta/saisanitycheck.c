@@ -561,6 +561,12 @@ bool sai_metadata_is_acl_field_or_action(
             return true;
         }
 
+        if (metadata->attrid >= SAI_ACL_ENTRY_ATTR_CUSTOM_RANGE_START &&
+            metadata->attrid <= SAI_ACL_ENTRY_ATTR_CUSTOM_RANGE_END)
+        {
+            return true;
+        }
+
         if (metadata->isextensionattr)
         {
             return true;
