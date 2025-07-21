@@ -455,11 +455,10 @@ typedef enum _sai_debug_counter_attr_t
      */
     SAI_DEBUG_COUNTER_ATTR_END,
 
-    /** Custom range base value */
-    SAI_DEBUG_COUNTER_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_DEBUG_COUNTER_ATTR_CUSTOM_RANGE_END
+    /**
+     * @brief Custom range base value
+     */
+    SAI_DEBUG_COUNTER_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_debug_counter_attr_t;
 

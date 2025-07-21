@@ -166,6 +166,24 @@ sub CreateCustomRangeAllTest
 
         for my $enum (@all)
         {
+            if ($enum =~ /ACL_(TABLE|ENTRY)_ATTR/) {
+                if ($enum =~ /FIELD/)
+                {
+                    WriteTest "    TEST_ASSERT_TRUE($enum == 0x10001000, \"invalid custom range start for $enum\");" if $enum =~ /_START$/;
+                    WriteTest "    TEST_ASSERT_TRUE($enum < 0x10002000, \"invalid custom range end for $enum\");" if $enum =~ /_END$/;
+                }
+                elsif ($enum =~ /ACTION/)
+                {
+                    WriteTest "    TEST_ASSERT_TRUE($enum == 0x10002000, \"invalid custom range start for $enum\");" if $enum =~ /_START$/;
+                    WriteTest "    TEST_ASSERT_TRUE($enum < 0x10003000, \"invalid custom range end for $enum\");" if $enum =~ /_END$/;
+                }
+                else {
+                    WriteTest "    TEST_ASSERT_TRUE($enum == 0x10000000, \"invalid custom range start for $enum\");" if $enum =~ /_START$/;
+                    WriteTest "    TEST_ASSERT_TRUE($enum < 0x10001000, \"invalid custom range end for $enum\");" if $enum =~ /_END$/;
+                }
+                next;
+            }
+
             WriteTest "    TEST_ASSERT_TRUE($enum == 0x10000000, \"invalid custom range start for $enum\");" if $enum =~ /_START$/;
             WriteTest "    TEST_ASSERT_TRUE($enum < 0x20000000, \"invalid custom range end for $enum\");" if $enum =~ /_END$/;
         }
@@ -198,13 +216,26 @@ sub CreateCustomRangeBaseTest
                 next;
             }
 
+            if ($range eq "${prefix}_FIELD_CUSTOM_RANGE_BASE")
+            {
+                WriteTest "    TEST_ASSERT_TRUE_EXT($range == 0x10001000, \"invalid custom range start for $range = 0x%x\", $range);" ;
+                next;
+            }
+
+            if ($range eq "${prefix}_ACTION_CUSTOM_RANGE_BASE")
+            {
+                WriteTest "    TEST_ASSERT_TRUE_EXT($range == 0x10002000, \"invalid custom range start for $range = 0x%x\", $range);" ;
+                next;
+            }
+
             if ($range eq "${prefix}_EXTENSIONS_RANGE_BASE")
             {
                 WriteTest "    TEST_ASSERT_TRUE_EXT($range == 0x20000000, \"invalid extensions range base for $range: = 0x%x\", $range);" ;
                 next;
             }
 
-            LogInfo "Skipping range base $range";
+            LogInfo "Skipping range base $range for $prefix";
+
 
             # currently any other range should be less than custom
 

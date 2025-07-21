@@ -26,6 +26,7 @@
 #include <string.h>
 #include <alloca.h>
 #include <sai.h>
+#include <saicustom.h>
 #include <saiversion.h>
 #include "saimetadatautils.h"
 #include "saimetadata.h"
@@ -557,6 +558,18 @@ bool sai_metadata_is_acl_field_or_action(
 
         if (metadata->attrid >= SAI_ACL_ENTRY_ATTR_ACTION_START &&
                 metadata->attrid <= SAI_ACL_ENTRY_ATTR_ACTION_END)
+        {
+            return true;
+        }
+
+        if (metadata->attrid >= SAI_ACL_ENTRY_ATTR_ACTION_CUSTOM_RANGE_START &&
+            metadata->attrid <= SAI_ACL_ENTRY_ATTR_ACTION_CUSTOM_RANGE_END)
+        {
+            return true;
+        }
+
+        if (metadata->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_CUSTOM_RANGE_START &&
+            metadata->attrid <= SAI_ACL_ENTRY_ATTR_FIELD_CUSTOM_RANGE_END)
         {
             return true;
         }
@@ -2204,8 +2217,10 @@ void check_attr_acl_fields(
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST:
 
             if (md->objecttype == SAI_OBJECT_TYPE_ACL_ENTRY &&
-                    md->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_START &&
-                    md->attrid  <= SAI_ACL_ENTRY_ATTR_FIELD_END)
+                    ((md->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_START &&
+                    md->attrid  <= SAI_ACL_ENTRY_ATTR_FIELD_END) ||
+                    (md->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_CUSTOM_RANGE_START &&
+                    md->attrid <= SAI_ACL_ENTRY_ATTR_FIELD_CUSTOM_RANGE_END)))
             {
                 break;
 
@@ -5060,6 +5075,50 @@ void check_acl_entry_actions()
                     meta->attridname, enum_name);
         }
 
+        index++;
+        enum_index++;
+    }
+
+    for (; meta_acl_entry[index] != NULL; index++)
+    {
+        if (meta_acl_entry[index]->attrid == SAI_ACL_ENTRY_ATTR_ACTION_CUSTOM_RANGE_START)
+        {
+            break;
+        }
+    }
+
+    while (meta_acl_entry[index] != NULL &&
+           meta_acl_entry[index]->attrid >= SAI_ACL_ENTRY_ATTR_ACTION_CUSTOM_RANGE_START &&
+           meta_acl_entry[index]->attrid < SAI_ACL_ENTRY_ATTR_ACTION_CUSTOM_RANGE_END) {
+        const sai_attr_metadata_t *meta = meta_acl_entry[index];
+
+        if (meta->flags != SAI_ATTR_FLAGS_CREATE_AND_SET)
+        {
+            META_MD_ASSERT_FAIL(meta, "acl entry action flags should be CREATE_AND_SET");
+        }
+
+        const char* enum_name = sai_metadata_enum_sai_acl_action_type_t.valuesnames[enum_index];
+
+        META_ASSERT_NOT_NULL(enum_name);
+
+        META_LOG_DEBUG("processing acl action: %s %s", meta->attridname, enum_name);
+
+        /*
+         * check acl fields attribute if endings are the same
+         */
+        const char * enum_name_pos = strstr(enum_name, "_ACTION_TYPE_");
+
+        META_ASSERT_NOT_NULL(enum_name_pos);
+
+        const char * attr_entry_pos = strstr(meta->attridname, "_ATTR_ACTION_");
+
+        META_ASSERT_NOT_NULL(attr_entry_pos);
+
+        if (strcmp(enum_name_pos + strlen("_ACTION_TYPE_"), attr_entry_pos + strlen("_ATTR_ACTION_")) != 0)
+        {
+            META_ASSERT_FAIL("attr entry action name %s is not ending at the same enum name %s",
+                    meta->attridname, enum_name);
+        }
         index++;
         enum_index++;
     }

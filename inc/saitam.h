@@ -92,10 +92,7 @@ typedef enum _sai_tam_attr_t
     SAI_TAM_ATTR_END,
 
     /** Custom range base value */
-    SAI_TAM_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_TAM_ATTR_CUSTOM_RANGE_END
+    SAI_TAM_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_tam_attr_t;
 
@@ -207,10 +204,7 @@ typedef enum _sai_tam_math_func_attr_t
     SAI_TAM_MATH_FUNC_ATTR_END,
 
     /** Custom range base value */
-    SAI_TAM_MATH_FUNC_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_TAM_MATH_FUNC_ATTR_CUSTOM_RANGE_END
+    SAI_TAM_MATH_FUNC_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_tam_math_func_attr_t;
 
@@ -377,10 +371,7 @@ typedef enum _sai_tam_event_threshold_attr_t
     SAI_TAM_EVENT_THRESHOLD_ATTR_END,
 
     /** Custom range base value */
-    SAI_TAM_EVENT_THRESHOLD_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_TAM_EVENT_THRESHOLD_ATTR_CUSTOM_RANGE_END
+    SAI_TAM_EVENT_THRESHOLD_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_tam_event_threshold_attr_t;
 
@@ -804,10 +795,7 @@ typedef enum _sai_tam_int_attr_t
     SAI_TAM_INT_ATTR_END,
 
     /** Custom range base value */
-    SAI_TAM_INT_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_TAM_INT_ATTR_CUSTOM_RANGE_END
+    SAI_TAM_INT_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_tam_int_attr_t;
 
@@ -1156,10 +1144,7 @@ typedef enum _sai_tam_tel_type_attr_t
     SAI_TAM_TEL_TYPE_ATTR_END,
 
     /** Custom range base value */
-    SAI_TAM_TEL_TYPE_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_TAM_TEL_TYPE_ATTR_CUSTOM_RANGE_END
+    SAI_TAM_TEL_TYPE_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 } sai_tam_tel_type_attr_t;
 
 /**
@@ -1459,10 +1444,7 @@ typedef enum _sai_tam_report_attr_t
     SAI_TAM_REPORT_ATTR_END,
 
     /** Custom range base value */
-    SAI_TAM_REPORT_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_TAM_REPORT_ATTR_CUSTOM_RANGE_END
+    SAI_TAM_REPORT_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_tam_report_attr_t;
 
@@ -1600,10 +1582,7 @@ typedef enum _sai_tam_telemetry_attr_t
     SAI_TAM_TELEMETRY_ATTR_END,
 
     /** Custom range base value */
-    SAI_TAM_TELEMETRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_TAM_TELEMETRY_ATTR_CUSTOM_RANGE_END
+    SAI_TAM_TELEMETRY_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_tam_telemetry_attr_t;
 
@@ -1791,10 +1770,7 @@ typedef enum _sai_tam_transport_attr_t
     SAI_TAM_TRANSPORT_ATTR_END,
 
     /** Custom range base value */
-    SAI_TAM_TRANSPORT_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_TAM_TRANSPORT_ATTR_CUSTOM_RANGE_END
+    SAI_TAM_TRANSPORT_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_tam_transport_attr_t;
 
@@ -1984,10 +1960,7 @@ typedef enum _sai_tam_collector_attr_t
     SAI_TAM_COLLECTOR_ATTR_END,
 
     /** Custom range base value */
-    SAI_TAM_COLLECTOR_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_TAM_COLLECTOR_ATTR_CUSTOM_RANGE_END
+    SAI_TAM_COLLECTOR_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_tam_collector_attr_t;
 
@@ -2143,10 +2116,7 @@ typedef enum _sai_tam_event_action_attr_t
     SAI_TAM_EVENT_ACTION_ATTR_END,
 
     /** Custom range base value */
-    SAI_TAM_EVENT_ACTION_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_TAM_EVENT_ACTION_ATTR_CUSTOM_RANGE_END
+    SAI_TAM_EVENT_ACTION_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_tam_event_action_attr_t;
 
@@ -2264,10 +2234,7 @@ typedef enum _sai_tam_event_attr_t
     SAI_TAM_EVENT_ATTR_END,
 
     /** Custom range base value */
-    SAI_TAM_EVENT_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_TAM_EVENT_ATTR_CUSTOM_RANGE_END
+    SAI_TAM_EVENT_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_tam_event_attr_t;
 
@@ -2386,10 +2353,7 @@ typedef enum _sai_tam_counter_subscription_attr_t
     SAI_TAM_COUNTER_SUBSCRIPTION_ATTR_END,
 
     /** Custom range base value */
-    SAI_TAM_COUNTER_SUBSCRIPTION_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_TAM_COUNTER_SUBSCRIPTION_ATTR_CUSTOM_RANGE_END
+    SAI_TAM_COUNTER_SUBSCRIPTION_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_tam_counter_subscription_attr_t;
 

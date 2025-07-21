@@ -103,11 +103,10 @@ typedef enum _sai_hostif_trap_group_attr_t
      */
     SAI_HOSTIF_TRAP_GROUP_ATTR_END,
 
-    /** Start of custom range base */
-    SAI_HOSTIF_TRAP_GROUP_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range */
-    SAI_HOSTIF_TRAP_GROUP_ATTR_CUSTOM_RANGE_END
+    /**
+     * @brief Custom range base value
+     */
+    SAI_HOSTIF_TRAP_GROUP_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_hostif_trap_group_attr_t;
 
@@ -621,11 +620,10 @@ typedef enum _sai_hostif_trap_attr_t
      */
     SAI_HOSTIF_TRAP_ATTR_END,
 
-    /** Custom range start */
-    SAI_HOSTIF_TRAP_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** Custom range end */
-    SAI_HOSTIF_TRAP_ATTR_CUSTOM_RANGE_END
+    /**
+     * @brief Custom range base value
+     */
+    SAI_HOSTIF_TRAP_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_hostif_trap_attr_t;
 
@@ -774,11 +772,10 @@ typedef enum _sai_hostif_user_defined_trap_attr_t
      */
     SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_END,
 
-    /** Custom range start */
-    SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** Custom range end */
-    SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_CUSTOM_RANGE_END
+    /**
+     * @brief Custom range base value
+     */
+    SAI_HOSTIF_USER_DEFINED_TRAP_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_hostif_user_defined_trap_attr_t;
 
@@ -974,11 +971,10 @@ typedef enum _sai_hostif_attr_t
      */
     SAI_HOSTIF_ATTR_END,
 
-    /** Custom range base value */
-    SAI_HOSTIF_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_HOSTIF_ATTR_CUSTOM_RANGE_END
+    /**
+     * @brief Custom range base value
+     */
+    SAI_HOSTIF_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_hostif_attr_t;
 
@@ -1146,11 +1142,10 @@ typedef enum _sai_hostif_table_entry_attr_t
      */
     SAI_HOSTIF_TABLE_ENTRY_ATTR_END,
 
-    /** Custom range base value */
-    SAI_HOSTIF_TABLE_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_HOSTIF_TABLE_ENTRY_ATTR_CUSTOM_RANGE_END
+    /**
+     * @brief Custom range base value
+     */
+    SAI_HOSTIF_TABLE_ENTRY_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_hostif_table_entry_attr_t;
 
@@ -1332,11 +1327,10 @@ typedef enum _sai_hostif_packet_attr_t
      */
     SAI_HOSTIF_PACKET_ATTR_END,
 
-    /** Custom range base value */
-    SAI_HOSTIF_PACKET_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_HOSTIF_PACKET_ATTR_CUSTOM_RANGE_END
+    /**
+     * @brief Custom range base value
+     */
+    SAI_HOSTIF_PACKET_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_hostif_packet_attr_t;
 
