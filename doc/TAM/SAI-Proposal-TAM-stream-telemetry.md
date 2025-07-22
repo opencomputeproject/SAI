@@ -402,7 +402,7 @@ erDiagram
     TAM[TAM] {
         SAI_ID SAI_VALUE "Comments"
         SAI_TAM_ATTR_TELEMETRY_OBJECTS_LIST sai_tam_telemetry_obj
-        SAI_TAM_ATTR_TAM_BIND_POINT_TYPE_LIST SAI_TAM_BIND_POINT_TYPE_PORT
+        SAI_TAM_ATTR_TAM_BIND_POINT_TYPE_LIST SAI_TAM_BIND_POINT_TYPE_SWITCH
     }
     switch[Switch] {
         SAI_ID SAI_VALUE "Comments"
@@ -889,9 +889,8 @@ sai_attr_list[0].value.objlist.count = telemetry_objs.size();
 sai_attr_list[0].value.objlist.list = telemetry_objs.data();
 
 sai_attr_list[1].id = SAI_TAM_ATTR_TAM_BIND_POINT_TYPE_LIST;
-sai_attr_list[1].value.objlist.count = 2;
-sai_attr_list[1].value.objlist.list[0] = SAI_TAM_BIND_POINT_TYPE_PORT;
-sai_attr_list[1].value.objlist.list[0] = SAI_TAM_BIND_POINT_TYPE_QUEUE;
+sai_attr_list[1].value.objlist.count = 1;
+sai_attr_list[1].value.objlist.list[0] = SAI_TAM_BIND_POINT_TYPE_SWITCH;
 
 attr_count = 2;
 create_tam(&sai_tam_obj, switch_id, attr_count, sai_attr_list);
