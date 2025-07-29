@@ -285,8 +285,16 @@ typedef enum _sai_buffer_pool_type_t
     SAI_BUFFER_POOL_TYPE_EGRESS,
 
     /** Buffer pool used by both ingress and egress */
-    SAI_BUFFER_POOL_TYPE_BOTH
+    SAI_BUFFER_POOL_TYPE_BOTH,
 
+    /** Egress HBM buffer pool */
+    SAI_BUFFER_POOL_TYPE_EGRESS_HBM,
+
+    /** Custom range base value */
+    SAI_BUFFER_POOL_TYPE_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_BUFFER_POOL_TYPE_CUSTOM_RANGE_END
 } sai_buffer_pool_type_t;
 
 /**
