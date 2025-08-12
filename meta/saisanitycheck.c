@@ -791,6 +791,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_UINT32_RANGE:
         case SAI_ATTR_VALUE_TYPE_UINT16_RANGE_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
+        case SAI_ATTR_VALUE_TYPE_UINT32_RANGE_LIST:
         case SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_MAP_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_CAPABILITY:
@@ -1161,6 +1162,15 @@ void check_attr_default_required(
 
             META_MD_ASSERT_FAIL(md, "default value list is needed on this attr value type but list is NULL");
 
+        case SAI_ATTR_VALUE_TYPE_UINT32_RANGE_LIST:
+
+            if (md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_EMPTY_LIST)
+            {
+                break;
+            }
+
+            META_MD_ASSERT_FAIL(md, "default value list is needed on this attr value type but list is NULL");
+
         case SAI_ATTR_VALUE_TYPE_POINTER:
 
             /*
@@ -1306,6 +1316,7 @@ void check_attr_default_value_type(
 
             switch (md->attrvaluetype)
             {
+                case SAI_ATTR_VALUE_TYPE_UINT32_RANGE_LIST:
                 case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
                 case SAI_ATTR_VALUE_TYPE_INT32_LIST:
                 case SAI_ATTR_VALUE_TYPE_UINT8_LIST:
@@ -2067,6 +2078,7 @@ void check_attr_allow_flags(
             case SAI_ATTR_VALUE_TYPE_INT32_LIST:
             case SAI_ATTR_VALUE_TYPE_VLAN_LIST:
             case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
+            case SAI_ATTR_VALUE_TYPE_UINT32_RANGE_LIST:
             case SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST:
             case SAI_ATTR_VALUE_TYPE_MAP_LIST:
             case SAI_ATTR_VALUE_TYPE_ACL_RESOURCE_LIST:
@@ -2974,6 +2986,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_ERR_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT16_RANGE_LIST:
+        case SAI_ATTR_VALUE_TYPE_UINT32_RANGE_LIST:
         case SAI_ATTR_VALUE_TYPE_PORT_LANE_LATCH_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_JSON:
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:

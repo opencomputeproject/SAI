@@ -500,6 +500,12 @@ typedef enum _sai_attr_value_type_t
      * @brief Attribute value is port PAM4 eye values list.
      */
     SAI_ATTR_VALUE_TYPE_PORT_PAM4_EYE_VALUES_LIST,
+
+    /**
+     * @brief Attribute value is 32 bit unsigned integer range list.
+     */
+    SAI_ATTR_VALUE_TYPE_UINT32_RANGE_LIST,
+
 } sai_attr_value_type_t;
 
 /**

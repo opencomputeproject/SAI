@@ -481,6 +481,16 @@ typedef enum _sai_tam_int_type_t
      */
     SAI_TAM_INT_TYPE_PATH_TRACING,
 
+    /**
+     * @brief INT type Congestion Signalling compact tag
+     */
+    SAI_TAM_INT_TYPE_CSIG_COMPACT,
+
+    /**
+     * @brief INT type Congestion Signalling wide tag
+     */
+    SAI_TAM_INT_TYPE_CSIG_WIDE,
+
 } sai_tam_int_type_t;
 
 /**
@@ -509,8 +519,12 @@ typedef enum _sai_tam_int_presence_type_t
     /**
      * @brief INT presence type DSCP
      */
-    SAI_TAM_INT_PRESENCE_TYPE_DSCP
+    SAI_TAM_INT_PRESENCE_TYPE_DSCP,
 
+    /**
+     * @brief INT presence type Ether Type Code Point
+     */
+    SAI_TAM_INT_PRESENCE_TYPE_ETH_TYPE,
 } sai_tam_int_presence_type_t;
 
 /**
@@ -797,6 +811,237 @@ typedef enum _sai_tam_int_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_TAM_INT_ATTR_REPORT_ID,
+
+    /**
+     * @brief Ethernet code point value that indicates presence of CSIG compact tag in a packet
+     *
+     * @type sai_uint16_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @isvlan false
+     * @condition SAI_TAM_INT_ATTR_INT_PRESENCE_TYPE == SAI_TAM_INT_PRESENCE_TYPE_ETH_TYPE and SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_COMPACT
+     */
+    SAI_TAM_INT_ATTR_ETH_TYPE_CSIG_COMPACT,
+
+    /**
+     * @brief Ethernet code point value that indicates presence of CSIG wide tag in a packet
+     *
+     * @type sai_uint16_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @isvlan false
+     * @condition SAI_TAM_INT_ATTR_INT_PRESENCE_TYPE == SAI_TAM_INT_PRESENCE_TYPE_ETH_TYPE and SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_WIDE
+     */
+    SAI_TAM_INT_ATTR_ETH_TYPE_CSIG_WIDE,
+
+    /**
+     * @brief Enable min available bandwidth signal: min(ABW)
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_COMPACT or SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_WIDE
+     */
+    SAI_TAM_INT_ATTR_CSIG_MIN_ABW,
+
+    /**
+     * @brief Enable relative min available bandwidth signal: min(ABW/C)
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_COMPACT or SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_WIDE
+     */
+    SAI_TAM_INT_ATTR_CSIG_MIN_ABW_C,
+
+    /**
+     * @brief Enable maximum per hop delay signal: max(Delay)
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_COMPACT or SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_WIDE
+     */
+    SAI_TAM_INT_ATTR_CSIG_MAX_HOP_DELAY,
+
+    /**
+     * @brief Enable maximum per hop normalized queue delay signal: max(NQD)
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_COMPACT or SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_WIDE
+     */
+    SAI_TAM_INT_ATTR_CSIG_MAX_NQD,
+
+    /**
+     * @brief Strip the CSIG header and forward the packet
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_COMPACT or SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_WIDE
+     */
+    SAI_TAM_INT_ATTR_CSIG_STRIP_AND_FORWARD,
+
+    /**
+     * @brief Update the D bit indicating the packet is trimmed
+     * DSCP value configured for TRIM packets comes from the TRIM configuration
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_COMPACT or SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_WIDE
+     */
+    SAI_TAM_INT_ATTR_CSIG_D_BIT,
+
+    /**
+     * @brief Time interval for bandwidth computation in nanosecond
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 256
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_COMPACT or SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_WIDE
+     */
+    SAI_TAM_INT_ATTR_BW_TIME_INTERVAL,
+
+    /**
+     * @brief Number of quantization bands support for compact CSIG tag
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 32
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_COMPACT
+     */
+    SAI_TAM_INT_ATTR_COMPACT_QUANT_BANDS,
+
+    /**
+     * @brief Number of quantization bands support for wide CSIG tag
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 1048576
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_WIDE
+     */
+    SAI_TAM_INT_ATTR_WIDE_QUANT_BANDS,
+
+    /**
+     * @brief Quantization band range values for ABW signal. This is applicable only if ABW signal is enabled.
+     *
+     * @type sai_u32_range_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_COMPACT
+     */
+    SAI_TAM_INT_ATTR_ABW_QUANT_BAND_UINT32_RANGE_LIST,
+
+    /**
+     * @brief Quantization band range values for ABW/C signal. This is applicable only if ABW/C signal is enabled.
+     *
+     * @type sai_u32_range_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_COMPACT
+     */
+    SAI_TAM_INT_ATTR_ABW_C_QUANT_BAND_UINT32_RANGE_LIST,
+
+    /**
+     * @brief Quantization band range values for delay signal. This is applicable only if delay signal is enabled.
+     *
+     * @type sai_u32_range_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_COMPACT
+     */
+    SAI_TAM_INT_ATTR_HOP_DELAY_QUANT_BAND_UINT32_RANGE_LIST,
+
+    /**
+     * @brief Quantization band range values for queue depth signal. This is applicable only if queue depth is enabled.
+     *
+     * @type sai_u32_range_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_COMPACT
+     */
+    SAI_TAM_INT_ATTR_HOP_NQD_QUANT_BAND_UINT32_RANGE_LIST,
+
+    /**
+     * @brief Base value for CSIG wide tag ABW signal quantization. Must be power of 2
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_WIDE
+     */
+    SAI_TAM_INT_ATTR_WIDE_ABW_QUANT_BASE_VALUE,
+
+    /**
+     * @brief Step value for CSIG wide tag ABW signal quantization. Must be power of 2
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_WIDE
+     */
+    SAI_TAM_INT_ATTR_WIDE_ABW_QUANT_STEP_VALUE,
+
+    /**
+     * @brief Base value for CSIG wide tag ABW/C signal quantization. Must be power of 2
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_WIDE
+     */
+    SAI_TAM_INT_ATTR_WIDE_ABW_C_QUANT_BASE_VALUE,
+
+    /**
+     * @brief Step value for CSIG wide tag ABW/C signal quantization. Must be power of 2
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_WIDE
+     */
+    SAI_TAM_INT_ATTR_WIDE_ABW_C_QUANT_STEP_VALUE,
+
+    /**
+     * @brief Base value for CSIG wide tag delay signal quantization. Must be power of 2
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_WIDE
+     */
+    SAI_TAM_INT_ATTR_WIDE_HOP_DELAY_QUANT_BASE_VALUE,
+
+    /**
+     * @brief Step value for CSIG wide tag delay signal quantization. Must be power of 2
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_WIDE
+     */
+    SAI_TAM_INT_ATTR_WIDE_HOP_DELAY_QUANT_STEP_VALUE,
+
+    /**
+     * @brief Base value for CSIG wide tag queue depth signal quantization. Must be power of 2
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_WIDE
+     */
+    SAI_TAM_INT_ATTR_WIDE_NQD_QUANT_BASE_VALUE,
+
+    /**
+     * @brief Step value for CSIG wide tag queue depth signal quantization. Must be power of 2
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_WIDE
+     */
+    SAI_TAM_INT_ATTR_WIDE_NQD_QUANT_STEP_VALUE,
 
     /**
      * @brief End of Attributes

@@ -1,4 +1,5 @@
 # this file defines acronyms, one acronym per line
+ABW - Available Bandwidth
 ACL - Access Control List
 AES - Advanced Encryption Standard
 AN - Association Number
@@ -27,6 +28,7 @@ CMIS - Common Management Interface Specification
 CPLD - Complex programmable logic device
 CPU - Central Processing Unit
 CRC - Cyclic Redundancy Code
+CSIG - Congestion Signaling
 DHCP - Dynamic Host Configuration Protocol
 DHCPV6 - Dynamic Host Configuration Protocol for IPv6
 DLD - Dead Lock Detection
@@ -101,6 +103,7 @@ NAPT - Network Address Port Translation
 NHLFE - Next Hop Label Forwarding Entry
 NMOS - N-channel Metal Oxide Semiconductor
 NPU - Numeric Processing Unit
+NQD - Normalized Queue Depth
 NRZ - Non Return to Zero
 NTPCLIENT - Network Time Protocol Client
 NTPSERVER - Network Time Protocol Server
