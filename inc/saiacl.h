@@ -1583,18 +1583,54 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_DST_PREFIX_META = SAI_ACL_TABLE_ATTR_FIELD_START + 0x161,
 
     /**
+     * @brief CSIG ABW Signal
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_CSIG_ABW = SAI_ACL_TABLE_ATTR_FIELD_START + 0x162,
+
+    /**
+     * @brief CSIG ABW/C Signal
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_CSIG_ABW_C = SAI_ACL_TABLE_ATTR_FIELD_START + 0x163,
+
+    /**
+     * @brief CSIG Delay Signal
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_CSIG_DELAY = SAI_ACL_TABLE_ATTR_FIELD_START + 0x164,
+
+    /**
+     * @brief CSIG NQD Signal
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_CSIG_NQD = SAI_ACL_TABLE_ATTR_FIELD_START + 0x165,
+
+    /**
      * @brief CSIG TRIM Bit D
      *
      * @type bool
      * @flags CREATE_ONLY
      * @default false
      */
-    SAI_ACL_TABLE_ATTR_FIELD_TRIM_BIT = SAI_ACL_TABLE_ATTR_FIELD_START + 0x162,
+    SAI_ACL_TABLE_ATTR_FIELD_CSIG_D = SAI_ACL_TABLE_ATTR_FIELD_START + 0x166,
 
     /**
      * @brief End of ACL Table Match Field
      */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_TRIM_BIT,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_CSIG_D,
 
     /**
      * @brief ACL table entries associated with this table.
@@ -2720,18 +2756,54 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_DST_PREFIX_META = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x161,
 
     /**
+     * @brief CSIG ABW Signal
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_CSIG_ABW = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x162,
+
+    /**
+     * @brief CSIG ABW/C Signal
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_CSIG_ABW_C = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x163,
+
+    /**
+     * @brief CSIG Delay Signal
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_CSIG_DELAY = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x164,
+
+    /**
+     * @brief CSIG NQD Signal
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_CSIG_NQD = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x165,
+
+    /**
      * @brief CSIG TRIM Bit D
      *
      * @type sai_acl_field_data_t bool
      * @flags CREATE_AND_SET
      * @default disabled
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_TRIM_BIT = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x162,
+    SAI_ACL_ENTRY_ATTR_FIELD_CSIG_D = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x166,
 
     /**
      * @brief End of Rule Match Fields
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_TRIM_BIT,
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_CSIG_D,
 
     /*
      * Actions [sai_acl_action_data_t]
