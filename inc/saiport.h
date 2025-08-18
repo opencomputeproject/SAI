@@ -2688,6 +2688,15 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PAM4_EYE_VALUES,
 
     /**
+     * @brief Enable INT metadata deletion
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_INT_DELETE,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
