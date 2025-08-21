@@ -504,6 +504,10 @@ typedef enum _sai_switch_tunnel_attr_t
     /**
      * @brief Tunnel UDP source port
      *
+     * This attribute is used to set the UDP source port for VXLAN tunnels.
+     * It is also applied to VxLAN pockets ingressing the switch. If the incoming
+     * packet does not match the configured UDP source port, the packet is dropped.
+     *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
      * @isvlan false
@@ -517,6 +521,9 @@ typedef enum _sai_switch_tunnel_attr_t
      *
      * Sport mask defining the number of least significant bits
      * reserved for the calculated hash value. 0 means a fixed value.
+     * It is also applied to VxLAN pockets ingressing the switch. If the incoming
+     * packet does not match the configured UDP source port range,
+     * the packet is dropped.
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
