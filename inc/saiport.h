@@ -2688,7 +2688,7 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PAM4_EYE_VALUES,
 
     /**
-     * @brief Get port firmware revision
+     * @brief Get port SerDes firmware revision
      * 
      * Standard attribute to collect port SerDes firmware rev.
      *
