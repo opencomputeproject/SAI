@@ -2688,6 +2688,26 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PAM4_EYE_VALUES,
 
     /**
+     * @brief Get port firmware revision
+     * 
+     * Standard attribute to collect port SerDes firmware rev or 
+     * any other vendor specific firmware rev.
+     *
+     * @type sai_s8_list_t
+     * @flags READ_ONLY
+    */
+
+    SAI_PORT_ATTR_FW_REVISION,
+
+    /**
+     * @brief The maximum size of SAI_PORT_ATTR_FW_REVISION in bytes.
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_FW_REVISION_SIZE,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
