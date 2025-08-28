@@ -2697,15 +2697,7 @@ typedef enum _sai_port_attr_t
      * @flags READ_ONLY
     */
 
-    SAI_PORT_ATTR_FW_REVISION,
-
-    /**
-     * @brief The maximum size of SAI_PORT_ATTR_FW_REVISION in bytes.
-     *
-     * @type sai_uint32_t
-     * @flags READ_ONLY
-     */
-    SAI_PORT_ATTR_FW_REVISION_SIZE,
+    SAI_PORT_ATTR_SERDES_FW_REVISION,
 
     /**
      * @brief End of attributes
