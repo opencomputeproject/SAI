@@ -2690,8 +2690,7 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Get port firmware revision
      * 
-     * Standard attribute to collect port SerDes firmware rev or 
-     * any other vendor specific firmware rev.
+     * Standard attribute to collect port SerDes firmware rev.
      *
      * @type sai_s8_list_t
      * @flags READ_ONLY
