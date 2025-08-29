@@ -162,10 +162,7 @@ typedef enum _sai_poe_device_attr_t
     SAI_POE_DEVICE_ATTR_END,
 
     /** Custom range base value */
-    SAI_POE_DEVICE_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_POE_DEVICE_ATTR_CUSTOM_RANGE_END
+    SAI_POE_DEVICE_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_poe_device_attr_t;
 
@@ -234,10 +231,7 @@ typedef enum _sai_poe_pse_attr_t
     SAI_POE_PSE_ATTR_END,
 
     /** Custom range base value */
-    SAI_POE_PSE_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_POE_PSE_ATTR_CUSTOM_RANGE_END
+    SAI_POE_PSE_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_poe_pse_attr_t;
 
@@ -325,10 +319,7 @@ typedef enum _sai_poe_port_attr_t
     SAI_POE_PORT_ATTR_END,
 
     /** Custom range base value */
-    SAI_POE_PORT_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_POE_PORT_ATTR_CUSTOM_RANGE_END
+    SAI_POE_PORT_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_poe_port_attr_t;
 

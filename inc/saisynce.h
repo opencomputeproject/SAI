@@ -110,10 +110,7 @@ typedef enum _sai_synce_clock_attr_t
     SAI_SYNCE_CLOCK_ATTR_END,
 
     /** Custom range base value */
-    SAI_SYNCE_CLOCK_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_SYNCE_CLOCK_ATTR_CUSTOM_RANGE_END
+    SAI_SYNCE_CLOCK_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_synce_clock_attr_t;
 

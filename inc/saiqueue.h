@@ -286,10 +286,7 @@ typedef enum _sai_queue_attr_t
     SAI_QUEUE_ATTR_END,
 
     /** Custom range base value */
-    SAI_QUEUE_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_QUEUE_ATTR_CUSTOM_RANGE_END
+    SAI_QUEUE_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_queue_attr_t;
 
