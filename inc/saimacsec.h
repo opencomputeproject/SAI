@@ -353,12 +353,8 @@ typedef enum _sai_macsec_attr_t
     /**
      * @brief Custom range base value
      */
-    SAI_MACSEC_ATTR_CUSTOM_RANGE_START = 0x10000000,
+    SAI_MACSEC_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
-    /**
-     * @brief End of custom range base
-     */
-    SAI_MACSEC_ATTR_CUSTOM_RANGE_END
 } sai_macsec_attr_t;
 
 /**
@@ -470,12 +466,7 @@ typedef enum _sai_macsec_port_attr_t
     /**
      * @brief Custom range base value
      */
-    SAI_MACSEC_PORT_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /**
-     * @brief End of custom range base
-     */
-    SAI_MACSEC_PORT_ATTR_CUSTOM_RANGE_END
+    SAI_MACSEC_PORT_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 } sai_macsec_port_attr_t;
 
 /**
@@ -565,12 +556,7 @@ typedef enum _sai_macsec_flow_attr_t
     /**
      * @brief Custom range base value
      */
-    SAI_MACSEC_FLOW_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /**
-     * @brief End of custom range base
-     */
-    SAI_MACSEC_FLOW_ATTR_CUSTOM_RANGE_END
+    SAI_MACSEC_FLOW_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 } sai_macsec_flow_attr_t;
 
 /**
@@ -813,12 +799,7 @@ typedef enum _sai_macsec_sc_attr_t
     /**
      * @brief Custom range base value
      */
-    SAI_MACSEC_SC_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /**
-     * @brief End of custom range base
-     */
-    SAI_MACSEC_SC_ATTR_CUSTOM_RANGE_END
+    SAI_MACSEC_SC_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 } sai_macsec_sc_attr_t;
 
 /**
@@ -954,12 +935,7 @@ typedef enum _sai_macsec_sa_attr_t
     /**
      * @brief Custom range base value
      */
-    SAI_MACSEC_SA_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /**
-     * @brief End of custom range base
-     */
-    SAI_MACSEC_SA_ATTR_CUSTOM_RANGE_END
+    SAI_MACSEC_SA_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 } sai_macsec_sa_attr_t;
 
 /**

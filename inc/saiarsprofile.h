@@ -467,10 +467,7 @@ typedef enum _sai_ars_profile_attr_t
     SAI_ARS_PROFILE_ATTR_END,
 
     /** Custom range base value */
-    SAI_ARS_PROFILE_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_ARS_PROFILE_ATTR_CUSTOM_RANGE_END
+    SAI_ARS_PROFILE_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_ars_profile_attr_t;
 

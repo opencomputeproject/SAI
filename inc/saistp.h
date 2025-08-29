@@ -93,10 +93,7 @@ typedef enum _sai_stp_attr_t
     SAI_STP_ATTR_END,
 
     /** Custom range base value */
-    SAI_STP_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_STP_ATTR_CUSTOM_RANGE_END
+    SAI_STP_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_stp_attr_t;
 
@@ -142,10 +139,7 @@ typedef enum _sai_stp_port_attr_t
     SAI_STP_PORT_ATTR_END,
 
     /** Custom range base value */
-    SAI_STP_PORT_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_STP_PORT_ATTR_CUSTOM_RANGE_END
+    SAI_STP_PORT_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_stp_port_attr_t;
 

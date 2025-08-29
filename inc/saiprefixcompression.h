@@ -75,10 +75,7 @@ typedef enum _sai_prefix_compression_table_attr_t
     SAI_PREFIX_COMPRESSION_TABLE_ATTR_END,
 
     /** Custom range base value */
-    SAI_PREFIX_COMPRESSION_TABLE_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_PREFIX_COMPRESSION_TABLE_ATTR_CUSTOM_RANGE_END
+    SAI_PREFIX_COMPRESSION_TABLE_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_prefix_compression_table_attr_t;
 
@@ -106,10 +103,7 @@ typedef enum _sai_prefix_compression_entry_attr_t
     SAI_PREFIX_COMPRESSION_ENTRY_ATTR_END,
 
     /** Custom range base value */
-    SAI_PREFIX_COMPRESSION_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_PREFIX_COMPRESSION_ENTRY_ATTR_CUSTOM_RANGE_END
+    SAI_PREFIX_COMPRESSION_ENTRY_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_prefix_compression_entry_attr_t;
 

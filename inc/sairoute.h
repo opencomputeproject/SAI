@@ -148,10 +148,7 @@ typedef enum _sai_route_entry_attr_t
     SAI_ROUTE_ENTRY_ATTR_END,
 
     /** Custom range base value */
-    SAI_ROUTE_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_ROUTE_ENTRY_ATTR_CUSTOM_RANGE_END
+    SAI_ROUTE_ENTRY_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_route_entry_attr_t;
 

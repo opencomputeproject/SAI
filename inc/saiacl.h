@@ -304,6 +304,9 @@ typedef enum _sai_acl_action_type_t
     /** Bind a TAM object */
     SAI_ACL_ACTION_TYPE_TAM_OBJECT = 0x0000003d,
 
+    /** Custom range base of ACL action type */
+    SAI_ACL_ACTION_TYPE_CUSTOM_RANGE_BASE = 0x10000000
+
 } sai_acl_action_type_t;
 
 /**
@@ -408,14 +411,9 @@ typedef enum _sai_acl_table_group_attr_t
     SAI_ACL_TABLE_GROUP_ATTR_END,
 
     /**
-     * @brief Custom range base value start
+     * @brief Custom range base value
      */
-    SAI_ACL_TABLE_GROUP_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /**
-     * @brief End of Custom range base
-     */
-    SAI_ACL_TABLE_GROUP_ATTR_CUSTOM_RANGE_END
+    SAI_ACL_TABLE_GROUP_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_acl_table_group_attr_t;
 
@@ -467,14 +465,9 @@ typedef enum _sai_acl_table_chain_group_attr_t
     SAI_ACL_TABLE_CHAIN_GROUP_ATTR_END,
 
     /**
-     * @brief Custom range base value start
+     * @brief Custom range base value
      */
-    SAI_ACL_TABLE_CHAIN_GROUP_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /**
-     * @brief End of Custom range base
-     */
-    SAI_ACL_TABLE_CHAIN_GROUP_ATTR_CUSTOM_RANGE_END
+    SAI_ACL_TABLE_CHAIN_GROUP_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_acl_table_chain_group_attr_t;
 
@@ -553,14 +546,9 @@ typedef enum _sai_acl_table_group_member_attr_t
     SAI_ACL_TABLE_GROUP_MEMBER_ATTR_END,
 
     /**
-     * @brief Custom range base value start
+     * @brief Custom range base value
      */
-    SAI_ACL_TABLE_GROUP_MEMBER_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /**
-     * @brief End of Custom range base
-     */
-    SAI_ACL_TABLE_GROUP_MEMBER_ATTR_CUSTOM_RANGE_END
+    SAI_ACL_TABLE_GROUP_MEMBER_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_acl_table_group_member_attr_t;
 
@@ -1699,14 +1687,14 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_END,
 
     /**
-     * @brief Custom range base value start
+     * @brief Custom range base value
      */
-    SAI_ACL_TABLE_ATTR_CUSTOM_RANGE_START = 0x10000000,
+    SAI_ACL_TABLE_ATTR_CUSTOM_RANGE_BASE = 0x10000000,
 
     /**
-     * @brief End of Custom range base
+     * @brief Custom field attribute range base value
      */
-    SAI_ACL_TABLE_ATTR_CUSTOM_RANGE_END
+    SAI_ACL_TABLE_ATTR_FIELD_CUSTOM_RANGE_BASE = SAI_ACL_TABLE_ATTR_CUSTOM_RANGE_BASE + 0x00001000
 
 } sai_acl_table_attr_t;
 
@@ -3387,11 +3375,20 @@ typedef enum _sai_acl_entry_attr_t
      */
     SAI_ACL_ENTRY_ATTR_END,
 
-    /** Custom range base value */
-    SAI_ACL_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
+    /**
+     * @brief Custom range base value
+     */
+    SAI_ACL_ENTRY_ATTR_CUSTOM_RANGE_BASE = 0x10000000,
 
-    /** End of custom range base */
-    SAI_ACL_ENTRY_ATTR_CUSTOM_RANGE_END
+    /**
+     * @brief Base value of custom ACL_ENTRY_ATTR_FIELD
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_CUSTOM_RANGE_BASE = SAI_ACL_ENTRY_ATTR_CUSTOM_RANGE_BASE + 0x00001000,
+
+    /**
+     * @brief Base value of custom ACL_ENTRY_ATTR_ACTION
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_CUSTOM_RANGE_BASE = SAI_ACL_ENTRY_ATTR_CUSTOM_RANGE_BASE + 0x00002000
 
 } sai_acl_entry_attr_t;
 
@@ -3473,10 +3470,7 @@ typedef enum _sai_acl_counter_attr_t
     SAI_ACL_COUNTER_ATTR_END,
 
     /** Custom range base value */
-    SAI_ACL_COUNTER_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_ACL_COUNTER_ATTR_CUSTOM_RANGE_END
+    SAI_ACL_COUNTER_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_acl_counter_attr_t;
 
@@ -3541,10 +3535,7 @@ typedef enum _sai_acl_range_attr_t
     SAI_ACL_RANGE_ATTR_END,
 
     /** Custom range base value */
-    SAI_ACL_RANGE_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_ACL_RANGE_ATTR_CUSTOM_RANGE_END
+    SAI_ACL_RANGE_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_acl_range_attr_t;
 

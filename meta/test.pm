@@ -124,31 +124,6 @@ sub CreateSwitchIdTest
     WriteTest "}";
 }
 
-sub CreateCustomRangeTest
-{
-    DefineTestName "custom_range_test";
-
-    # purpose of this test is to make sure
-    # all objects define custom range start and end markers
-
-    WriteTest "{";
-
-    my @all = @{ $main::SAI_ENUMS{sai_object_type_t}{values} };
-
-    for my $obj (@all)
-    {
-        next if $obj eq "SAI_OBJECT_TYPE_NULL";
-        next if $obj eq "SAI_OBJECT_TYPE_MAX";
-
-        next if not $obj =~ /SAI_OBJECT_TYPE_(\w+)/;
-
-        WriteTest "    TEST_ASSERT_TRUE(SAI_$1_ATTR_CUSTOM_RANGE_START == 0x10000000, \"invalid custom range start for $1\");";
-        WriteTest "    TEST_ASSERT_TRUE(SAI_$1_ATTR_CUSTOM_RANGE_END > 0x10000000, \"invalid custom range end for $1\");";
-    }
-
-    WriteTest "}";
-}
-
 sub CreateCustomRangeAllTest
 {
     DefineTestName "custom_range_all_test";
@@ -166,6 +141,24 @@ sub CreateCustomRangeAllTest
 
         for my $enum (@all)
         {
+            if ($enum =~ /ACL_(TABLE|ENTRY)_ATTR/) {
+                if ($enum =~ /FIELD/)
+                {
+                    WriteTest "    TEST_ASSERT_TRUE($enum == 0x10001000, \"invalid custom range start for $enum\");" if $enum =~ /_START$/;
+                    WriteTest "    TEST_ASSERT_TRUE($enum < 0x10002000, \"invalid custom range end for $enum\");" if $enum =~ /_END$/;
+                }
+                elsif ($enum =~ /ACTION/)
+                {
+                    WriteTest "    TEST_ASSERT_TRUE($enum == 0x10002000, \"invalid custom range start for $enum\");" if $enum =~ /_START$/;
+                    WriteTest "    TEST_ASSERT_TRUE($enum < 0x10003000, \"invalid custom range end for $enum\");" if $enum =~ /_END$/;
+                }
+                else {
+                    WriteTest "    TEST_ASSERT_TRUE($enum == 0x10000000, \"invalid custom range start for $enum\");" if $enum =~ /_START$/;
+                    WriteTest "    TEST_ASSERT_TRUE($enum < 0x10001000, \"invalid custom range end for $enum\");" if $enum =~ /_END$/;
+                }
+                next;
+            }
+
             WriteTest "    TEST_ASSERT_TRUE($enum == 0x10000000, \"invalid custom range start for $enum\");" if $enum =~ /_START$/;
             WriteTest "    TEST_ASSERT_TRUE($enum < 0x20000000, \"invalid custom range end for $enum\");" if $enum =~ /_END$/;
         }
@@ -198,13 +191,26 @@ sub CreateCustomRangeBaseTest
                 next;
             }
 
+            if ($range eq "${prefix}_FIELD_CUSTOM_RANGE_BASE")
+            {
+                WriteTest "    TEST_ASSERT_TRUE_EXT($range == 0x10001000, \"invalid custom range start for $range = 0x%x\", $range);" ;
+                next;
+            }
+
+            if ($range eq "${prefix}_ACTION_CUSTOM_RANGE_BASE")
+            {
+                WriteTest "    TEST_ASSERT_TRUE_EXT($range == 0x10002000, \"invalid custom range start for $range = 0x%x\", $range);" ;
+                next;
+            }
+
             if ($range eq "${prefix}_EXTENSIONS_RANGE_BASE")
             {
                 WriteTest "    TEST_ASSERT_TRUE_EXT($range == 0x20000000, \"invalid extensions range base for $range: = 0x%x\", $range);" ;
                 next;
             }
 
-            LogInfo "Skipping range base $range";
+            LogInfo "Skipping range base $range for $prefix";
+
 
             # currently any other range should be less than custom
 
@@ -758,8 +764,6 @@ sub CreateTests
     CreateNonObjectIdTest();
 
     CreateSwitchIdTest();
-
-    CreateCustomRangeTest();
 
     CreatePointersTest();
 
