@@ -167,14 +167,9 @@ typedef enum _sai_dtel_attr_t
     SAI_DTEL_ATTR_END,
 
     /**
-     * @brief Custom range base value start
+     * @brief Custom range base value
      */
-    SAI_DTEL_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /**
-     * @brief End of Custom range base
-     */
-    SAI_DTEL_ATTR_CUSTOM_RANGE_END
+    SAI_DTEL_ATTR_CUSTOM_RANGE_BASE = 0x10000000,
 
 } sai_dtel_attr_t;
 
@@ -251,14 +246,9 @@ typedef enum _sai_dtel_queue_report_attr_t
     SAI_DTEL_QUEUE_REPORT_ATTR_END,
 
     /**
-     * @brief Custom range base value start
+     * @brief Custom range base value
      */
-    SAI_DTEL_QUEUE_REPORT_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /**
-     * @brief End of Custom range base
-     */
-    SAI_DTEL_QUEUE_REPORT_ATTR_CUSTOM_RANGE_END
+    SAI_DTEL_QUEUE_REPORT_ATTR_CUSTOM_RANGE_BASE = 0x10000000,
 
 } sai_dtel_queue_report_attr_t;
 
@@ -349,14 +339,9 @@ typedef enum _sai_dtel_int_session_attr_t
     SAI_DTEL_INT_SESSION_ATTR_END,
 
     /**
-     * @brief Custom range base value start
+     * @brief Custom range base value
      */
-    SAI_DTEL_INT_SESSION_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /**
-     * @brief End of Custom range base
-     */
-    SAI_DTEL_INT_SESSION_ATTR_CUSTOM_RANGE_END
+    SAI_DTEL_INT_SESSION_ATTR_CUSTOM_RANGE_BASE = 0x10000000,
 
 } sai_dtel_int_session_attr_t;
 
@@ -439,12 +424,7 @@ typedef enum _sai_dtel_report_session_attr_t
     /**
      * @brief Custom range base value start
      */
-    SAI_DTEL_REPORT_SESSION_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /**
-     * @brief End of Custom range base
-     */
-    SAI_DTEL_REPORT_SESSION_ATTR_CUSTOM_RANGE_END
+    SAI_DTEL_REPORT_SESSION_ATTR_CUSTOM_RANGE_BASE = 0x10000000,
 
 } sai_dtel_report_session_attr_t;
 
@@ -529,14 +509,9 @@ typedef enum _sai_dtel_event_attr_t
     SAI_DTEL_EVENT_ATTR_END,
 
     /**
-     * @brief Custom range base value start
+     * @brief Custom range base value
      */
-    SAI_DTEL_EVENT_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /**
-     * @brief End of Custom range base
-     */
-    SAI_DTEL_EVENT_ATTR_CUSTOM_RANGE_END
+    SAI_DTEL_EVENT_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_dtel_event_attr_t;
 

@@ -339,12 +339,7 @@ typedef enum _sai_ipsec_attr_t
     /**
      * @brief Custom range base value
      */
-    SAI_IPSEC_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /**
-     * @brief End of custom range base
-     */
-    SAI_IPSEC_ATTR_CUSTOM_RANGE_END
+    SAI_IPSEC_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 } sai_ipsec_attr_t;
 
 /**
@@ -469,12 +464,7 @@ typedef enum _sai_ipsec_port_attr_t
     /**
      * @brief Custom range base value
      */
-    SAI_IPSEC_PORT_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /**
-     * @brief End of custom range base
-     */
-    SAI_IPSEC_PORT_ATTR_CUSTOM_RANGE_END
+    SAI_IPSEC_PORT_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 } sai_ipsec_port_attr_t;
 
 /**
@@ -750,12 +740,7 @@ typedef enum _sai_ipsec_sa_attr_t
     /**
      * @brief Custom range base value
      */
-    SAI_IPSEC_SA_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /**
-     * @brief End of custom range base
-     */
-    SAI_IPSEC_SA_ATTR_CUSTOM_RANGE_END
+    SAI_IPSEC_SA_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 } sai_ipsec_sa_attr_t;
 
 /**

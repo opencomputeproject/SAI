@@ -104,10 +104,7 @@ typedef enum _sai_mcast_fdb_entry_attr_t
     SAI_MCAST_FDB_ENTRY_ATTR_END,
 
     /** Start of custom range base value */
-    SAI_MCAST_FDB_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range */
-    SAI_MCAST_FDB_ENTRY_ATTR_CUSTOM_RANGE_END
+    SAI_MCAST_FDB_ENTRY_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_mcast_fdb_entry_attr_t;
 

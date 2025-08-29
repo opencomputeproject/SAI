@@ -226,10 +226,7 @@ typedef enum _sai_nat_entry_attr_t
     SAI_NAT_ENTRY_ATTR_END,
 
     /** Custom range base value */
-    SAI_NAT_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_NAT_ENTRY_ATTR_CUSTOM_RANGE_END
+    SAI_NAT_ENTRY_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_nat_entry_attr_t;
 
@@ -615,10 +612,7 @@ typedef enum _sai_nat_zone_counter_attr_t
     SAI_NAT_ZONE_COUNTER_ATTR_END,
 
     /** Custom range base value */
-    SAI_NAT_ZONE_COUNTER_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_NAT_ZONE_COUNTER_ATTR_CUSTOM_RANGE_END
+    SAI_NAT_ZONE_COUNTER_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_nat_zone_counter_attr_t;
 
