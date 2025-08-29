@@ -126,7 +126,7 @@ For how to check the sai header version and sonic branch from a certain sonic im
         ```
         # Init env
         make init
-        # BLDENV=bullseye: Current image is the bullseye
+        # BLDENV=bookworm: Current image is the bookworm
         # PLATFORM=<vendor name> Setup platform environment e.g. Broadcom
         NOSTRETCH=y NOJESSIE=y NOBUSTER=y make configure PLATFORM=broadcom
 
@@ -143,9 +143,9 @@ For how to check the sai header version and sonic branch from a certain sonic im
 
     - docker saiserverv2 at `<local_folder>/sonic-buildimage/target/docker-saiserverv2-brcm.gz`
     - docker ptf-sai from [Download](https://sonicstorage.blob.core.windows.net/public/sai/ptf-sai/master/20220919/docker-ptf-sai.gz?sv=2020-08-04&st=2022-09-20T11%3A36%3A23Z&se=2037-09-21T11%3A36%3A00Z&sr=b&sp=r&sig=e2PjlExxekVY%2FniU3g3ED7lE2BfWkz9b3tudf5b22jE%3D), please move to `<local_folder>/sonic-buildimage/target/docker-ptf-sai.gz`
-    - python_saithrift at `<local_folder>/target/debs/bullseye/python-saithriftv2_0.9.4_amd64.deb`
+    - python_saithrift at `<local_folder>/target/debs/bookworm/python-saithrift_0.9.4_amd64.deb`
 
-        > Note: for different platform (BLDENV=buster), the output folder might be different, i.e. BLDENV=bullseye, it will be <local_folder>/target/debs/bullseye
+        > Note: for different platform (BLDENV=buster), the output folder might be different, i.e. BLDENV=bookworm, it will be <local_folder>/target/debs/bookworm
 
 Now, you have built all PFT-SAIv2 components: docker saiserverv2, docker ptf-sai, and python_saithrift. The next step is to upload those dockers, i.e. tag and push them to your local available docker registry. After this, you can pull those dockers in the DUT with our script. 
 
