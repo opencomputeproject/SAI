@@ -1330,6 +1330,13 @@ typedef struct _sai_attr_metadata_t
      */
     bool                                        nextrelease;
 
+    /**
+     * @brief Specifies value decimal precision for this attribute.
+     *
+     * For example, if precision is 2, then value 1234 means 12.34.
+     */
+    size_t                                      valueprecision;
+
 } sai_attr_metadata_t;
 
 /*
