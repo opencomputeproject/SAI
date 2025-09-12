@@ -478,6 +478,21 @@ typedef struct _sai_latch_status_t
     bool changed;
 } sai_latch_status_t;
 
+/** 
+ * @brief Represents BER as: mantissa * 10^(-exponent)
+ */
+typedef struct _sai_prbs_bit_error_rate_t
+{
+    uint8_t  exponent; /* Negative exponent as in 10^-exponent */
+    uint64_t mantissa; /* Significant digits of the BER, to be multiplied by 10^(-exponent) */
+} sai_prbs_bit_error_rate_t;
+
+typedef struct _sai_prbs_bit_error_rate_list_t
+{
+    uint32_t count;
+    sai_prbs_bit_error_rate_t *list;
+} sai_prbs_bit_error_rate_list_t;
+
 typedef struct _sai_port_lane_latch_status_t
 {
     uint32_t lane;
@@ -489,6 +504,15 @@ typedef struct _sai_port_lane_latch_status_list_t
     uint32_t count;
     sai_port_lane_latch_status_t *list;
 } sai_port_lane_latch_status_list_t;
+
+/**
+ * @brief Defines PRBS Rx states for list of all serdes lanes
+ */
+typedef struct _sai_prbs_rx_state_list_t
+{
+    uint32_t count;
+    sai_prbs_rx_state_t *list;
+} sai_prbs_rx_state_list_t;
 
 /**
  * @brief Field match mask
@@ -1696,6 +1720,16 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PORT_PAM4_EYE_VALUES_LIST */
     sai_port_pam4_eye_values_list_t portpam4eyevalues;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PRBS_RX_STATE_LIST */
+    sai_prbs_rx_state_list_t prbs_rx_state_list;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PRBS_BIT_ERROR_RATE */
+    sai_prbs_bit_error_rate_t prbs_ber;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PRBS_BIT_ERROR_RATE_LIST */
+    sai_prbs_bit_error_rate_list_t prbs_ber_list;
+
 } sai_attribute_value_t;
 
 /**

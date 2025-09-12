@@ -848,6 +848,9 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST:
         case SAI_ATTR_VALUE_TYPE_POE_PORT_POWER_CONSUMPTION:
+        case SAI_ATTR_VALUE_TYPE_PRBS_RX_STATE_LIST:
+        case SAI_ATTR_VALUE_TYPE_PRBS_BIT_ERROR_RATE:
+        case SAI_ATTR_VALUE_TYPE_PRBS_BIT_ERROR_RATE_LIST:
 
             if (md->allowedobjecttypes != NULL)
             {
@@ -2978,6 +2981,8 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_JSON:
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST:
+        case SAI_ATTR_VALUE_TYPE_PRBS_RX_STATE_LIST:
+        case SAI_ATTR_VALUE_TYPE_PRBS_BIT_ERROR_RATE_LIST:
 
             if (md->isprimitive)
             {
@@ -3039,6 +3044,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_FABRIC_PORT_REACHABILITY:
         case SAI_ATTR_VALUE_TYPE_LATCH_STATUS:
         case SAI_ATTR_VALUE_TYPE_POE_PORT_POWER_CONSUMPTION:
+        case SAI_ATTR_VALUE_TYPE_PRBS_BIT_ERROR_RATE:
 
             if (!md->isprimitive)
             {
@@ -6318,6 +6324,9 @@ void check_struct_and_union_size()
     CHECK_STRUCT_SIZE(sai_u32_range_t, 8);
     CHECK_STRUCT_SIZE(sai_u8_list_t, 16);
     CHECK_STRUCT_SIZE(sai_vlan_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_prbs_rx_state_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_prbs_bit_error_rate_t, 16);
+    CHECK_STRUCT_SIZE(sai_prbs_bit_error_rate_list_t, 16);
 }
 #pragma GCC diagnostic pop
 
