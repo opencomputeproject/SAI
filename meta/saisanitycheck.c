@@ -848,6 +848,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST:
         case SAI_ATTR_VALUE_TYPE_POE_PORT_POWER_CONSUMPTION:
+        case SAI_ATTR_VALUE_TYPE_TAPS_LIST:
 
             if (md->allowedobjecttypes != NULL)
             {
@@ -1113,6 +1114,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG_LIST:
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST:
+        case SAI_ATTR_VALUE_TYPE_TAPS_LIST:
 
             if (((md->objecttype == SAI_OBJECT_TYPE_PORT) || (md->objecttype == SAI_OBJECT_TYPE_PORT_SERDES))
                  && md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL)
@@ -2978,6 +2980,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_JSON:
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST:
+        case SAI_ATTR_VALUE_TYPE_TAPS_LIST:
 
             if (md->isprimitive)
             {
@@ -6318,6 +6321,7 @@ void check_struct_and_union_size()
     CHECK_STRUCT_SIZE(sai_u32_range_t, 8);
     CHECK_STRUCT_SIZE(sai_u8_list_t, 16);
     CHECK_STRUCT_SIZE(sai_vlan_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_taps_list_t, 16)
 }
 #pragma GCC diagnostic pop
 
