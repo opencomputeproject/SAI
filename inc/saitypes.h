@@ -392,6 +392,18 @@ typedef struct _sai_vlan_list_t
 
 } sai_vlan_list_t;
 
+/**
+ * @brief Defines a list of FIR/FFE/DFE taps
+ */
+typedef struct _sai_taps_list_t
+{
+    /** Number of taps */
+    uint32_t count;
+
+    /** List of tap values */
+    sai_s32_list_t *list;
+} sai_taps_list_t;
+
 typedef enum _sai_ip_addr_family_t
 {
     SAI_IP_ADDR_FAMILY_IPV4,
@@ -1696,6 +1708,9 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PORT_PAM4_EYE_VALUES_LIST */
     sai_port_pam4_eye_values_list_t portpam4eyevalues;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_TAPS_LIST */
+    sai_taps_list_t portserdestaps;
 } sai_attribute_value_t;
 
 /**
