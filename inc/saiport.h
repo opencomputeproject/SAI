@@ -3941,7 +3941,7 @@ typedef enum _sai_port_serdes_attr_t
     /**
      * @brief Port serdes control TX FIR PRE1 filter
      *
-     * List of port serdes TX fir precursor1 tap-filter values.
+     * List of port serdes TX FIR precursor1 tap-filter values.
      * The values are of type sai_s32_list_t where the count is number lanes in
      * a port and the list specifies list of values to be applied to each lane.
      *
@@ -3954,7 +3954,7 @@ typedef enum _sai_port_serdes_attr_t
     /**
      * @brief Port serdes control TX FIR PRE2 filter
      *
-     * List of port serdes TX fir precursor2 tap-filter values.
+     * List of port serdes TX FIR precursor2 tap-filter values.
      * The values are of type sai_s32_list_t where the count is number lanes in
      * a port and the list specifies list of values to be applied to each lane.
      *
@@ -3967,7 +3967,7 @@ typedef enum _sai_port_serdes_attr_t
     /**
      * @brief Port serdes control TX FIR PRE3 filter
      *
-     * List of port serdes TX fir precursor3 tap-filter values.
+     * List of port serdes TX FIR precursor3 tap-filter values.
      * The values are of type sai_s32_list_t where the count is number lanes in
      * a port and the list specifies list of values to be applied to each lane.
      *
@@ -3980,7 +3980,7 @@ typedef enum _sai_port_serdes_attr_t
     /**
      * @brief Port serdes control TX FIR MAIN filter
      *
-     * List of port serdes TX fir maincursor tap-filter values.
+     * List of port serdes TX FIR maincursor tap-filter values.
      * The values are of type sai_s32_list_t where the count is number lanes in
      * a port and the list specifies list of values to be applied to each lane.
      *
@@ -3993,7 +3993,7 @@ typedef enum _sai_port_serdes_attr_t
     /**
      * @brief Port serdes control TX FIR POST1 filter
      *
-     * List of port serdes TX fir postcursor1 tap-filter values.
+     * List of port serdes TX FIR postcursor1 tap-filter values.
      * The values are of type sai_s32_list_t where the count is number lanes in
      * a port and the list specifies list of values to be applied to each lane.
      *
@@ -4006,7 +4006,7 @@ typedef enum _sai_port_serdes_attr_t
     /**
      * @brief Port serdes control TX FIR POST2 filter
      *
-     * List of port serdes TX fir postcursor2 tap-filter values.
+     * List of port serdes TX FIR postcursor2 tap-filter values.
      * The values are of type sai_s32_list_t where the count is number lanes in
      * a port and the list specifies list of values to be applied to each lane.
      *
@@ -4019,7 +4019,7 @@ typedef enum _sai_port_serdes_attr_t
     /**
      * @brief Port serdes control TX FIR POST3 filter
      *
-     * List of port serdes TX fir postcursor3 tap-filter values.
+     * List of port serdes TX FIR postcursor3 tap-filter values.
      * The values are of type sai_s32_list_t where the count is number lanes in
      * a port and the list specifies list of values to be applied to each lane.
      *
@@ -4032,7 +4032,7 @@ typedef enum _sai_port_serdes_attr_t
     /**
      * @brief Port serdes control TX FIR attenuation
      *
-     * List of port serdes TX fir attn values.
+     * List of port serdes TX FIR attn values.
      * The values are of type sai_s32_list_t where the count is number lanes in
      * a port and the list specifies list of values to be applied to each lane.
      *
@@ -4252,6 +4252,76 @@ typedef enum _sai_port_serdes_attr_t
      * @default internal
      */
     SAI_PORT_SERDES_ATTR_RX_POLARITY,
+
+    /**
+     * @brief Total number of RX FFE taps supported
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_SERDES_ATTR_RX_FFE_COUNT,
+
+    /**
+     * @brief Total number of TX FIR taps supported
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_SERDES_ATTR_TX_FIR_COUNT,
+
+    /**
+     * @brief Total number of RX DFE taps supported
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_SERDES_ATTR_RX_DFE_COUNT,
+
+    /**
+     * @brief Port serdes RX FFE taps
+     *
+     * List of port serdes RX FFE tap values
+     *
+     * @type sai_taps_list_t
+     * @flags CREATE_AND_SET
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_RX_FFE_TAPS_LIST,
+
+    /**
+     * @brief Port serdes TX FIR taps
+     *
+     * List of port serdes TX FIR tap values
+     *
+     * @type sai_taps_list_t
+     * @flags CREATE_AND_SET
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_FIR_TAPS_LIST,
+
+    /**
+     * @brief Port serdes DFE taps
+     *
+     * List of port serdes RX DFE tap values
+     *
+     * @type sai_taps_list_t
+     * @flags CREATE_AND_SET
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_RX_DFE_TAPS_LIST,
+
+    /**
+     * @brief Port serdes VGA settings
+     *
+     * List of port serdes VGA settings values
+     * The values are of type sai_u32_list_t where the count is number of lanes
+     * in a port and the list specifies list of VGA settings for each lane.
+     *
+     * @type sai_u32_list_t
+     * @flags CREATE_AND_SET
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_RX_VGA,
 
     /**
      * @brief End of attributes
