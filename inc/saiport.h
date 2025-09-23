@@ -2713,6 +2713,17 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PAM4_EYE_VALUES,
 
     /**
+     * @brief Get port SerDes firmware revision
+     * 
+     * Standard attribute to collect port SerDes firmware rev.
+     *
+     * @type sai_s8_list_t
+     * @flags READ_ONLY
+    */
+
+    SAI_PORT_ATTR_SERDES_FW_REVISION,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
