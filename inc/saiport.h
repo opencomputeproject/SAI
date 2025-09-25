@@ -2713,6 +2713,15 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PAM4_EYE_VALUES,
 
     /**
+     * @brief Enables the fast link-up for a port on port/link recovery. Vendors can use to reduce linkup time on remote link failure
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_FAST_LINKUP_ENABLED,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,

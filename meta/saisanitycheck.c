@@ -789,6 +789,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_PRBS_RX_STATE:
         case SAI_ATTR_VALUE_TYPE_CHARDATA:
         case SAI_ATTR_VALUE_TYPE_UINT32_RANGE:
+        case SAI_ATTR_VALUE_TYPE_UINT16_RANGE:
         case SAI_ATTR_VALUE_TYPE_UINT16_RANGE_LIST:
         case SAI_ATTR_VALUE_TYPE_UINT32_LIST:
         case SAI_ATTR_VALUE_TYPE_QOS_MAP_LIST:
@@ -3026,6 +3027,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_UINT16:
         case SAI_ATTR_VALUE_TYPE_INT16:
         case SAI_ATTR_VALUE_TYPE_UINT32:
+        case SAI_ATTR_VALUE_TYPE_UINT16_RANGE:
         case SAI_ATTR_VALUE_TYPE_UINT32_RANGE:
         case SAI_ATTR_VALUE_TYPE_UINT64:
         case SAI_ATTR_VALUE_TYPE_INT64:

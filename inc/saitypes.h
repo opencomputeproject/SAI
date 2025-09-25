@@ -1711,6 +1711,9 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_TAPS_LIST */
     sai_taps_list_t portserdestaps;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_UINT16_RANGE */
+    sai_u16_range_t u16range;
 } sai_attribute_value_t;
 
 /**
