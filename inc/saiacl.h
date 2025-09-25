@@ -1589,9 +1589,18 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_NEXT_HOP_USER_META = SAI_ACL_TABLE_ATTR_FIELD_START + 0x162,
 
     /**
+     * @brief Router Interface User metadata
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_ROUTER_INTERFACE_USER_META = SAI_ACL_TABLE_ATTR_FIELD_START + 0x163,
+
+    /**
      * @brief End of ACL Table Match Field
      */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_NEXT_HOP_USER_META,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_ROUTER_INTERFACE_USER_META,
 
     /**
      * @brief ACL table entries associated with this table.
@@ -2729,9 +2738,24 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_NEXT_HOP_USER_META = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x162,
 
     /**
+     * @brief Router Interface User metadata
+     *
+     * Value must be in the range defined in
+     * #SAI_SWITCH_ATTR_ROUTER_INTERFACE_META_DATA_INGRESS_RANGE
+     * SAI_ROUTER_INTERFACE_ATTR_META_DATA_INGRESS in SAI_ACL_STAGE_POST_INGRESS stage
+     * or #SAI_SWITCH_ATTR_ROUTER_INTERFACE_META_DATA_EGRESS_RANGE
+     * SAI_ROUTER_INTERFACE_ATTR_META_DATA_EGRESS in SAI_ACL_STAGE_EGRESS stage
+     *
+     * @type sai_acl_field_data_t sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_ROUTER_INTERFACE_USER_META = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x163,
+
+    /**
      * @brief End of Rule Match Fields
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_NEXT_HOP_USER_META,
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_ROUTER_INTERFACE_USER_META,
 
     /*
      * Actions [sai_acl_action_data_t]

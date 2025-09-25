@@ -3469,6 +3469,22 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_NEXT_HOP_USER_META_DATA_RANGE,
 
     /**
+     * @brief Ingress Router Interface user-based meta data range
+     *
+     * @type sai_u32_range_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_ROUTER_INTERFACE_META_DATA_INGRESS_RANGE,
+
+    /**
+     * @brief Egress Router Interface user-based meta data range
+     *
+     * @type sai_u32_range_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_ROUTER_INTERFACE_META_DATA_EGRESS_RANGE,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,

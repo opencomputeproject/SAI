@@ -343,6 +343,28 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_MY_MAC,
 
     /**
+     * @brief User based Meta Data Ingress
+     *
+     * Value Range #SAI_SWITCH_ATTR_ROUTER_INTERFACE_META_DATA_INGRESS_RANGE for Ingress stage.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ROUTER_INTERFACE_ATTR_META_DATA_INGRESS,
+
+    /**
+     * @brief User based Meta Data Egress
+     *
+     * Value Range #SAI_SWITCH_ATTR_ROUTER_INTERFACE_META_DATA_EGRESS_RANGE for Egress stage.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_ROUTER_INTERFACE_ATTR_META_DATA_EGRESS,
+
+    /**
      * @brief End of attributes
      */
     SAI_ROUTER_INTERFACE_ATTR_END,
