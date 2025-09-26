@@ -3469,6 +3469,59 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_NEXT_HOP_USER_META_DATA_RANGE,
 
     /**
+     * @brief Linkup polling time range (in secs)
+     *
+     * @type sai_u16_range_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_FAST_LINKUP_POLLING_TIMEOUT_RANGE,
+
+    /**
+     * @brief Time (in sec) during which the fast link-up is attempted.
+     *
+     * If this timer expires before the link is UP the regular link-up will be performed
+     * Supported range can be obtained using SAI_SWITCH_ATTR_FAST_LINKUP_POLLING_TIMEOUT_RANGE
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 60
+     */
+    SAI_SWITCH_ATTR_FAST_LINKUP_POLLING_TIMEOUT,
+
+    /**
+     * @brief Linkup guard time range (in secs)
+     *
+     * @type sai_u16_range_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_FAST_LINKUP_GUARD_TIMEOUT_RANGE,
+
+    /**
+     * @brief Time (in secs) during which the link must be UP with the BER below the level configured with SAI_SWITCH_ATTR_FAST_LINKUP_BER_THRESHOLD to keep the fast link-up configuration.
+     *
+     * If either link failures happens within this time or high BER is measured at the end of this period of time the link should undergo regular link up process
+     * Supported range can be obtained using SAI_SWITCH_ATTR_FAST_LINKUP_GUARD_TIMEOUT_RANGE
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 10
+     */
+    SAI_SWITCH_ATTR_FAST_LINKUP_GUARD_TIMEOUT,
+
+    /**
+     * @brief Threshold to control regular link-up happened after fast linkup Time-out
+     *
+     * Configures the BER (negative exponent only, mantissa is always 1) which is if measured during
+     * SAI_SWITCH_ATTR_FAST_LINKUP_GUARD_TIMEOUT causes the full link-up flow. For example, value 12 configured here is 1e^-12
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 12
+     */
+    SAI_SWITCH_ATTR_FAST_LINKUP_BER_THRESHOLD,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
