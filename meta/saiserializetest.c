@@ -1235,6 +1235,7 @@ void test_serialize_neighbor_entry()
     sai_neighbor_entry_t ne;
 
     ne.switch_id = 0x123;
+    ne.vr_id = 0xfab;
     ne.rif_id = 0xfab;
 
     ne.ip_address.addr_family = SAI_IP_ADDR_FAMILY_IPV4;
@@ -1242,7 +1243,7 @@ void test_serialize_neighbor_entry()
 
     res = sai_serialize_neighbor_entry(buf, &ne);
 
-    ASSERT_STR_EQ(buf, "{\"switch_id\":\"oid:0x123\",\"rif_id\":\"oid:0xfab\",\"ip_address\":\"1.2.3.4\"}", res);
+    ASSERT_STR_EQ(buf, "{\"switch_id\":\"oid:0x123\",\"vr_id\":\"oid:0xfab\",\"rif_id\":\"oid:0xfab\",\"ip_address\":\"1.2.3.4\"}", res);
 
     uint16_t ip6[] = { 0x1111, 0x2222, 0x3333, 0x4444, 0x5555, 0x6666, 0xaaaa, 0xbbbb };
 
@@ -1252,7 +1253,7 @@ void test_serialize_neighbor_entry()
 
     res = sai_serialize_neighbor_entry(buf, &ne);
 
-    ASSERT_STR_EQ(buf, "{\"switch_id\":\"oid:0x123\",\"rif_id\":\"oid:0xfab\",\"ip_address\":\"1111:2222:3333:4444:5555:6666:aaaa:bbbb\"}", res);
+    ASSERT_STR_EQ(buf, "{\"switch_id\":\"oid:0x123\",\"vr_id\":\"oid:0xfab\",\"rif_id\":\"oid:0xfab\",\"ip_address\":\"1111:2222:3333:4444:5555:6666:aaaa:bbbb\"}", res);
 
     ne.ip_address.addr_family = 2;
 
@@ -1270,6 +1271,7 @@ void test_deserialize_neighbor_entry()
     sai_neighbor_entry_t ne;
 
     ne.switch_id = 0x123;
+    ne.vr_id = 0xfab;
     ne.rif_id = 0xfab;
 
     ne.ip_address.addr_family = SAI_IP_ADDR_FAMILY_IPV4;
@@ -1277,7 +1279,7 @@ void test_deserialize_neighbor_entry()
 
     res = sai_serialize_neighbor_entry(buf, &ne);
 
-    ASSERT_STR_EQ(buf, "{\"switch_id\":\"oid:0x123\",\"rif_id\":\"oid:0xfab\",\"ip_address\":\"1.2.3.4\"}", res);
+    ASSERT_STR_EQ(buf, "{\"switch_id\":\"oid:0x123\",\"vr_id\":\"oid:0xfab\",\"rif_id\":\"oid:0xfab\",\"ip_address\":\"1.2.3.4\"}", res);
 
     sai_neighbor_entry_t dene;
 
@@ -1296,7 +1298,7 @@ void test_deserialize_neighbor_entry()
 
     res = sai_serialize_neighbor_entry(buf, &ne);
 
-    ASSERT_STR_EQ(buf, "{\"switch_id\":\"oid:0x123\",\"rif_id\":\"oid:0xfab\",\"ip_address\":\"1111:2222:3333:4444:5555:6666:aaaa:bbbb\"}", res);
+    ASSERT_STR_EQ(buf, "{\"switch_id\":\"oid:0x123\",\"vr_id\":\"oid:0xfab\",\"rif_id\":\"oid:0xfab\",\"ip_address\":\"1111:2222:3333:4444:5555:6666:aaaa:bbbb\"}", res);
 
     memset(&dene, 0, sizeof(dene));
     res = sai_deserialize_neighbor_entry(buf, &dene);
