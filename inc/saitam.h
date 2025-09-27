@@ -180,6 +180,9 @@ typedef enum _sai_tam_tel_math_func_type_t
     /** Packet Rate computation */
     SAI_TAM_TEL_MATH_FUNC_TYPE_RATE,
 
+    /** Custom range base value */
+    SAI_TAM_TEL_MATH_FUNC_TYPE_CUSTOM_RANGE_BASE = 0x10000000
+
 } sai_tam_tel_math_func_type_t;
 
 /**
