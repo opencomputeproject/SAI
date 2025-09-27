@@ -106,6 +106,7 @@ typedef uint8_t sai_auth_key_t[16];
 typedef uint8_t sai_macsec_sak_t[32];
 typedef uint8_t sai_macsec_auth_key_t[16];
 typedef uint8_t sai_macsec_salt_t[12];
+typedef uint32_t sai_interrupt_id_t;
 
 #define _In_
 #define _Out_
