@@ -138,10 +138,7 @@ typedef enum _sai_ipmc_entry_attr_t
     SAI_IPMC_ENTRY_ATTR_END,
 
     /** Custom range base value */
-    SAI_IPMC_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** Custom range base end value */
-    SAI_IPMC_ENTRY_ATTR_CUSTOM_RANGE_END
+    SAI_IPMC_ENTRY_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_ipmc_entry_attr_t;
 

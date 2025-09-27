@@ -2727,10 +2727,7 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_END,
 
     /** Custom range base value */
-    SAI_PORT_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_PORT_ATTR_CUSTOM_RANGE_END,
+    SAI_PORT_ATTR_CUSTOM_RANGE_BASE = 0x10000000,
 
     /** Extensions range base */
     SAI_PORT_ATTR_EXTENSIONS_RANGE_BASE = 0x20000000
@@ -3733,10 +3730,7 @@ typedef enum _sai_port_pool_attr_t
     SAI_PORT_POOL_ATTR_END,
 
     /** Custom range base value */
-    SAI_PORT_POOL_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_PORT_POOL_ATTR_CUSTOM_RANGE_END
+    SAI_PORT_POOL_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_port_pool_attr_t;
 
@@ -4362,10 +4356,7 @@ typedef enum _sai_port_serdes_attr_t
     SAI_PORT_SERDES_ATTR_END,
 
     /** Custom range base value */
-    SAI_PORT_SERDES_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_PORT_SERDES_ATTR_CUSTOM_RANGE_END
+    SAI_PORT_SERDES_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_port_serdes_attr_t;
 
@@ -4486,10 +4477,7 @@ typedef enum _sai_port_connector_attr_t
     SAI_PORT_CONNECTOR_ATTR_END,
 
     /** Custom range base value */
-    SAI_PORT_CONNECTOR_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_PORT_CONNECTOR_ATTR_CUSTOM_RANGE_END
+    SAI_PORT_CONNECTOR_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_port_connector_attr_t;
 

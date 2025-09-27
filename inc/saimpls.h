@@ -218,10 +218,7 @@ typedef enum _sai_inseg_entry_attr_t
     SAI_INSEG_ENTRY_ATTR_END,
 
     /** Custom range base value */
-    SAI_INSEG_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_INSEG_ENTRY_ATTR_CUSTOM_RANGE_END
+    SAI_INSEG_ENTRY_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_inseg_entry_attr_t;
 
