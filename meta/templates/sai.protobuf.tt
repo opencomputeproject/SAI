@@ -1,0 +1,382 @@
+[% PROCESS "$templates_dir/sai_protobuf_utils.tt" -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK typedef_declaration -%]
+    [%- IF dbg -%]
+    // [% type.type.name %] [% type.name %][% IF type.raw %] (raw)[% END %];
+
+    [%- END -%]
+message [% type.protobuf_name %] {
+    [% type.protobuf_def %] value = 1;
+}
+
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK define_api_typedefs -%]
+    [%- FOREACH type IN apis.$api.typedefs %]
+        [%- PROCESS typedef_declaration -%]
+    [%- END -%]
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK define_enums -%]
+// SAI ENUMS
+[%- SET generated_enums = {} %]
+[% FOREACH api IN apis.keys.sort %]
+    [% FOREACH function IN apis.$api.functions %]
+        [%- IF apis.$api.objects.${function.object}.attrs.name %]
+        [%- SET enum_name = "protobuf" _ apis.$api.objects.${function.object}.attrs.name %]
+        [%- UNLESS generated_enums.$enum_name %]
+
+enum [%- enum_name %] {
+    [%- SET is_enum_first = "YES" %]
+    [% FOREACH elem IN apis.$api.objects.${function.object}.attrs.elements %]
+        [%- FOREACH attr IN elem %]
+            [%- IF attr.value && is_enum_first == 'YES' %]
+                [%- SET is_enum_first = "NO" -%]
+                [%- attr.value -%] = 0;
+            [% END %]
+            [%- IF attr.name && attr.value %]
+//                [%- attr.name %] = [%- attr.value %];
+                [%- IF not loop.last %];[%- END %]
+            [%- END %]
+        [%- END %]
+    [% END %];
+}
+            [%- generated_enums.$enum_name = 1 -%]
+        [%- END -%]
+    [% END %]
+    [%- END -%]
+[%- END -%]
+// SAI ENUMS END
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK define_typedefs -%]
+// common types
+message sai_protobuf_int {
+    int32 value = 1;
+}
+
+
+    [%- PROCESS define_api_typedefs api = 'common' -%]
+
+    [%- FOREACH api IN apis.keys.sort -%]
+        [%- IF apis.$api.typedefs.size and api != 'common' -%]
+
+// [% api %] API types
+
+             [%- PROCESS define_api_typedefs -%]
+         [%- END -%]
+    [%- END -%]
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- # TODO: This is workaround, it should be removed -%]
+[%- BLOCK define_object_structs -%]
+// object API structures
+// warning: this struct is invalid and  manually defined - do not use
+message sai_protobuf_object_key_entry_t {
+    int64 object_id = 1;
+    int64 fdb_entry = 2;
+    int64 neighbor_entry = 3;
+    int64 route_entry = 4;
+    int64 mcast_fdb_entry = 5;
+    int64 l2mc_entry = 6;
+    int64 ipmc_entry = 7;
+    int64 inseg_entry = 8;
+    int64 nat_entry = 9;
+}
+
+message sai_protobuf_object_key_t {
+    sai_protobuf_object_key_entry_t key = 1;
+}
+
+message sai_protobuf_attr_capability_t {
+    bool create_implemented = 1;
+    bool boolset_implemented = 2;
+    bool get_implemented = 3;
+}
+
+message sai_protobuf_query_attribute_enum_values_capability_msg_arg {
+    sai_protobuf_object_type_t object_type = 1;
+    sai_protobuf_attr_id_t attr_id = 2;
+    int32 caps_count = 3;
+}
+
+message sai_protobuf_object_type_get_availability_msg_arg {
+    sai_protobuf_object_type_t object_type = 1;
+    sai_protobuf_attr_id_t attr_id = 2;
+    int32 attr_type = 3;
+}
+
+message sai_protobuf_string_response {
+    string value = 1;
+}
+
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK define_api_structs -%]
+            [%- FOREACH struct IN apis.$api.structs %]
+                [%- PROCESS struct_declaration %]
+
+            [%- END %]
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK struct_declaration -%]
+message [% struct.protobuf_name %] {
+    [%- id = 1; FOREACH member IN struct.members %]
+        [%- # IF dbg %]
+  // [% member.type.name %] [% member.name %];
+        [%- # END -%]
+
+            [%- # TODO: The condition is a workaround, it should be removed and only 'ELSE' part should be kept -%]
+            [%- IF struct.protobuf_name == 'sai_protobuf_attribute_value_t' AND id == 1 %]
+    oneof sai_protobuf_attribute_value {
+            [%- END %]
+
+            [%- IF struct.protobuf_name == 'sai_protobuf_attr_condition_t' AND member.type.protobuf_name == 'sai_protobuf_attribute_value_t' AND member.name == 'condition' -%]
+    int64 [% member.protobuf_name %] = [% id; id = id + 1 %];
+            [%- ELSE -%]
+    [% member.type.protobuf_name %] [% member.protobuf_name %] = [% id; id = id + 1 %];
+            [%- END -%]
+    [%- END %]
+        [%- IF struct.protobuf_name == 'sai_protobuf_attribute_value_t' %]
+    }
+        [%- END %]
+}
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK define_structs -%]
+[% # TODO: This is workaround, it should be removed -%]
+[%- PROCESS define_object_structs %]
+[% # TODO: This is end of workaround, it should be removed -%]
+
+// common types
+
+    [%- PROCESS define_api_structs api = 'common' -%]
+
+    [%- FOREACH api IN apis.keys.sort -%]
+        [%- # TODO: Comparison to 'object' is a part of workaround, it should be removed -%]
+        [%- IF apis.$api.structs.size and api != 'common' and api != 'object' -%]
+// [% api %] API structures
+
+            [%- PROCESS define_api_structs %]
+        [%- END -%]
+    [%- END %]
+
+    [%- PROCESS define_attribute_list -%]
+    [%- PROCESS define_stats_ptr_list -%]
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK define_exceptions -%]
+
+// error handling
+message sai_protobuf_exception {
+    sai_protobuf_status_t status = 1;
+}
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK define_empty_response -%]
+
+// error handling
+message sai_protobuf_response {
+    bool success = 1;
+}
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK define_stats_ptr_list -%]
+// Stats attribute list
+message sai_protobuf_u64_list_t {
+    // uint32_t count;
+    sai_protobuf_uint32_t count = 1;
+    // PTR=>int64_t list;
+    repeated sai_protobuf_uint64_t u64 = 2;
+}
+message sai_protobuf_status_list_t {
+    // uint32_t count;
+    sai_protobuf_uint32_t count = 1;
+    // PTR=>int32_t list;
+    repeated sai_protobuf_status_t status = 2;
+}
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK define_attribute_list -%]
+// common attribute list
+message sai_protobuf_attribute_list_t {
+    sai_protobuf_int32_t attr_count = 1;
+    repeated sai_protobuf_attribute_t attr_list = 2;
+}
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK function_debug_info -%]
+    [%- # IF dbg -%]
+
+    // [% function.dbg_info %]
+
+        [%- IF function.object -%]
+            [%- IF function.operation == 'create' -%]
+    // [% function.object %] mandatory attrs: 
+    // [%- FOREACH attr IN apis.$api.objects.${function.object}.attrs.mandatory -%] [%- attr.name %], [% END %]
+            [%- ELSIF function.operation == 'stats' -%]
+    // [% function.object %] stats: 
+    // [%- FOREACH stat IN apis.$api.objects.${function.object}.stats.all -%] [%- stat.simple_name -%], [%- END -%]
+            [%- ELSE -%]
+    // [% function.object %] attrs: 
+    // [% FOREACH attr IN apis.$api.objects.${function.object}.attrs.${function.operation} %] 
+        // [% attr.name %], [% END %]
+            [%- END %]
+
+        [%- END -%]
+    [%- # END -%]
+        // [% RAGHA %]
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK function_declaration -%]
+    rpc [% function.protobuf_name %]([% function.protobuf_name %]_msg_args)
+    [%- IF function.rpc_return.type.protobuf_name == 'void' -%]
+        returns (sai_protobuf_response);
+
+    [%- ELSIF function.rpc_return.type.protobuf_name == 'string' -%]
+        returns (sai_protobuf_string_response);
+
+    [%- ELSIF function.rpc_return.type.protobuf_name == 'repeated sai_protobuf_uint64_t' || function.rpc_return.type.protobuf_name == 'repeated sai_protobuf_uint64_t ' -%]
+        returns (sai_protobuf_u64_list_t);
+    [%- ELSIF function.rpc_return.type.protobuf_name == 'repeated sai_protobuf_uint32_t' || function.rpc_return.type.protobuf_name == 'repeated sai_protobuf_uint32_t ' -%]
+        returns (sai_protobuf_u32_list_t);
+    [%- ELSIF function.rpc_return.type.protobuf_name == 'repeated sai_protobuf_status_t' -%]
+        returns (sai_protobuf_status_list_t);
+
+    [%- ELSE -%]
+        returns ([% function.rpc_return.type.protobuf_name %]);
+    [% END -%]
+
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK define_api_functions -%]
+    [%- FOREACH function IN apis.$api.functions -%]
+        [%- PROCESS function_debug_info -%]
+        [%- IF api -%]
+    // [% api %] API
+        [%- END %]
+
+        [%- PROCESS function_declaration -%]
+    [%- END -%]
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK define_functions -%]
+    [%- IF apis.common.functions.size -%]
+
+    // common functions
+    [%- PROCESS define_api_functions api = 'common' -%]
+    [%- END -%]
+
+    [%- FOREACH api IN apis.keys.sort -%]
+        [%- IF apis.$api.functions.size and api != 'common' %]
+    // Start of [% api %] API
+            [%- PROCESS define_api_functions api = api -%]
+        [%- END -%]
+
+    [%- END -%]
+[% END -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK define_message_sai_args -%]
+[%- FOREACH api IN apis.keys.sort -%]
+[%- FOREACH function IN apis.$api.functions -%]
+message [% function.protobuf_name %]_msg_args {
+    optional sai_protobuf_int32_t tid = 1;
+    [%- id = 2; FOREACH rpcarg IN function.args %]
+    [% rpcarg.type.protobuf_name %] [% rpcarg.name %] = [%- id; id = id + 1 %];
+    [%- END %]
+}
+[% END -%]
+[% END -%]
+[%- END -%]
+
+[%- # The body of the file: -%]
+// AUTOGENERATED FILE! DO NOT EDIT
+
+syntax = "proto3";
+
+//package my_package;
+
+
+[% PROCESS define_typedefs %]
+
+[% PROCESS define_enums %]
+
+[% PROCESS define_structs %]
+
+[% PROCESS define_exceptions %]
+
+[% PROCESS define_empty_response %]
+
+[% PROCESS define_message_sai_args %]
+
+service sai_rpc {
+
+    [%- PROCESS define_functions %]
+    [%- PROCESS define_utils_functions %]
+    [%- new_template -%]
+}
+

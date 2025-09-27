@@ -1,0 +1,26 @@
+[%- ######################################################################## -%]
+
+[%- BLOCK define_objects_api -%]
+    // sai objects API
+    rpc sai_protobuf_query_attribute_enum_values_capability(sai_protobuf_query_attribute_enum_values_capability_msg_arg) returns (sai_protobuf_attribute_list_t);
+    rpc sai_protobuf_object_type_get_availability(sai_protobuf_object_type_get_availability_msg_arg) returns (sai_protobuf_uint64_t);
+    rpc sai_protobuf_switch_id_query(sai_protobuf_object_id_t) returns (sai_protobuf_object_id_t); 
+    rpc sai_protobuf_object_type_query(sai_protobuf_object_id_t) returns (sai_protobuf_object_type_t);
+    rpc sai_protobuf_api_uninitialize(sai_protobuf_object_id_t) returns (sai_protobuf_status_t);
+
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
+[%- BLOCK define_utils_functions -%]
+
+    // SAI utils
+
+
+    [%- PROCESS define_objects_api -%]
+
+[%- END -%]
+
+[%- ######################################################################## -%]

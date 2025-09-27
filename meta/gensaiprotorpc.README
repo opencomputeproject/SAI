@@ -1,0 +1,38 @@
+NAME
+    gensaiprotorpc.pl - generate protobuf interface of SAI 
+
+DESCRIPTION
+    This script generates GRPC interface of SAI function. It
+    should be used after SAI interface update.
+
+    For more details see the development documentation (rpc/README.md).
+
+USAGE
+    In order to run, just call:
+
+      ./gensaiprotorpc.pl
+
+    Before committing it is a good idea to clean before generation:
+
+      ./gensaiprotorpc.pl --clean-meta
+
+    In order to generate debug files and avoid cleanup, use --dbg or --dump
+    flags. Use --experimental to generate extensions and experimental code.
+
+    For more information, use --help:
+
+      ./gensaiprotorpc.pl --help
+
+DEPENDENCIES
+    Ubuntu packages:
+  ```
+    [sudo] apt-get install -y \
+      libtemplate-perl \
+      libconst-fast-perl \
+      libmoosex-aliases-perl \
+      libnamespace-autoclean-perl \
+      libgetopt-long-descriptive-perl \
+      doxygen \
+      graphviz \
+      aspell-en
+```

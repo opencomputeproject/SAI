@@ -62,6 +62,24 @@ sub thrift_def {
     return $name;
 }
 
+sub protobuf_def {
+    my $self = shift;
+
+    my $name = $self->type->protobuf_name( $self->raw );
+
+    # The special case - replace definition (like i64)
+    # with string - only for ip/mac addresses
+    $name = 'string' if $self->name =~ /(ip\d+|mac)_t$/;
+
+    croak colored(
+        'Circular type dependency '
+          . $name . ' -> '
+          . $self->type->protobuf_name . "\n",
+        'bold red'
+    ) if $self->protobuf_name eq $name;
+
+    return $name;
+}
 ################
 # TT coditions #
 ################

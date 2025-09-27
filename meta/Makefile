@@ -131,6 +131,11 @@ saimetadatatest.c saimetadata.c saimetadata.h: xml $(XMLDEPS) parse.pl $(CONSTHE
 
 RPC_MODULES=$(shell find rpc -type f -name "*.pm")
 
+sai.proto: xml $(XMLDEPS) gensaiprotorpc.pl templates/*.tt $(RPC_MODULES)
+	perl -Irpc gensaiprotorpc.pl $(GEN_SAIRPC_OPTS)
+
+protorpc: sai.proto
+
 sai.thrift sai_rpc_server.cpp sai_adapter.py: xml $(XMLDEPS) gensairpc.pl templates/*.tt $(RPC_MODULES)
 	perl -Irpc gensairpc.pl $(GEN_SAIRPC_OPTS)
 
@@ -182,18 +187,18 @@ generated/gen-cpp/sai_rpc_server.skeleton: sai.thrift $(RPC_OBJ)
 
 sai_rpc_server.skeleton: generated/gen-cpp/sai_rpc_server.skeleton
 
-sai_rpc_frontend: rpc sai_rpc_frontend.cpp sai_rpc_frontend.main.cpp sai_rpc_server.cpp libsaimetadata.so libsai.so
+sai_rpc_frontend: rpc protorpc sai_rpc_frontend.cpp sai_rpc_frontend.main.cpp sai_rpc_server.cpp libsaimetadata.so libsai.so
 	$(CXX) $(CFLAGS) -std=c++11 \
 		generated/gen-cpp/sai_rpc.o generated/gen-cpp/sai_types.o generated/gen-cpp/sai_constants.o \
 		sai_rpc_frontend.main.cpp sai_rpc_frontend.cpp \
 		libsaimetadata.so libsai.so -lthrift -lpthread -I generated/gen-cpp -o sai_rpc_frontend
+.PHONY: clean rpc protorpc
 
-.PHONY: clean rpc
 
 clean:
 	rm -f *.o *~ .*~ *.tmp .*.swp .*.swo *.bak sai*.gv sai*.svg *.o.symbols doxygen*.db *.so
 	rm -f saimetadata.h saimetadatasize.h saimetadata.c saimetadatatest.c saiswig.i saiattrversion.h
 	rm -f saisanitycheck saimetadatatest saiserializetest saidepgraphgen sai_rpc_frontend
-	rm -f sai.thrift sai_rpc_server.cpp sai_adapter.py
+	rm -f sai.thrift sai_rpc_server.cpp sai_adapter.py sai.proto
 	rm -f *.gcda *.gcno *.gcov
-	rm -rf xml html dist temp generated
+	rm -rf xml html dist temp generated generated-protobuf
