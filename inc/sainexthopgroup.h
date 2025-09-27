@@ -96,6 +96,22 @@ typedef enum _sai_next_hop_group_member_observed_role_t
 } sai_next_hop_group_member_observed_role_t;
 
 /**
+ * @brief Next hop group admin role to manually switch between primary and backup, overriding hardware switchover
+ */
+typedef enum _sai_next_hop_group_admin_role_t
+{
+    /** Auto mode - hardware controlled switching (default) */
+    SAI_NEXT_HOP_GROUP_ADMIN_ROLE_AUTO,
+
+    /** Force primary role - manual override to primary */
+    SAI_NEXT_HOP_GROUP_ADMIN_ROLE_PRIMARY,
+
+    /** Force backup role - manual override to backup */
+    SAI_NEXT_HOP_GROUP_ADMIN_ROLE_BACKUP,
+
+} sai_next_hop_group_admin_role_t;
+
+/**
  * @brief Attribute id for next hop
  */
 typedef enum _sai_next_hop_group_attr_t
@@ -142,6 +158,20 @@ typedef enum _sai_next_hop_group_attr_t
      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
      */
     SAI_NEXT_HOP_GROUP_ATTR_SET_SWITCHOVER,
+
+    /**
+     * @brief Admin role to manually control switching between primary and backup
+     *
+     * This attribute allows manual switching between primary and backup roles,
+     * overriding hardware-controlled switching.
+     * Enables planned operations without any traffic loss.
+     *
+     * @type sai_next_hop_group_admin_role_t
+     * @flags CREATE_AND_SET
+     * @default SAI_NEXT_HOP_GROUP_ADMIN_ROLE_AUTO
+     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_HW_PROTECTION
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_ADMIN_ROLE,
 
     /**
      * @brief Attach a counter
