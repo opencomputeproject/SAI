@@ -96,7 +96,7 @@ typedef enum _sai_next_hop_group_member_observed_role_t
 } sai_next_hop_group_member_observed_role_t;
 
 /**
- * @brief Next hop group admin role to manually switch between primary and backup, overriding hardware switchover
+ * @brief Next hop group admin role to manually switch between primary and standby, overriding hardware switchover
  */
 typedef enum _sai_next_hop_group_admin_role_t
 {
@@ -106,8 +106,8 @@ typedef enum _sai_next_hop_group_admin_role_t
     /** Force primary role - manual override to primary */
     SAI_NEXT_HOP_GROUP_ADMIN_ROLE_PRIMARY,
 
-    /** Force backup role - manual override to backup */
-    SAI_NEXT_HOP_GROUP_ADMIN_ROLE_BACKUP,
+    /** Force standby role - manual override to standby */
+    SAI_NEXT_HOP_GROUP_ADMIN_ROLE_STANDBY,
 
 } sai_next_hop_group_admin_role_t;
 
