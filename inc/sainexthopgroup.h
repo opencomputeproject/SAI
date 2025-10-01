@@ -393,7 +393,7 @@ typedef enum _sai_next_hop_group_member_attr_t
     /**
      * @brief The actual role in protection group
      *
-     * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
+     * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_PROTECTION or SAI_NEXT_HOP_GROUP_TYPE_HW_PROTECTION
      *
      * @type sai_next_hop_group_member_observed_role_t
      * @flags READ_ONLY

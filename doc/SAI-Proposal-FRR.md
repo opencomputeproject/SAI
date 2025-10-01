@@ -642,7 +642,7 @@ if (nhg_entry_attrs[0].value.u32 == SAI_NEXT_HOP_GROUP_ADMIN_ROLE_AUTO) {
     // Hardware-controlled switching is active
 } else if (nhg_entry_attrs[0].value.u32 == SAI_NEXT_HOP_GROUP_ADMIN_ROLE_PRIMARY) {
     // Forced to use primary path
-} else if (nhg_entry_attrs[0].value.u32 == SAI_NEXT_HOP_GROUP_ADMIN_ROLE_BACKUP) {
+} else if (nhg_entry_attrs[0].value.u32 == SAI_NEXT_HOP_GROUP_ADMIN_ROLE_STANDBY) {
     // Forced to use backup path
 }
 
