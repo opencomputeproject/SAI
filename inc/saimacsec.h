@@ -380,16 +380,16 @@ typedef enum _sai_macsec_port_post_status_t
 typedef enum _sai_macsec_port_secure_policy_t
 {
     /**
-     * @brief Should Secure Policy: Traffic is exchanged in clear
-     * till the encryption keys are in place.
-     */
-    SAI_MACSEC_PORT_SECURE_POLICY_SHOULD_SECURE,
-
-    /**
      * @brief Must Secure Policy: Traffic will need to be dropped till
      * the encryption keys are in place.
      */
     SAI_MACSEC_PORT_SECURE_POLICY_MUST_SECURE,
+
+    /**
+     * @brief Should Secure Policy: Traffic is exchanged in clear
+     * till the encryption keys are in place.
+     */
+    SAI_MACSEC_PORT_SECURE_POLICY_SHOULD_SECURE,
 
 } sai_macsec_port_secure_policy_t;
 
@@ -488,7 +488,7 @@ typedef enum _sai_macsec_port_attr_t
      *
      * @type sai_macsec_port_secure_policy_t
      * @flags CREATE_AND_SET
-     * @default SAI_MACSEC_PORT_SECURE_POLICY_SHOULD_SECURE
+     * @default SAI_MACSEC_PORT_SECURE_POLICY_MUST_SECURE
      */
     SAI_MACSEC_PORT_ATTR_SECURE_POLICY,
 
