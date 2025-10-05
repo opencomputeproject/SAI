@@ -77,10 +77,12 @@ The existing telemetry solution relies on a process to proactively query stats a
 - The vendor SDK should support querying the minimal polling interval for each counter.
 - When reconfiguring any stream settings, whether it is the polling interval or the stats list, the existing stream will be interrupted and regenerated.
 - If any of monitored objects is deleted, the existing stream will be interrupted and regenerated.
+- The collector is designed to handle single-cycle counter rollovers; however, vendors must ensure that the data does not roll over twice between two collection intervals.
 
 ### Phase 2
 
 - Supports updating configuration without interrupting the telemetry stream
+- Support stats of tam telemetry for debugging purpose
 
 ## Architecture Design
 
@@ -971,6 +973,13 @@ typedef struct _sai_stat_st_capability_t
      */
     uint64_t minimal_polling_interval;
 
+/**
+     * @brief Maximal polling interval in nanoseconds
+     *
+     * If polling interval is more than this value, it will be unacceptable.
+     */
+    uint64_t maximal_polling_interval;
+
 } sai_stat_st_capability_t;
 
 typedef struct _sai_stat_st_capability_list_t
@@ -1005,5 +1014,64 @@ typedef enum _sai_tam_tel_type_mode_t
 sai_s32_list_t tel_type_mode[2] = {-1, -1};
 
 sai_query_attribute_enum_values_capability(switch_id, SAI_OBJECT_TYPE_TAM_TEL_TYPE, SAI_TAM_TEL_TYPE_ATTR_MODE, tel_type_mode)
+
+```
+
+#### Stats for TAM telemetry
+
+```c++
+
+/**
+ * @brief TAM telemetry counter IDs in sai_get_tam_telemetry_stats_ext() call
+ *
+ * @flags ranges
+ */
+typedef enum _sai_tam_telemetry_stat_t
+{
+    /** Tam telemetry stat range start */
+    SAI_TAM_TELEMETRY_STAT_START,
+
+    /**
+     * @brief Total number of telemetry records successfully ingested
+     *
+     * Indicates the cumulative count of telemetry messages received and accepted
+     * into the telemetry system.
+     * Unit: Count [uint64_t]
+     */
+    SAI_TAM_TELEMETRY_STAT_INGESTED_RECORDS = SAI_TAM_TELEMETRY_STAT_START,
+
+    /**
+     * @brief Number of telemetry records pending read or processing
+     *
+     * Represents current backlog or pending messages awaiting processing.
+     * This is a gauge-type value rather than a monotonically increasing counter.
+     * Unit: Count [uint64_t]
+     */
+    SAI_TAM_TELEMETRY_STAT_PENDING_READ_RECORDS,
+
+    /**
+     * @brief Total number of telemetry records successfully consumed
+     *
+     * Indicates the cumulative count of telemetry records that have been processed
+     * by the consumer.
+     * Unit: Count [uint64_t]
+     */
+    SAI_TAM_TELEMETRY_STAT_CONSUMED_RECORDS,
+
+    /**
+     * @brief Total number of telemetry records dropped
+     *
+     * Represents the cumulative number of telemetry messages discarded due to
+     * buffer overflow, timeout, or internal error.
+     * Unit: Count [uint64_t]
+     */
+    SAI_TAM_TELEMETRY_STAT_DROPPED_RECORDS,
+
+    /** Tam telemetry stat range end */
+    SAI_TAM_TELEMETRY_STAT_END,
+
+    SAI_TAM_TELEMETRY_STAT_CUSTOM_RANGE_BASE = 0x10000000,
+
+} sai_tam_telemetry_stat_t;
 
 ```

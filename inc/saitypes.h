@@ -1909,6 +1909,12 @@ typedef struct _sai_stat_st_capability_t
      */
     uint64_t minimal_polling_interval;
 
+    /**
+     * @brief Maximal polling interval in nanoseconds
+     *
+     * If polling interval is more than this value, it will be unacceptable.
+     */
+    uint64_t maximal_polling_interval;
 } sai_stat_st_capability_t;
 
 typedef struct _sai_stat_st_capability_list_t
