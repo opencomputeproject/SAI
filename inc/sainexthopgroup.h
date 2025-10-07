@@ -300,6 +300,17 @@ typedef enum _sai_next_hop_group_attr_t
     SAI_NEXT_HOP_GROUP_ATTR_LABEL,
 
     /**
+     * @brief Weighted multi path configuration mode.
+     * false: Nexthop group is programmed with repeated member entries proportional to their weight
+     * true: Nexthop group is programmed with switch native configuration
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_NATIVE_WCMP,
+
+    /**
      * @brief End of attributes
      */
     SAI_NEXT_HOP_GROUP_ATTR_END,
