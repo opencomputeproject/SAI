@@ -230,6 +230,22 @@ typedef enum _sai_next_hop_group_type_t
 
 } sai_next_hop_group_type_t;
 
++/**
++ * @brief Next hop group admin role to manually control switching between primary and backup, overriding hardware switchover
++ */
++typedef enum _sai_next_hop_group_admin_role_t
++{
++    /** Auto mode - hardware controlled switching (default) */
++    SAI_NEXT_HOP_GROUP_ADMIN_ROLE_AUTO,
++
++    /** Force primary role - manual override to primary */
++    SAI_NEXT_HOP_GROUP_ADMIN_ROLE_PRIMARY,
++
++    /** Force backup role - manual override to standby */
++    SAI_NEXT_HOP_GROUP_ADMIN_ROLE_STANDBY,
++
++} sai_next_hop_group_admin_role_t;
+
 /**
  * @brief Attribute id for next hop
  */
@@ -273,6 +289,20 @@ typedef enum _sai_next_hop_group_attr_t
 +      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
 +      */
 +     SAI_NEXT_HOP_GROUP_ATTR_SET_SWITCHOVER,
++
++     /**
++      * @brief Admin role to manually control switching between primary and backup
++      *
++      * This attribute allows manual switching between primary and standby roles,
++      * overriding hardware-controlled switching when not set to auto mode.
++      * Enables planned operations without any traffic loss.
++      *
++      * @type sai_next_hop_group_admin_role_t
++      * @flags CREATE_AND_SET
++      * @default SAI_NEXT_HOP_GROUP_ADMIN_ROLE_AUTO
++      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_HW_PROTECTION
++      */
++     SAI_NEXT_HOP_GROUP_ATTR_ADMIN_ROLE,
 
     /**
      * @brief End of attributes
@@ -556,6 +586,64 @@ for (attr_id = 0; attr_id < attr_count; attr_id++) {
     if (nhgm_entry_attrs[attr_id].id == SAI_NEXT_HOP_GROUP_MEMBER_ATTR_OBSERVED_ROLE) {
         assert(nhgm_entry_attrs[attr_id].value.u32 == SAI_NEXT_HOP_GROUP_MEMBER_OBSERVED_ROLE_INACTIVE);
     }
+}
+
+```
+
+## Manual Admin Role Control
+
+### Force primary role
+```
+// Force the next hop group to use primary path regardless of hardware state
+nhg_entry_attrs[1].id = SAI_NEXT_HOP_GROUP_ATTR_ADMIN_ROLE;
+nhg_entry_attrs[1].value.u32 = SAI_NEXT_HOP_GROUP_ADMIN_ROLE_PRIMARY;
+saistatus = sai_set_next_hop_group_attribute_fn(nhg_id, nhg_entry_attrs);
+if (saistatus != SAI_STATUS_SUCCESS) {
+    return saistatus;
+}
+
+```
+
+### Force standby role
+```
+// Force the next hop group to use backup path regardless of hardware state
+nhg_entry_attrs[1].id = SAI_NEXT_HOP_GROUP_ATTR_ADMIN_ROLE;
+nhg_entry_attrs[1].value.u32 = SAI_NEXT_HOP_GROUP_ADMIN_ROLE_STANDBY;
+saistatus = sai_set_next_hop_group_attribute_fn(nhg_id, nhg_entry_attrs);
+if (saistatus != SAI_STATUS_SUCCESS) {
+    return saistatus;
+}
+
+```
+
+### Reset to auto mode
+```
+// Return control back to hardware-based switching
+nhg_entry_attrs[1].id = SAI_NEXT_HOP_GROUP_ATTR_ADMIN_ROLE;
+nhg_entry_attrs[1].value.u32 = SAI_NEXT_HOP_GROUP_ADMIN_ROLE_AUTO;
+saistatus = sai_set_next_hop_group_attribute_fn(nhg_id, nhg_entry_attrs);
+if (saistatus != SAI_STATUS_SUCCESS) {
+    return saistatus;
+}
+
+```
+
+### Query current admin role
+```
+// Get the current admin role setting
+nhg_entry_attrs[0].id = SAI_NEXT_HOP_GROUP_ATTR_ADMIN_ROLE;
+saistatus = sai_get_next_hop_group_attribute_fn(nhg_id, 1, nhg_entry_attrs);
+if (saistatus != SAI_STATUS_SUCCESS) {
+    return saistatus;
+}
+
+// Check the current admin role
+if (nhg_entry_attrs[0].value.u32 == SAI_NEXT_HOP_GROUP_ADMIN_ROLE_AUTO) {
+    // Hardware-controlled switching is active
+} else if (nhg_entry_attrs[0].value.u32 == SAI_NEXT_HOP_GROUP_ADMIN_ROLE_PRIMARY) {
+    // Forced to use primary path
+} else if (nhg_entry_attrs[0].value.u32 == SAI_NEXT_HOP_GROUP_ADMIN_ROLE_STANDBY) {
+    // Forced to use backup path
 }
 
 ```
