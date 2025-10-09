@@ -316,9 +316,9 @@ typedef enum _sai_next_hop_group_attr_t
     SAI_NEXT_HOP_GROUP_ATTR_LABEL,
 
     /**
-     * @brief Admin role to manually control switching between primary and backup
+     * @brief Admin role to manually control switching between primary and standby
      *
-     * This attribute allows manual switching between primary and backup roles,
+     * This attribute allows manual switching between primary and standby roles,
      * overriding hardware-controlled switching.
      * Enables planned operations without any traffic loss.
      *
