@@ -258,6 +258,14 @@ typedef enum _sai_hostif_trap_type_t
      */
     SAI_HOSTIF_TRAP_TYPE_ESMC = 0x00000014,
 
+    /**
+     * @brief Peer Delay PTP traffic.
+     * ((EtherType == 0x88F7 or UDP dst port == 319 or UDP dst port == 320)
+     * and (PTP messageType == 0x2 or PTP messageType == 0x3 or PTP messageType == 0x10))
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_PTP_PEER_DELAY = 0x00000015,
+
     /** Switch traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_SWITCH_CUSTOM_RANGE_BASE = 0x00001000,
 
