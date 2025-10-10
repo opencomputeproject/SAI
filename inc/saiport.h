@@ -2732,6 +2732,61 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_SERDES_FW_REVISION,
 
     /**
+     * @brief Per Lane PRBS Lock Status
+     *
+     * Per lane list of lock status for PRBS.
+     * The values are of type sai_port_lane_latch_status_list where the count is the number of lanes in
+     * a port and the list specifies list of lane id and lock status for each lane
+     * Lock status will have both lock status and changed status.
+     *
+     * @type sai_port_lane_latch_status_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PRBS_PER_LANE_LOCK_STATUS_LIST,
+
+    /**
+     * @brief Per Lane PRBS Rx Status
+     *
+     * Per lane list of Rx status for PRBS.
+     * The values are of type sai_prbs_per_lane_rx_status_list_t where the count is the number of lanes in
+     * a port and the list specifies list of values of type sai_port_prbs_rx_status_t and the lane id
+     * for each lane.
+     *
+     * @type sai_prbs_per_lane_rx_status_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PRBS_PER_LANE_RX_STATUS_LIST,
+
+    /**
+     * @brief Per Lane PRBS Rx State
+     *
+     * Per lane list of Rx state for PRBS.
+     * The values are of type sai_prbs_per_lane_rx_state_list_t where the count is the number
+     * of lanes in a port and the list specifies list of values of type sai_prbs_rx_state_t
+     * for each lane and its lane id.
+     * Used for clear on read status/count register.
+     * Adapter should return SAI_STATUS_NOT_SUPPORTED if not supported.
+     *
+     * @type sai_prbs_per_lane_rx_state_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PRBS_PER_LANE_RX_STATE_LIST,
+
+    /**
+     * @brief Per Lane PRBS Bit Error Rate (BER)
+     *
+     * Per lane list of PRBS Bit Error Rate (BER).
+     * The values are of type sai_prbs_per_lane_bit_error_rate_list_t where the count is the number
+     * of lanes in a port and the list specifies list of values of type sai_prbs_bit_error_rate_t
+     * and lane id for each lane.
+     * BER will be (error count/bits transmitted) = BER.mantissa * (10^-BER.exponent)
+     *
+     * @type sai_prbs_per_lane_bit_error_rate_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PRBS_PER_LANE_BER_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
@@ -3525,6 +3580,60 @@ typedef enum _sai_port_stat_t
 
     /** SAI port stat ether out pkts 9001 to 16383 octets */
     SAI_PORT_STAT_ETHER_OUT_PKTS_9001_TO_16383_OCTETS,
+
+    /** Per Lane PRBS Error Count Range Start */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_RANGE_BASE = 0x00004000,
+
+    /** Per Lane PRBS Error Count For lane in index 0 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_0 = SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_RANGE_BASE,
+
+    /** Per Lane PRBS Error Count For lane in index 1 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_1,
+
+    /** Per Lane PRBS Error Count For lane in index 2 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_2,
+
+    /** Per Lane PRBS Error Count For lane in index 3 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_3,
+
+    /** Per Lane PRBS Error Count For lane in index 4 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_4,
+
+    /** Per Lane PRBS Error Count For lane in index 5 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_5,
+
+    /** Per Lane PRBS Error Count For lane in index 6 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_6,
+
+    /** Per Lane PRBS Error Count For lane in index 7 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_7,
+
+    /** Per Lane PRBS Error Count For lane in index 8 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_8,
+
+    /** Per Lane PRBS Error Count For lane in index 9 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_9,
+
+    /** Per Lane PRBS Error Count For lane in index 10 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_10,
+
+    /** Per Lane PRBS Error Count For lane in index 11 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_11,
+
+    /** Per Lane PRBS Error Count For lane in index 12 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_12,
+
+    /** Per Lane PRBS Error Count For lane in index 13 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_13,
+
+    /** Per Lane PRBS Error Count For lane in index 14 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_14,
+
+    /** Per Lane PRBS Error Count For lane in index 15 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_15,
+
+    /** Per Lane PRBS Error Count Range End */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_RANGE_END = 0x00004fff,
 
     /** Port stat range end */
     SAI_PORT_STAT_END,

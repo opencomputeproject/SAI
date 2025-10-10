@@ -147,6 +147,26 @@ typedef enum _sai_attr_value_type_t
     SAI_ATTR_VALUE_TYPE_PRBS_RX_STATE,
 
     /**
+     * @brief Attribute value is a list of rx status for all lanes in a port.
+     */
+    SAI_ATTR_VALUE_TYPE_PRBS_PER_LANE_RX_STATUS_LIST,
+
+    /**
+     * @brief Attribute value is a list of rx state for all lanes in a port.
+     */
+    SAI_ATTR_VALUE_TYPE_PRBS_PER_LANE_RX_STATE_LIST,
+
+    /**
+     * @brief Attribute value is bit error rate.
+     */
+    SAI_ATTR_VALUE_TYPE_PRBS_BIT_ERROR_RATE,
+
+    /**
+     * @brief Attribute value is a list of bit error rates for all lanes in a port.
+     */
+    SAI_ATTR_VALUE_TYPE_PRBS_PER_LANE_BIT_ERROR_RATE_LIST,
+
+    /**
      * @brief Attribute value is object id.
      */
     SAI_ATTR_VALUE_TYPE_OBJECT_ID,
