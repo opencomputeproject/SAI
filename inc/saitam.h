@@ -1611,6 +1611,59 @@ typedef enum _sai_tam_telemetry_attr_t
 } sai_tam_telemetry_attr_t;
 
 /**
+ * @brief TAM telemetry counter IDs in sai_get_tam_telemetry_stats_ext() call
+ *
+ * @flags ranges
+ */
+typedef enum _sai_tam_telemetry_stat_t
+{
+    /** Tam telemetry stat range start */
+    SAI_TAM_TELEMETRY_STAT_START,
+
+    /**
+     * @brief Total number of telemetry records successfully ingested
+     *
+     * Indicates the cumulative count of telemetry messages received and accepted
+     * into the telemetry system.
+     * Unit: Count [uint64_t]
+     */
+    SAI_TAM_TELEMETRY_STAT_INGESTED_RECORDS = SAI_TAM_TELEMETRY_STAT_START,
+
+    /**
+     * @brief Number of telemetry records pending read or processing
+     *
+     * Represents current backlog or pending messages awaiting processing.
+     * This is a gauge-type value rather than a monotonically increasing counter.
+     * Unit: Count [uint64_t]
+     */
+    SAI_TAM_TELEMETRY_STAT_PENDING_READ_RECORDS,
+
+    /**
+     * @brief Total number of telemetry records successfully consumed
+     *
+     * Indicates the cumulative count of telemetry records that have been processed
+     * by the consumer.
+     * Unit: Count [uint64_t]
+     */
+    SAI_TAM_TELEMETRY_STAT_CONSUMED_RECORDS,
+
+    /**
+     * @brief Total number of telemetry records dropped
+     *
+     * Represents the cumulative number of telemetry messages discarded due to
+     * buffer overflow, timeout, or internal error.
+     * Unit: Count [uint64_t]
+     */
+    SAI_TAM_TELEMETRY_STAT_DROPPED_RECORDS,
+
+    /** Tam telemetry stat range end */
+    SAI_TAM_TELEMETRY_STAT_END,
+
+    SAI_TAM_TELEMETRY_STAT_CUSTOM_RANGE_BASE = 0x10000000,
+
+} sai_tam_telemetry_stat_t;
+
+/**
  * @brief Create and return a telemetry object
  *
  * @param[out] tam_telemetry_id Telemetry object id
@@ -2488,6 +2541,54 @@ sai_status_t sai_tam_telemetry_get_data(
         _Out_ void *buffer);
 
 /**
+ * @brief Get TAM telemetry statistics counters. Deprecated for backward compatibility.
+ *
+ * @param[in] tam_telemetry_id TAM telemetry id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_tam_telemetry_stats_fn)(
+        _In_ sai_object_id_t tam_telemetry_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Get TAM telemetry statistics counters extended.
+ *
+ * @param[in] tam_telemetry_id TAM telemetry id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] mode Statistics mode
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_tam_telemetry_stats_ext_fn)(
+        _In_ sai_object_id_t tam_telemetry_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _In_ sai_stats_mode_t mode,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Clear tam_telemetry statistics counters.
+ *
+ * @param[in] tam_telemetry_id TAM telemetry id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_clear_tam_telemetry_stats_fn)(
+        _In_ sai_object_id_t tam_telemetry_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids);
+
+/**
  * @brief SAI TAM API set
  */
 typedef struct _sai_tam_api_t
@@ -2534,6 +2635,9 @@ typedef struct _sai_tam_api_t
     sai_remove_tam_telemetry_fn                    remove_tam_telemetry;
     sai_set_tam_telemetry_attribute_fn             set_tam_telemetry_attribute;
     sai_get_tam_telemetry_attribute_fn             get_tam_telemetry_attribute;
+    sai_get_tam_telemetry_stats_fn                 get_tam_telemetry_stats;
+    sai_get_tam_telemetry_stats_ext_fn             get_tam_telemetry_stats_ext;
+    sai_clear_tam_telemetry_stats_fn               clear_tam_telemetry_stats;
 
     sai_create_tam_collector_fn                    create_tam_collector;
     sai_remove_tam_collector_fn                    remove_tam_collector;
