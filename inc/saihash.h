@@ -236,10 +236,7 @@ typedef enum _sai_fine_grained_hash_field_attr_t
     SAI_FINE_GRAINED_HASH_FIELD_ATTR_END,
 
     /** Custom range base value */
-    SAI_FINE_GRAINED_HASH_FIELD_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_FINE_GRAINED_HASH_FIELD_ATTR_CUSTOM_RANGE_END
+    SAI_FINE_GRAINED_HASH_FIELD_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_fine_grained_hash_field_attr_t;
 
@@ -288,10 +285,7 @@ typedef enum _sai_hash_attr_t
     SAI_HASH_ATTR_END,
 
     /** Custom range base value */
-    SAI_HASH_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_HASH_ATTR_CUSTOM_RANGE_END
+    SAI_HASH_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_hash_attr_t;
 

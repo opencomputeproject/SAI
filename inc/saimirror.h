@@ -409,10 +409,7 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_END,
 
     /** Custom range base value */
-    SAI_MIRROR_SESSION_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_MIRROR_SESSION_ATTR_CUSTOM_RANGE_END
+    SAI_MIRROR_SESSION_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_mirror_session_attr_t;
 
