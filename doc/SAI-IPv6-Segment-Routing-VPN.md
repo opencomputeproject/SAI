@@ -664,6 +664,63 @@ has a NULL object id for SID-list.
     saistatus = sai_route_api->create_route(&route_entry, 2, route_entry_attrs);
 ```
 
+## SRv6 SID Marking Feature
+
+This section describes the SID Marking feature for SRv6 VPN, which enables VPN SIDs to carry QoS and policy information derived from packet classification. Two new tunnel map types support SID Marking by allowing VPN SID selection based on forwarding class (which is mapped from DSCP via QoS Maps or ACL classification) and hierarchical policy lookup.
+
+### SAI_TUNNEL_MAP_TYPE_FORWARDING_CLASS_TO_SRV6_VPN_SID - SID Marking
+
+#### Overview
+
+The `SAI_TUNNEL_MAP_TYPE_FORWARDING_CLASS_TO_SRV6_VPN_SID` tunnel map type implements the core SID Marking capability. It enables VPN SIDs to be "marked" with QoS information by selecting different VPN SIDs based on forwarding class. The forwarding class is derived from packet DSCP values through QoS Map classification or ACL-based classification, allowing the ingress node to encode traffic priority directly into the VPN SID itself. This marked VPN SID then carries the QoS information end-to-end through the SRv6 network.
+
+#### API Attributes
+
+**Tunnel Map Type:**
+```c
+SAI_TUNNEL_MAP_TYPE_FORWARDING_CLASS_TO_SRV6_VPN_SID = 0x0000000f
+```
+
+**Tunnel Map Entry Attributes:**
+```c
+// Key: Forwarding Class
+SAI_TUNNEL_MAP_ENTRY_ATTR_FORWARDING_CLASS_KEY = 0x00000013
+// Type: sai_uint32_t
+// Flags: MANDATORY_ON_CREATE | CREATE_ONLY
+
+// Value: SRv6 VPN SID
+SAI_TUNNEL_MAP_ENTRY_ATTR_SRV6_VPN_SID_VALUE = 0x00000011
+// Type: sai_ip6_t
+// Flags: MANDATORY_ON_CREATE | CREATE_ONLY
+```
+
+### SAI_TUNNEL_MAP_TYPE_PREFIX_AGG_ID_TO_TUNNEL_MAP_ID - Hierarchical SID Marking
+
+#### Overview
+
+The `SAI_TUNNEL_MAP_TYPE_PREFIX_AGG_ID_TO_TUNNEL_MAP_ID` tunnel map type enables hierarchical, two-level lookup for VPN SID selection. This indirection allows combining the prefix-based derivation with the forwarding-class-based SID Marking.
+
+#### API Attributes
+
+**Tunnel Map Type:**
+```c
+SAI_TUNNEL_MAP_TYPE_PREFIX_AGG_ID_TO_TUNNEL_MAP_ID = 0x0000000e
+```
+
+**Tunnel Map Entry Attributes:**
+```c
+// Key: Prefix Aggregation ID
+SAI_TUNNEL_MAP_ENTRY_ATTR_PREFIX_AGG_ID_KEY = 0x00000010
+// Type: sai_uint32_t
+// Flags: MANDATORY_ON_CREATE | CREATE_ONLY
+
+// Value: Tunnel Map Object ID
+SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_ID_VALUE = 0x00000012
+// Type: sai_object_id_t
+// Flags: MANDATORY_ON_CREATE | CREATE_ONLY
+// Objects: SAI_OBJECT_TYPE_TUNNEL_MAP
+```
+
 ## References
 1. [IPv6 Segment Routing Header (SRH)](https://tools.ietf.org/html/rfc8754)
 2. [Segment Routing over IPv6 (SRv6) Network Programming](https://tools.ietf.org/html/rfc8986)
