@@ -264,27 +264,27 @@
 /**
  * @brief Is invalid attribute helper
  */
-#define SAI_STATUS_IS_INVALID_ATTRIBUTE(x)      (((x) & (~0xFFFF)) == SAI_STATUS_INVALID_ATTRIBUTE_0)
+#define SAI_STATUS_IS_INVALID_ATTRIBUTE(x)      (((abs(x)) & (~0xFFFF)) == (abs(SAI_STATUS_INVALID_ATTRIBUTE_0)))
 
 /**
  * @brief Is invalid attribute value helper
  */
-#define SAI_STATUS_IS_INVALID_ATTR_VALUE(x)     (((x) & (~0xFFFF)) == SAI_STATUS_INVALID_ATTR_VALUE_0)
+#define SAI_STATUS_IS_INVALID_ATTR_VALUE(x)     (((abs(x)) & (~0xFFFF)) == (abs(SAI_STATUS_INVALID_ATTR_VALUE_0)))
 
 /**
  * @brief Is attribute not implemented helper
  */
-#define SAI_STATUS_IS_ATTR_NOT_IMPLEMENTED(x)   (((x) & (~0xFFFF)) == SAI_STATUS_ATTR_NOT_IMPLEMENTED_0)
+#define SAI_STATUS_IS_ATTR_NOT_IMPLEMENTED(x)   (((abs(x)) & (~0xFFFF)) == (abs(SAI_STATUS_ATTR_NOT_IMPLEMENTED_0)))
 
 /**
  * @brief Is unknown attribute helper
  */
-#define SAI_STATUS_IS_UNKNOWN_ATTRIBUTE(x)      (((x) & (~0xFFFF)) == SAI_STATUS_INVALID_ATTRIBUTE_0)
+#define SAI_STATUS_IS_UNKNOWN_ATTRIBUTE(x)      (((abs(x)) & (~0xFFFF)) == (abs(SAI_STATUS_INVALID_ATTRIBUTE_0)))
 
 /**
  * @brief Is attribute not supported helper
  */
-#define SAI_STATUS_IS_ATTR_NOT_SUPPORTED(x)     (((x) & (~0xFFFF)) == SAI_STATUS_ATTR_NOT_SUPPORTED_0)
+#define SAI_STATUS_IS_ATTR_NOT_SUPPORTED(x)     (((abs(x)) & (~0xFFFF)) == (abs(SAI_STATUS_ATTR_NOT_SUPPORTED_0)))
 
 /**
  * @}
