@@ -26,6 +26,7 @@
 #define __SAITYPESEXTENSIONS_H_
 
 #include <saitypes.h>
+#include <saiobject.h>
 
 /**
  * @brief SAI object type extensions
