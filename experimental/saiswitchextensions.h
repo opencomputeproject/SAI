@@ -27,6 +27,7 @@
 
 #include <saiswitch.h>
 #include <saitypesextensions.h>
+#include <saiexperimentaldashflow.h>
 
 /**
  * @brief DASH capability HA scope level
