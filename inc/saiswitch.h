@@ -3522,6 +3522,14 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_FAST_LINKUP_BER_THRESHOLD,
 
     /**
+     * @brief Maximum number of timers supported for CSIG bandwidth signal
+     *
+     * @type sai_uint8_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_CSIG_TIMERS,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,

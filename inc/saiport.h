@@ -2787,6 +2787,25 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PRBS_PER_LANE_BER_LIST,
 
     /**
+     * @brief Enable INT metadata deletion
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_INT_DELETE,
+
+    /**
+     * @brief INT metadata
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     */
+    SAI_PORT_ATTR_INT_METADATA,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
