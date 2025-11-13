@@ -484,6 +484,15 @@ typedef enum _sai_tam_int_type_t
      */
     SAI_TAM_INT_TYPE_PATH_TRACING,
 
+    /**
+     * @brief INT type Congestion Signaling compact tag
+     */
+    SAI_TAM_INT_TYPE_CSIG_COMPACT,
+
+    /**
+     * @brief INT type Congestion Signaling wide tag
+     */
+    SAI_TAM_INT_TYPE_CSIG_WIDE,
 } sai_tam_int_type_t;
 
 /**
@@ -512,9 +521,86 @@ typedef enum _sai_tam_int_presence_type_t
     /**
      * @brief INT presence type DSCP
      */
-    SAI_TAM_INT_PRESENCE_TYPE_DSCP
+    SAI_TAM_INT_PRESENCE_TYPE_DSCP,
 
+    /**
+     * @brief INT presence type Ether Type Code Point
+     */
+    SAI_TAM_INT_PRESENCE_TYPE_ETH_TYPE,
 } sai_tam_int_presence_type_t;
+
+/**
+ * @brief Bandwidth time interval units
+ */
+typedef enum _sai_tam_int_bw_time_interval_unit_t
+{
+    /**
+     * @brief Time interval unit nanosecond
+     */
+    SAI_TAM_INT_BW_TIME_INTERVAL_UNIT_NANOSEC,
+
+    /**
+     * @brief Time interval unit microsecond
+     */
+    SAI_TAM_INT_BW_TIME_INTERVAL_UNIT_USEC,
+
+    /**
+     * @brief Time interval unit millisecond
+     */
+    SAI_TAM_INT_BW_TIME_INTERVAL_UNIT_MSEC,
+
+} sai_tam_int_bw_time_interval_unit_t;
+
+/**
+ * @brief BW time intervals
+ */
+typedef enum _sai_tam_int_bw_time_interval_t
+{
+    /**
+     * @brief Time window 128
+     */
+    SAI_TAM_INT_BW_TIME_INTERVAL_128,
+
+    /**
+     * @brief Time window 256
+     */
+    SAI_TAM_INT_BW_TIME_INTERVAL_256,
+
+    /**
+     * @brief Time window 384
+     */
+    SAI_TAM_INT_BW_TIME_INTERVAL_384,
+
+    /**
+     * @brief Time window 512
+     */
+    SAI_TAM_INT_BW_TIME_INTERVAL_512,
+
+    /**
+     * @brief Time window 640
+     */
+    SAI_TAM_INT_BW_TIME_INTERVAL_640,
+
+    /**
+     * @brief Time window 768
+     */
+    SAI_TAM_INT_BW_TIME_INTERVAL_768,
+
+    /**
+     * @brief Time window 896
+     */
+    SAI_TAM_INT_BW_TIME_INTERVAL_896,
+
+    /**
+     * @brief Time window 1024
+     */
+    SAI_TAM_INT_BW_TIME_INTERVAL_1024,
+
+    /**
+     * @brief Vendor defined time window
+     */
+    SAI_TAM_INT_BW_TIME_INTERVAL_VENDOR_DEFINED,
+} sai_tam_int_bw_time_interval_t;
 
 /**
  * @brief Attributes for TAM INT
@@ -800,6 +886,97 @@ typedef enum _sai_tam_int_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_TAM_INT_ATTR_REPORT_ID,
+
+    /**
+     * @brief Ethernet code point value that indicates presence of CSIG compact tag in a packet
+     *
+     * @type sai_uint16_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @isvlan false
+     * @condition SAI_TAM_INT_ATTR_INT_PRESENCE_TYPE == SAI_TAM_INT_PRESENCE_TYPE_ETH_TYPE
+     */
+    SAI_TAM_INT_ATTR_ETH_TYPE_CODE_POINT,
+
+    /**
+     * @brief CSIG signal type
+     *
+     * @type sai_csig_signal_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_CSIG_SIGNAL_TYPE_ABW
+     */
+    SAI_TAM_INT_ATTR_CSIG_SIGNAL_TYPE,
+
+    /**
+     * @brief Time interval for bandwidth computation in nanosecond
+     *
+     * @type sai_tam_int_bw_time_interval_t
+     * @flags CREATE_AND_SET
+     * @default SAI_TAM_INT_BW_TIME_INTERVAL_256
+     * @validonly SAI_TAM_INT_ATTR_CSIG_SIGNAL_TYPE == SAI_CSIG_SIGNAL_TYPE_ABW or SAI_TAM_INT_ATTR_CSIG_SIGNAL_TYPE == SAI_CSIG_SIGNAL_TYPE_ABWC
+     */
+    SAI_TAM_INT_ATTR_BW_TIME_INTERVAL,
+
+    /**
+     * @brief Bandwidth time Interval Units
+     *
+     * @type sai_tam_int_bw_time_interval_unit_t
+     * @flags CREATE_AND_SET
+     * @default SAI_TAM_INT_BW_TIME_INTERVAL_UNIT_USEC
+     * @validonly SAI_TAM_INT_ATTR_CSIG_SIGNAL_TYPE == SAI_CSIG_SIGNAL_TYPE_ABW or SAI_TAM_INT_ATTR_CSIG_SIGNAL_TYPE == SAI_CSIG_SIGNAL_TYPE_ABWC
+     */
+    SAI_TAM_INT_ATTR_BW_TIME_INTERVAL_UNIT,
+
+    /**
+     * @brief Number of quantization bands
+     * Compact tag supports maximum of 32 bands and wide tag supports maximum of 1048576 bands
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 32
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_COMPACT or SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_WIDE
+     */
+    SAI_TAM_INT_ATTR_QUANT_BANDS,
+
+    /**
+     * @brief Quantization band range values for compact tag
+     *
+     * @type sai_u32_range_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_COMPACT
+     */
+    SAI_TAM_INT_ATTR_QUANT_BAND_UINT32_RANGE_LIST,
+
+    /**
+     * @brief Base value for wide tag quantization. Must be power of 2
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_WIDE
+     */
+    SAI_TAM_INT_ATTR_WIDE_QUANT_BASE_VALUE,
+
+    /**
+     * @brief Step value for wide tag quantization. Must be power of 2
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_WIDE
+     */
+    SAI_TAM_INT_ATTR_WIDE_QUANT_STEP_VALUE,
+
+    /**
+     * @brief Update the D bit indicating the packet is trimmed
+     * DSCP value configured for TRIM packets comes from the TRIM configuration
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_COMPACT or SAI_TAM_INT_ATTR_TYPE == SAI_TAM_INT_TYPE_CSIG_WIDE
+     */
+    SAI_TAM_INT_ATTR_CSIG_D_BIT,
 
     /**
      * @brief End of Attributes
