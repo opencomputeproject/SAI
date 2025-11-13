@@ -114,6 +114,26 @@ typedef enum _sai_acl_dtel_flow_op_t
 } sai_acl_dtel_flow_op_t;
 
 /**
+ * @brief CSIG Signal Type
+ * Value of signal in the specification is maintained in the enum order.
+ */
+typedef enum _sai_csig_signal_type_t
+{
+    /** Available Bandwidth */
+    SAI_CSIG_SIGNAL_TYPE_ABW = 0,
+
+    /** Normalized Available Bandwidth */
+    SAI_CSIG_SIGNAL_TYPE_ABWC = 1,
+
+    /** Delay */
+    SAI_CSIG_SIGNAL_TYPE_DELAY = 2,
+
+    /** Normalized Queue Depth */
+    SAI_CSIG_SIGNAL_TYPE_NQD = 3,
+
+} sai_csig_signal_type_t;
+
+/**
  * @brief ACL Action Type
  */
 typedef enum _sai_acl_action_type_t
@@ -1589,9 +1609,36 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_NEXT_HOP_USER_META = SAI_ACL_TABLE_ATTR_FIELD_START + 0x162,
 
     /**
+     * @brief CSIG Compact Tag Ether Type
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_CSIG_COMPACT_TAG_ETHER_TYPE = SAI_ACL_TABLE_ATTR_FIELD_START + 0x163,
+
+    /**
+     * @brief CSIG Wide Tag Ether Type
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_CSIG_WIDE_TAG_ETHER_TYPE = SAI_ACL_TABLE_ATTR_FIELD_START + 0x164,
+
+    /**
+     * @brief CSIG Signal Type
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_CSIG_SIGNAL_TYPE = SAI_ACL_TABLE_ATTR_FIELD_START + 0x165,
+
+    /**
      * @brief End of ACL Table Match Field
      */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_NEXT_HOP_USER_META,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_CSIG_SIGNAL_TYPE,
 
     /**
      * @brief ACL table entries associated with this table.
@@ -2729,9 +2776,38 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_NEXT_HOP_USER_META = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x162,
 
     /**
+     * @brief CSIG Compact Tag Ether Type
+     *
+     * @type sai_acl_field_data_t sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_CSIG_COMPACT_TAG_ETHER_TYPE = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x163,
+
+    /**
+     * @brief CSIG Wide Tag Ether Type
+     *
+     * @type sai_acl_field_data_t sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_CSIG_WIDE_TAG_ETHER_TYPE = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x164,
+
+    /**
+     * @brief CSIG Signal Type
+     *
+     * @type sai_acl_field_data_t sai_csig_signal_type_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_CSIG_SIGNAL_TYPE = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x165,
+
+    /**
      * @brief End of Rule Match Fields
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_NEXT_HOP_USER_META,
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_CSIG_SIGNAL_TYPE,
 
     /*
      * Actions [sai_acl_action_data_t]
