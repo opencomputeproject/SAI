@@ -490,7 +490,7 @@ typedef enum _sai_flow_entry_bulk_get_session_filter_attr_t
      *
      * @type sai_dash_flow_entry_bulk_get_session_filter_key_t
      * @flags CREATE_AND_SET
-     * @default SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_FILTER_KEY_INVAILD
+     * @default SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_FILTER_KEY_INVALID
      */
     SAI_FLOW_ENTRY_BULK_GET_SESSION_FILTER_ATTR_DASH_FLOW_ENTRY_BULK_GET_SESSION_FILTER_KEY = SAI_FLOW_ENTRY_BULK_GET_SESSION_FILTER_ATTR_START,
 

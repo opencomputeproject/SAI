@@ -293,7 +293,7 @@ typedef enum _sai_dash_flow_entry_bulk_get_session_mode_t
  */
 typedef enum _sai_dash_flow_entry_bulk_get_session_filter_key_t
 {
-    SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_FILTER_KEY_INVAILD,
+    SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_FILTER_KEY_INVALID,
 
     SAI_DASH_FLOW_ENTRY_BULK_GET_SESSION_FILTER_KEY_FLOW_TABLE_ID,
 
