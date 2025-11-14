@@ -3735,6 +3735,14 @@ void check_attr_version(
     }
 }
 
+void check_attr_precision(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    META_ASSERT_TRUE(md->valueprecision <= 18, "expected precision in range [0, 18]");
+}
+
 void check_single_attribute(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -3783,6 +3791,7 @@ void check_single_attribute(
     check_attr_mixed_validonly(md);
     check_attr_condition_relaxed(md);
     check_attr_version(md);
+    check_attr_precision(md);
 
     define_attr(md);
 }
