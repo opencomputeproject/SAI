@@ -121,10 +121,7 @@ typedef enum _sai_virtual_router_attr_t
     SAI_VIRTUAL_ROUTER_ATTR_END,
 
     /** Custom range base value */
-    SAI_VIRTUAL_ROUTER_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_VIRTUAL_ROUTER_ATTR_CUSTOM_RANGE_END
+    SAI_VIRTUAL_ROUTER_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_virtual_router_attr_t;
 

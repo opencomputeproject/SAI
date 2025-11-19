@@ -359,11 +359,10 @@ typedef enum _sai_bridge_port_attr_t
      */
     SAI_BRIDGE_PORT_ATTR_END,
 
-    /** Custom range base value */
-    SAI_BRIDGE_PORT_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_BRIDGE_PORT_ATTR_CUSTOM_RANGE_END
+    /**
+     * @brief Custom range base value
+     */
+    SAI_BRIDGE_PORT_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_bridge_port_attr_t;
 
@@ -685,11 +684,10 @@ typedef enum _sai_bridge_attr_t
      */
     SAI_BRIDGE_ATTR_END,
 
-    /** Custom range base value */
-    SAI_BRIDGE_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_BRIDGE_ATTR_CUSTOM_RANGE_END
+    /**
+     * @brief Custom range base value
+     */
+    SAI_BRIDGE_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_bridge_attr_t;
 
