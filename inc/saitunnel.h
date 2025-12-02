@@ -660,6 +660,10 @@ typedef enum _sai_tunnel_attr_t
     /**
      * @brief Tunnel UDP source port
      *
+     * See also SAI_TUNNEL_ATTR_VXLAN_UDP_SPORT_SECURITY.
+     * This attribute is applied to VXLAN packets ingressing the switch. If the incoming
+     * packet does not match the configured UDP source port range, the packet is dropped.
+     *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
      * @isvlan false
