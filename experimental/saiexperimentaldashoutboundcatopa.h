@@ -66,9 +66,9 @@ typedef struct _sai_outbound_ca_to_pa_entry_t
     sai_object_id_t dst_vnet_id;
 
     /**
-     * @brief Exact matched key dip
+     * @brief LPM matched key dip
      */
-    sai_ip_address_t dip;
+    sai_ip_prefix_t dip;
 
 } sai_outbound_ca_to_pa_entry_t;
 
