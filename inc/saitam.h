@@ -907,7 +907,7 @@ typedef enum _sai_tam_int_attr_t
     SAI_TAM_INT_ATTR_CSIG_SIGNAL_TYPE,
 
     /**
-     * @brief Time interval for bandwidth computation in nanosecond
+     * @brief Time interval for bandwidth computation
      *
      * @type sai_tam_int_bw_time_interval_t
      * @flags CREATE_AND_SET
