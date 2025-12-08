@@ -16,7 +16,7 @@ The core principle of CSIG's design is the aggregation of congestion state infor
 
 For instance, with several signal types, we are primarily interested in the congestion state at only one specific switch along the path. This "switch of interest" is defined as the one where the signal's value represents an extremum (either the maximum or minimum) among all switches along that path.
 
-![Fig-1: Life of a CSIG Packet](./Life-Of-CSIG-Packet.png)
+![Fig-1](./Life-Of-CSIG-Packet.png "Figure 1: Life of a CSIG Packet")
 
 Following logical functions can be performed by the fabric element in a CSIG domain:
 - **CSIG init:** Only the Fabric Edge Processor (FEP) executes the initialization function, which involves inserting the CSIG tag into the packet
@@ -63,9 +63,9 @@ This CSIG tag data can be used for
 	- r: Reserved
 
 
-![Fig-2: CSIG Compact Tag Format](./4B-Tag.png)
+![Fig-2](./CSIG-Tag.png)
 
-![Fig-3: CSIG Wide Tag Format](./8B-Tag.png)
+
 
 
 Following signals are support for compact and wide tag formats
@@ -113,7 +113,7 @@ We will leverage the existing SAI infrastructure that utilizes the TAM object. T
 ### 4.1 SAI TAM Object Hierarchy
 
 
-![Fig-4: TAM Object Hierarchy](./TAM-Object.png)
+![Fig-4](./TAM-Object.png "Figure 4: TAM Object Hierarchy")
 
 ### 4.2 TAM INT Presence Type
 The sai_tam_int_presence_type_t enum indicates how a given INT packet is identified.
