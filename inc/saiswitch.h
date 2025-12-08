@@ -504,6 +504,10 @@ typedef enum _sai_switch_tunnel_attr_t
     /**
      * @brief Tunnel UDP source port
      *
+     * See also SAI_SWITCH_TUNNEL_ATTR_VXLAN_UDP_SPORT_SECURITY.
+     * This attribute is applied to VXLAN packets ingressing the switch. If the incoming
+     * packet does not match the configured UDP source port range, the packet is dropped.
+     *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
      * @isvlan false
@@ -575,6 +579,20 @@ typedef enum _sai_switch_tunnel_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_TUNNEL_ATTR_DECAP_QOS_TC_TO_PRIORITY_GROUP_MAP,
+
+    /**
+     * @brief Drop tunnel packets with not allowed UDP source port
+     *
+     * Upon enabling this feature, if the tunnel packet ingresses with
+     * UDP source port outside of range defined for this tunnel, it
+     * will be dropped.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_SWITCH_TUNNEL_ATTR_TUNNEL_TYPE == SAI_TUNNEL_TYPE_VXLAN and SAI_SWITCH_TUNNEL_ATTR_TUNNEL_VXLAN_UDP_SPORT_MODE == SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_USER_DEFINED
+     */
+    SAI_SWITCH_TUNNEL_ATTR_VXLAN_UDP_SPORT_SECURITY,
 
     /**
      * @brief End of attributes
