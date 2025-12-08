@@ -1636,9 +1636,18 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_CSIG_SIGNAL_TYPE = SAI_ACL_TABLE_ATTR_FIELD_START + 0x165,
 
     /**
+     * @brief CSIG D Bit
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_CSIG_D_BIT = SAI_ACL_TABLE_ATTR_FIELD_START + 0x166,
+
+    /**
      * @brief End of ACL Table Match Field
      */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_CSIG_SIGNAL_TYPE,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_CSIG_D_BIT,
 
     /**
      * @brief ACL table entries associated with this table.
@@ -2805,9 +2814,18 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_CSIG_SIGNAL_TYPE = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x165,
 
     /**
+     * @brief CSIG D Bit
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_CSIG_D_BIT = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x166,
+
+    /**
      * @brief End of Rule Match Fields
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_CSIG_SIGNAL_TYPE,
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_CSIG_D_BIT,
 
     /*
      * Actions [sai_acl_action_data_t]
