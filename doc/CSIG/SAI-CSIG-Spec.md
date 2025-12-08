@@ -16,6 +16,8 @@ The core principle of CSIG's design is the aggregation of congestion state infor
 
 For instance, with several signal types, we are primarily interested in the congestion state at only one specific switch along the path. This "switch of interest" is defined as the one where the signal's value represents an extremum (either the maximum or minimum) among all switches along that path.
 
+###### Figure 1: Life of a CSIG Packet
+
 ![Fig-1](./Life-Of-CSIG-Packet.png "Figure 1: Life of a CSIG Packet")
 
 Following logical functions can be performed by the fabric element in a CSIG domain:
@@ -62,6 +64,8 @@ This CSIG tag data can be used for
 	- d: Do not update Bit, this is the bit set by switch for the packet that got trimmed
 	- r: Reserved
 
+
+###### Figure 2: CSIG 4B and 8B Tag Format
 
 ![Fig-2](./CSIG-Tag.png)
 
@@ -112,6 +116,7 @@ We will leverage the existing SAI infrastructure that utilizes the TAM object. T
 
 ### 4.1 SAI TAM Object Hierarchy
 
+###### Figure 3: TAM Object Hierarchy
 
 ![Fig-4](./TAM-Object.png "Figure 4: TAM Object Hierarchy")
 
