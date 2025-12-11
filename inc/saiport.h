@@ -2787,6 +2787,18 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PRBS_PER_LANE_BER_LIST,
 
     /**
+     * @brief Packet drop status for all PGs of a port.
+     *
+     * The key is the PG index and the status value (clear-on-read) for each PG
+     * is from {0, 1}, where 0 indicates no drops were observed and 1 indicates
+     * packet drops.
+     *
+     * @type sai_map_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PORT_PG_PKT_DROP_STATUS,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
