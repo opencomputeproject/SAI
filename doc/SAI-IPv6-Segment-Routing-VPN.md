@@ -664,6 +664,249 @@ has a NULL object id for SID-list.
     saistatus = sai_route_api->create_route(&route_entry, 2, route_entry_attrs);
 ```
 
+## SRv6 SID Marking Feature
+
+This section describes the SID Marking feature for SRv6 VPN, which enables VPN SIDs to carry QoS and policy information derived from packet classification. Two new tunnel map types support SID Marking by allowing VPN SID selection based on forwarding class and hierarchical policy lookup.
+
+### Forwarding Class Derivation
+
+The forwarding class used for SID Marking is derived from packet classification through one of the following mechanisms:
+
+1. **QoS Map Classification**: Use `SAI_QOS_MAP_TYPE_DSCP_TO_FORWARDING_CLASS` to map incoming packet DSCP values to forwarding class values. The QoS map is attached to the ingress port.
+
+2. **ACL Classification**: Use `SAI_ACL_ENTRY_ATTR_ACTION_SET_FORWARDING_CLASS` ACL action to set the forwarding class based on ACL match criteria, providing flexible classification beyond DSCP.
+
+### Hierarchical Lookup Flow
+
+When using hierarchical SID Marking with `PREFIX_AGG_ID_TO_TUNNEL_MAP_ID`, the logical lookup proceeds as follows:
+
+```
+Route Entry (with Prefix Aggregation ID)
+    │
+    ▼
+First Tunnel Map (PREFIX_AGG_ID_TO_TUNNEL_MAP_ID)
+    │  Key: Prefix Aggregation ID
+    │  Value: Second Tunnel Map OID
+    ▼
+Second Tunnel Map (FORWARDING_CLASS_TO_SRV6_VPN_SID)
+    │  Key: Forwarding Class (from QoS Map or ACL)
+    │  Value: VPN SID
+    ▼
+Final VPN SID for encapsulation
+```
+
+This two-level indirection enables per-destination, per-QoS-class VPN SID selection, allowing different traffic classes to the same destination to use different VPN SIDs.
+
+**Note:** While the SAI API models this as a two-level lookup, implementations are likely to collapse the hierarchical lookup into a single lookup using a composite key (e.g., Prefix Aggregation ID + Forwarding Class) for efficiency.
+
+### SAI_TUNNEL_MAP_TYPE_FORWARDING_CLASS_TO_SRV6_VPN_SID
+
+#### Overview
+
+The `SAI_TUNNEL_MAP_TYPE_FORWARDING_CLASS_TO_SRV6_VPN_SID` tunnel map type implements the core SID Marking capability. It enables VPN SIDs to be marked with QoS information by selecting different VPN SIDs based on forwarding class. The marked VPN SID carries the QoS information end-to-end through the SRv6 network.
+
+#### Tunnel Map Entry Attributes
+
+```c
+typedef enum _sai_tunnel_map_entry_attr_t
+{
+    // ...
+    // <snip>
+    // ...
+
+    /**
+     * @brief Forwarding Class key
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_FORWARDING_CLASS_TO_SRV6_VPN_SID
+     */
+    SAI_TUNNEL_MAP_ENTRY_ATTR_FORWARDING_CLASS_KEY = 0x00000013,
+
+    /**
+     * @brief SRv6 VPN SID value
+     *
+     * @type sai_ip6_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_FORWARDING_CLASS_TO_SRV6_VPN_SID
+     */
+    SAI_TUNNEL_MAP_ENTRY_ATTR_SRV6_VPN_SID_VALUE = 0x00000011,
+
+    // ...
+    // <snip>
+    // ...
+} sai_tunnel_map_entry_attr_t;
+```
+
+### SAI_TUNNEL_MAP_TYPE_PREFIX_AGG_ID_TO_TUNNEL_MAP_ID
+
+#### Overview
+
+The `SAI_TUNNEL_MAP_TYPE_PREFIX_AGG_ID_TO_TUNNEL_MAP_ID` tunnel map type enables hierarchical, two-level lookup for VPN SID selection. The first level maps a prefix aggregation ID to a second tunnel map, which then maps forwarding class to VPN SID. This allows combining prefix-based routing with QoS-aware SID Marking.
+
+#### Tunnel Map Entry Attributes
+
+```c
+typedef enum _sai_tunnel_map_entry_attr_t
+{
+    // ...
+    // <snip>
+    // ...
+
+    /**
+     * @brief Prefix Aggregation ID key
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_PREFIX_AGG_ID_TO_TUNNEL_MAP_ID
+     */
+    SAI_TUNNEL_MAP_ENTRY_ATTR_PREFIX_AGG_ID_KEY = 0x00000010,
+
+    /**
+     * @brief Tunnel Map ID value
+     *
+     * @type sai_object_id_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @objects SAI_OBJECT_TYPE_TUNNEL_MAP
+     * @condition SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE == SAI_TUNNEL_MAP_TYPE_PREFIX_AGG_ID_TO_TUNNEL_MAP_ID
+     */
+    SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_ID_VALUE = 0x00000012,
+
+    // ...
+    // <snip>
+    // ...
+} sai_tunnel_map_entry_attr_t;
+```
+
+### SID Marking Programming Example
+
+The following example demonstrates SID Marking where traffic uses different VPN SIDs based on forwarding class.
+
+```c
+    // 1. Create QoS Map to derive forwarding class from DSCP (on ingress port)
+    //    This step configures SAI_QOS_MAP_TYPE_DSCP_TO_FORWARDING_CLASS
+    //    (QoS map creation omitted for brevity)
+
+    // 2. Create the tunnel map (Forwarding Class -> VPN SID)
+    tunnel_map_attrs[0].id = SAI_TUNNEL_MAP_ATTR_TYPE;
+    tunnel_map_attrs[0].value.s32 = SAI_TUNNEL_MAP_TYPE_FORWARDING_CLASS_TO_SRV6_VPN_SID;
+    saistatus = sai_tunnel_api->create_tunnel_map(&fc_to_sid_map, switch_id, 1, tunnel_map_attrs);
+
+    // 2.1 Create tunnel map entries for each forwarding class
+    // Forwarding Class 0x0 -> VPN SID
+    tunnel_map_entry_attrs[0].id = SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE;
+    tunnel_map_entry_attrs[0].value.s32 = SAI_TUNNEL_MAP_TYPE_FORWARDING_CLASS_TO_SRV6_VPN_SID;
+    tunnel_map_entry_attrs[1].id = SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP;
+    tunnel_map_entry_attrs[1].value.oid = fc_to_sid_map;
+    tunnel_map_entry_attrs[2].id = SAI_TUNNEL_MAP_ENTRY_ATTR_FORWARDING_CLASS_KEY;
+    tunnel_map_entry_attrs[2].value.u32 = 0x0;
+    tunnel_map_entry_attrs[3].id = SAI_TUNNEL_MAP_ENTRY_ATTR_SRV6_VPN_SID_VALUE;
+    CONVERT_STR_TO_IPV6(tunnel_map_entry_attrs[3].value.ip6, "fd00:205:2007:fff0:30::");
+    saistatus = sai_tunnel_api->create_tunnel_map_entry(&fc0_entry, switch_id, 4, tunnel_map_entry_attrs);
+
+    // Forwarding Class 0x8 -> VPN SID
+    tunnel_map_entry_attrs[2].value.u32 = 0x8;
+    CONVERT_STR_TO_IPV6(tunnel_map_entry_attrs[3].value.ip6, "fd00:205:2007:fff0:38::");
+    saistatus = sai_tunnel_api->create_tunnel_map_entry(&fc8_entry, switch_id, 4, tunnel_map_entry_attrs);
+
+    // Forwarding Class 0xf -> VPN SID
+    tunnel_map_entry_attrs[2].value.u32 = 0xf;
+    CONVERT_STR_TO_IPV6(tunnel_map_entry_attrs[3].value.ip6, "fd00:205:2007:fff0:3f::");
+    saistatus = sai_tunnel_api->create_tunnel_map_entry(&fcf_entry, switch_id, 4, tunnel_map_entry_attrs);
+
+    // 3. Create SRv6 tunnel with the FC->SID encap mapper
+    tunnel_entry_attrs[0].id = SAI_TUNNEL_ATTR_TYPE;
+    tunnel_entry_attrs[0].value.s32 = SAI_TUNNEL_TYPE_SRV6;
+    tunnel_entry_attrs[1].id = SAI_TUNNEL_ATTR_ENCAP_SRC_IP;
+    CONVERT_STR_TO_IPV6(tunnel_entry_attrs[1].value.ip6, "fd00:205:2007::1");
+    tunnel_entry_attrs[2].id = SAI_TUNNEL_ATTR_UNDERLAY_INTERFACE;
+    tunnel_entry_attrs[2].value.oid = underlay_rif;
+    tunnel_entry_attrs[3].id = SAI_TUNNEL_ATTR_ENCAP_MAPPERS;
+    tunnel_entry_attrs[3].value.objlist.count = 1;
+    tunnel_entry_attrs[3].value.objlist.list[0] = fc_to_sid_map;
+    tunnel_entry_attrs[4].id = SAI_TUNNEL_ATTR_PEER_MODE;
+    tunnel_entry_attrs[4].value.s32 = SAI_TUNNEL_PEER_MODE_P2P;
+    tunnel_entry_attrs[5].id = SAI_TUNNEL_ATTR_ENCAP_DST_IP;
+    CONVERT_STR_TO_IPV6(tunnel_entry_attrs[5].value.ip6, "fd00:205:2007::21");
+    saistatus = sai_tunnel_api->create_tunnel(&srv6_tunnel_id, switch_id, 6, tunnel_entry_attrs);
+
+    // 4. Create SRv6 nexthop and route
+    // (Similar to existing VPN programming, see earlier examples)
+```
+
+### Hierarchical SID Marking Programming Example
+
+The following example demonstrates hierarchical SID Marking where a prefix aggregation ID maps to a tunnel map, which then maps forwarding class to VPN SID.
+
+```c
+    // 1. Create QoS Map to derive forwarding class from DSCP (on ingress port)
+    //    This step configures SAI_QOS_MAP_TYPE_DSCP_TO_FORWARDING_CLASS
+    //    (QoS map creation omitted for brevity)
+
+    // 2. Create the inner tunnel map (Forwarding Class -> VPN SID)
+    tunnel_map_attrs[0].id = SAI_TUNNEL_MAP_ATTR_TYPE;
+    tunnel_map_attrs[0].value.s32 = SAI_TUNNEL_MAP_TYPE_FORWARDING_CLASS_TO_SRV6_VPN_SID;
+    saistatus = sai_tunnel_api->create_tunnel_map(&fc_to_sid_map, switch_id, 1, tunnel_map_attrs);
+
+    // 2.1 Create tunnel map entries for each forwarding class
+    // Forwarding Class 0x0 -> VPN SID
+    tunnel_map_entry_attrs[0].id = SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE;
+    tunnel_map_entry_attrs[0].value.s32 = SAI_TUNNEL_MAP_TYPE_FORWARDING_CLASS_TO_SRV6_VPN_SID;
+    tunnel_map_entry_attrs[1].id = SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP;
+    tunnel_map_entry_attrs[1].value.oid = fc_to_sid_map;
+    tunnel_map_entry_attrs[2].id = SAI_TUNNEL_MAP_ENTRY_ATTR_FORWARDING_CLASS_KEY;
+    tunnel_map_entry_attrs[2].value.u32 = 0x0;
+    tunnel_map_entry_attrs[3].id = SAI_TUNNEL_MAP_ENTRY_ATTR_SRV6_VPN_SID_VALUE;
+    CONVERT_STR_TO_IPV6(tunnel_map_entry_attrs[3].value.ip6, "fd00:205:2007:fff0:30::");
+    saistatus = sai_tunnel_api->create_tunnel_map_entry(&fc0_entry, switch_id, 4, tunnel_map_entry_attrs);
+
+    // Forwarding Class 0x8 -> VPN SID
+    tunnel_map_entry_attrs[2].value.u32 = 0x8;
+    CONVERT_STR_TO_IPV6(tunnel_map_entry_attrs[3].value.ip6, "fd00:205:2007:fff0:38::");
+    saistatus = sai_tunnel_api->create_tunnel_map_entry(&fc8_entry, switch_id, 4, tunnel_map_entry_attrs);
+
+    // Forwarding Class 0xf -> VPN SID
+    tunnel_map_entry_attrs[2].value.u32 = 0xf;
+    CONVERT_STR_TO_IPV6(tunnel_map_entry_attrs[3].value.ip6, "fd00:205:2007:fff0:3f::");
+    saistatus = sai_tunnel_api->create_tunnel_map_entry(&fcf_entry, switch_id, 4, tunnel_map_entry_attrs);
+
+    // 3. Create the outer tunnel map (Prefix Aggregation ID -> Tunnel Map)
+    tunnel_map_attrs[0].id = SAI_TUNNEL_MAP_ATTR_TYPE;
+    tunnel_map_attrs[0].value.s32 = SAI_TUNNEL_MAP_TYPE_PREFIX_AGG_ID_TO_TUNNEL_MAP_ID;
+    saistatus = sai_tunnel_api->create_tunnel_map(&prefix_to_map, switch_id, 1, tunnel_map_attrs);
+
+    // 3.1 Create entry mapping prefix aggregation ID 10 to the FC->SID map
+    tunnel_map_entry_attrs[0].id = SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_TYPE;
+    tunnel_map_entry_attrs[0].value.s32 = SAI_TUNNEL_MAP_TYPE_PREFIX_AGG_ID_TO_TUNNEL_MAP_ID;
+    tunnel_map_entry_attrs[1].id = SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP;
+    tunnel_map_entry_attrs[1].value.oid = prefix_to_map;
+    tunnel_map_entry_attrs[2].id = SAI_TUNNEL_MAP_ENTRY_ATTR_PREFIX_AGG_ID_KEY;
+    tunnel_map_entry_attrs[2].value.u32 = 10;  // Prefix Aggregation ID
+    tunnel_map_entry_attrs[3].id = SAI_TUNNEL_MAP_ENTRY_ATTR_TUNNEL_MAP_ID_VALUE;
+    tunnel_map_entry_attrs[3].value.oid = fc_to_sid_map;  // Points to FC->SID map
+    saistatus = sai_tunnel_api->create_tunnel_map_entry(&prefix_entry, switch_id, 4, tunnel_map_entry_attrs);
+
+    // 4. Create SRv6 tunnel with the hierarchical encap mapper
+    tunnel_entry_attrs[0].id = SAI_TUNNEL_ATTR_TYPE;
+    tunnel_entry_attrs[0].value.s32 = SAI_TUNNEL_TYPE_SRV6;
+    tunnel_entry_attrs[1].id = SAI_TUNNEL_ATTR_ENCAP_SRC_IP;
+    CONVERT_STR_TO_IPV6(tunnel_entry_attrs[1].value.ip6, "fd00:205:2007::1");
+    tunnel_entry_attrs[2].id = SAI_TUNNEL_ATTR_UNDERLAY_INTERFACE;
+    tunnel_entry_attrs[2].value.oid = underlay_rif;
+    tunnel_entry_attrs[3].id = SAI_TUNNEL_ATTR_ENCAP_MAPPERS;
+    tunnel_entry_attrs[3].value.objlist.count = 1;
+    tunnel_entry_attrs[3].value.objlist.list[0] = prefix_to_map;  // Outer map
+    tunnel_entry_attrs[4].id = SAI_TUNNEL_ATTR_PEER_MODE;
+    tunnel_entry_attrs[4].value.s32 = SAI_TUNNEL_PEER_MODE_P2P;
+    tunnel_entry_attrs[5].id = SAI_TUNNEL_ATTR_ENCAP_DST_IP;
+    CONVERT_STR_TO_IPV6(tunnel_entry_attrs[5].value.ip6, "fd00:205:2007::21");
+    saistatus = sai_tunnel_api->create_tunnel(&srv6_tunnel_id, switch_id, 6, tunnel_entry_attrs);
+
+    // 5. Create SRv6 nexthop and route with prefix aggregation ID
+    // Route entry must include SAI_ROUTE_ENTRY_ATTR_PREFIX_AGG_ID = 10
+    // (Similar to existing VPN programming, see earlier examples)
+```
+
 ## References
 1. [IPv6 Segment Routing Header (SRH)](https://tools.ietf.org/html/rfc8754)
 2. [Segment Routing over IPv6 (SRv6) Network Programming](https://tools.ietf.org/html/rfc8986)
