@@ -152,6 +152,12 @@ typedef enum _sai_flow_bulk_get_session_event_t
  */
 typedef struct _sai_flow_bulk_get_session_event_data_t
 {
+    /** Flow entry */
+    sai_flow_entry_t flow_entry;
+
+    /** Attributes count */
+    uint32_t attr_count;
+
     /**
      * @brief Event type
      *
@@ -159,6 +165,13 @@ typedef struct _sai_flow_bulk_get_session_event_data_t
      * If event_type is SAI_FLOW_BULK_GET_SESSION_EVENT_FLOW_ENTRY, attr is not NULL.
      */
     sai_flow_bulk_get_session_event_t event_type;
+
+    /**
+     * @brief Attributes
+     *
+     * @objects SAI_OBJECT_TYPE_FLOW_ENTRY
+     */
+    sai_attribute_t *attr;
 
 } sai_flow_bulk_get_session_event_data_t;
 
