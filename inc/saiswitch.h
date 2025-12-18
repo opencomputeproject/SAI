@@ -214,6 +214,12 @@ typedef enum _sai_hash_algorithm_t
     /** Round-robin based hash algorithm (per-packet round-robin spraying) */
     SAI_HASH_ALGORITHM_ROUND_ROBIN = 8,
 
+    /** Lower 16 bits of Jenkins hash algorithm */
+    SAI_HASH_ALGORITHM_JENKINS_LO = 9,
+
+    /** Upper 16 bits of Jenkins hash algorithm */
+    SAI_HASH_ALGORITHM_JENKINS_HI = 10,
+
 } sai_hash_algorithm_t;
 
 /**
