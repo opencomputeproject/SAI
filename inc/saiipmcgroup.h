@@ -248,6 +248,10 @@ typedef struct _sai_ipmc_group_api_t
     sai_remove_ipmc_group_member_fn             remove_ipmc_group_member;
     sai_set_ipmc_group_member_attribute_fn      set_ipmc_group_member_attribute;
     sai_get_ipmc_group_member_attribute_fn      get_ipmc_group_member_attribute;
+    sai_bulk_object_create_fn                   create_ipmc_groups;
+    sai_bulk_object_remove_fn                   remove_ipmc_groups;
+    sai_bulk_object_set_attribute_fn            set_ipmc_groups_attribute;
+    sai_bulk_object_get_attribute_fn            get_ipmc_groups_attribute;
 
 } sai_ipmc_group_api_t;
 
