@@ -100,6 +100,13 @@ typedef enum _sai_object_type_extensions_t
 
     SAI_OBJECT_TYPE_ENI_TRUSTED_VNI_ENTRY,
 
+    /**
+     * @brief OTN Extensions
+     */
+    SAI_OBJECT_TYPE_OTN_ATTENUATOR,
+
+    SAI_OBJECT_TYPE_OTN_OA,
+
     /* Add new experimental object types above this line */
 
     SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END

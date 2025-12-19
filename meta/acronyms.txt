@@ -108,7 +108,10 @@ NRZ - Non Return to Zero
 NTPCLIENT - Network Time Protocol Client
 NTPSERVER - Network Time Protocol Server
 NVGRE - Network Virtualization using Generic Routing Encapsulation
+OA - Optical Amplifier
 OAM - Operations Administration and Maintenance
+ORL - Optical Return Loss
+OTN - Optical Transport Network
 OUI - Organizationally Unique Identifier
 P4RT - Programming Protocol-independent Packet Processors Runtime
 PAM4 - Pulse Amplitude Modulation 4-level
