@@ -379,6 +379,12 @@ typedef struct _sai_u16_range_list_t
     sai_u16_range_t *list;
 } sai_u16_range_list_t;
 
+typedef struct _sai_u32_range_list_t
+{
+    uint32_t count;
+    sai_u32_range_t *list;
+} sai_u32_range_list_t;
+
 /**
  * @brief Defines a vlan list data structure
  */
@@ -1778,6 +1784,8 @@ typedef union _sai_attribute_value_t
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PRBS_PER_LANE_BIT_ERROR_RATE_LIST */
     sai_prbs_per_lane_bit_error_rate_list_t prbs_ber_list;
 
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_UINT32_RANGE_LIST */
+    sai_u32_range_list_t u32rangelist;
 } sai_attribute_value_t;
 
 /**

@@ -529,7 +529,12 @@ typedef enum _sai_attr_value_type_t
     /**
      * @brief Attribute value is port SerDes tap values list.
      */
-    SAI_ATTR_VALUE_TYPE_TAPS_LIST
+    SAI_ATTR_VALUE_TYPE_TAPS_LIST,
+
+    /**
+     * @brief Attribute value is 32 bit unsigned integer range list.
+     */
+    SAI_ATTR_VALUE_TYPE_UINT32_RANGE_LIST,
 } sai_attr_value_type_t;
 
 /**
