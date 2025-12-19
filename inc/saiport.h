@@ -2787,6 +2787,18 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PRBS_PER_LANE_BER_LIST,
 
     /**
+     * @brief Link up debounce time in microseconds
+     *
+     * 0 means no delay time so link up events are immediately delivered as usual
+     * This attribute overrides the switch level debounce configuration
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_ATTR_LINK_UP_DEBOUNCE_TIMEOUT,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
