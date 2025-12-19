@@ -3548,6 +3548,19 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MAX_CSIG_TIMERS,
 
     /**
+     * @brief TAM INT bind point
+     *
+     * Bind (or unbind) the TAM INT object.
+     * SAI_NULL_OBJECT_ID in the attribute value.
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM_INT
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_TAM_INT_OBJECT_ID,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
