@@ -78,6 +78,10 @@ struct sai_thrift_attr_capability_t {
 
 [%- BLOCK define_api_structs -%]
             [%- FOREACH struct IN apis.$api.structs %]
+                [%- # Workaround for C++ Thrift generator: structs that embed entry types by-value must be emitted after those entry structs are defined. -%]
+                [%- IF api == 'common' AND struct.thrift_name == 'sai_thrift_flow_bulk_get_session_event_data_t' -%]
+                    [%- NEXT -%]
+                [%- END -%]
                 [%- PROCESS struct_declaration %]
 
             [%- END %]
@@ -126,6 +130,13 @@ struct [% struct.thrift_name %] {
             [%- PROCESS define_api_structs %]
         [%- END -%]
     [%- END %]
+
+// common types (late-emitted to satisfy type dependencies)
+[% FOREACH struct IN apis.common.structs %]
+[% IF struct.thrift_name == 'sai_thrift_flow_bulk_get_session_event_data_t' %]
+[% PROCESS struct_declaration %]
+[% END %]
+[% END %]
 
     [%- PROCESS define_attribute_list -%]
 [% END -%]
