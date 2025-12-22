@@ -82,6 +82,7 @@
 #include "saipoe.h"
 #include "saiicmpecho.h"
 #include "saisynce.h"
+#include "saitc.h"
 
 /**
  * @defgroup SAI SAI - Entry point specific API definitions.
@@ -153,6 +154,7 @@ typedef enum _sai_api_t
     SAI_API_ICMP_ECHO        = 52, /**< sai_icmp_echo_api_t */
     SAI_API_PREFIX_COMPRESSION = 53, /**< sai_prefix_compression_api_t */
     SAI_API_SYNCE            = 54, /**< sai_synce_api_t */
+    SAI_API_TC               = 55, /**< sai_tc_api_t */
     SAI_API_MAX,                   /**< total number of APIs */
 
     /**

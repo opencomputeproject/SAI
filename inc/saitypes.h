@@ -302,6 +302,7 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_PREFIX_COMPRESSION_TABLE = 112,
     SAI_OBJECT_TYPE_PREFIX_COMPRESSION_ENTRY = 113,
     SAI_OBJECT_TYPE_SYNCE_CLOCK              = 114,
+    SAI_OBJECT_TYPE_TC                       = 115,
 
     /** Must remain in last position */
     SAI_OBJECT_TYPE_MAX,
@@ -1051,6 +1052,9 @@ typedef enum _sai_tam_bind_point_type_t
 
     /** Bind Point Type Buffer Service Pool */
     SAI_TAM_BIND_POINT_TYPE_BSP,
+
+    /** Bind Point Type Traffic Class */
+    SAI_TAM_BIND_POINT_TYPE_TC,
 
 } sai_tam_bind_point_type_t;
 
