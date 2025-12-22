@@ -1,4 +1,5 @@
 # this file defines acronyms, one acronym per line
+ACK - Acknowledgement
 ACL - Access Control List
 AES - Advanced Encryption Standard
 AN - Association Number
@@ -91,6 +92,7 @@ L2MC - Layer 2 Multi Cast
 L3 - Layer 3
 LAG - Link Aggregation Group
 LDP - Label Distribution Protocol
+LLR - Link Layer Retry
 LPM - Longest Prefix Match
 LSP - Label Switched Path
 MAC - Medium Access Control
@@ -100,6 +102,7 @@ MILLI - milli (1/1000)
 MMU - Memory Management Unit
 MPLS - Multi Protocol Label Switching
 MTU - Maximum Transmission Unit
+NACK - Negative Acknowledgement
 NAPT - Network Address Port Translation
 NHLFE - Next Hop Label Forwarding Entry
 NMOS - N-channel Metal Oxide Semiconductor
