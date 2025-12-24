@@ -375,6 +375,25 @@ typedef enum _sai_macsec_port_post_status_t
 } sai_macsec_port_post_status_t;
 
 /**
+ * @brief Attribute Data for MACsec Secure Policy
+ */
+typedef enum _sai_macsec_port_secure_policy_t
+{
+    /**
+     * @brief Must Secure Policy: Traffic will need to be dropped till
+     * the encryption keys are in place.
+     */
+    SAI_MACSEC_PORT_SECURE_POLICY_MUST_SECURE,
+
+    /**
+     * @brief Should Secure Policy: Traffic is exchanged in clear
+     * till the encryption keys are in place.
+     */
+    SAI_MACSEC_PORT_SECURE_POLICY_SHOULD_SECURE,
+
+} sai_macsec_port_secure_policy_t;
+
+/**
  * @brief Attribute Id for sai_macsec_port
  */
 typedef enum _sai_macsec_port_attr_t
@@ -461,6 +480,17 @@ typedef enum _sai_macsec_port_attr_t
      * @flags READ_ONLY
      */
     SAI_MACSEC_PORT_ATTR_POST_STATUS,
+
+    /**
+     * @brief Secure policy for MACSEC port
+     *
+     * Attribute to set the type of secure policy for a MACSEC port
+     *
+     * @type sai_macsec_port_secure_policy_t
+     * @flags CREATE_AND_SET
+     * @default SAI_MACSEC_PORT_SECURE_POLICY_MUST_SECURE
+     */
+    SAI_MACSEC_PORT_ATTR_SECURE_POLICY,
 
     /**
      * @brief End of MACsec Port attributes
@@ -804,6 +834,35 @@ typedef enum _sai_macsec_sc_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_MACSEC_SC_ATTR_MACSEC_PORT_ID,
+
+    /**
+     * @brief Confidentiality Offset for this Secure Channel
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_MACSEC_SC_ATTR_CONFIDENTIALITY_OFFSET,
+
+    /**
+     * @brief End Station bit in the Tag Control Information field of SecTAG
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_MACSEC_SC_ATTR_MACSEC_DIRECTION == SAI_MACSEC_DIRECTION_EGRESS
+     */
+    SAI_MACSEC_SC_ATTR_USE_ES,
+
+    /**
+     * @brief Single Copy Broadcast bit in the Tag Control Information field of SecTAG
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_MACSEC_SC_ATTR_MACSEC_DIRECTION == SAI_MACSEC_DIRECTION_EGRESS
+     */
+    SAI_MACSEC_SC_ATTR_USE_SCB,
 
     /**
      * @brief End of MACsec Secure Channel attributes
