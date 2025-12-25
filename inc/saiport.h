@@ -2799,6 +2799,18 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PORT_PG_PKT_DROP_STATUS,
 
     /**
+     * @brief One-way (From port to neighbor) link propagation delay in nanoseconds
+     *
+     * Device adds this value to PTP header correction-field along with residence time
+     * in Peer Delay Mechanism in Peer-to-Peer TC.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_ATTR_PTP_PEER_MEAN_PATH_DELAY,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,

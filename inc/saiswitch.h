@@ -3540,6 +3540,27 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_FAST_LINKUP_BER_THRESHOLD,
 
     /**
+     * @brief Corrected time as an offset from epoch applied by NOS on system
+     *        clock to sync with master clock()
+     *
+     * @type sai_timespec_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_PTP_TIME_OFFSET,
+
+    /**
+     * @brief Used by NOS to program the delta value that needs to be
+     *        added to existing clock frequency.
+     *        Unit is Parts Per Trillion
+     *
+     * @type sai_int32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_PTP_SYNTONIZE_ADJUST,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
