@@ -3658,6 +3658,70 @@ typedef enum _sai_port_stat_t
 } sai_port_stat_t;
 
 /**
+ * @brief Port interruption IDs in get_port_interrupts_status() call
+ */
+typedef enum _sai_port_interrupt_t
+{
+    /** PCS Rx FIFO Empty Interrupt */
+    SAI_PORT_INTERRUPT_PCS_RX_FIFO_EMPTY,
+
+    /** PCS Rx FIFO Full Interrupt */
+    SAI_PORT_INTERRUPT_PCS_RX_FIFO_FULL,
+
+    /** PCS Tx PPM FIFO Overflow Interrupt */
+    SAI_PORT_INTERRUPT_PCS_RX_FIFO_OVERFLOW,
+
+    /** PCS Tx PPM FIFO Underflow Interrupt */
+    SAI_PORT_INTERRUPT_PCS_RX_FIFO_UNDERFLOW,
+
+    /** PCS Tx PPM FIFO Overrun Interrupt */
+    SAI_PORT_INTERRUPT_PCS_TX_FIFO_OVERRUN,
+
+    /** Edge of the Local Fault Condition on Tx Path Interrupt */
+    SAI_PORT_INTERRUPT_PCS_RX_LOCAL_FAULT,
+
+    /** Edge of the Local Fault Condition on Rx Path Interrupt */
+    SAI_PORT_INTERRUPT_PCS_TX_LOCAL_FAULT,
+
+    /** Edge of the Remote Fault Condition on Tx Path Interrupt */
+    SAI_PORT_INTERRUPT_PCS_RX_REMOTE_FAULT,
+
+    /** Edge of the Remote Fault Condition on Rx Path Interrupt */
+    SAI_PORT_INTERRUPT_PCS_TX_REMOTE_FAULT,
+
+    /** Edge of the 4 Local Fault Condition on Tx Path Interrupt */
+    SAI_PORT_INTERRUPT_PCS_TX_4LOCAL_FAULT,
+
+    /** Edge of the 4 Remote Fault Condition on Tx Path Interrupt */
+    SAI_PORT_INTERRUPT_PCS_TX_4REMOTE_FAULT,
+
+    /** PCS Tx PPM FIFO Push back Interrupt */
+    SAI_PORT_INTERRUPT_PCS_TX_FIFO_PUSHBACK,
+
+    /** PCS Tx PPM FIFO Stop Write Interrupt */
+    SAI_PORT_INTERRUPT_PCS_TX_FIFO_STOPWRITE,
+
+    /** PCS Tx LPI Received Interrupt */
+    SAI_PORT_INTERRUPT_PCS_LPI_TX,
+
+    /** PCS Tx LPI Received Interrupt */
+    SAI_PORT_INTERRUPT_PCS_LPI_RX,
+
+    /** PCS Tx PPM FIFO Very High Water Interrupt */
+    SAI_PORT_INTERRUPT_PCS_VERY_HIGH,
+
+    /** High BER Change Interrupt */
+    SAI_PORT_INTERRUPT_HIGH_BER_CHANGE,
+
+    /** Packet CRC Check Error Interrupt */
+    SAI_PORT_INTERRUPT_PKT_CRC_ERROR,
+
+    /** Link Change Interrupt */
+    SAI_PORT_INTERRUPT_LINK_CHANGE,
+
+} sai_port_interrupt_t;
+
+/**
  * @brief Create port
  *
  * @param[out] port_id Port id
@@ -3766,6 +3830,24 @@ typedef sai_status_t (*sai_clear_port_stats_fn)(
  */
 typedef sai_status_t (*sai_clear_port_all_stats_fn)(
         _In_ sai_object_id_t port_id);
+
+/**
+ * @brief Get port interruptions status.
+ *
+ * This API is clear-on-read, the interruption status should be reset after the read.
+ *
+ * @param[in] port_id Port id
+ * @param[in] count Number of interruptions ids in the array
+ * @param[in] interrupt_ids Specifies the array of interrupts ids
+ * @param[out] stats Array of resulting interruptions status.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_port_interrupts_status_fn)(
+        _In_ sai_object_id_t port_id,
+        _In_ uint32_t count,
+        _In_ const sai_interrupt_id_t *interrupt_ids,
+        _Out_ bool *stats);
 
 /**
  * @brief Port state change notification
@@ -4690,6 +4772,7 @@ typedef struct _sai_port_api_t
     sai_get_port_stats_ext_fn              get_port_stats_ext;
     sai_clear_port_stats_fn                clear_port_stats;
     sai_clear_port_all_stats_fn            clear_port_all_stats;
+    sai_get_port_interrupts_status_fn      get_port_interrupts_status;
     sai_create_port_pool_fn                create_port_pool;
     sai_remove_port_pool_fn                remove_port_pool;
     sai_set_port_pool_attribute_fn         set_port_pool_attribute;
