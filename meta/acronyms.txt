@@ -120,6 +120,7 @@ OA - Optical Amplifier
 OAM - Operations Administration and Maintenance
 ORL - Optical Return Loss
 OTN - Optical Transport Network
+OCS - Optical Circuit Switch
 OUI - Organizationally Unique Identifier
 P4RT - Programming Protocol-independent Packet Processors Runtime
 PAM4 - Pulse Amplitude Modulation 4-level
