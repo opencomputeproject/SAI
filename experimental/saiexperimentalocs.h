@@ -20,12 +20,20 @@
  * @file    saiexperimentalocs.h
  *
  * @brief   This module defines SAI OCS
+ *
+ * @warning This module is a SAI experimental module
  */
 
 #if !defined (__SAIEXPERIMENTALOCS_H_)
 #define __SAIEXPERIMENTALOCS_H_
 
-#include <saitypes.h>
+#include <saitypesextensions.h>
+
+/**
+ * @defgroup SAIEXPERIMENTALOCS SAI - Experimental: OCS specific API definitions
+ *
+ * @{
+ */
 
 /**
  * @brief List of OCS cross connect attributes
@@ -450,4 +458,7 @@ typedef struct _sai_ocs_api_t
 
 } sai_ocs_api_t;
 
+/**
+ * @}
+ */
 #endif /** __SAIEXPERIMENTALOCS_H_ */
