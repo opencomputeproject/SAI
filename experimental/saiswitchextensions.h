@@ -27,6 +27,7 @@
 
 #include <saiswitch.h>
 #include <saitypesextensions.h>
+#include <saiexperimentaldashflow.h>
 
 /**
  * @brief DASH capability HA scope level
@@ -132,6 +133,65 @@ typedef void (*sai_ha_scope_event_notification_fn)(
         _In_ const sai_ha_scope_event_data_t *data);
 
 /**
+ * @brief Flow bulk get session event type
+ */
+typedef enum _sai_flow_bulk_get_session_event_t
+{
+    /** Bulk get session finished */
+    SAI_FLOW_BULK_GET_SESSION_EVENT_FINISHED,
+
+    /** Flow entry received */
+    SAI_FLOW_BULK_GET_SESSION_EVENT_FLOW_ENTRY,
+
+} sai_flow_bulk_get_session_event_t;
+
+/**
+ * @brief Notification data format received from SAI flow bulk get session callback
+ *
+ * @count attr[attr_count]
+ */
+typedef struct _sai_flow_bulk_get_session_event_data_t
+{
+    /** Flow entry */
+    sai_flow_entry_t flow_entry;
+
+    /** Attributes count */
+    uint32_t attr_count;
+
+    /**
+     * @brief Event type
+     *
+     * If event_type is SAI_FLOW_BULK_GET_SESSION_EVENT_FINISHED, attr is NULL, flow_entry is invalid.
+     * If event_type is SAI_FLOW_BULK_GET_SESSION_EVENT_FLOW_ENTRY, attr is not NULL.
+     */
+    sai_flow_bulk_get_session_event_t event_type;
+
+    /**
+     * @brief Attributes
+     *
+     * @objects SAI_OBJECT_TYPE_FLOW_ENTRY
+     */
+    sai_attribute_t *attr;
+
+} sai_flow_bulk_get_session_event_data_t;
+
+/**
+ * @brief Flow bulk get session event notification
+ *
+ * Passed as a parameter into sai_initialize_switch()
+ *
+ * @count data[count]
+ *
+ * @param[in] flow_bulk_session_id ID of the flow bulk session
+ * @param[in] count Number of notifications
+ * @param[in] data Array of flow bulk get session events
+ */
+typedef void (*sai_flow_bulk_get_session_event_notification_fn)(
+        _In_ sai_object_id_t flow_bulk_session_id,
+        _In_ uint32_t count,
+        _In_ const sai_flow_bulk_get_session_event_data_t *data);
+
+/**
  * @brief SAI switch attribute extensions.
  *
  * @flags free
@@ -190,6 +250,17 @@ typedef enum _sai_switch_attr_extensions_t
      * @default NULL
      */
     SAI_SWITCH_ATTR_HA_SCOPE_EVENT_NOTIFY,
+
+    /**
+     * @brief DASH flow bulk get session event notification
+     *
+     * Use sai_flow_bulk_get_session_event_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_flow_bulk_get_session_event_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_FLOW_BULK_GET_SESSION_EVENT_NOTIFY,
 
     SAI_SWITCH_ATTR_EXTENSIONS_RANGE_END
 

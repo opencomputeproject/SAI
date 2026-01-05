@@ -685,6 +685,31 @@ typedef enum _sai_port_path_tracing_timestamp_type_t
 } sai_port_path_tracing_timestamp_type_t;
 
 /**
+ * @brief Serdes Rx Error Correcting Decoder/Maximum Likelihood
+ * Sequence Estimation control state
+ */
+typedef enum _sai_port_serdes_rx_ecd_mlse_state_t
+{
+    /** Disable */
+    SAI_PORT_SERDES_RX_ECD_MLSE_STATE_DISABLE,
+    /** Enable */
+    SAI_PORT_SERDES_RX_ECD_MLSE_STATE_ENABLE
+
+} sai_port_serdes_rx_ecd_mlse_state_t;
+
+/**
+ * @brief Serdes polarity setting value
+ */
+typedef enum _sai_port_serdes_polarity_t
+{
+    /** Normal polarity */
+    SAI_PORT_SERDES_POLARITY_NORMAL,
+    /** Inverted polarity */
+    SAI_PORT_SERDES_POLARITY_INVERTED
+
+} sai_port_serdes_polarity_t;
+
+/**
  * @brief Attribute Id in sai_set_port_attribute() and
  * sai_get_port_attribute() calls
  */
@@ -2688,6 +2713,92 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PAM4_EYE_VALUES,
 
     /**
+     * @brief Enables the fast link-up for a port on port/link recovery. Vendors can use to reduce linkup time on remote link failure
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_FAST_LINKUP_ENABLED,
+
+    /**
+     * @brief Get port SerDes firmware revision
+     *
+     * Standard attribute to collect port SerDes firmware rev.
+     *
+     * @type sai_s8_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_SERDES_FW_REVISION,
+
+    /**
+     * @brief Per Lane PRBS Lock Status
+     *
+     * Per lane list of lock status for PRBS.
+     * The values are of type sai_port_lane_latch_status_list where the count is the number of lanes in
+     * a port and the list specifies list of lane id and lock status for each lane
+     * Lock status will have both lock status and changed status.
+     *
+     * @type sai_port_lane_latch_status_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PRBS_PER_LANE_LOCK_STATUS_LIST,
+
+    /**
+     * @brief Per Lane PRBS Rx Status
+     *
+     * Per lane list of Rx status for PRBS.
+     * The values are of type sai_prbs_per_lane_rx_status_list_t where the count is the number of lanes in
+     * a port and the list specifies list of values of type sai_port_prbs_rx_status_t and the lane id
+     * for each lane.
+     *
+     * @type sai_prbs_per_lane_rx_status_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PRBS_PER_LANE_RX_STATUS_LIST,
+
+    /**
+     * @brief Per Lane PRBS Rx State
+     *
+     * Per lane list of Rx state for PRBS.
+     * The values are of type sai_prbs_per_lane_rx_state_list_t where the count is the number
+     * of lanes in a port and the list specifies list of values of type sai_prbs_rx_state_t
+     * for each lane and its lane id.
+     * Used for clear on read status/count register.
+     * Adapter should return SAI_STATUS_NOT_SUPPORTED if not supported.
+     *
+     * @type sai_prbs_per_lane_rx_state_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PRBS_PER_LANE_RX_STATE_LIST,
+
+    /**
+     * @brief Per Lane PRBS Bit Error Rate (BER)
+     *
+     * Per lane list of PRBS Bit Error Rate (BER).
+     * The values are of type sai_prbs_per_lane_bit_error_rate_list_t where the count is the number
+     * of lanes in a port and the list specifies list of values of type sai_prbs_bit_error_rate_t
+     * and lane id for each lane.
+     * BER will be (error count/bits transmitted) = BER.mantissa * (10^-BER.exponent)
+     *
+     * @type sai_prbs_per_lane_bit_error_rate_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PRBS_PER_LANE_BER_LIST,
+
+    /**
+     * @brief Packet drop status for all PGs of a port.
+     *
+     * The key is the PG index and the status value (clear-on-read) for each PG
+     * is from {0, 1}, where 0 indicates no drops were observed and 1 indicates
+     * packet drops.
+     *
+     * @type sai_map_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PORT_PG_PKT_DROP_STATUS,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
@@ -3368,6 +3479,12 @@ typedef enum _sai_port_stat_t
     /** Packets trimmed due to failed shared buffer admission [uint64_t] */
     SAI_PORT_STAT_TRIM_PACKETS,
 
+    /** Packets trimmed but dropped due to failed shared buffer admission on a trim queue */
+    SAI_PORT_STAT_DROPPED_TRIM_PACKETS,
+
+    /** Packets trimmed and successfully transmitted on port */
+    SAI_PORT_STAT_TX_TRIM_PACKETS,
+
     /** Port stat in drop reasons range start */
     SAI_PORT_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,
 
@@ -3475,6 +3592,60 @@ typedef enum _sai_port_stat_t
 
     /** SAI port stat ether out pkts 9001 to 16383 octets */
     SAI_PORT_STAT_ETHER_OUT_PKTS_9001_TO_16383_OCTETS,
+
+    /** Per Lane PRBS Error Count Range Start */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_RANGE_BASE = 0x00004000,
+
+    /** Per Lane PRBS Error Count For lane in index 0 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_0 = SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_RANGE_BASE,
+
+    /** Per Lane PRBS Error Count For lane in index 1 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_1,
+
+    /** Per Lane PRBS Error Count For lane in index 2 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_2,
+
+    /** Per Lane PRBS Error Count For lane in index 3 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_3,
+
+    /** Per Lane PRBS Error Count For lane in index 4 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_4,
+
+    /** Per Lane PRBS Error Count For lane in index 5 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_5,
+
+    /** Per Lane PRBS Error Count For lane in index 6 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_6,
+
+    /** Per Lane PRBS Error Count For lane in index 7 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_7,
+
+    /** Per Lane PRBS Error Count For lane in index 8 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_8,
+
+    /** Per Lane PRBS Error Count For lane in index 9 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_9,
+
+    /** Per Lane PRBS Error Count For lane in index 10 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_10,
+
+    /** Per Lane PRBS Error Count For lane in index 11 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_11,
+
+    /** Per Lane PRBS Error Count For lane in index 12 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_12,
+
+    /** Per Lane PRBS Error Count For lane in index 13 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_13,
+
+    /** Per Lane PRBS Error Count For lane in index 14 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_14,
+
+    /** Per Lane PRBS Error Count For lane in index 15 */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_15,
+
+    /** Per Lane PRBS Error Count Range End */
+    SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_RANGE_END = 0x00004fff,
 
     /** Port stat range end */
     SAI_PORT_STAT_END,
@@ -3934,7 +4105,7 @@ typedef enum _sai_port_serdes_attr_t
     /**
      * @brief Port serdes control TX FIR PRE1 filter
      *
-     * List of port serdes TX fir precursor1 tap-filter values.
+     * List of port serdes TX FIR precursor1 tap-filter values.
      * The values are of type sai_s32_list_t where the count is number lanes in
      * a port and the list specifies list of values to be applied to each lane.
      *
@@ -3947,7 +4118,7 @@ typedef enum _sai_port_serdes_attr_t
     /**
      * @brief Port serdes control TX FIR PRE2 filter
      *
-     * List of port serdes TX fir precursor2 tap-filter values.
+     * List of port serdes TX FIR precursor2 tap-filter values.
      * The values are of type sai_s32_list_t where the count is number lanes in
      * a port and the list specifies list of values to be applied to each lane.
      *
@@ -3960,7 +4131,7 @@ typedef enum _sai_port_serdes_attr_t
     /**
      * @brief Port serdes control TX FIR PRE3 filter
      *
-     * List of port serdes TX fir precursor3 tap-filter values.
+     * List of port serdes TX FIR precursor3 tap-filter values.
      * The values are of type sai_s32_list_t where the count is number lanes in
      * a port and the list specifies list of values to be applied to each lane.
      *
@@ -3973,7 +4144,7 @@ typedef enum _sai_port_serdes_attr_t
     /**
      * @brief Port serdes control TX FIR MAIN filter
      *
-     * List of port serdes TX fir maincursor tap-filter values.
+     * List of port serdes TX FIR maincursor tap-filter values.
      * The values are of type sai_s32_list_t where the count is number lanes in
      * a port and the list specifies list of values to be applied to each lane.
      *
@@ -3986,7 +4157,7 @@ typedef enum _sai_port_serdes_attr_t
     /**
      * @brief Port serdes control TX FIR POST1 filter
      *
-     * List of port serdes TX fir postcursor1 tap-filter values.
+     * List of port serdes TX FIR postcursor1 tap-filter values.
      * The values are of type sai_s32_list_t where the count is number lanes in
      * a port and the list specifies list of values to be applied to each lane.
      *
@@ -3999,7 +4170,7 @@ typedef enum _sai_port_serdes_attr_t
     /**
      * @brief Port serdes control TX FIR POST2 filter
      *
-     * List of port serdes TX fir postcursor2 tap-filter values.
+     * List of port serdes TX FIR postcursor2 tap-filter values.
      * The values are of type sai_s32_list_t where the count is number lanes in
      * a port and the list specifies list of values to be applied to each lane.
      *
@@ -4012,7 +4183,7 @@ typedef enum _sai_port_serdes_attr_t
     /**
      * @brief Port serdes control TX FIR POST3 filter
      *
-     * List of port serdes TX fir postcursor3 tap-filter values.
+     * List of port serdes TX FIR postcursor3 tap-filter values.
      * The values are of type sai_s32_list_t where the count is number lanes in
      * a port and the list specifies list of values to be applied to each lane.
      *
@@ -4025,7 +4196,7 @@ typedef enum _sai_port_serdes_attr_t
     /**
      * @brief Port serdes control TX FIR attenuation
      *
-     * List of port serdes TX fir attn values.
+     * List of port serdes TX FIR attn values.
      * The values are of type sai_s32_list_t where the count is number lanes in
      * a port and the list specifies list of values to be applied to each lane.
      *
@@ -4177,6 +4348,144 @@ typedef enum _sai_port_serdes_attr_t
      * @default internal
      */
     SAI_PORT_SERDES_ATTR_CUSTOM_COLLECTION,
+
+    /**
+     * @brief Port serdes Tx upper eye non linear compensation percentage value
+     *
+     * List of port serdes Tx upper eye non linear compensation percentage value
+     * The values are of type sai_u32_list_t where the count is number of lanes
+     * in a port and the list specifies list of values to be applied to each
+     * lane.
+     *
+     * @type sai_u32_list_t
+     * @flags CREATE_AND_SET
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_NLC_PERCENTAGE,
+
+    /**
+     * @brief Port serdes Tx lower eye non linear compensation percentage value
+     *
+     * List of port serdes Tx lower eye non linear compensation percentage value
+     * The values are of type sai_u32_list_t where the count is number of lanes
+     * in a port and the list specifies list of values to be applied to each
+     * lane.
+     *
+     * @type sai_u32_list_t
+     * @flags CREATE_AND_SET
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_NLC_LOWER_EYE_PERCENTAGE,
+
+    /**
+     * @brief Port serdes Rx Error Correcting Decoder/Maximum Likelihood
+     * Sequence Estimation control
+     *
+     * To enable/disable Rx ECD for a port with back plane media type.
+     *
+     * @type sai_s32_list_t sai_port_serdes_rx_ecd_mlse_state_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_PORT_SERDES_ATTR_RX_ECD_MLSE_STATE,
+
+    /**
+     * @brief Port serdes control for inverted TX polarity setting
+     *
+     * TX polarity setting value
+     * The values are of type sai_s32_list_t where the count is number of lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     * This extension is added to support both create and set operations.
+     *
+     * @type sai_s32_list_t sai_port_serdes_polarity_t
+     * @flags CREATE_AND_SET
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_POLARITY,
+
+    /**
+     * @brief Port serdes control for inverted RX polarity setting
+     *
+     * RX polarity setting value
+     * The values are of type sai_s32_list_t where the count is number of lanes in
+     * a port and the list specifies list of values to be applied to each lane.
+     * This extension is added to support both create and set operations.
+     *
+     * @type sai_s32_list_t sai_port_serdes_polarity_t
+     * @flags CREATE_AND_SET
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_RX_POLARITY,
+
+    /**
+     * @brief Total number of RX FFE taps supported
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_SERDES_ATTR_RX_FFE_COUNT,
+
+    /**
+     * @brief Total number of TX FIR taps supported
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_SERDES_ATTR_TX_FIR_COUNT,
+
+    /**
+     * @brief Total number of RX DFE taps supported
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_SERDES_ATTR_RX_DFE_COUNT,
+
+    /**
+     * @brief Port serdes RX FFE taps
+     *
+     * List of port serdes RX FFE tap values
+     *
+     * @type sai_taps_list_t
+     * @flags CREATE_AND_SET
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_RX_FFE_TAPS_LIST,
+
+    /**
+     * @brief Port serdes TX FIR taps
+     *
+     * List of port serdes TX FIR tap values
+     *
+     * @type sai_taps_list_t
+     * @flags CREATE_AND_SET
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_TX_FIR_TAPS_LIST,
+
+    /**
+     * @brief Port serdes DFE taps
+     *
+     * List of port serdes RX DFE tap values
+     *
+     * @type sai_taps_list_t
+     * @flags CREATE_AND_SET
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_RX_DFE_TAPS_LIST,
+
+    /**
+     * @brief Port serdes VGA settings
+     *
+     * List of port serdes VGA settings values
+     * The values are of type sai_u32_list_t where the count is number of lanes
+     * in a port and the list specifies list of VGA settings for each lane.
+     *
+     * @type sai_u32_list_t
+     * @flags CREATE_AND_SET
+     * @default internal
+     */
+    SAI_PORT_SERDES_ATTR_RX_VGA,
 
     /**
      * @brief End of attributes

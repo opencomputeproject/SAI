@@ -504,6 +504,10 @@ typedef enum _sai_switch_tunnel_attr_t
     /**
      * @brief Tunnel UDP source port
      *
+     * See also SAI_SWITCH_TUNNEL_ATTR_VXLAN_UDP_SPORT_SECURITY.
+     * This attribute is applied to VXLAN packets ingressing the switch. If the incoming
+     * packet does not match the configured UDP source port range, the packet is dropped.
+     *
      * @type sai_uint16_t
      * @flags CREATE_AND_SET
      * @isvlan false
@@ -575,6 +579,20 @@ typedef enum _sai_switch_tunnel_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_TUNNEL_ATTR_DECAP_QOS_TC_TO_PRIORITY_GROUP_MAP,
+
+    /**
+     * @brief Drop tunnel packets with not allowed UDP source port
+     *
+     * Upon enabling this feature, if the tunnel packet ingresses with
+     * UDP source port outside of range defined for this tunnel, it
+     * will be dropped.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_SWITCH_TUNNEL_ATTR_TUNNEL_TYPE == SAI_TUNNEL_TYPE_VXLAN and SAI_SWITCH_TUNNEL_ATTR_TUNNEL_VXLAN_UDP_SPORT_MODE == SAI_TUNNEL_VXLAN_UDP_SPORT_MODE_USER_DEFINED
+     */
+    SAI_SWITCH_TUNNEL_ATTR_VXLAN_UDP_SPORT_SECURITY,
 
     /**
      * @brief End of attributes
@@ -3425,6 +3443,103 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_SWITCH_IPSEC_POST_STATUS_NOTIFY,
 
     /**
+     * @brief Default Ingress Buffer Pool for CPU Port usage.
+     *
+     * This object id references an internal SAI-managed default buffer
+     * pool for the CPU Port. It may be used to configure the buffer pool
+     * attributes or reference the buffer pool from other QOS objects.
+     *
+     * The object id is read only, while the object attributes can be modified.
+     * Must return #SAI_NULL_OBJECT_ID if no such internal default buffer pool exists.
+     *
+     * @type sai_object_id_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_BUFFER_POOL
+     * @allownull true
+     * @default internal
+     */
+    SAI_SWITCH_ATTR_DEFAULT_CPU_INGRESS_BUFFER_POOL,
+
+    /**
+     * @brief Default Egress Buffer Pool for CPU Port usage.
+     *
+     * This object id references an internal SAI-managed default buffer
+     * pool for the CPU Port. It may be used to configure the buffer pool
+     * attributes or reference the buffer pool from other QOS objects.
+     *
+     * The object id is read only, while the object attributes can be modified.
+     * Must return #SAI_NULL_OBJECT_ID if no such internal default buffer pool exists.
+     *
+     * @type sai_object_id_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_BUFFER_POOL
+     * @allownull true
+     * @default internal
+     */
+    SAI_SWITCH_ATTR_DEFAULT_CPU_EGRESS_BUFFER_POOL,
+
+    /**
+     * @brief Nexthop DST Table user-based meta data range
+     *
+     * @type sai_u32_range_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_NEXT_HOP_USER_META_DATA_RANGE,
+
+    /**
+     * @brief Linkup polling time range (in secs)
+     *
+     * @type sai_u16_range_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_FAST_LINKUP_POLLING_TIMEOUT_RANGE,
+
+    /**
+     * @brief Time (in sec) during which the fast link-up is attempted.
+     *
+     * If this timer expires before the link is UP the regular link-up will be performed
+     * Supported range can be obtained using SAI_SWITCH_ATTR_FAST_LINKUP_POLLING_TIMEOUT_RANGE
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 60
+     */
+    SAI_SWITCH_ATTR_FAST_LINKUP_POLLING_TIMEOUT,
+
+    /**
+     * @brief Linkup guard time range (in secs)
+     *
+     * @type sai_u16_range_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_FAST_LINKUP_GUARD_TIMEOUT_RANGE,
+
+    /**
+     * @brief Time (in secs) during which the link must be UP with the BER below the level configured with SAI_SWITCH_ATTR_FAST_LINKUP_BER_THRESHOLD to keep the fast link-up configuration.
+     *
+     * If either link failures happens within this time or high BER is measured at the end of this period of time the link should undergo regular link up process
+     * Supported range can be obtained using SAI_SWITCH_ATTR_FAST_LINKUP_GUARD_TIMEOUT_RANGE
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 10
+     */
+    SAI_SWITCH_ATTR_FAST_LINKUP_GUARD_TIMEOUT,
+
+    /**
+     * @brief Threshold to control regular link-up happened after fast linkup Time-out
+     *
+     * Configures the BER (negative exponent only, mantissa is always 1) which is if measured during
+     * SAI_SWITCH_ATTR_FAST_LINKUP_GUARD_TIMEOUT causes the full link-up flow. For example, value 12 configured here is 1e^-12
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 12
+     */
+    SAI_SWITCH_ATTR_FAST_LINKUP_BER_THRESHOLD,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
@@ -3482,6 +3597,15 @@ typedef enum _sai_switch_asic_sdk_health_category_t
  */
 typedef enum _sai_switch_stat_t
 {
+    /** Switch stat range start */
+    SAI_SWITCH_STAT_START,
+
+    /** Global (switch-wise) counter of packets trimmed but dropped due to failed shared buffer admission on a trim queue */
+    SAI_SWITCH_STAT_DROPPED_TRIM_PACKETS = SAI_SWITCH_STAT_START,
+
+    /** Global (switch-wise) counter of packets trimmed and successfully sent on a trim queue */
+    SAI_SWITCH_STAT_TX_TRIM_PACKETS,
+
     /** Switch stat in drop reasons range start */
     SAI_SWITCH_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,
 
@@ -3563,6 +3687,12 @@ typedef enum _sai_switch_stat_t
     /** Switch stat fabric drop reasons range end */
     SAI_SWITCH_STAT_FABRIC_DROP_REASON_RANGE_END = 0x00003fff,
 
+    /** Switch stat range end */
+    SAI_SWITCH_STAT_END,
+
+    /** Custom range base value */
+    SAI_SWITCH_STAT_CUSTOM_RANGE_BASE = 0x10000000
+
 } sai_switch_stat_t;
 
 /**
@@ -3578,7 +3708,7 @@ typedef enum _sai_switch_stat_t
  * @note This value needs to be incremented whenever a new switch attribute key
  * is added.
  */
-#define SAI_SWITCH_ATTR_MAX_KEY_COUNT         16
+#define SAI_SWITCH_ATTR_MAX_KEY_COUNT         17
 
 /*
  * List of switch attributes keys that can be set using key=value
@@ -3643,6 +3773,13 @@ typedef enum _sai_switch_stat_t
  * @def SAI_KEY_INIT_CONFIG_FILE
  */
 #define SAI_KEY_INIT_CONFIG_FILE                  "SAI_INIT_CONFIG_FILE"
+
+/**
+ * @def SAI_KEY_NHG_HIERARCHICAL_NEXTHOP
+ * true: Nexthop groups consists of tunnel and IP nexthop
+ * false: Nexthop groups consists of IP nexthop only
+ */
+#define SAI_KEY_NHG_HIERARCHICAL_NEXTHOP          "SAI_NHG_HIERARCHICAL_NEXTHOP"
 
 /**
  * @def SAI_KEY_BOOT_TYPE

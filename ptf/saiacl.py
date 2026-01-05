@@ -4798,7 +4798,7 @@ class IPv6NextHdrTest(SaiHelperSimplified):
 
         packet_action = sai_thrift_acl_action_data_t(
             parameter=sai_thrift_acl_action_parameter_t(
-                s32=SAI_PACKET_ACTION_DROP))
+                s32=SAI_PACKET_ACTION_DROP), enable=True)
 
         field_ipv6_next_header = sai_thrift_acl_field_data_t(
             data=sai_thrift_acl_field_data_data_t(u8=ipv6_next_header),
