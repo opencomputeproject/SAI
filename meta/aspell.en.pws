@@ -9,6 +9,8 @@ api
 APIs
 Args
 armhf
+attenuator
+Attenuator
 attr
 attrid
 attrs
@@ -29,6 +31,7 @@ const
 couldn
 cpp
 cpu
+dBm
 decap
 decapsulation
 Decrement
@@ -102,6 +105,7 @@ loopback
 Loopback
 lossless
 lu
+mA
 MACsec
 maincursor
 Marvell
@@ -129,6 +133,7 @@ netlink
 nexthop
 nexthopgroup
 nextrelease
+nm
 NPUs
 NRZ
 objlist
@@ -138,6 +143,7 @@ OID
 OIDs
 ok
 opcode
+openconfig
 optimizations
 outsegment
 param
@@ -155,6 +161,7 @@ psec
 PVID
 qos
 quantization
+Raman
 reachability
 routable
 runtime
@@ -189,6 +196,7 @@ SysFS
 syslog
 timespec
 timestamp
+THz
 TLV
 TODO
 tx

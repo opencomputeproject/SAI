@@ -236,6 +236,7 @@ ALIASES                += "suffix         =@par Serialize suffix:^^       @xmlon
 ALIASES                += "isresourcetype =@par IsResourceType:^^         @xmlonly @@isresourcetype @endxmlonly"
 ALIASES                += "relaxed        =@par Condition Relaxed:^^      @xmlonly @@relaxed        @endxmlonly"
 ALIASES                += "deprecated     =@par Deprecated:^^             @xmlonly @@deprecated     @endxmlonly"
+ALIASES                += "precision      =@par Value Precision:^^        @xmlonly @@precision      @endxmlonly"
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
 # A mapping has the form "name=value". For example adding "class=itcl::class"
