@@ -5294,13 +5294,81 @@ sub CreateSourcePragmaPop
     WriteSource "#pragma GCC diagnostic pop";
 }
 
+sub GetDoxygenVersion
+{
+    # Try running doxygen --version
+    my $version = `doxygen --version 2>/dev/null`;
+    chomp $version;
+    return $version if $version =~ /^\d+\.\d+\.\d+$/;
+
+    return undef;
+}
+
 sub ProcessXmlFiles
 {
-    for my $file (GetSaiXmlFiles($XMLDIR))
-    {
-        LogInfo "Processing $file";
+    my $doxygen_version = GetDoxygenVersion();
+    my $use_group_files = 0;
 
-        ProcessXmlFile("$XMLDIR/$file");
+    if (defined $doxygen_version) {
+        # Doxygen 1.9.8+ puts enum definitions in group_*.xml files instead of sai*_8h.xml
+        # Compare version: 1.9.8 or higher
+        if ($doxygen_version =~ /^(\d+)\.(\d+)\.(\d+)$/) {
+            my ($major, $minor, $patch) = ($1, $2, $3);
+            # Convert to comparable number: major*10000 + minor*100 + patch
+            my $version_num = $major * 10000 + $minor * 100 + $patch;
+            if ($version_num >= 10908) {
+                $use_group_files = 1;
+                LogInfo "Doxygen version $doxygen_version detected - using group_*.xml files";
+            } else {
+                LogInfo "Doxygen version $doxygen_version detected - using legacy sai*_8h.xml files only";
+            }
+        }
+    }
+
+    if ($use_group_files) {
+        # Doxygen 1.9.8+ approach: two-pass processing
+        # We need to process #defines BEFORE enums that reference them
+        my @all_files = ();
+        push @all_files, glob("$XMLDIR/group_*.xml");
+        push @all_files, map { "$XMLDIR/$_" } GetSaiXmlFiles($XMLDIR);
+
+        # PASS 1: Process ONLY #define sections from all files
+        for my $fullpath (@all_files) {
+            my $file = $fullpath;
+            $file =~ s/^.*\///;
+            LogInfo "Processing $file (defines pass)";
+            ProcessXmlFileDefinesOnly($fullpath);
+        }
+
+        # PASS 2: Process everything else (enums, typedefs, functions)
+        for my $fullpath (@all_files) {
+            my $file = $fullpath;
+            $file =~ s/^.*\///;
+            LogInfo "Processing $file";
+            ProcessXmlFile($fullpath);
+        }
+    } else {
+        # Legacy approach: single-pass, only sai*_8h.xml files
+        for my $file (GetSaiXmlFiles($XMLDIR))
+        {
+            LogInfo "Processing $file";
+
+            ProcessXmlFile("$XMLDIR/$file");
+        }
+    }
+}
+
+sub ProcessXmlFileDefinesOnly
+{
+    my $file = shift;
+
+    my $ref = ReadXml $file;
+
+    my @sections = @{ $ref->{compounddef}[0]->{sectiondef} };
+
+    for my $section (@sections)
+    {
+        ProcessDefineSection($section) if ($section->{kind} eq "define");
     }
 }
 
@@ -5444,6 +5512,8 @@ sub MergeExtensionsEnums
         }
 
         my $enum = "$1_t";
+
+        LogInfo "Merging extensions enum $exenum into $enum";
 
         if (not defined $SAI_ENUMS{$enum})
         {
