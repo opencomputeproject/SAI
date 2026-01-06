@@ -5335,26 +5335,23 @@ sub NeedsTwoPassProcessing
 
     for my $section (@sai_sections)
     {
-        if ($section->{kind} eq "enum")
+        next if not $section->{kind} eq "enum";
+
+        for my $memberdef (@{ $section->{memberdef} })
         {
-            for my $memberdef (@{ $section->{memberdef} })
+            next if not $memberdef->{kind} eq "enum";
+
+            if (defined $memberdef->{enumvalue})
             {
-                next if not $memberdef->{kind} eq "enum";
-
-                if (defined $memberdef->{enumvalue})
+                for my $enumvalue (@{ $memberdef->{enumvalue} })
                 {
-                    for my $enumvalue (@{ $memberdef->{enumvalue} })
+                    if (defined $enumvalue->{name} and defined $enumvalue->{name}[0] and $enumvalue->{name}[0] eq "SAI_API_SWITCH")
                     {
-                        if (defined $enumvalue->{name} and defined $enumvalue->{name}[0] and $enumvalue->{name}[0] eq "SAI_API_SWITCH")
-                        {
-                            $has_enumvalue = 1;
+                        $has_enumvalue = 1;
 
-                            last;
-                        }
+                        last;
                     }
                 }
-
-                last if $has_enumvalue;
             }
         }
 
@@ -5375,16 +5372,15 @@ sub NeedsTwoPassProcessing
 
     for my $section (@saiacl_sections)
     {
-        if ($section->{kind} eq "define")
-        {
-            for my $memberdef (@{ $section->{memberdef} })
-            {
-                if ($memberdef->{kind} eq "define")
-                {
-                    $has_define = 1;
+        next if not $section->{kind} eq "define";
 
-                    last;
-                }
+        for my $memberdef (@{ $section->{memberdef} })
+        {
+            if ($memberdef->{kind} eq "define")
+            {
+                $has_define = 1;
+
+                last;
             }
         }
 
@@ -5396,12 +5392,7 @@ sub NeedsTwoPassProcessing
     # Otherwise, use two-pass processing (group_*.xml files contain the actual content)
     #
 
-    if ($has_enumvalue and $has_define)
-    {
-        return 0;
-    }
-
-    return 1;
+    return not ($has_enumvalue and $has_define);
 }
 
 sub ProcessXmlFiles
