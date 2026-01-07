@@ -523,6 +523,17 @@ typedef enum _sai_hostif_trap_type_t
      */
     SAI_HOSTIF_TRAP_TYPE_MPLS_LABEL_LOOKUP_MISS = 0x00008002,
 
+    /**
+     * @brief Hostif trap to perform flood control on broadcast,
+     * unknown unicast and multicast packets per traffic class
+     *
+     * This applies to packets whose TC object has
+     * SAI_TC_ATTR_FLOOD_CONTROL_ENABLE as true.
+     *
+     * (default packet action is drop)
+     */
+    SAI_HOSTIF_TRAP_TYPE_TC_FLOOD_CONTROL,
+
     /** Exception traps custom range start */
     SAI_HOSTIF_TRAP_TYPE_CUSTOM_EXCEPTION_RANGE_BASE = 0x00009000,
 
