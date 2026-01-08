@@ -239,6 +239,15 @@ sub GetXmlUnionFiles
     return grep { /^union_\w*\.xml$/ } @files;
 }
 
+sub GetGroupXmlFiles
+{
+    my $dir = shift;
+
+    my @files = GetXmlFiles($dir);
+
+    return grep { /^group__\w+\.xml$/ } @files;
+}
+
 sub ProcessStructCount
 {
     my ($structName, $tagValue, $previousTagValue) = @_;
@@ -626,7 +635,7 @@ BEGIN
 {
     our @ISA    = qw(Exporter);
     our @EXPORT = qw/
-    ReadXml UnescapeXml GetSaiXmlFiles GetXmlUnionFiles
+    ReadXml UnescapeXml GetSaiXmlFiles GetXmlUnionFiles GetGroupXmlFiles
     ExtractDescription ExtractStructInfo ExtractStructInfoEx
     /;
 }
