@@ -68,6 +68,12 @@ typedef enum _sai_ocs_cross_connect_attr_t
      */
     SAI_OCS_CROSS_CONNECT_ATTR_END,
 
+    /** Custom range base value */
+    SAI_OCS_CROSS_CONNECT_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_OCS_CROSS_CONNECT_ATTR_CUSTOM_RANGE_END,
+
 } sai_ocs_cross_connect_attr_t;
 
 /**
@@ -193,6 +199,7 @@ typedef enum _sai_ocs_port_attr_t
      *
      * @type sai_ocs_port_override_state_t
      * @flags CREATE_AND_SET
+     * @default SAI_OCS_PORT_OVERRIDE_STATE_NORMAL
      */
     SAI_OCS_PORT_ATTR_OVERRIDE_STATE,
 
