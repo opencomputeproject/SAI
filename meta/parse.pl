@@ -5294,67 +5294,135 @@ sub CreateSourcePragmaPop
     WriteSource "#pragma GCC diagnostic pop";
 }
 
-sub GetDoxygenVersion
+sub NeedsTwoPassProcessing
 {
-    # Try running doxygen --version
-    my $version = `doxygen --version 2>/dev/null`;
-    chomp $version;
-    return $version if $version =~ /^\d+\.\d+\.\d+$/;
+    #
+    # Detect if XML files require two-pass processing based on their structure.
+    #
+    # In Doxygen 1.9.8+, the XML structure changed:
+    # - sai_*.xml files have empty enum/define sections (just sectiondef exists, no memberdefs)
+    # - group_*.xml files contain the actual enum definitions with enumvalues and defines
+    #
+    # In older Doxygen versions:
+    # - sai_*.xml files contain both defines and enums with enumvalues
+    # - group_*.xml files don't exist or aren't used
+    #
+    # Returns 1 if two-pass processing is needed (new structure):
+    #   - First pass: process all defines from group_*.xml files
+    #   - Second pass: process enums/typedefs/functions from group_*.xml and sai_*.xml files
+    #
+    # Returns 0 if single-pass processing is sufficient (old structure):
+    #   - Process sai_*.xml files only
+    #
 
-    return undef;
+    my $sai_file = "$XMLDIR/sai_8h.xml";
+
+    my $saiacl_file = "$XMLDIR/saiacl_8h.xml";
+
+    return 1 if not -f $sai_file or not -f $saiacl_file;
+
+    #
+    # Check sai_8h.xml for enumvalue with name="SAI_API_SWITCH"
+    #
+
+    my $sai_ref = ReadXml $sai_file;
+
+    return 1 if not defined $sai_ref->{compounddef}[0];
+
+    my @sai_sections = @{ $sai_ref->{compounddef}[0]->{sectiondef} };
+
+    my $has_enumvalue = 0;
+
+    for my $section (@sai_sections)
+    {
+        next if not $section->{kind} eq "enum";
+
+        for my $memberdef (@{ $section->{memberdef} })
+        {
+            next if not $memberdef->{kind} eq "enum";
+
+            if (defined $memberdef->{enumvalue})
+            {
+                for my $enumvalue (@{ $memberdef->{enumvalue} })
+                {
+                    if (defined $enumvalue->{name} and defined $enumvalue->{name}[0] and $enumvalue->{name}[0] eq "SAI_API_SWITCH")
+                    {
+                        $has_enumvalue = 1;
+
+                        last;
+                    }
+                }
+            }
+        }
+
+        last if $has_enumvalue;
+    }
+
+    #
+    # Check saiacl_8h.xml for memberdef kind="define"
+    #
+
+    my $saiacl_ref = ReadXml $saiacl_file;
+
+    return 1 if not defined $saiacl_ref->{compounddef}[0];
+
+    my @saiacl_sections = @{ $saiacl_ref->{compounddef}[0]->{sectiondef} };
+
+    my $has_define = 0;
+
+    for my $section (@saiacl_sections)
+    {
+        next if not $section->{kind} eq "define";
+
+        for my $memberdef (@{ $section->{memberdef} })
+        {
+            if ($memberdef->{kind} eq "define")
+            {
+                $has_define = 1;
+
+                last;
+            }
+        }
+
+        last if $has_define;
+    }
+
+    #
+    # If sai_8h.xml has enumvalues and saiacl_8h.xml has defines, it's old structure (single-pass)
+    # Otherwise, use two-pass processing (group_*.xml files contain the actual content)
+    #
+
+    return not ($has_enumvalue and $has_define);
 }
 
 sub ProcessXmlFiles
 {
-    my $doxygen_version = GetDoxygenVersion();
-    my $use_group_files = 0;
+    if (NeedsTwoPassProcessing())
+    {
+        LogInfo "New XML structure detected, proceeding with 2 pass processing";
 
-    if (defined $doxygen_version) {
-        # Doxygen 1.9.8+ puts enum definitions in group_*.xml files instead of sai*_8h.xml
-        # Compare version: 1.9.8 or higher
-        if ($doxygen_version =~ /^(\d+)\.(\d+)\.(\d+)$/) {
-            my ($major, $minor, $patch) = ($1, $2, $3);
-            # Convert to comparable number: major*10000 + minor*100 + patch
-            my $version_num = $major * 10000 + $minor * 100 + $patch;
-            if ($version_num >= 10908) {
-                $use_group_files = 1;
-                LogInfo "Doxygen version $doxygen_version detected - using group_*.xml files";
-            } else {
-                LogInfo "Doxygen version $doxygen_version detected - using legacy sai*_8h.xml files only";
-            }
-        }
-    }
+        my @group_files = GetGroupXmlFiles($XMLDIR);
 
-    if ($use_group_files) {
-        # Doxygen 1.9.8+ approach: two-pass processing
-        # We need to process #defines BEFORE enums that reference them
-        my @all_files = ();
-        push @all_files, glob("$XMLDIR/group_*.xml");
-        push @all_files, map { "$XMLDIR/$_" } GetSaiXmlFiles($XMLDIR);
-
-        # PASS 1: Process ONLY #define sections from all files
-        for my $fullpath (@all_files) {
-            my $file = $fullpath;
-            $file =~ s/^.*\///;
+        for my $file (@group_files)
+        {
             LogInfo "Processing $file (defines pass)";
-            ProcessXmlFileDefinesOnly($fullpath);
+
+            ProcessXmlFileDefinesOnly("$XMLDIR/$file");
         }
 
-        # PASS 2: Process everything else (enums, typedefs, functions)
-        for my $fullpath (@all_files) {
-            my $file = $fullpath;
-            $file =~ s/^.*\///;
-            LogInfo "Processing $file";
-            ProcessXmlFile($fullpath);
-        }
-    } else {
-        # Legacy approach: single-pass, only sai*_8h.xml files
-        for my $file (GetSaiXmlFiles($XMLDIR))
+        for my $file (@group_files)
         {
             LogInfo "Processing $file";
 
             ProcessXmlFile("$XMLDIR/$file");
         }
+    }
+
+    for my $file (GetSaiXmlFiles($XMLDIR))
+    {
+        LogInfo "Processing $file";
+
+        ProcessXmlFile("$XMLDIR/$file");
     }
 }
 
