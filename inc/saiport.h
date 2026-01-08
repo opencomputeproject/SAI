@@ -123,7 +123,10 @@ typedef enum _sai_port_error_status_t
     SAI_PORT_ERROR_STATUS_SIGNAL_LOCAL_ERROR = 1 << 11,
 
     /** Port is not accepting reachability data units */
-    SAI_PORT_ERROR_STATUS_NO_RX_REACHABILITY = 1 << 12
+    SAI_PORT_ERROR_STATUS_NO_RX_REACHABILITY = 1 << 12,
+
+    /** Port LLR Tx mechanism entering or exiting flush state */
+    SAI_PORT_ERROR_STATUS_LLR_TX_FLUSH = 1 << 13
 } sai_port_error_status_t;
 
 /**
@@ -708,6 +711,72 @@ typedef enum _sai_port_serdes_polarity_t
     SAI_PORT_SERDES_POLARITY_INVERTED
 
 } sai_port_serdes_polarity_t;
+
+/**
+ * @brief LLR Tx status value
+ */
+typedef enum _sai_port_llr_tx_status_t
+{
+    /** LLR_TX_ENABLE is false */
+    SAI_PORT_LLR_TX_STATUS_OFF,
+
+    /**
+     * @brief LLR Tx is enabled and sending periodic INIT messages.
+     * Waiting for INIT_ECHO to be received from link partner
+     */
+    SAI_PORT_LLR_TX_STATUS_INIT,
+
+    /** LLR Tx in normal operation, and no replay is in progress */
+    SAI_PORT_LLR_TX_STATUS_ADVANCE,
+
+    /** LLR Tx Replay is in progress */
+    SAI_PORT_LLR_TX_STATUS_REPLAY,
+
+    /** LLR mechanism is in flush state */
+    SAI_PORT_LLR_TX_STATUS_FLUSH
+
+} sai_port_llr_tx_status_t;
+
+/**
+ * @brief LLR Rx status value
+ */
+typedef enum _sai_port_llr_rx_status_t
+{
+    /** LLR_RX_ENABLE is false */
+    SAI_PORT_LLR_RX_STATUS_OFF,
+
+    /**
+     * @brief LLR receive is in normal operation and sending ACK.
+     * No missing/bad frames have been received
+     */
+    SAI_PORT_LLR_RX_STATUS_SEND_ACKS,
+
+    /**
+     * @brief LLR detected a missing frame or received a bad frame,
+     * and is in the process of sending the NACK
+     */
+    SAI_PORT_LLR_RX_STATUS_SEND_NACK,
+
+    /** LLR sent a NACK and is waiting for the expected frame */
+    SAI_PORT_LLR_RX_STATUS_NACK_SENT
+
+} sai_port_llr_rx_status_t;
+
+/**
+ * @brief LLR frame action
+ */
+typedef enum _sai_llr_frame_action_t
+{
+    /** Frames are dropped. */
+    SAI_LLR_FRAME_ACTION_DISCARD,
+
+    /** Blocks transmission requests from higher layers to the MAC. */
+    SAI_LLR_FRAME_ACTION_BLOCK,
+
+    /** Frames are treated as regular packets and are transmitted. */
+    SAI_LLR_FRAME_ACTION_BEST_EFFORT
+
+} sai_llr_frame_action_t;
 
 /**
  * @brief Attribute Id in sai_set_port_attribute() and
@@ -2799,6 +2868,52 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PORT_PG_PKT_DROP_STATUS,
 
     /**
+     * @brief Enable the port to start receiving LLR INIT messages.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_LLR_MODE_LOCAL,
+
+    /**
+     * @brief Enable the port to start sending LLR INIT messages.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_LLR_MODE_REMOTE,
+
+    /**
+     * @brief The LLR profile to configure the port's LLR mechanism.
+     * Mandatory when LLR_MODE_LOCAL and/or LLR_MODE_REMOTE are true.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT_LLR_PROFILE
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_LLR_PROFILE,
+
+    /**
+     * @brief Port LLR TX status
+     *
+     * @type sai_port_llr_tx_status_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_LLR_TX_STATUS,
+
+    /**
+     * @brief Port LLR RX status
+     *
+     * @type sai_port_llr_rx_status_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_LLR_RX_STATUS,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
@@ -3484,6 +3599,76 @@ typedef enum _sai_port_stat_t
 
     /** Packets trimmed and successfully transmitted on port */
     SAI_PORT_STAT_TX_TRIM_PACKETS,
+
+    /** Number of LLR_INIT control ordered sets transmitted */
+    SAI_PORT_STAT_LLR_TX_INIT_CTL_OS,
+
+    /** Number of LLR_INIT_ECHO control ordered sets transmitted */
+    SAI_PORT_STAT_LLR_TX_INIT_ECHO_CTL_OS,
+
+    /** Number of LLR_ACK control ordered sets transmitted */
+    SAI_PORT_STAT_LLR_TX_ACK_CTL_OS,
+
+    /** Number of LLR_NACK control ordered sets transmitted */
+    SAI_PORT_STAT_LLR_TX_NACK_CTL_OS,
+
+    /**
+     * @brief Number of LLR-eligible frames discarded by the LLR TX when
+     * the TX state machine is in the INIT state and the llr_init_behavior is set to DISCARD, or
+     * the TX state machine is in the FLUSH state and the llr_flush_behavior is set to DISCARD
+     */
+    SAI_PORT_STAT_LLR_TX_DISCARD,
+
+    /** Number of LLR-eligible frames transmitted with a good FCS */
+    SAI_PORT_STAT_LLR_TX_OK,
+
+    /** Number of LLR-eligible frames transmitted with a poisoned FCS */
+    SAI_PORT_STAT_LLR_TX_POISONED,
+
+    /** Number of times that LLR Tx completed a replay operation */
+    SAI_PORT_STAT_LLR_TX_REPLAY,
+
+    /** Number of LLR_INIT control ordered sets received */
+    SAI_PORT_STAT_LLR_RX_INIT_CTL_OS,
+
+    /** Number of LLR_INIT_ECHO control ordered sets received */
+    SAI_PORT_STAT_LLR_RX_INIT_ECHO_CTL_OS,
+
+    /** Number of LLR_ACK control ordered sets received */
+    SAI_PORT_STAT_LLR_RX_ACK_CTL_OS,
+
+    /** Number of LLR_NACK control ordered sets received */
+    SAI_PORT_STAT_LLR_RX_NACK_CTL_OS,
+
+    /** Number of LLR_ACK/LLR_NACK sequence number errors. The counter is incremented each time an LLR_ACK or LLR_NACK is received with an unexpected sequence number */
+    SAI_PORT_STAT_LLR_RX_ACK_NACK_SEQ_ERROR,
+
+    /** Number of LLR-eligible frames received with a good FCS */
+    SAI_PORT_STAT_LLR_RX_OK,
+
+    /** Number of LLR-eligible frames received with a poisoned FCS */
+    SAI_PORT_STAT_LLR_RX_POISONED,
+
+    /** Number of LLR-eligible frames received with a bad FCS */
+    SAI_PORT_STAT_LLR_RX_BAD,
+
+    /** Number of LLR-eligible frames received with a good FCS and with the expected sequence number */
+    SAI_PORT_STAT_LLR_RX_EXPECTED_SEQ_GOOD,
+
+    /** Number of LLR-eligible frames received with a poisoned FCS and with the expected sequence number */
+    SAI_PORT_STAT_LLR_RX_EXPECTED_SEQ_POISONED,
+
+    /** Number of LLR-eligible frames received with a bad FCS and with the expected sequence number */
+    SAI_PORT_STAT_LLR_RX_EXPECTED_SEQ_BAD,
+
+    /** Number of LLR-eligible frames received with a sequence number that indicated a missing LLR-eligible frame in the sequence, irrespective of FCS status */
+    SAI_PORT_STAT_LLR_RX_MISSING_SEQ,
+
+    /** Number of LLR-eligible frames received with a duplicate sequence number, irrespective of FCS status */
+    SAI_PORT_STAT_LLR_RX_DUPLICATE_SEQ,
+
+    /** Number of times that LLR Rx detected the start of a replay */
+    SAI_PORT_STAT_LLR_RX_REPLAY,
 
     /** Port stat in drop reasons range start */
     SAI_PORT_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,
@@ -4678,6 +4863,175 @@ typedef sai_status_t (*sai_get_port_connector_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
+ * @brief List of Port LLR profile attributes
+ */
+typedef enum _sai_port_llr_profile_attr_t
+{
+    /**
+     * @brief Start of attributes
+     */
+    SAI_PORT_LLR_PROFILE_ATTR_START,
+
+    /**
+     * @brief Limit on the number of unacknowledged frames.
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE|CREATE_ONLY
+     */
+    SAI_PORT_LLR_PROFILE_ATTR_OUTSTANDING_FRAMES_MAX = SAI_PORT_LLR_PROFILE_ATTR_START,
+
+    /**
+     * @brief Limit on the number of unacknowledged bytes.
+     *
+     * @type sai_uint32_t
+     * @flags MANDATORY_ON_CREATE|CREATE_ONLY
+     */
+    SAI_PORT_LLR_PROFILE_ATTR_OUTSTANDING_BYTES_MAX,
+
+    /**
+     * @brief A configuration parameter that sets the maximum timer value in nanoseconds.
+     * When this timer expires, a replay is initiated.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_LLR_PROFILE_ATTR_REPLAY_TIMER_MAX,
+
+    /**
+     * @brief Limit on the number of replays if no further LLR_ACKs are received.
+     * Once the limit is reached, LLR enters a 'FLUSH' state.
+     * A value of 255 indicates that there is no maximum.
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 1
+     */
+    SAI_PORT_LLR_PROFILE_ATTR_REPLAY_COUNT_MAX,
+
+    /**
+     * @brief If the port PCS status is false for this duration, LLR enters a 'FLUSH' state.
+     * The value is specified in nanoseconds.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_LLR_PROFILE_ATTR_PCS_LOST_TIMEOUT,
+
+    /**
+     * @brief Limit of the time a frame can reside in the replay buffer.
+     * The value is specified in nanoseconds.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_LLR_PROFILE_ATTR_DATA_AGE_TIMEOUT,
+
+    /**
+     * @brief The action to be taken on frames received from the higher layers when the LLR mechanism enters the 'INIT' state.
+     *
+     * @type sai_llr_frame_action_t
+     * @flags CREATE_AND_SET
+     * @default SAI_LLR_FRAME_ACTION_BEST_EFFORT
+     */
+    SAI_PORT_LLR_PROFILE_ATTR_INIT_LLR_FRAME_ACTION,
+
+    /**
+     * @brief The action to be taken on frames received from the higher layers when the LLR mechanism enters the 'FLUSH' state.
+     *
+     * @type sai_llr_frame_action_t
+     * @flags CREATE_AND_SET
+     * @default SAI_LLR_FRAME_ACTION_BEST_EFFORT
+     */
+    SAI_PORT_LLR_PROFILE_ATTR_FLUSH_LLR_FRAME_ACTION,
+
+    /**
+     * @brief Indicates that the LLR mechanism must reinitialize LLR when it enters the 'FLUSH' State.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_LLR_PROFILE_ATTR_RE_INIT_ON_FLUSH,
+
+    /**
+     * @brief Desired spacing between CtlOS messages in bytes between transmission of successive LLR_ACK / LLR_NACK CtlOS.
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 2048
+     */
+    SAI_PORT_LLR_PROFILE_ATTR_CTLOS_TARGET_SPACING,
+
+    /**
+     * @brief End of attributes
+     */
+    SAI_PORT_LLR_PROFILE_ATTR_END,
+
+    /** Custom range base value */
+    SAI_PORT_LLR_PROFILE_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_PORT_LLR_PROFILE_ATTR_CUSTOM_RANGE_END
+
+} sai_port_llr_profile_attr_t;
+
+/**
+ * @brief Create Port LLR Profile
+ *
+ * @param[out] port_llr_profile_id Port LLR Profile id
+ * @param[in] switch_id Switch id
+ * @param[in] attr_count Number of attributes
+ * @param[in] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_create_port_llr_profile_fn)(
+        _Out_ sai_object_id_t *port_llr_profile_id,
+        _In_ sai_object_id_t switch_id,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief Remove Port LLR Profile
+ *
+ * @param[in] port_llr_profile_id Port LLR Profile id
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_remove_port_llr_profile_fn)(
+        _In_ sai_object_id_t port_llr_profile_id);
+
+/**
+ * @brief Set Port LLR Profile attribute value.
+ *
+ * @param[in] port_llr_profile_id Port LLR Profile id
+ * @param[in] attr Attribute
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_set_port_llr_profile_attribute_fn)(
+        _In_ sai_object_id_t port_llr_profile_id,
+        _In_ const sai_attribute_t *attr);
+
+/**
+ * @brief Get Port LLR Profile attribute value.
+ *
+ * @param[in] port_llr_profile_id Port LLR Profile id
+ * @param[in] attr_count Number of attributes
+ * @param[inout] attr_list Array of attributes
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_port_llr_profile_attribute_fn)(
+        _In_ sai_object_id_t port_llr_profile_id,
+        _In_ uint32_t attr_count,
+        _Inout_ sai_attribute_t *attr_list);
+
+/**
  * @brief Port methods table retrieved with sai_api_query()
  */
 typedef struct _sai_port_api_t
@@ -4713,6 +5067,10 @@ typedef struct _sai_port_api_t
     sai_bulk_object_remove_fn              remove_port_serdess;
     sai_bulk_object_set_attribute_fn       set_port_serdess_attribute;
     sai_bulk_object_get_attribute_fn       get_port_serdess_attribute;
+    sai_create_port_llr_profile_fn         create_port_llr_profile;
+    sai_remove_port_llr_profile_fn         remove_port_llr_profile;
+    sai_set_port_llr_profile_attribute_fn  set_port_llr_profile_attribute;
+    sai_get_port_llr_profile_attribute_fn  get_port_llr_profile_attribute;
 } sai_port_api_t;
 
 /**
