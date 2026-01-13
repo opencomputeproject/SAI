@@ -4198,7 +4198,8 @@ typedef struct _sai_switch_api_t
     sai_get_switch_tunnel_attribute_fn     get_switch_tunnel_attribute;
     sai_switch_mdio_cl22_read_fn           switch_mdio_cl22_read;
     sai_switch_mdio_cl22_write_fn          switch_mdio_cl22_write;
-
+    sai_bulk_object_set_attribute_fn       set_switchs_attribute;
+    sai_bulk_object_get_attribute_fn       get_switchs_attribute;
 } sai_switch_api_t;
 
 /**
