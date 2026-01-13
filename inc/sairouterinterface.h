@@ -343,6 +343,100 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_MY_MAC,
 
     /**
+     * @brief Enable DSCP -> TC MAP on Router Interface.
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on Router Interface.
+     * To enable/disable trust DSCP, map ID should be added/removed on Router Interface.
+     * Default no map.
+     * This will override the QOS MAP configured on Port.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ROUTER_INTERFACE_ATTR_QOS_DSCP_TO_TC_MAP,
+
+    /**
+     * @brief Enable DSCP -> COLOR MAP on Router Interface.
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on Router Interface.
+     * To enable/disable trust DSCP, map ID should be added/removed on Router Interface.
+     * Default no map.
+     * This will override the QOS MAP configured on Port.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ROUTER_INTERFACE_ATTR_QOS_DSCP_TO_COLOR_MAP,
+
+    /**
+     * @brief Enable DOT1P -> TC MAP on Router Interface.
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on Router Interface.
+     * To enable/disable trust Dot1p, map ID should be added/removed on Router Interface.
+     * Default no map.
+     * This will override the QOS MAP configured on Port.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ROUTER_INTERFACE_ATTR_QOS_DOT1P_TO_TC_MAP,
+
+    /**
+     * @brief Enable DOT1P -> COLOR MAP on Router Interface.
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on Router Interface.
+     * To enable/disable trust Dot1p, map ID should be added/removed on Router Interface.
+     * Default no map.
+     * This will override the QOS MAP configured on Port.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ROUTER_INTERFACE_ATTR_QOS_DOT1P_TO_COLOR_MAP,
+
+    /**
+     * @brief Enable TC AND COLOR -> DSCP MAP on Router Interface.
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on Router Interface.
+     * Default no map.
+     * This will be overridden by the QOS MAP configured on Port.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ROUTER_INTERFACE_ATTR_QOS_TC_AND_COLOR_TO_DSCP_MAP,
+
+    /**
+     * @brief Enable TC AND COLOR -> DOT1P MAP on Router Interface.
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on Router Interface.
+     * Default no map.
+     * This will be overridden by the QOS MAP configured on Port.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_ROUTER_INTERFACE_ATTR_QOS_TC_AND_COLOR_TO_DOT1P_MAP,
+
+    /**
      * @brief End of attributes
      */
     SAI_ROUTER_INTERFACE_ATTR_END,
