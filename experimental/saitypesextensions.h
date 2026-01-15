@@ -100,6 +100,12 @@ typedef enum _sai_object_type_extensions_t
 
     SAI_OBJECT_TYPE_ENI_TRUSTED_VNI_ENTRY,
 
+    SAI_OBJECT_TYPE_OCS_CROSS_CONNECT,
+
+    SAI_OBJECT_TYPE_OCS_PORT,
+
+    SAI_OBJECT_TYPE_OCS_CROSS_CONNECT_FACTORY_DATA,
+
     /* Add new experimental object types above this line */
 
     SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END

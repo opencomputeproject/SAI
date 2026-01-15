@@ -112,6 +112,7 @@ NTPCLIENT - Network Time Protocol Client
 NTPSERVER - Network Time Protocol Server
 NVGRE - Network Virtualization using Generic Routing Encapsulation
 OAM - Operations Administration and Maintenance
+OCS - Optical Circuit Switch
 OUI - Organizationally Unique Identifier
 P4RT - Programming Protocol-independent Packet Processors Runtime
 PAM4 - Pulse Amplitude Modulation 4-level
