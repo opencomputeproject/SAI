@@ -600,10 +600,7 @@ typedef enum _sai_switch_tunnel_attr_t
     SAI_SWITCH_TUNNEL_ATTR_END,
 
     /** Custom range base value */
-    SAI_SWITCH_TUNNEL_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_SWITCH_TUNNEL_ATTR_CUSTOM_RANGE_END
+    SAI_SWITCH_TUNNEL_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_switch_tunnel_attr_t;
 
@@ -3545,10 +3542,7 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_END,
 
     /** Custom range base value */
-    SAI_SWITCH_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_SWITCH_ATTR_CUSTOM_RANGE_END,
+    SAI_SWITCH_ATTR_CUSTOM_RANGE_BASE = 0x10000000,
 
     /** Extensions range base */
     SAI_SWITCH_ATTR_EXTENSIONS_RANGE_BASE = 0x20000000

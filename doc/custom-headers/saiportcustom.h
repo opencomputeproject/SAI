@@ -35,6 +35,7 @@
  */
 typedef enum _sai_port_attr_custom_t
 {
+    SAI_PORT_ATTR_CUSTOM_RANGE_START = SAI_PORT_ATTR_CUSTOM_RANGE_BASE,
     /**
      * @brief Custom 1
      *
@@ -42,6 +43,8 @@ typedef enum _sai_port_attr_custom_t
      * @flags READ_ONLY
      */
     SAI_PORT_ATTR_CUSTOM1 = SAI_PORT_ATTR_CUSTOM_RANGE_START,
+
+    SAI_PORT_ATTR_CUSTOM_RANGE_END
 
     /* Add new csutom port attributes above this line */
 

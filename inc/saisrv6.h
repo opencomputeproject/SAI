@@ -118,10 +118,7 @@ typedef enum _sai_my_sid_entry_endpoint_behavior_t
     SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_UDT46,
 
     /** Custom range base value */
-    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of Custom range base */
-    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_CUSTOM_RANGE_END
+    SAI_MY_SID_ENTRY_ENDPOINT_BEHAVIOR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_my_sid_entry_endpoint_behavior_t;
 
@@ -231,10 +228,7 @@ typedef enum _sai_srv6_sidlist_attr_t
     SAI_SRV6_SIDLIST_ATTR_END,
 
     /** Custom range base value */
-    SAI_SRV6_SIDLIST_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_SRV6_SIDLIST_ATTR_CUSTOM_RANGE_END
+    SAI_SRV6_SIDLIST_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 } sai_srv6_sidlist_attr_t;
 
 /**
@@ -450,10 +444,7 @@ typedef enum _sai_my_sid_entry_attr_t
     SAI_MY_SID_ENTRY_ATTR_END,
 
     /** Custom range base value */
-    SAI_MY_SID_ENTRY_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_MY_SID_ENTRY_ATTR_CUSTOM_RANGE_END
+    SAI_MY_SID_ENTRY_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_my_sid_entry_attr_t;
 

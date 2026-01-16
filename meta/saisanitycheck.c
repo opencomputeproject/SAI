@@ -92,8 +92,8 @@ defined_attr_t* defined_attributes = NULL;
 
 /* custom ranges start are the same for all objects */
 
-#define CUSTOM_ATTR_RANGE_START SAI_PORT_ATTR_CUSTOM_RANGE_START
 #define CUSTOM_RANGE_START (0x10000000)
+#define CUSTOM_ATTR_RANGE_START CUSTOM_RANGE_START
 #define EXTENSION_RANGE_START (0x20000000)
 #define EXTENSION_OBJECT_TYPE_COUNT (SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END - SAI_OBJECT_TYPE_EXTENSIONS_RANGE_START)
 /* #define CUSTOM_OBJECT_TYPE_COUNT (SAI_OBJECT_TYPE_CUSTOM_RANGE_END - SAI_OBJECT_TYPE_CUSTOM_RANGE_START) */
@@ -107,6 +107,8 @@ defined_attr_t* defined_attributes = NULL;
 #ifndef SAI_OBJECT_TYPE_CUSTOM_RANGE_END
 #define SAI_OBJECT_TYPE_CUSTOM_RANGE_END (CUSTOM_RANGE_START + SAI_METADATA_CUSTOM_OBJECT_COUNT)
 #endif
+
+#define SUB_CUSTOM_RANGE_SIZE 0x1000
 
 bool is_extensions_enum(
         _In_ const sai_enum_metadata_t* emd)
@@ -557,6 +559,18 @@ bool sai_metadata_is_acl_field_or_action(
 
         if (metadata->attrid >= SAI_ACL_ENTRY_ATTR_ACTION_START &&
                 metadata->attrid <= SAI_ACL_ENTRY_ATTR_ACTION_END)
+        {
+            return true;
+        }
+
+        if (metadata->attrid >= SAI_ACL_ENTRY_ATTR_ACTION_CUSTOM_RANGE_BASE &&
+            metadata->attrid < SAI_ACL_ENTRY_ATTR_ACTION_CUSTOM_RANGE_BASE + SUB_CUSTOM_RANGE_SIZE)
+        {
+            return true;
+        }
+
+        if (metadata->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_CUSTOM_RANGE_BASE &&
+            metadata->attrid < SAI_ACL_ENTRY_ATTR_FIELD_CUSTOM_RANGE_BASE + SUB_CUSTOM_RANGE_SIZE)
         {
             return true;
         }
@@ -2211,8 +2225,10 @@ void check_attr_acl_fields(
         case SAI_ATTR_VALUE_TYPE_ACL_FIELD_DATA_UINT8_LIST:
 
             if (md->objecttype == SAI_OBJECT_TYPE_ACL_ENTRY &&
-                    md->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_START &&
-                    md->attrid  <= SAI_ACL_ENTRY_ATTR_FIELD_END)
+                    ((md->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_START &&
+                    md->attrid  <= SAI_ACL_ENTRY_ATTR_FIELD_END) ||
+                    (md->attrid >= SAI_ACL_ENTRY_ATTR_FIELD_CUSTOM_RANGE_BASE &&
+                    md->attrid <= SAI_ACL_ENTRY_ATTR_FIELD_CUSTOM_RANGE_BASE + SUB_CUSTOM_RANGE_SIZE)))
             {
                 break;
 
@@ -5073,6 +5089,54 @@ void check_acl_entry_actions()
                     meta->attridname, enum_name);
         }
 
+        index++;
+        enum_index++;
+    }
+
+    /*
+     * Find the index of first entry action custom attribute, if there is no such nothing will happened.
+     */
+    for (; meta_acl_entry[index] != NULL; index++)
+    {
+        if (meta_acl_entry[index]->attrid == SAI_ACL_ENTRY_ATTR_ACTION_CUSTOM_RANGE_BASE)
+        {
+            break;
+        }
+    }
+
+    while (meta_acl_entry[index] != NULL &&
+           meta_acl_entry[index]->attrid >= SAI_ACL_ENTRY_ATTR_ACTION_CUSTOM_RANGE_BASE &&
+           meta_acl_entry[index]->attrid < SAI_ACL_ENTRY_ATTR_ACTION_CUSTOM_RANGE_BASE + SUB_CUSTOM_RANGE_SIZE)
+    {
+        const sai_attr_metadata_t *meta = meta_acl_entry[index];
+
+        if (meta->flags != SAI_ATTR_FLAGS_CREATE_AND_SET)
+        {
+            META_MD_ASSERT_FAIL(meta, "acl entry action flags should be CREATE_AND_SET");
+        }
+
+        const char* enum_name = sai_metadata_enum_sai_acl_action_type_t.valuesnames[enum_index];
+
+        META_ASSERT_NOT_NULL(enum_name);
+
+        META_LOG_DEBUG("processing acl action: %s %s", meta->attridname, enum_name);
+
+        /*
+         * check acl fields attribute if endings are the same
+         */
+        const char * enum_name_pos = strstr(enum_name, "_ACTION_TYPE_");
+
+        META_ASSERT_NOT_NULL(enum_name_pos);
+
+        const char * attr_entry_pos = strstr(meta->attridname, "_ATTR_ACTION_");
+
+        META_ASSERT_NOT_NULL(attr_entry_pos);
+
+        if (strcmp(enum_name_pos + strlen("_ACTION_TYPE_"), attr_entry_pos + strlen("_ATTR_ACTION_")) != 0)
+        {
+            META_ASSERT_FAIL("attr entry action name %s is not ending at the same enum name %s",
+                    meta->attridname, enum_name);
+        }
         index++;
         enum_index++;
     }

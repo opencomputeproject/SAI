@@ -79,10 +79,7 @@ typedef enum _sai_generic_programmable_attr_t
     SAI_GENERIC_PROGRAMMABLE_ATTR_END,
 
     /** Custom range base value */
-    SAI_GENERIC_PROGRAMMABLE_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_GENERIC_PROGRAMMABLE_ATTR_CUSTOM_RANGE_END
+    SAI_GENERIC_PROGRAMMABLE_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_generic_programmable_attr_t;
 

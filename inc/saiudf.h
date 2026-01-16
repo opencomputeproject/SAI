@@ -116,10 +116,7 @@ typedef enum _sai_udf_attr_t
     SAI_UDF_ATTR_END,
 
     /** Custom range base value */
-    SAI_UDF_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_UDF_ATTR_CUSTOM_RANGE_END
+    SAI_UDF_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_udf_attr_t;
 
@@ -195,10 +192,7 @@ typedef enum _sai_udf_match_attr_t
     SAI_UDF_MATCH_ATTR_END,
 
     /** Custom range base value */
-    SAI_UDF_MATCH_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_UDF_MATCH_ATTR_CUSTOM_RANGE_END
+    SAI_UDF_MATCH_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_udf_match_attr_t;
 
@@ -273,10 +267,7 @@ typedef enum _sai_udf_group_attr_t
     SAI_UDF_GROUP_ATTR_END,
 
     /** Custom range base value */
-    SAI_UDF_GROUP_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_UDF_GROUP_ATTR_CUSTOM_RANGE_END
+    SAI_UDF_GROUP_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_udf_group_attr_t;
 

@@ -275,10 +275,7 @@ typedef enum _sai_next_hop_attr_t
     SAI_NEXT_HOP_ATTR_END,
 
     /** Custom range base value */
-    SAI_NEXT_HOP_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_NEXT_HOP_ATTR_CUSTOM_RANGE_END
+    SAI_NEXT_HOP_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_next_hop_attr_t;
 

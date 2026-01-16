@@ -246,10 +246,7 @@ typedef enum _sai_policer_attr_t
     SAI_POLICER_ATTR_END,
 
     /** Custom range base value */
-    SAI_POLICER_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_POLICER_ATTR_CUSTOM_RANGE_END
+    SAI_POLICER_ATTR_CUSTOM_RANGE_BASE = 0x10000000
 
 } sai_policer_attr_t;
 
