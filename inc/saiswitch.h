@@ -3540,6 +3540,17 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_FAST_LINKUP_BER_THRESHOLD,
 
     /**
+     * @brief Link up debounce time in microseconds
+     *
+     * 0 means no delay time so link up events are immediately delivered as usual
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_LINK_UP_DEBOUNCE_TIMEOUT,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
