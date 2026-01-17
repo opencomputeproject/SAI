@@ -304,6 +304,9 @@ typedef enum _sai_acl_action_type_t
     /** Bind a TAM object */
     SAI_ACL_ACTION_TYPE_TAM_OBJECT = 0x0000003d,
 
+    /** Custom range base value */
+    SAI_ACL_ACTION_TYPE_CUSTOM_RANGE_BASE = 0x10000000
+
 } sai_acl_action_type_t;
 
 /**
