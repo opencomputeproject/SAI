@@ -134,11 +134,6 @@ typedef sai_status_t (*sai_get_ocs_cross_connect_attribute_fn)(
 typedef enum _sai_ocs_port_override_state_t
 {
     /**
-     * @brief First element that the beam hits is powered off, for testing
-     */
-    SAI_OCS_PORT_OVERRIDE_STATE_POWERED_OFF,
-
-    /**
      * @brief Default, state to be determined by presence of cross-connect
      */
     SAI_OCS_PORT_OVERRIDE_STATE_NORMAL,
@@ -161,17 +156,17 @@ typedef enum _sai_ocs_port_status_t
     SAI_OCS_PORT_STATUS_BLOCKED,
 
     /**
-     * @brief Insertion loss is >0.5dB of target
+     * @brief Status when device is performing the switching.
      */
     SAI_OCS_PORT_STATUS_TUNING,
 
     /**
-     * @brief Insertion loss is within 0.5dB of target
+     * @brief Status when the device has finished switching.
      */
     SAI_OCS_PORT_STATUS_TUNED,
 
     /**
-     * @brief If there is a hardware failure
+     * @brief This is not a configuration or permanent failure flag. It is meant as a status in the port tuning state machine, for example, when software fails to apply a beam steering state to the OCS module due to some communication issue. It is up to the vendor to determine what constitutes a failure in port tuning. Note that the "failed" status is not an all-inclusive status but only used at times that the software knows of a certain failure in tuning.
      */
     SAI_OCS_PORT_STATUS_FAILED
 } sai_ocs_port_status_t;
