@@ -54,20 +54,20 @@ OCS_PORT|8B        normal
 ## 3.3 OCS Port Operational Status
 The OCS port operational status relies on the override state and the presence of an OCS cross-connect configuration on the port.       
 
-![OCS Port Operational Status](images/port_status.png)
+![OCS Port Operational Status](images/port_status.png)   
+The OCS port physical mapping information is about the internal port mapping to faceplate ports.    
 # 4. OCS Cross-Connects
 OCS cross-connects are dynamically created and removed via SAI APIs.    
 ## 4.1. Object Relationships
 * The SAI object IDs of OCS ports serve as the SAI attributes for both the ingress and egress ports in OCS cross-connect SAI object.
 * OCS ports are referenced to OCS cross-connect by their SAI object IDs in cross-connect attributes.
 ## 4.2. Cross-Connect Configuration 
-* To have fast switching performance, SAI bulk create/remove APIs are used for management of OCS cross-connect configurations.
-* OCS cross-connect can not be provisioned between two A side ports or two B side ports.
-* One OCS port can only involved in one OCS cross-connect; when switching existing OCS cross-connect, e.g. switch from 1A-1B to 1A-2B, the upstream application need to use SAI API to remove 1A-1B and then create 1A-2B. 
+* OCS cross-connect can be provisioned between two OCS ports such as 1A-1B, 1A-2A, etc.    
+* SAI bulk create/remove APIs are used for management of OCS cross-connect configurations. The backend logic under SAI can be implemented with one operation to OCS device, similar as overwrite behavior.
 # 5. OCS Cross-Connects Factory Data
-OCS cross-connect factory data are read-only information about insertion loss measurements of all possible cross-connects. 
+OCS cross-connect factory data are read-only information about factory beginning-of-life measurements that serve as a baseline reference that users can compare with. 
 * Factory data are measured during the manufacturing calibration phase.
-* The measurement is for every possible optical path (cross-connect) with an optical spectrum (central frequency) in specific environment (temperature).
+* The measurement is for optical paths (cross-connects) with an optical spectrum (central frequency) in specific environment (temperature).
 
 # 6. OCS SAI Object and Attributes
 | SAI Object | SAI Attributes | SAI Data Type |
