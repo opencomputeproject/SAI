@@ -134,7 +134,7 @@ typedef sai_status_t (*sai_get_ocs_cross_connect_attribute_fn)(
 typedef enum _sai_ocs_port_override_state_t
 {
     /**
-     * @brief Default, state to be determined by presence of cross-connect
+     * @brief Default, port status to be determined by presence of cross-connect
      */
     SAI_OCS_PORT_OVERRIDE_STATE_NORMAL,
 
