@@ -2926,6 +2926,15 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_LINK_UP_DEBOUNCE_TIMEOUT,
 
     /**
+     * @brief Port PFC Deadlock Detection timer granularity of all the PFC priorities
+     *
+     * @type sai_map_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_PORT_ATTR_PFC_TC_DLD_TIMER_INTERVAL,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,

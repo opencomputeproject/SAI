@@ -3551,6 +3551,16 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_LINK_UP_DEBOUNCE_TIMEOUT,
 
     /**
+     * @brief PFC Deadlock Detection timer granularity in milliseconds.
+     * Value must be either 1ms or 10ms or 100ms
+     *
+     * @type sai_map_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_PFC_TC_DLD_TIMER_INTERVAL,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
