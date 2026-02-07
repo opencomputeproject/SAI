@@ -3552,7 +3552,11 @@ typedef enum _sai_switch_attr_t
 
     /**
      * @brief PFC Deadlock Detection timer granularity in milliseconds.
-     * Value must be either 1ms or 10ms or 100ms
+     *
+     * Specifies the hardware timer granularity for PFC deadlock detection.
+     * The actual detection timer interval (SAI_SWITCH_ATTR_PFC_TC_DLD_INTERVAL) will be
+     * rounded to the nearest multiple of this granularity.
+     * Note: Use TC (Traffic Class) value as key and granularity value (1, 10, or 100 milliseconds) as value.
      *
      * @type sai_map_list_t
      * @flags CREATE_AND_SET
