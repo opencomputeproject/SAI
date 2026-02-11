@@ -1746,6 +1746,10 @@ sub ProcessDefaultValue
     {
         WriteSource "$val = { .mac = { 0, 0, 0, 0, 0, 0 } };";
     }
+    elsif ($default =~ /^0$/ and $type =~ /^(sai_timespec_t)/)
+    {
+        WriteSource "$val = { 0 };";
+    }
     else
     {
         LogError "invalid default value '$default' on $attr ($type)";
