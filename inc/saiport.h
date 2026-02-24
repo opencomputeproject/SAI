@@ -498,6 +498,12 @@ typedef enum _sai_port_interface_type_t
     /** Interface type USXGMII */
     SAI_PORT_INTERFACE_TYPE_USXGMII,
 
+    /** Interface type CEILR */
+    SAI_PORT_INTERFACE_TYPE_CEILR,
+
+    /** Interface type CEILR_ER */
+    SAI_PORT_INTERFACE_TYPE_CEILR_ER,
+
     /** Interface type MAX */
     SAI_PORT_INTERFACE_TYPE_MAX,
 
