@@ -21,6 +21,8 @@ CAUI - 100 Gigabit Attachment Unit Interface
 CB - Callback
 CBS - Committed Burst Size
 CCITT - Comite Consultatif International de Telegraphique et Telephonique
+CEILR - Common Electrical Interface Long Reach Normal
+CEIMR - Common Electrical Interface Medium Reach
 CFI - Canonical Format Indicator
 CIDR - Classless Inter Domain Routing
 CIR - Committed Information Rate
