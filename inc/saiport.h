@@ -370,6 +370,15 @@ typedef enum _sai_port_fec_mode_extended_t
 
     /** Enable FC-FEC (CL74) - 10G, 25G, 40G, 50G ports */
     SAI_PORT_FEC_MODE_EXTENDED_FC,
+
+    /** Enable RS544-FEC (interleaved) ETC variant */
+    SAI_PORT_FEC_MODE_EXTENDED_RS544_INTERLEAVED_ETC,
+
+    /** Enable RS544-FEC (interleaved-CL172) IEEE 802.3df variant */
+    SAI_PORT_FEC_MODE_EXTENDED_RS544_INTERLEAVED_CL172,
+
+    /** Enable RS544-FEC Low Latency variant */
+    SAI_PORT_FEC_MODE_EXTENDED_RS544_LOW_LATENCY,
 } sai_port_fec_mode_extended_t;
 
 /**
