@@ -3594,6 +3594,18 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PTP_SYNTONIZE_ADJUST,
 
     /**
+     * @brief Event learn notification callback
+     * function passed to the adapter.
+     *
+     * Use sai_tam_event_learn_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_tam_event_learn_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_TAM_EVENT_LEARN_NOTIFY,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,

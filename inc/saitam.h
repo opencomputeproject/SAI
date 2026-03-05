@@ -2312,6 +2312,32 @@ typedef sai_status_t (*sai_set_tam_event_action_attribute_fn)(
         _In_ const sai_attribute_t *attr);
 
 /**
+ * @brief Packet drop types.
+ */
+typedef enum _sai_packet_drop_type_t
+{
+    /**
+     * @brief No drops monitored
+     */
+    SAI_PACKET_DROP_TYPE_NONE,
+
+    /**
+     * @brief Ingress drops
+     */
+    SAI_PACKET_DROP_TYPE_INGRESS,
+
+    /**
+     * @brief Egress drops
+     */
+    SAI_PACKET_DROP_TYPE_EGRESS,
+
+    /**
+     * @brief Buffer related drops
+     */
+    SAI_PACKET_DROP_TYPE_BUFFER,
+} sai_packet_drop_type_t;
+
+/**
  * @brief Tam event attributes
  */
 typedef enum _sai_tam_event_attr_t
@@ -2366,6 +2392,26 @@ typedef enum _sai_tam_event_attr_t
      * @default 0
      */
     SAI_TAM_EVENT_ATTR_DSCP_VALUE,
+
+    /**
+     * @brief Enable hardware based learning of events
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_TAM_EVENT_ATTR_TYPE == SAI_TAM_EVENT_TYPE_PACKET_DROP
+     */
+    SAI_TAM_EVENT_ATTR_HW_LEARN,
+
+    /**
+     * @brief Enable hardware based learning of events
+     *
+     * @type sai_packet_drop_type_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PACKET_DROP_TYPE_NONE
+     * @validonly SAI_TAM_EVENT_ATTR_TYPE == SAI_TAM_EVENT_TYPE_PACKET_DROP
+     */
+    SAI_TAM_EVENT_ATTR_PACKET_DROP_TYPE,
 
     /**
      * @brief End of Attributes
@@ -2574,6 +2620,66 @@ typedef void (*sai_tam_event_notification_fn)(
         _In_ const void *buffer,
         _In_ uint32_t attr_count,
         _In_ const sai_attribute_t *attr_list);
+
+/**
+ * @brief TAM tam learn entry
+ */
+typedef struct _sai_tam_event_learn_entry_t
+{
+    /**
+     * @brief Switch ID
+     *
+     * @objects SAI_OBJECT_TYPE_SWITCH
+     */
+    sai_object_id_t switch_id;
+
+    /**
+     * @brief Ingress Port ID
+     *
+     * @objects SAI_OBJECT_TYPE_SWITCH
+     */
+    sai_object_id_t ingress_port_id;
+
+    /** IP address */
+    sai_ip_address_t ip_address;
+
+    /** Drop Reason Code */
+    sai_uint32_t drop_reason;
+
+} sai_tam_event_learn_entry_t;
+
+/**
+ * @brief Notification data format received from SAI TAM event learn callback
+ *
+ * @count attr[attr_count]
+ */
+typedef struct _sai_tam_event_learn_notification_data_t
+{
+    /** TAM event learn entry */
+    sai_tam_event_learn_entry_t learn_entry;
+
+    /** Attributes count */
+    uint32_t attr_count;
+
+    /**
+     * @brief Attributes
+     *
+     * @objects SAI_OBJECT_TYPE_ACL_ENTRY
+     */
+    sai_attribute_t *attr;
+} sai_tam_event_learn_notification_data_t;
+
+/**
+ * @brief TAM Event learn notifications
+ *
+ * @count data[count]
+ *
+ * @param[in] count Number of notifications
+ * @param[in] data Pointer to TAM event learn notification data array
+ */
+typedef void (*sai_tam_event_learn_notification_fn)(
+        _In_ uint32_t count,
+        _In_ const sai_tam_event_learn_notification_data_t *data);
 
 /**
  * @brief TAM telemetry data get API

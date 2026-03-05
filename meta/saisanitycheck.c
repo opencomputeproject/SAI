@@ -6352,6 +6352,7 @@ void check_struct_and_union_size()
     CHECK_STRUCT_SIZE(sai_prbs_per_lane_rx_state_list_t, 16);
     CHECK_STRUCT_SIZE(sai_prbs_bit_error_rate_t, 16);
     CHECK_STRUCT_SIZE(sai_prbs_per_lane_bit_error_rate_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_tam_event_learn_entry_t, 40);
 }
 #pragma GCC diagnostic pop
 

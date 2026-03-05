@@ -324,6 +324,9 @@ typedef enum _sai_acl_action_type_t
     /** Bind a TAM object */
     SAI_ACL_ACTION_TYPE_TAM_OBJECT = 0x0000003d,
 
+    /** Bind a TAM event object */
+    SAI_ACL_ACTION_TYPE_TAM_EVENT_OBJECT = 0x0000003e,
+
     /** Custom range base value */
     SAI_ACL_ACTION_TYPE_CUSTOM_RANGE_BASE = 0x10000000
 
@@ -1648,9 +1651,18 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_CSIG_D_BIT = SAI_ACL_TABLE_ATTR_FIELD_START + 0x166,
 
     /**
+     * @brief Drop Reason
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_DROP_REASON = SAI_ACL_TABLE_ATTR_FIELD_START + 0x167,
+
+    /**
      * @brief End of ACL Table Match Field
      */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_CSIG_D_BIT,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_DROP_REASON,
 
     /**
      * @brief ACL table entries associated with this table.
@@ -2826,9 +2838,18 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_CSIG_D_BIT = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x166,
 
     /**
+     * @brief Drop Reason
+     *
+     * @type sai_acl_field_data_t sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_DROP_REASON = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x167,
+
+    /**
      * @brief End of Rule Match Fields
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_CSIG_D_BIT,
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_DROP_REASON,
 
     /*
      * Actions [sai_acl_action_data_t]
@@ -3475,9 +3496,22 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_TAM_OBJECT = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x3d,
 
     /**
+     * @brief ACL bind point for TAM event object
+     *
+     * Bind (or unbind) a TAM event object.
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_TAM_EVENT
+     * @allownull true
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_TAM_EVENT_OBJECT = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x3e,
+
+    /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_TAM_OBJECT,
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_TAM_EVENT_OBJECT,
 
     /**
      * @brief End of ACL Entry attributes
