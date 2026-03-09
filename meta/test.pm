@@ -646,7 +646,14 @@ sub CreateStructUnionSizeCheckTest
             $STRUCTS{$name} = $name;
 
             next if $name =~ /^sai_\w+_api_t$/; # skip api structs
-            next if $name eq "sai_switch_health_data_t";
+
+            # Skip extensible structs that are allowed to grow (see also structs.pl)
+            my %extensible_structs = map { $_ => 1 } (
+                "sai_switch_health_data_t",
+                "sai_port_oper_status_notification_t",
+                "sai_stat_st_capability_t",
+            );
+            next if $extensible_structs{$name};
 
             my $upname = uc($name);
 
