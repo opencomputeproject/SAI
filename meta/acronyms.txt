@@ -202,3 +202,5 @@ XLAUI - 40 Gbps Attachment Unit Interface
 XOFF - Transmitter Off
 XON - Transmitter On
 XPN - Extended Packet Number
+CEIMR - Common Electrical Interface Medium Reach
+CEILR - Common Electrical Interface Long Reach Normal
