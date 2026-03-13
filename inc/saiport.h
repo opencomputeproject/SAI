@@ -504,7 +504,7 @@ typedef enum _sai_port_interface_type_t
     /** Interface type CEILR */
     SAI_PORT_INTERFACE_TYPE_CEILR,
 
-    /** Interface type CEILR extended long reach */
+    /** Interface type CEILR extended reach */
     SAI_PORT_INTERFACE_TYPE_CEILR_ER,
 
     /** Interface type MAX */
