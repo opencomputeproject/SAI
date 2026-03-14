@@ -564,6 +564,79 @@ typedef enum _sai_port_prbs_config_t
 } sai_port_prbs_config_t;
 
 /**
+ * @brief Attribute data for #SAI_PORT_ATTR_PRBS_PATTERN
+ * PRBS polynomial pattern
+ */
+typedef enum _sai_port_prbs_pattern_t
+{
+    /** Vendor determined PRBS polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_AUTO,
+
+    /** PRBS-7 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS7,
+
+    /** PRBS-9 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS9,
+
+    /** PRBS-10 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS10,
+
+    /** PRBS-11 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS11,
+
+    /** PRBS-13 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS13,
+
+    /** PRBS-15 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS15,
+
+    /** PRBS-16 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS16,
+
+    /** PRBS-20 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS20,
+
+    /** PRBS-23 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS23,
+
+    /** PRBS-31 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS31,
+
+    /** PRBS-32 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS32,
+
+    /** PRBS-49 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS49,
+
+    /** PRBS-58 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS58,
+
+    /** PRBS-7Q polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS7Q,
+
+    /** PRBS-9Q polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS9Q,
+
+    /** PRBS-13Q polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS13Q,
+
+    /** PRBS-15Q polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS15Q,
+
+    /** PRBS-23Q polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS23Q,
+
+    /** PRBS-31Q polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS31Q,
+
+    /** SSPRQ polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_SSPRQ,
+
+    /** Custom range base value */
+    SAI_PORT_PRBS_PATTERN_CUSTOM_RANGE_BASE = 0x10000000
+} sai_port_prbs_pattern_t;
+
+/**
  * @brief Attribute data for #SAI_PORT_CONNECTOR_ATTR_FAILOVER_MODE
  * Used for Failover mode configuration on port
  */
@@ -1972,9 +2045,13 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Port PRBS Polynomial
      *
+     * Deprecated. Use SAI_PORT_ATTR_PRBS_PATTERN.
+     * This attribute is mutually exclusive with SAI_PORT_ATTR_PRBS_PATTERN.
+     *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default internal
+     * @deprecated true
      */
     SAI_PORT_ATTR_PRBS_POLYNOMIAL,
 
@@ -2964,6 +3041,25 @@ typedef enum _sai_port_attr_t
      * @default 0
      */
     SAI_PORT_ATTR_PTP_PEER_MEAN_PATH_DELAY,
+
+    /**
+     * @brief Port PRBS Polynomial Pattern
+     *
+     * This attribute is mutually exclusive with the deprecated SAI_PORT_ATTR_PRBS_POLYNOMIAL.
+     *
+     * @type sai_port_prbs_pattern_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_PRBS_PATTERN_AUTO
+     */
+    SAI_PORT_ATTR_PRBS_PATTERN,
+
+    /**
+     * @brief Supported list of PRBS Polynomial Patterns for the port
+     *
+     * @type sai_s32_list_t sai_port_prbs_pattern_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_SUPPORTED_PRBS_PATTERN,
 
     /**
      * @brief End of attributes
