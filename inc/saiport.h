@@ -2966,6 +2966,203 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PTP_PEER_MEAN_PATH_DELAY,
 
     /**
+     * @brief Get CBFC Native Credit Size in bytes.
+     *
+     * Receiver's input buffer is typically divided into cells, and the native credit size is this cell size (in bytes).
+     *
+     * @type sai_uint16_t
+     * @flags READ_ONLY
+     * @isvlan false
+     */
+    SAI_PORT_ATTR_CBFC_RECEIVER_NATIVE_CREDIT_SIZE,
+
+    /**
+     * @brief Get CBFC Receiver Native Packet Overhead in bytes.
+     *
+     * @type sai_int16_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_CBFC_RECEIVER_NATIVE_PACKET_OVERHEAD,
+
+    /**
+     * @brief Get CBFC Receiver Total Port Credits in Credits.
+     *
+     * If value is 0, receiver sets per-VC credit limits.
+     *
+     * @type sai_uint16_t
+     * @flags READ_ONLY
+     * @isvlan false
+     */
+    SAI_PORT_ATTR_CBFC_RECEIVER_NATIVE_TOTAL_CREDITS,
+
+    /**
+     * @brief Configure CBFC Receiver Credit Size in bytes.
+     *
+     * If value is 0, CBFC_RECEIVER_NATIVE_CREDIT_SIZE will be used.
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     */
+    SAI_PORT_ATTR_CBFC_RECEIVER_CREDIT_SIZE,
+
+    /**
+     * @brief Configure CBFC Receiver Packet Overhead in bytes.
+     *
+     * Range: -16 to 127
+     * If value is 128, SAI_PORT_ATTR_CBFC_RECEIVER_NATIVE_PACKET_OVERHEAD will be used
+     *
+     * @type sai_int16_t
+     * @flags CREATE_AND_SET
+     * @default 128
+     */
+    SAI_PORT_ATTR_CBFC_RECEIVER_PACKET_OVERHEAD,
+
+    /**
+     * @brief Get CBFC supported Credit Size in bytes.
+     *
+     * @type sai_u16_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_CBFC_SENDER_SUPPORTED_CREDIT_SIZE,
+
+    /**
+     * @brief Configure CBFC Sender Credit Size in bytes.
+     *
+     * To maximize utilization of the receiver's input buffer, set to largest value in CBFC_SENDER_SUPPORTED_CREDIT_SIZE that does not exceed CBFC_RECEIVER_NATIVE_CREDIT_SIZE.
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 128
+     */
+    SAI_PORT_ATTR_CBFC_SENDER_CREDIT_SIZE,
+
+    /**
+     * @brief Configure CBFC Sender Packet Overhead in bytes.
+     *
+     * Range: -16 to 127.
+     *
+     * @type sai_int16_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_ATTR_CBFC_SENDER_PACKET_OVERHEAD,
+
+    /**
+     * @brief Configure CBFC Sender Port Credit Limit.
+     *
+     * Range; 0 to (2^20 - 1).
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_ATTR_CBFC_SENDER_CREDIT_LIMIT,
+
+    /**
+     * @brief Configure CBFC CC_Update message timer in  microseconds.
+     *
+     * Range: 1us to 250000us.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 256
+     */
+    SAI_PORT_ATTR_CBFC_CC_MESSAGE_TIMER,
+
+    /**
+     * @brief Configure minimum space between CBFC CF_Update messages in bytes.
+     *
+     * Must be >=800B.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 6400
+     */
+    SAI_PORT_ATTR_CBFC_CF_MIN_SPACING,
+
+    /**
+     * @brief Configure minimum space in bytes between CtlOS messages 
+     * like CBFC CF_Update, LLR ACK etc.
+     * Must be >=800B.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 6400
+     */
+    SAI_PORT_ATTR_CTLOS_MIN_SPACING,
+
+    /**
+     * @brief Configure maximum space between CBFC CF_Update messages in bytes.
+     *
+     * Range: 16 KB to 1 MB with minimum granularity of 16 KB.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 262144
+     */
+    SAI_PORT_ATTR_CBFC_CF_MAX_SPACING,
+
+    /**
+     * @brief Enable Queue to VC MAP on port
+     *
+     * QOS_MAP of type SAI_QOS_MAP_TYPE_QUEUE_TO_VC
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_QOS_QUEUE_TO_VC_MAP,
+
+    /**
+     * @brief Enable TC to VC MAP on port.
+     * 
+     * QOS_MAP of type SAI_QOS_MAP_TYPE_TC_TO_VC
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_QOS_TC_TO_VC_MAP,
+
+    /**
+     * @brief Enable {DOT1P,DEI} -> TC MAP on port.
+     *
+     * Cannot co-exist with SAI_PORT_ATTR_QOS_DOT1P_TO_TC_MAP.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_QOS_DOT1P_DEI_TO_TC_MAP,
+
+    /**
+     * @brief List of virtual channels for the port.
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_VIRTUAL_CHANNEL
+     */
+    SAI_PORT_ATTR_QOS_VIRTUAL_CHANNEL_LIST,
+
+    /**
+     * @brief List of CBFC credit pools for the port.
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_CBFC_CREDIT_POOL
+     */
+    SAI_PORT_ATTR_CBFC_CREDIT_POOL_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
@@ -3721,6 +3918,24 @@ typedef enum _sai_port_stat_t
 
     /** Number of times that LLR Rx detected the start of a replay */
     SAI_PORT_STAT_LLR_RX_REPLAY,
+
+    /** SAI port stat sender credits used */
+    SAI_PORT_STAT_CBFC_SENDER_CREDITS_USED,
+
+    /** SAI port stat sender credits used watermark */
+    SAI_PORT_STAT_CBFC_SENDER_CREDITS_USED_WATERMARK,
+
+    /** SAI port stat credits consumed update messages tx */
+    SAI_PORT_STAT_CBFC_NUM_CC_UPDATE_MESSAGES_TX,
+
+    /** SAI port stat credits freed update messages tx */
+    SAI_PORT_STAT_CBFC_NUM_CF_UPDATE_MESSAGES_TX,
+
+    /** SAI port stat credits consumed update messages rx */
+    SAI_PORT_STAT_CBFC_NUM_CC_UPDATE_MESSAGES_RX,
+
+    /** SAI port stat credits freed update messages rx */
+    SAI_PORT_STAT_CBFC_NUM_CF_UPDATE_MESSAGES_RX,
 
     /** Port stat in drop reasons range start */
     SAI_PORT_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,
