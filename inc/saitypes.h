@@ -303,6 +303,9 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_PREFIX_COMPRESSION_ENTRY = 113,
     SAI_OBJECT_TYPE_SYNCE_CLOCK              = 114,
     SAI_OBJECT_TYPE_PORT_LLR_PROFILE         = 115,
+    SAI_OBJECT_TYPE_VIRTUAL_CHANNEL          = 116,
+    SAI_OBJECT_TYPE_CBFC_CREDIT_POOL         = 117,
+    SAI_OBJECT_TYPE_CBFC_CREDIT_PROFILE      = 118,
 
     /** Must remain in last position */
     SAI_OBJECT_TYPE_MAX,
@@ -835,6 +838,12 @@ typedef struct _sai_qos_map_params_t
 
     /** Forwarding class */
     sai_uint8_t fc;
+
+    /** Dot1p + DEI used in SAI_QOS_MAP_TYPE_DOT1P_DEI_TO_TC */
+    sai_uint8_t dot1p_dei;
+
+    /** Virtual Channel */
+    sai_uint8_t vc;
 
 } sai_qos_map_params_t;
 
