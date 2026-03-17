@@ -187,8 +187,11 @@ typedef enum _sai_switch_switching_mode_t
  */
 typedef enum _sai_hash_algorithm_t
 {
+    /**  Start of hash algorithms */
+    SAI_HASH_ALGORITHM_START = 0,
+
     /** CRC based hash algorithm */
-    SAI_HASH_ALGORITHM_CRC = 0,
+    SAI_HASH_ALGORITHM_CRC = SAI_HASH_ALGORITHM_START,
 
     /** XOR-based hash algorithm */
     SAI_HASH_ALGORITHM_XOR = 1,
@@ -220,6 +223,8 @@ typedef enum _sai_hash_algorithm_t
     /** Upper 16 bits of Jenkins hash algorithm */
     SAI_HASH_ALGORITHM_JENKINS_HI = 10,
 
+    /** End of hash algorithms */
+    SAI_HASH_ALGORITHM_END
 } sai_hash_algorithm_t;
 
 /**
