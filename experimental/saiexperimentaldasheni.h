@@ -583,249 +583,335 @@ typedef enum _sai_eni_attr_t
  */
 typedef enum _sai_eni_stat_t
 {
-    /** DASH ENI RX_BYTES stat count */
+    /** Number of bytes received by the ENI */
     SAI_ENI_STAT_RX_BYTES,
 
-    /** DASH ENI RX_PACKETS stat count */
+    /** Number of packets received by the ENI */
     SAI_ENI_STAT_RX_PACKETS,
 
-    /** DASH ENI TX_BYTES stat count */
+    /** Number of bytes transmitted by the ENI */
     SAI_ENI_STAT_TX_BYTES,
 
-    /** DASH ENI TX_PACKETS stat count */
+    /** Number of packets transmitted by the ENI */
     SAI_ENI_STAT_TX_PACKETS,
 
-    /** DASH ENI OUTBOUND_RX_BYTES stat count */
+    /** Number of bytes received for outbound sessions */
     SAI_ENI_STAT_OUTBOUND_RX_BYTES,
 
-    /** DASH ENI OUTBOUND_RX_PACKETS stat count */
+    /** Number of packets received for outbound sessions */
     SAI_ENI_STAT_OUTBOUND_RX_PACKETS,
 
-    /** DASH ENI OUTBOUND_TX_BYTES stat count */
+    /** Number of bytes transmitted for outbound sessions */
     SAI_ENI_STAT_OUTBOUND_TX_BYTES,
 
-    /** DASH ENI OUTBOUND_TX_PACKETS stat count */
+    /** Number of packets transmitted for outbound sessions */
     SAI_ENI_STAT_OUTBOUND_TX_PACKETS,
 
-    /** DASH ENI INBOUND_RX_BYTES stat count */
+    /** Number of bytes received for inbound sessions */
     SAI_ENI_STAT_INBOUND_RX_BYTES,
 
-    /** DASH ENI INBOUND_RX_PACKETS stat count */
+    /** Number of packets received for inbound sessions */
     SAI_ENI_STAT_INBOUND_RX_PACKETS,
 
-    /** DASH ENI INBOUND_TX_BYTES stat count */
+    /** Number of bytes transmitted for inbound sessions */
     SAI_ENI_STAT_INBOUND_TX_BYTES,
 
-    /** DASH ENI INBOUND_TX_PACKETS stat count */
+    /** Number of packets transmitted for inbound sessions */
     SAI_ENI_STAT_INBOUND_TX_PACKETS,
 
-    /** DASH ENI LB_FAST_PATH_ICMP_IN_BYTES stat count */
+    /** Number of bytes received for fast path ICMP flow redirect messages */
     SAI_ENI_STAT_LB_FAST_PATH_ICMP_IN_BYTES,
 
-    /** DASH ENI LB_FAST_PATH_ICMP_IN_PACKETS stat count */
+    /** Number of fast path ICMP flow redirect messages received */
     SAI_ENI_STAT_LB_FAST_PATH_ICMP_IN_PACKETS,
 
-    /** DASH ENI FLOW_CREATED stat count */
+    /** Number of flows created */
     SAI_ENI_STAT_FLOW_CREATED,
 
-    /** DASH ENI FLOW_CREATE_FAILED stat count */
+    /** Number of failed flow-create */
     SAI_ENI_STAT_FLOW_CREATE_FAILED,
 
-    /** DASH ENI FLOW_UPDATED stat count */
+    /** Number of flows updated */
     SAI_ENI_STAT_FLOW_UPDATED,
 
-    /** DASH ENI FLOW_UPDATE_FAILED stat count */
+    /** Number of failed flow-update */
     SAI_ENI_STAT_FLOW_UPDATE_FAILED,
 
-    /** DASH ENI FLOW_UPDATED_BY_RESIMULATION stat count */
+    /** Number of flows updated by re-simulation */
     SAI_ENI_STAT_FLOW_UPDATED_BY_RESIMULATION,
 
-    /** DASH ENI FLOW_UPDATE_BY_RESIMULATION_FAILED stat count */
+    /** Number of failed flow-update by re-simulation */
     SAI_ENI_STAT_FLOW_UPDATE_BY_RESIMULATION_FAILED,
 
-    /** DASH ENI FLOW_DELETED stat count */
+    /** Number of flows deleted */
     SAI_ENI_STAT_FLOW_DELETED,
 
-    /** DASH ENI FLOW_DELETE_FAILED stat count */
+    /** Number of failed flow-delete */
     SAI_ENI_STAT_FLOW_DELETE_FAILED,
 
-    /** DASH ENI FLOW_AGED stat count */
+    /** Number of flows idle-aged */
     SAI_ENI_STAT_FLOW_AGED,
 
-    /** DASH ENI INLINE_SYNC_PACKET_RX_BYTES stat count */
+    /** Number of bytes received for inline sync packets */
     SAI_ENI_STAT_INLINE_SYNC_PACKET_RX_BYTES,
 
-    /** DASH ENI INLINE_SYNC_PACKET_RX_PACKETS stat count */
+    /** Number of inline sync packets received */
     SAI_ENI_STAT_INLINE_SYNC_PACKET_RX_PACKETS,
 
-    /** DASH ENI INLINE_SYNC_PACKET_TX_BYTES stat count */
+    /** Number of bytes transmitted for inline sync packets */
     SAI_ENI_STAT_INLINE_SYNC_PACKET_TX_BYTES,
 
-    /** DASH ENI INLINE_SYNC_PACKET_TX_PACKETS stat count */
+    /** Number of inline sync packets transmitted */
     SAI_ENI_STAT_INLINE_SYNC_PACKET_TX_PACKETS,
 
-    /** DASH ENI TIMED_SYNC_PACKET_RX_BYTES stat count */
+    /** Number of bytes received for timed sync packets */
     SAI_ENI_STAT_TIMED_SYNC_PACKET_RX_BYTES,
 
-    /** DASH ENI TIMED_SYNC_PACKET_RX_PACKETS stat count */
+    /** Number of timed sync packets received */
     SAI_ENI_STAT_TIMED_SYNC_PACKET_RX_PACKETS,
 
-    /** DASH ENI TIMED_SYNC_PACKET_TX_BYTES stat count */
+    /** Number of bytes transmitted for timed sync packets */
     SAI_ENI_STAT_TIMED_SYNC_PACKET_TX_BYTES,
 
-    /** DASH ENI TIMED_SYNC_PACKET_TX_PACKETS stat count */
+    /** Number of timed sync packets transmitted */
     SAI_ENI_STAT_TIMED_SYNC_PACKET_TX_PACKETS,
 
-    /** DASH ENI INLINE_FLOW_CREATE_REQ_SENT stat count */
+    /** Number of inline flow-create requests sent */
     SAI_ENI_STAT_INLINE_FLOW_CREATE_REQ_SENT,
 
-    /** DASH ENI INLINE_FLOW_CREATE_REQ_RECV stat count */
+    /** Number of inline flow-create requests received */
     SAI_ENI_STAT_INLINE_FLOW_CREATE_REQ_RECV,
 
-    /** DASH ENI INLINE_FLOW_CREATE_REQ_FAILED stat count */
+    /** Number of failed inline flow-create requests */
     SAI_ENI_STAT_INLINE_FLOW_CREATE_REQ_FAILED,
 
-    /** DASH ENI INLINE_FLOW_CREATE_REQ_IGNORED stat count */
+    /** Number of ignored inline flow-create requests */
     SAI_ENI_STAT_INLINE_FLOW_CREATE_REQ_IGNORED,
 
-    /** DASH ENI INLINE_FLOW_CREATE_ACK_RECV stat count */
+    /** Number of inline flow-create acknowledgements received */
     SAI_ENI_STAT_INLINE_FLOW_CREATE_ACK_RECV,
 
-    /** DASH ENI INLINE_FLOW_CREATE_ACK_FAILED stat count */
+    /** Number of failed inline flow-create acknowledgements */
     SAI_ENI_STAT_INLINE_FLOW_CREATE_ACK_FAILED,
 
-    /** DASH ENI INLINE_FLOW_CREATE_ACK_IGNORED stat count */
+    /** Number of ignored inline flow-create acknowledgements */
     SAI_ENI_STAT_INLINE_FLOW_CREATE_ACK_IGNORED,
 
-    /** DASH ENI TIMED_FLOW_CREATE_REQ_SENT stat count */
+    /** Number of timed flow-create requests sent */
     SAI_ENI_STAT_TIMED_FLOW_CREATE_REQ_SENT,
 
-    /** DASH ENI TIMED_FLOW_CREATE_REQ_RECV stat count */
+    /** Number of timed flow-create requests received */
     SAI_ENI_STAT_TIMED_FLOW_CREATE_REQ_RECV,
 
-    /** DASH ENI TIMED_FLOW_CREATE_REQ_FAILED stat count */
+    /** Number of failed timed flow-create requests */
     SAI_ENI_STAT_TIMED_FLOW_CREATE_REQ_FAILED,
 
-    /** DASH ENI TIMED_FLOW_CREATE_REQ_IGNORED stat count */
+    /** Number of ignored timed flow-create requests */
     SAI_ENI_STAT_TIMED_FLOW_CREATE_REQ_IGNORED,
 
-    /** DASH ENI TIMED_FLOW_CREATE_ACK_RECV stat count */
+    /** Number of timed flow-create acknowledgements received */
     SAI_ENI_STAT_TIMED_FLOW_CREATE_ACK_RECV,
 
-    /** DASH ENI TIMED_FLOW_CREATE_ACK_FAILED stat count */
+    /** Number of failed timed flow-create acknowledgements */
     SAI_ENI_STAT_TIMED_FLOW_CREATE_ACK_FAILED,
 
-    /** DASH ENI TIMED_FLOW_CREATE_ACK_IGNORED stat count */
+    /** Number of ignored timed flow-create acknowledgements */
     SAI_ENI_STAT_TIMED_FLOW_CREATE_ACK_IGNORED,
 
-    /** DASH ENI INLINE_FLOW_UPDATE_REQ_SENT stat count */
+    /** Number of inline flow-update requests sent */
     SAI_ENI_STAT_INLINE_FLOW_UPDATE_REQ_SENT,
 
-    /** DASH ENI INLINE_FLOW_UPDATE_REQ_RECV stat count */
+    /** Number of inline flow-update requests received */
     SAI_ENI_STAT_INLINE_FLOW_UPDATE_REQ_RECV,
 
-    /** DASH ENI INLINE_FLOW_UPDATE_REQ_FAILED stat count */
+    /** Number of failed inline flow-update requests */
     SAI_ENI_STAT_INLINE_FLOW_UPDATE_REQ_FAILED,
 
-    /** DASH ENI INLINE_FLOW_UPDATE_REQ_IGNORED stat count */
+    /** Number of ignored inline flow-update requests */
     SAI_ENI_STAT_INLINE_FLOW_UPDATE_REQ_IGNORED,
 
-    /** DASH ENI INLINE_FLOW_UPDATE_ACK_RECV stat count */
+    /** Number of inline flow-update acknowledgements received */
     SAI_ENI_STAT_INLINE_FLOW_UPDATE_ACK_RECV,
 
-    /** DASH ENI INLINE_FLOW_UPDATE_ACK_FAILED stat count */
+    /** Number of failed inline flow-update acknowledgements */
     SAI_ENI_STAT_INLINE_FLOW_UPDATE_ACK_FAILED,
 
-    /** DASH ENI INLINE_FLOW_UPDATE_ACK_IGNORED stat count */
+    /** Number of ignored inline flow-update acknowledgements */
     SAI_ENI_STAT_INLINE_FLOW_UPDATE_ACK_IGNORED,
 
-    /** DASH ENI TIMED_FLOW_UPDATE_REQ_SENT stat count */
+    /** Number of timed flow-update requests sent */
     SAI_ENI_STAT_TIMED_FLOW_UPDATE_REQ_SENT,
 
-    /** DASH ENI TIMED_FLOW_UPDATE_REQ_RECV stat count */
+    /** Number of timed flow-update requests received */
     SAI_ENI_STAT_TIMED_FLOW_UPDATE_REQ_RECV,
 
-    /** DASH ENI TIMED_FLOW_UPDATE_REQ_FAILED stat count */
+    /** Number of failed timed flow-update requests */
     SAI_ENI_STAT_TIMED_FLOW_UPDATE_REQ_FAILED,
 
-    /** DASH ENI TIMED_FLOW_UPDATE_REQ_IGNORED stat count */
+    /** Number of ignored timed flow-update requests */
     SAI_ENI_STAT_TIMED_FLOW_UPDATE_REQ_IGNORED,
 
-    /** DASH ENI TIMED_FLOW_UPDATE_ACK_RECV stat count */
+    /** Number of timed flow-update acknowledgements received */
     SAI_ENI_STAT_TIMED_FLOW_UPDATE_ACK_RECV,
 
-    /** DASH ENI TIMED_FLOW_UPDATE_ACK_FAILED stat count */
+    /** Number of failed timed flow-update acknowledgements */
     SAI_ENI_STAT_TIMED_FLOW_UPDATE_ACK_FAILED,
 
-    /** DASH ENI TIMED_FLOW_UPDATE_ACK_IGNORED stat count */
+    /** Number of ignored timed flow-update acknowledgements */
     SAI_ENI_STAT_TIMED_FLOW_UPDATE_ACK_IGNORED,
 
-    /** DASH ENI INLINE_FLOW_DELETE_REQ_SENT stat count */
+    /** Number of inline flow-delete requests sent */
     SAI_ENI_STAT_INLINE_FLOW_DELETE_REQ_SENT,
 
-    /** DASH ENI INLINE_FLOW_DELETE_REQ_RECV stat count */
+    /** Number of inline flow-delete requests received */
     SAI_ENI_STAT_INLINE_FLOW_DELETE_REQ_RECV,
 
-    /** DASH ENI INLINE_FLOW_DELETE_REQ_FAILED stat count */
+    /** Number of failed inline flow-delete requests */
     SAI_ENI_STAT_INLINE_FLOW_DELETE_REQ_FAILED,
 
-    /** DASH ENI INLINE_FLOW_DELETE_REQ_IGNORED stat count */
+    /** Number of ignored inline flow-delete requests */
     SAI_ENI_STAT_INLINE_FLOW_DELETE_REQ_IGNORED,
 
-    /** DASH ENI INLINE_FLOW_DELETE_ACK_RECV stat count */
+    /** Number of inline flow-delete acknowledgements received */
     SAI_ENI_STAT_INLINE_FLOW_DELETE_ACK_RECV,
 
-    /** DASH ENI INLINE_FLOW_DELETE_ACK_FAILED stat count */
+    /** Number of failed inline flow-delete acknowledgements */
     SAI_ENI_STAT_INLINE_FLOW_DELETE_ACK_FAILED,
 
-    /** DASH ENI INLINE_FLOW_DELETE_ACK_IGNORED stat count */
+    /** Number of ignored inline flow-delete acknowledgements */
     SAI_ENI_STAT_INLINE_FLOW_DELETE_ACK_IGNORED,
 
-    /** DASH ENI TIMED_FLOW_DELETE_REQ_SENT stat count */
+    /** Number of timed flow-delete requests sent */
     SAI_ENI_STAT_TIMED_FLOW_DELETE_REQ_SENT,
 
-    /** DASH ENI TIMED_FLOW_DELETE_REQ_RECV stat count */
+    /** Number of timed flow-delete requests received */
     SAI_ENI_STAT_TIMED_FLOW_DELETE_REQ_RECV,
 
-    /** DASH ENI TIMED_FLOW_DELETE_REQ_FAILED stat count */
+    /** Number of failed timed flow-delete requests */
     SAI_ENI_STAT_TIMED_FLOW_DELETE_REQ_FAILED,
 
-    /** DASH ENI TIMED_FLOW_DELETE_REQ_IGNORED stat count */
+    /** Number of ignored timed flow-delete requests */
     SAI_ENI_STAT_TIMED_FLOW_DELETE_REQ_IGNORED,
 
-    /** DASH ENI TIMED_FLOW_DELETE_ACK_RECV stat count */
+    /** Number of timed flow-delete acknowledgements received */
     SAI_ENI_STAT_TIMED_FLOW_DELETE_ACK_RECV,
 
-    /** DASH ENI TIMED_FLOW_DELETE_ACK_FAILED stat count */
+    /** Number of failed timed flow-delete acknowledgements */
     SAI_ENI_STAT_TIMED_FLOW_DELETE_ACK_FAILED,
 
-    /** DASH ENI TIMED_FLOW_DELETE_ACK_IGNORED stat count */
+    /** Number of ignored timed flow-delete acknowledgements */
     SAI_ENI_STAT_TIMED_FLOW_DELETE_ACK_IGNORED,
 
-    /** DASH ENI OUTBOUND_ROUTING_ENTRY_MISS_DROP_PACKETS stat count */
+    /** Number of packets dropped due to outbound routing entry miss */
     SAI_ENI_STAT_OUTBOUND_ROUTING_ENTRY_MISS_DROP_PACKETS,
 
-    /** DASH ENI OUTBOUND_CA_PA_ENTRY_MISS_DROP_PACKETS stat count */
+    /** Number of packets dropped due to outbound CA-PA entry miss */
     SAI_ENI_STAT_OUTBOUND_CA_PA_ENTRY_MISS_DROP_PACKETS,
 
-    /** DASH ENI INBOUND_ROUTING_ENTRY_MISS_DROP_PACKETS stat count */
+    /** Number of packets dropped due to inbound routing entry miss */
     SAI_ENI_STAT_INBOUND_ROUTING_ENTRY_MISS_DROP_PACKETS,
 
-    /** DASH ENI OUTBOUND_ROUTING_GROUP_MISS_DROP_PACKETS stat count */
+    /** Number of packets dropped due to outbound routing group miss */
     SAI_ENI_STAT_OUTBOUND_ROUTING_GROUP_MISS_DROP_PACKETS,
 
-    /** DASH ENI OUTBOUND_ROUTING_GROUP_DISABLED_DROP_PACKETS stat count */
+    /** Number of packets dropped due to outbound routing group disabled */
     SAI_ENI_STAT_OUTBOUND_ROUTING_GROUP_DISABLED_DROP_PACKETS,
 
-    /** DASH ENI OUTBOUND_PORT_MAP_MISS_DROP_PACKETS stat count */
+    /** Number of packets dropped due to outbound port map miss */
     SAI_ENI_STAT_OUTBOUND_PORT_MAP_MISS_DROP_PACKETS,
 
-    /** DASH ENI OUTBOUND_PORT_MAP_PORT_RANGE_ENTRY_MISS_DROP_PACKETS stat count */
+    /** Number of packets dropped due to outbound port-map port-range entry miss */
     SAI_ENI_STAT_OUTBOUND_PORT_MAP_PORT_RANGE_ENTRY_MISS_DROP_PACKETS,
 
-    /** DASH ENI ENI_TRUSTED_VNI_ENTRY_MISS_DROP_PACKETS stat count */
+    /** Number of packets dropped due to ENI trusted VNI entry miss */
     SAI_ENI_STAT_ENI_TRUSTED_VNI_ENTRY_MISS_DROP_PACKETS,
 
+    /** Number of TCP SYN packets received for inbound session */
+    SAI_ENI_STAT_INBOUND_TCP_SYN_PACKETS,
+
+    /** Number of TCP SYN+ACK packets received for inbound session */
+    SAI_ENI_STAT_INBOUND_TCP_SYNACK_PACKETS,
+
+    /** Number of TCP FIN packets received for inbound session */
+    SAI_ENI_STAT_INBOUND_TCP_FIN_PACKETS,
+
+    /** Number of TCP reset packets received for inbound session */
+    SAI_ENI_STAT_INBOUND_TCP_RST_PACKETS,
+
+    /** Number of TCP SYN packets transmitted for outbound session */
+    SAI_ENI_STAT_OUTBOUND_TCP_SYN_PACKETS,
+
+    /** Number of TCP SYN+ACK packets transmitted for outbound session */
+    SAI_ENI_STAT_OUTBOUND_TCP_SYNACK_PACKETS,
+
+    /** Number of TCP FIN packets transmitted for outbound session */
+    SAI_ENI_STAT_OUTBOUND_TCP_FIN_PACKETS,
+
+    /** Number of TCP reset packets transmitted for outbound session */
+    SAI_ENI_STAT_OUTBOUND_TCP_RST_PACKETS,
+
+    /** Maximum inbound CPS observed on ENI (potentially since last queried, if cleared) */
+    SAI_ENI_STAT_MAX_RX_CPS,
+
+    /** Maximum outbound CPS observed on ENI (potentially since last queried, if cleared) */
+    SAI_ENI_STAT_MAX_TX_CPS,
+
+    /** Number of TCP reset packets injected to force terminate TCP sessions on idle-timeout */
+    SAI_ENI_STAT_TCP_RST_INJECT_PACKETS,
+
+    /** Number of fast path ICMP flow redirect messages dropped */
+    SAI_ENI_STAT_LB_FAST_PATH_ICMP_IN_DROP_PACKETS,
+
+    /** Number of packets dropped on source PA (tunnel-endpoint) validation failure */
+    SAI_ENI_STAT_PA_VALIDATION_FAIL_DROP_PACKETS,
+
+    /** Number of packets dropped due to forwarding errors (mapping & route-lookup misses etc) */
+    SAI_ENI_STAT_FORWARDING_DROP_PACKETS,
+
+    /** Number of packets dropped as per ENI policy/ACL */
+    SAI_ENI_STAT_POLICY_DROP_PACKETS,
+
+    /** Number of TCP non-syn packet drops due to missing flow-entry */
+    SAI_ENI_STAT_TCP_NON_SYN_FLOW_MISS_DROP_PACKETS,
+
+    /** Number of (new session) packets dropped on reaching configured ENI session-limit */
+    SAI_ENI_STAT_SESSION_LIMIT_EXCEEDED_DROP_PACKETS,
+
+    /** Number of unsupported protocol (non-TCP/UDP/ICMP) packets received from tenant */
+    SAI_ENI_STAT_UNSUPPORTED_PROTOCOL_DROP_PACKETS,
+
+    /** Number of packets dropped on exceeding Control-Plane Policer limits */
+    SAI_ENI_STAT_COPP_DROP_PACKETS,
+
+    /** Number of packets dropped due to flow-entry inconsistency */
+    SAI_ENI_STAT_INCONSISTENT_FLOW_ENTRY_DROP_PACKETS,
+
+    /** Number of packets dropped on detecting packet-loop in pipeline */
+    SAI_ENI_STAT_PIPELINE_PACKET_LOOP_DROP_PACKETS,
+
+    /** Number of packets dropped due to other (internal) reason on ENI */
+    SAI_ENI_STAT_OTHER_DROP_PACKETS,
+
+    /** Dropped packets total per ENI */
+    SAI_ENI_STAT_TOTAL_DROP_PACKETS,
+
+    /** Number of inline sync requests sent to HA peer */
+    SAI_ENI_STAT_INLINE_SYNC_REQ_TX,
+
+    /** Number of inline sync acknowledgements sent to HA peer */
+    SAI_ENI_STAT_INLINE_SYNC_ACK_TX,
+
+    /** Number of inline sync redirect packets sent to ENI-owner HA peer */
+    SAI_ENI_STAT_INLINE_SYNC_REDIRECT_PACKETS_TX,
+
+    /** Number of inline sync requests received from HA peer */
+    SAI_ENI_STAT_INLINE_SYNC_REQ_RX,
+
+    /** Number of inline sync acknowledgements received from HA peer */
+    SAI_ENI_STAT_INLINE_SYNC_ACK_RX,
+
+    /** Number of inline sync redirect packets received by ENI-owner from HA peer */
+    SAI_ENI_STAT_INLINE_SYNC_REDIRECT_PACKETS_RX,
 } sai_eni_stat_t;
 
 /**
