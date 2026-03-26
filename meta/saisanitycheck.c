@@ -6110,6 +6110,36 @@ void check_enum_flags_type(
     META_ASSERT_FAIL("enum %s flags type %d not supported yet, FIXME", emd->name, emd->flagstype);
 }
 
+void check_enum_flag_zero(
+        _In_ const sai_enum_metadata_t* emd)
+{
+    META_LOG_ENTER();
+
+    /*
+     * this check tests whether each strict flag has value at index 0 which
+     * enum value is zero (no flags defined) this will be handy during
+     * serialization of empty flags
+     */
+
+    if (emd->flagstype != SAI_ENUM_FLAGS_TYPE_STRICT)
+        return;
+
+    /* enum contains strict flags */
+
+    if (emd->valuescount == 0)
+    {
+        META_ASSERT_FAIL("enum %s (flags strict) don't contain any values!", emd->name);
+    }
+
+    if (emd->values[0] != 0)
+    {
+        META_ASSERT_FAIL("enum %s (flags strict) value %s = %d at index 0 is not zero (no flags):",
+                emd->name,
+                emd->valuesnames[0],
+                emd->values[0]);
+    }
+}
+
 void check_single_enum(
         _In_ const sai_enum_metadata_t* emd)
 {
@@ -6121,6 +6151,7 @@ void check_single_enum(
     check_enum_flags_type_ranges(emd);
     check_enum_flags_type_free(emd);
     check_enum_object_type(emd);
+    check_enum_flag_zero(emd);
 }
 
 void check_all_enums()
