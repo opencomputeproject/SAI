@@ -164,18 +164,27 @@ sub BuildCommitHistory
         # of union may not increase by adding members, and actual union size
         # check is performed by sai sanity check
 
+        # Structs that are allowed to append new members at the end (ABI extension).
+        # api_t structs are always allowed. Add other structs here as needed.
+        my @extensible_structs = (
+            "sai_switch_health_data_t",
+            "sai_port_oper_status_notification_t",
+            "sai_stat_st_capability_t",
+        );
+
+        my %extensible = map { $_ => 1 } @extensible_structs;
+
         if ($currCount != $histCount and not $structTypeName =~ /^sai_\w+_api_t$/
-                and $structTypeName ne "sai_switch_health_data_t"
-                and $structTypeName ne "sai_port_oper_status_notification_t")
+                and not $extensible{$structTypeName})
         {
             LogError "FATAL: struct $structTypeName member count differs, was $histCount but is $currCount on commit $commit" if $type eq "struct";
         }
 
         if ($histCount > $currCount)
         {
-            if ($structTypeName eq "sai_port_oper_status_notification_t")
+            if ($extensible{$structTypeName})
             {
-                # we allow this to change back backward compatibility
+                # we allow extensible structs to change for backward compatibility
             }
             else
             {
