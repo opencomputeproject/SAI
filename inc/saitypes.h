@@ -303,6 +303,7 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_PREFIX_COMPRESSION_ENTRY = 113,
     SAI_OBJECT_TYPE_SYNCE_CLOCK              = 114,
     SAI_OBJECT_TYPE_PORT_LLR_PROFILE         = 115,
+    SAI_OBJECT_TYPE_PERFMON                  = 116,
 
     /** Must remain in last position */
     SAI_OBJECT_TYPE_MAX,
@@ -1568,6 +1569,18 @@ typedef struct _sai_port_err_status_list_t
     sai_port_err_status_t *list;
 } sai_port_err_status_list_t;
 
+typedef struct _sai_perfdata_t
+{
+    /** Time when metrics is collected */
+    sai_timespec_t timespec;
+
+    /** Latency measure in milliseconds */
+    sai_uint32_t latency;
+
+    /** Number of objects handled in this measure */
+    sai_uint16_t num_objects;
+} sai_perfdata_t;
+
 /**
  * @brief Data Type
  *
@@ -1796,6 +1809,9 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_UINT64_RANGE_LIST */
     sai_u64_range_list_t u64rangelist;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PERFDATA */
+    sai_perfdata_t perfdata;
 
 } sai_attribute_value_t;
 

@@ -539,7 +539,13 @@ typedef enum _sai_attr_value_type_t
     /**
      * @brief Attribute value is 64 bit unsigned integer range list.
      */
-    SAI_ATTR_VALUE_TYPE_UINT64_RANGE_LIST
+    SAI_ATTR_VALUE_TYPE_UINT64_RANGE_LIST,
+
+    /**
+     * @brief Attribute value is performance monitoring data.
+     */
+    SAI_ATTR_VALUE_TYPE_PERFDATA,
+
 } sai_attr_value_type_t;
 
 /**
