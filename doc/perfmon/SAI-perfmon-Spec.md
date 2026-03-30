@@ -5,8 +5,8 @@
  Authors     | Jai Kumar, Broadcom Inc
  Status      | In review
  Type        | Standards track
- Created     | 03/18/20206: Initial Draft
- SAI-Version | 1.18
+ Created     | 03/18/2026: Initial Draft
+ SAI-Version | 1.19
 -------------------------------------------------------------------------------
 
 
@@ -55,7 +55,9 @@ This specification proposes API performance measures for the following metrics
 3. Maximum Latency
 
 ### 3.1 Average, Instantaneous, and Maximum Latency
-API completion time consists of the time spent in the SAI adapter and the SDK, including hardware update or query time. These metrics can be used to: 
+API completion time consists of the time spent in the SAI adapter and the SDK, including hardware update or query time. Time measured is irrespetcive of the status of the API call i.e. if the API call completes with error status, adapter will still account the measured latency during the time interval of the metrics computation. NOS tracks the return status of API calls and can account for errors as needed. Discounting latency for specific error statuses would result in inconsistent measurements, requiring metric subscribers to implement manual workarounds for those cases.
+
+These metrics can be used to: 
 - Improve SAI adapter and SDK implementations
 - Provide a baseline for comparing different hardware
 - Instantaneous value: Provides [time, n], where n > 1 represents the number of objects in a bulk API, or n = 1 represents the last observed latency for a single object
