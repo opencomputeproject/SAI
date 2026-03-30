@@ -556,6 +556,13 @@ typedef enum _sai_attr_value_type_t
 typedef enum _sai_attr_flags_t
 {
     /**
+     * @brief No flags defined.
+     *
+     * This member should not be used.
+     */
+    SAI_ATTR_FLAGS_NONE = (0 << 0),
+
+    /**
      * @brief Mandatory on create flag.
      *
      * Attribute with this flag is mandatory when calling CREATE API, unless
