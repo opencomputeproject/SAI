@@ -158,3 +158,50 @@ if (saistatus != SAI_STATUS_SUCCESS) {
     return saistatus;
 }
 ```
+
+## 5.0 Per-Monitored-Object Switchover Notification
+
+To provide NOS visibility for HW-triggered FRR, add a switch-level notification callback.
+Notification is generated per monitored object, and one monitored object may point to multiple protection groups.
+
+### Notification
+
+```c
+typedef struct _sai_next_hop_group_hw_protection_switchover_notification_data_t
+{
+    sai_object_id_t monitored_oid;     // monitored object id
+    sai_next_hop_group_member_observed_role_t new_role // Current role after the switchover
+    uint32_t        switchover_success_count;  // number of protection groups switched successfully
+    sai_object_list_t failed_next_hop_group_obj_list; // failed protection-group object ids
+} sai_next_hop_group_hw_protection_switchover_notification_data_t;
+
+typedef void (*sai_next_hop_group_hw_protection_switchover_notification_fn)(
+        _In_ uint32_t count,
+        _In_ const sai_next_hop_group_hw_protection_switchover_notification_data_t *data);
+```
+
+### Switch attribute for callback registration
+
+```c
+SAI_SWITCH_ATTR_NEXT_HOP_GROUP_HW_PROTECTION_SWITCHOVER_NOTIFY
+```
+
+### Usage example
+
+```c
+switch_attr.id = SAI_SWITCH_ATTR_NEXT_HOP_GROUP_HW_PROTECTION_SWITCHOVER_NOTIFY;
+switch_attr.value.ptr = (void*)nhg_hw_protection_switchover_cb;
+sai_switch_api->set_switch_attribute(switch_id, &switch_attr);
+```
+
+Example callback report:
+```c
+  monitored_oid = <monitored_object_oid>
+  new_role = SAI_NEXT_HOP_GROUP_MEMBER_CONFIGURED_ROLE_STANDBY
+  switchover_success_count = 5
+  failed_next_hop_group_obj_list.count = 2
+  failed_next_hop_group_obj_list.list[0] = failed_nhg_oid1
+  failed_next_hop_group_obj_list.list[1] = failed_nhg_oid2
+```
+In this example, `switchover_success_count = 5` means five protection groups switched over successfully
+for the monitored object, while `failed_next_hop_group_obj_list.count = 2` means two protection groups failed.
