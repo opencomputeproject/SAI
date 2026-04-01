@@ -21,6 +21,8 @@ CAUI - 100 Gigabit Attachment Unit Interface
 CB - Callback
 CBS - Committed Burst Size
 CCITT - Comite Consultatif International de Telegraphique et Telephonique
+CEILR - Common Electrical Interface Long Reach Normal
+CEIMR - Common Electrical Interface Medium Reach
 CFI - Canonical Format Indicator
 CIDR - Classless Inter Domain Routing
 CIR - Committed Information Rate
@@ -163,6 +165,7 @@ SRV6 - Segment Routing with IPv6
 SSCI - Short Secure Channel Identifier
 SSH - Secure Shell
 SSL - Secure Socket Layer
+SSPRQ - Short Stress Pattern Random Quaternary
 STP - Spanning Tree Protocol
 SYNCE - Synchronous Ethernet
 TC - Traffic Control

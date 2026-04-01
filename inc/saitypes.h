@@ -1926,6 +1926,11 @@ typedef sai_status_t (*sai_bulk_object_get_attribute_fn)(
 typedef enum _sai_stats_mode_t
 {
     /**
+     * @brief No mode defined
+     */
+    SAI_STATS_MODE_NONE = 0 << 0,
+
+    /**
      * @brief Read statistics
      */
     SAI_STATS_MODE_READ = 1 << 0,
@@ -2102,6 +2107,11 @@ typedef enum _sai_ser_correction_type_t
  */
 typedef enum _sai_ser_log_type_t
 {
+    /**
+     * @brief No errors
+     */
+    SAI_SER_LOG_TYPE_NONE = 0 << 0,
+
     /**
      * @brief Error happens on memory
      */
