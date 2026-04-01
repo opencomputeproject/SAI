@@ -553,6 +553,18 @@ typedef enum _sai_bfd_session_attr_t
     SAI_BFD_SESSION_ATTR_NEXT_HOP_ID,
 
     /**
+     * @brief Admin state
+     *
+     * Allows user to administratively disable a BFD session without deleting it. Setting this
+     * attribute to false disables the session.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     */
+    SAI_BFD_SESSION_ATTR_ADMIN_STATE,
+
+    /**
      * @brief End of attributes
      */
     SAI_BFD_SESSION_ATTR_END,
