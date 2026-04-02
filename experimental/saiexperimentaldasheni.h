@@ -912,6 +912,9 @@ typedef enum _sai_eni_stat_t
 
     /** Number of inline sync redirect packets received by ENI-owner from HA peer */
     SAI_ENI_STAT_INLINE_SYNC_REDIRECT_PACKETS_RX,
+
+    /** Number of active flows updated by fast path ICMP redirect message */
+    SAI_ENI_STAT_LB_FAST_PATH_ACTIVE_FLOW,
 } sai_eni_stat_t;
 
 /**
