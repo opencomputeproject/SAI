@@ -48,6 +48,7 @@
 #include "sainexthopgroup.h"
 #include "sainexthop.h"
 #include "saiobject.h"
+#include "saiperfmon.h"
 #include "saipolicer.h"
 #include "saiport.h"
 #include "saiqosmap.h"
@@ -153,6 +154,7 @@ typedef enum _sai_api_t
     SAI_API_ICMP_ECHO        = 52, /**< sai_icmp_echo_api_t */
     SAI_API_PREFIX_COMPRESSION = 53, /**< sai_prefix_compression_api_t */
     SAI_API_SYNCE            = 54, /**< sai_synce_api_t */
+    SAI_API_PERFMON          = 55, /**< sai_perfmon_api_t */
     SAI_API_MAX,                   /**< total number of APIs */
 
     /**
