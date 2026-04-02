@@ -3562,6 +3562,15 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_LINK_UP_DEBOUNCE_TIMEOUT,
 
     /**
+     * @brief HW protection switchover notification callback function passed to the adapter.
+     *
+     * @type sai_pointer_t sai_next_hop_group_hw_protection_switchover_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_NEXT_HOP_GROUP_HW_PROTECTION_SWITCHOVER_NOTIFY,
+
+    /**
      * @brief Maximum number of timers supported for CSIG bandwidth signal
      *
      * @type sai_uint8_t
