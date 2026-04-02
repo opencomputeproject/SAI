@@ -138,7 +138,7 @@ typedef struct _sai_next_hop_group_hw_protection_switchover_notification_data_t
      *
      * @objects SAI_OBJECT_TYPE_NEXT_HOP_GROUP
      */
-    sai_object_list_t failed_next_hop_group_obj_list;
+    sai_object_list_t failed_next_hop_groups;
 } sai_next_hop_group_hw_protection_switchover_notification_data_t;
 
 /**
