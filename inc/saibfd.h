@@ -577,7 +577,10 @@ typedef enum _sai_bfd_session_stat_t
     SAI_BFD_SESSION_STAT_OUT_PACKETS,
 
     /** Packet Drop stat count */
-    SAI_BFD_SESSION_STAT_DROP_PACKETS
+    SAI_BFD_SESSION_STAT_DROP_PACKETS,
+
+    /** Count transitions where the session state changes from UP to DOWN */
+    SAI_BFD_SESSION_STAT_SESSION_UP2DOWN_TRANSITIONS
 
 } sai_bfd_session_stat_t;
 
