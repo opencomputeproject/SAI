@@ -1382,6 +1382,9 @@ typedef enum _sai_port_attr_t
      * @brief Enable flood (unknown unicast or unknown multicast)
      * storm control policer on port.
      *
+     * Deprecated. Use SAI_PORT_ATTR_UNKNOWN_UNICAST_STORM_CONTROL_POLICER_ID
+     * and SAI_PORT_ATTR_UNKNOWN_MULTICAST_STORM_CONTROL_POLICER_ID.
+     *
      * Set policer id = #SAI_NULL_OBJECT_ID to disable policer on port.
      *
      * @type sai_object_id_t
@@ -1389,6 +1392,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_POLICER
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
+     * @deprecated true
      */
     SAI_PORT_ATTR_FLOOD_STORM_CONTROL_POLICER_ID,
 
@@ -1408,6 +1412,9 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Enable multicast storm control policer on port.
      *
+     * Deprecated. Use SAI_PORT_ATTR_KNOWN_MULTICAST_STORM_CONTROL_POLICER_ID
+     * and SAI_PORT_ATTR_UNKNOWN_MULTICAST_STORM_CONTROL_POLICER_ID.
+     *
      * Set policer id = #SAI_NULL_OBJECT_ID to disable policer on port.
      *
      * @type sai_object_id_t
@@ -1415,6 +1422,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_POLICER
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
+     * @deprecated true
      */
     SAI_PORT_ATTR_MULTICAST_STORM_CONTROL_POLICER_ID,
 
@@ -3069,6 +3077,58 @@ typedef enum _sai_port_attr_t
      * @flags READ_ONLY
      */
     SAI_PORT_ATTR_SUPPORTED_PRBS_PATTERN,
+    
+    /**
+     * @brief Enable known unicast storm control policer on port.
+     *
+     * Set policer id = #SAI_NULL_OBJECT_ID to disable policer on port.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_POLICER
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_KNOWN_UNICAST_STORM_CONTROL_POLICER_ID,
+
+    /**
+     * @brief Enable unknown unicast storm control policer on port.
+     *
+     * Set policer id = #SAI_NULL_OBJECT_ID to disable policer on port.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_POLICER
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_UNKNOWN_UNICAST_STORM_CONTROL_POLICER_ID,
+
+    /**
+     * @brief Enable known multicast storm control policer on port.
+     *
+     * Set Policer id = #SAI_NULL_OBJECT_ID to disable policer on port.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_POLICER
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_KNOWN_MULTICAST_STORM_CONTROL_POLICER_ID,
+
+    /**
+     * @brief Enable unknown multicast storm control policer on port.
+     *
+     * Set Policer id = #SAI_NULL_OBJECT_ID to disable policer on port.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_POLICER
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_UNKNOWN_MULTICAST_STORM_CONTROL_POLICER_ID,
 
     /**
      * @brief End of attributes
