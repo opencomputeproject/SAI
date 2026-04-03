@@ -4042,6 +4042,15 @@ typedef enum _sai_port_stat_t
     /** SAI port stat credits freed update messages rx */
     SAI_PORT_STAT_CBFC_NUM_CF_UPDATE_MESSAGES_RX,
 
+    /** SAI port stat ether stats packets with frame size 1519 octets to max MTU supported by the port */
+    SAI_PORT_STAT_ETHER_STATS_PKTS_1519_TO_MAX_OCTETS,
+
+    /** SAI port stat ether RX packets with frame size 1519 octets to max MTU supported by the port */
+    SAI_PORT_STAT_ETHER_IN_PKTS_1519_TO_MAX_OCTETS,
+
+    /** SAI port stat ether TX packets with frame size 1519 octets to max MTU supported by the port */
+    SAI_PORT_STAT_ETHER_OUT_PKTS_1519_TO_MAX_OCTETS,
+
     /** Port stat in drop reasons range start */
     SAI_PORT_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,
 
