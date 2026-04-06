@@ -1,4 +1,5 @@
 # this file defines acronyms, one acronym per line
+ACK - Acknowledgement
 ACL - Access Control List
 AES - Advanced Encryption Standard
 AN - Association Number
