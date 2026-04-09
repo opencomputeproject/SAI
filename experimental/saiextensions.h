@@ -51,6 +51,7 @@
 #include "saiexperimentaldashdirectionlookup.h"
 #include "saiexperimentaldashacl.h"
 #include "saiexperimentalbmtor.h"
+#include "saiexperimentalocs.h"
 
 /**
  * @brief Extensions to SAI APIs
@@ -94,6 +95,8 @@ typedef enum _sai_api_extensions_t
     SAI_API_DASH_OUTBOUND_PORT_MAP,
 
     SAI_API_DASH_TRUSTED_VNI,
+
+    SAI_API_OCS,
 
     /* Add new experimental APIs above this line */
 
