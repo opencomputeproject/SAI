@@ -37,6 +37,7 @@ Decrement
 defaultvalue
 defaultvaluetype
 defgroup
+dequeue
 deserialize
 deserialized
 didn
@@ -50,6 +51,7 @@ Encaps
 eni
 Eni
 ENI
+enqueue
 enum
 Enum
 enums
@@ -210,10 +212,12 @@ Uninitialize
 unordered
 untagged
 Untagged
+Upto
 uSID
 Utils
 validonly
 validonlys
+VCs
 versa
 vlan
 Vlan

@@ -19,8 +19,11 @@ BW - Bandwidth
 CAM - Content Addressable Memory
 CAUI - 100 Gigabit Attachment Unit Interface
 CB - Callback
+CBFC - Credit Based Flow Control
 CBS - Committed Burst Size
 CCITT - Comite Consultatif International de Telegraphique et Telephonique
+CEILR - Common Electrical Interface Long Reach Normal
+CEIMR - Common Electrical Interface Medium Reach
 CFI - Canonical Format Indicator
 CIDR - Classless Inter Domain Routing
 CIR - Committed Information Rate
@@ -29,6 +32,7 @@ CPLD - Complex programmable logic device
 CPU - Central Processing Unit
 CRC - Cyclic Redundancy Code
 CSIG - Congestion Signaling
+DEI - Drop Elgibility Indicator
 DFE - Decision Feedback Equalizer
 DHCP - Dynamic Host Configuration Protocol
 DHCPV6 - Dynamic Host Configuration Protocol for IPv6
@@ -181,6 +185,7 @@ UDP - User Datagram Protocol
 USD - Ultimate Segment Decapsulation
 USP - Ultimate Segment Pop
 USXGMII - Universal Serial 10 Gigabit Media Independent Interface
+VC - Virtual Channel
 VGA - Variable Gain Amplifier
 VNET - Virtual Network
 VNI - Virtual Network Interface
