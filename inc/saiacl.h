@@ -588,6 +588,24 @@ typedef enum _sai_acl_table_group_member_attr_t
 } sai_acl_table_group_member_attr_t;
 
 /**
+ * @brief Mirror copy type for ACL matching
+ */
+typedef enum _sai_acl_mirror_copy_type_t
+{
+    /** Match packets that are not mirror copies */
+    SAI_ACL_MIRROR_COPY_TYPE_NONE,
+
+    /** Match packets that are ingress mirror copies */
+    SAI_ACL_MIRROR_COPY_TYPE_INGRESS,
+
+    /** Match packets that are egress mirror copies */
+    SAI_ACL_MIRROR_COPY_TYPE_EGRESS,
+
+    /** Match packets that are any mirror copy (either ingress or egress) */
+    SAI_ACL_MIRROR_COPY_TYPE_INGRESS_OR_EGRESS
+} sai_acl_mirror_copy_type_t;
+
+/**
  * @brief ACL User Defined Field Attribute ID Range
  */
 #define SAI_ACL_USER_DEFINED_FIELD_ATTR_ID_RANGE 0xFF
@@ -1648,9 +1666,18 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_CSIG_D_BIT = SAI_ACL_TABLE_ATTR_FIELD_START + 0x166,
 
     /**
+     * @brief Match on mirror copy type
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_ACL_MIRROR_COPY_TYPE = SAI_ACL_TABLE_ATTR_FIELD_START + 0x167,
+
+    /**
      * @brief End of ACL Table Match Field
      */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_CSIG_D_BIT,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_ACL_MIRROR_COPY_TYPE,
 
     /**
      * @brief ACL table entries associated with this table.
@@ -2826,9 +2853,18 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_CSIG_D_BIT = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x166,
 
     /**
+     * @brief Match on mirror copy type
+     *
+     * @type sai_acl_field_data_t sai_acl_mirror_copy_type_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_ACL_MIRROR_COPY_TYPE = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x167,
+
+    /**
      * @brief End of Rule Match Fields
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_CSIG_D_BIT,
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_ACL_MIRROR_COPY_TYPE,
 
     /*
      * Actions [sai_acl_action_data_t]
