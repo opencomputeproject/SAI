@@ -3533,7 +3533,7 @@ typedef enum _sai_acl_counter_attr_t
      *
      * @type bool
      * @flags CREATE_ONLY
-     * @default false
+     * @default true
      */
     SAI_ACL_COUNTER_ATTR_ENABLE_BYTE_COUNT,
 
