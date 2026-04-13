@@ -1108,6 +1108,22 @@ typedef enum _sai_macsec_sa_stat_t
      * Valid for ingress, always returns 0 for egress.
      */
     SAI_MACSEC_SA_STAT_IN_PKTS_OK,
+
+    /**
+     * @brief IEEE 802.1ae defined inOctetsDecrypted.
+     * Valid for ingress, always returns 0 for egress.
+     * The number of octets of User Data recovered from received
+     * frames that were both integrity protected and encrypted.
+     */
+    SAI_MACSEC_SA_STAT_IN_OCTETS_DECRYPTED,
+
+    /**
+     * @brief IEEE 802.1ae defined inOctetsValidated.
+     * Valid for ingress, always returns 0 for egress.
+     * The number of octets of User Data recovered from received
+     * frames that were integrity protected but not encrypted.
+     */
+    SAI_MACSEC_SA_STAT_IN_OCTETS_VALIDATED,
 } sai_macsec_sa_stat_t;
 
 /**
