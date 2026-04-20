@@ -566,6 +566,15 @@ typedef enum _sai_eni_attr_t
     SAI_ENI_ATTR_DASH_ENI_MODE,
 
     /**
+     * @brief Get HA flow ownership status
+     *
+     * @type bool
+     * @flags READ_ONLY
+     * @default false
+     */
+    SAI_ENI_ATTR_IS_OPERATIONAL_HA_FLOW_OWNER,
+
+    /**
      * @brief End of attributes
      */
     SAI_ENI_ATTR_END,
