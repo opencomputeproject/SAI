@@ -306,6 +306,7 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_VIRTUAL_CHANNEL          = 116,
     SAI_OBJECT_TYPE_CBFC_CREDIT_POOL         = 117,
     SAI_OBJECT_TYPE_CBFC_CREDIT_PROFILE      = 118,
+    SAI_OBJECT_TYPE_PERFMON                  = 119,
 
     /** Must remain in last position */
     SAI_OBJECT_TYPE_MAX,
