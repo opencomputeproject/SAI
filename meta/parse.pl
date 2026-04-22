@@ -2695,6 +2695,7 @@ sub ProcessStructValueType
     my $type = shift;
 
     return "SAI_ATTR_VALUE_TYPE_OBJECT_ID"        if $type eq "sai_object_id_t";
+    return "SAI_ATTR_VALUE_TYPE_OBJECT_LIST"      if $type eq "sai_object_list_t";
     return "SAI_ATTR_VALUE_TYPE_MAC"              if $type eq "sai_mac_t";
     return "SAI_ATTR_VALUE_TYPE_IP_ADDRESS"       if $type eq "sai_ip_address_t";
     return "SAI_ATTR_VALUE_TYPE_IP_PREFIX"        if $type eq "sai_ip_prefix_t";
@@ -2743,7 +2744,7 @@ sub ProcessStructObjects
 
     my $type = $struct->{type};
 
-    return "NULL" if not $type eq "sai_object_id_t" and not $type eq "sai_attribute_t*";
+    return "NULL" if not $type eq "sai_object_id_t" and not $type eq "sai_object_list_t" and not $type eq "sai_attribute_t*";
 
     WriteSource "const sai_object_type_t sai_metadata_struct_member_sai_${rawname}_t_${key}_allowed_objects[] = {";
 
@@ -2767,7 +2768,7 @@ sub ProcessStructObjectLen
 
     my $type = $struct->{type};
 
-    return 0 if not $type eq "sai_object_id_t" and not $type eq "sai_attribute_t*";
+    return 0 if not $type eq "sai_object_id_t" and not $type eq "sai_object_list_t" and not $type eq "sai_attribute_t*";
 
     my @objects = @{ $struct->{objects} };
 
@@ -4172,13 +4173,13 @@ sub ProcessSingleNonObjectId
 
         # allowed entries on object structs
 
-        if (not $type =~ /^sai_(nat_entry_data|mac|object_id|vlan_id|ip_address|ip_prefix|acl_chain|label_id|ip6|uint8|uint16|uint32|u32_range|\w+_type)_t$/)
+        if (not $type =~ /^sai_(nat_entry_data|mac|object_id|object_list|vlan_id|ip_address|ip_prefix|acl_chain|label_id|ip6|uint8|uint16|uint32|u32_range|\w+_type)_t$/)
         {
             LogError "struct member $member type '$type' is not allowed on struct $structname";
             next;
         }
 
-        next if not $type eq "sai_object_id_t";
+        next if not $type eq "sai_object_id_t" and not $type eq "sai_object_list_t";
 
         my $objects = ExtractObjectsFromDesc($structname, $member, $desc);
 
@@ -5637,7 +5638,7 @@ sub ProcessNotificationStruct
         next if $type =~ /^(uint32_t|bool)$/;
         next if $type =~ /^(sai_twamp_session_stats_data_t)$/;
 
-        if ($type =~ /^(sai_object_id_t|sai_attribute_t\*)$/)
+        if ($type =~ /^(sai_object_id_t|sai_object_list_t|sai_attribute_t\*)$/)
         {
             my $objects = ExtractObjectsFromDesc($structname, $member, $desc);
 

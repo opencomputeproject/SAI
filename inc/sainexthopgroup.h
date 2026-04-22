@@ -112,6 +112,36 @@ typedef enum _sai_next_hop_group_admin_role_t
 } sai_next_hop_group_admin_role_t;
 
 /**
+ * @brief Defines the HW protection switchover status
+ */
+typedef struct _sai_next_hop_group_hw_protection_switchover_notification_data_t
+{
+    /**
+     * @brief Monitored object id
+     *
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_ROUTER_INTERFACE, SAI_OBJECT_TYPE_VLAN_MEMBER, SAI_OBJECT_TYPE_TUNNEL, SAI_OBJECT_TYPE_BRIDGE_PORT, SAI_OBJECT_TYPE_ICMP_ECHO_SESSION, SAI_OBJECT_TYPE_BFD_SESSION
+     */
+    sai_object_id_t monitored_oid;
+
+    /**
+     * @brief Current role after the switchover
+     */
+    sai_next_hop_group_member_observed_role_t new_role;
+
+    /**
+     * @brief Number of protection groups that switched over successfully
+     */
+    uint32_t switchover_success_count;
+
+    /**
+     * @brief List of protection groups that failed switchover.
+     *
+     * @objects SAI_OBJECT_TYPE_NEXT_HOP_GROUP
+     */
+    sai_object_list_t failed_next_hop_groups;
+} sai_next_hop_group_hw_protection_switchover_notification_data_t;
+
+/**
  * @brief Attribute id for next hop
  */
 typedef enum _sai_next_hop_group_attr_t
@@ -682,6 +712,20 @@ typedef sai_status_t (*sai_get_next_hop_group_map_attribute_fn)(
         _In_ sai_object_id_t next_hop_group_map_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
+
+/**
+ * @brief Next Hop Group HW protection switchover notification callback
+ *
+ * Passed as a parameter into sai_initialize_switch().
+ *
+ * @count data[count]
+ *
+ * @param[in] count Number of notifications
+ * @param[in] data Array of notification data
+ */
+typedef void (*sai_next_hop_group_hw_protection_switchover_notification_fn)(
+        _In_ uint32_t count,
+        _In_ const sai_next_hop_group_hw_protection_switchover_notification_data_t *data);
 
 /**
  * @brief Next Hop methods table retrieved with sai_api_query()
