@@ -465,6 +465,12 @@ typedef enum _sai_queue_stat_t
     /** Packets trimmed and successfully transmitted on a trim queue. Counted on the original trimming-eligible queue [uint64_t] */
     SAI_QUEUE_STAT_TX_TRIM_PACKETS = 0x0000002e,
 
+    /** Get packets deleted from a queue when PFC Deadlock Recovery is triggered with SAI_PACKET_ACTION_DROP [uint64_t] */
+    SAI_QUEUE_STAT_PFC_DLR_DELETED_PACKETS = 0x0000002f,
+
+    /** Get bytes deleted from a queue when PFC Deadlock Recovery is triggered with SAI_PACKET_ACTION_DROP [uint64_t] */
+    SAI_QUEUE_STAT_PFC_DLR_DELETED_BYTES = 0x00000030,
+
     /** Custom range base value */
     SAI_QUEUE_STAT_CUSTOM_RANGE_BASE = 0x10000000
 
