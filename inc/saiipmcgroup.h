@@ -81,6 +81,15 @@ typedef enum _sai_ipmc_group_attr_t
     SAI_IPMC_GROUP_ATTR_IPMC_OUTPUT_LIST,
 
     /**
+     * @brief Label attribute used to uniquely identify IPMC-group.
+     *
+     * @type char
+     * @flags CREATE_AND_SET
+     * @default ""
+     */
+    SAI_IPMC_GROUP_ATTR_LABEL,
+
+    /**
      * @brief End of attributes
      */
     SAI_IPMC_GROUP_ATTR_END,
