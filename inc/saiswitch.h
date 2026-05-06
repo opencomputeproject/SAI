@@ -3599,6 +3599,17 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PTP_SYNTONIZE_ADJUST,
 
     /**
+     * @brief Link down debounce time in microseconds
+     *
+     * 0 means no delay time so link down events are immediately delivered as usual
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_LINK_DOWN_DEBOUNCE_TIMEOUT,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
