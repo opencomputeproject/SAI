@@ -36,6 +36,7 @@
 #include <sainat.h>
 #include <saisrv6.h>
 #include <saiprefixcompression.h>
+#include <saitam.h>
 
 /* new experimental object type includes */
 #include <saiexperimentaldashtrustedvni.h>

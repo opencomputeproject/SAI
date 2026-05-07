@@ -5324,6 +5324,11 @@ void check_object_ro_list(
         return;
     }
 
+    if (SAI_OBJECT_TYPE_TAM_EVENT_LEARN_ENTRY == oi->objecttype)
+    {
+        META_LOG_WARN("tam event learn entry object %s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
+        return;
+    }
     META_ASSERT_FAIL("%s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
 }
 
@@ -5549,6 +5554,19 @@ void check_graph_connected()
              */
 
             META_LOG_WARN("debug counter object %s is disconnected from graph",
+                    sai_metadata_all_object_type_infos[i]->objecttypename);
+
+            continue;
+        }
+
+        if (SAI_OBJECT_TYPE_TAM_EVENT_LEARN_ENTRY == idx2ot(i))
+        {
+            /*
+             * Allow learn entry event notification to be disconnected from main graph
+             * as use case is by querying base object stats and not by direct reference
+             */
+
+            META_LOG_WARN("tam event learn entry object %s is disconnected from graph",
                     sai_metadata_all_object_type_infos[i]->objecttypename);
 
             continue;
@@ -6385,6 +6403,7 @@ void check_struct_and_union_size()
     CHECK_STRUCT_SIZE(sai_prbs_per_lane_rx_state_list_t, 16);
     CHECK_STRUCT_SIZE(sai_prbs_bit_error_rate_t, 16);
     CHECK_STRUCT_SIZE(sai_prbs_per_lane_bit_error_rate_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_tam_event_learn_notification_data_t, 24);
 }
 #pragma GCC diagnostic pop
 

@@ -132,6 +132,7 @@ PMOS - P-channel Metal Oxide Semiconductor
 PN - Packet Number
 POE - Power over Ethernet
 PRBS - Pseudorandom binary sequence
+PRI - Priority Code Point
 PSC - PHB Scheduling Class
 PSE - Power Sourcing Equipment
 PSP - Penultimate Segment Pop
