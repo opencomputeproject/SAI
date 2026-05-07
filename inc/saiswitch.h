@@ -3610,6 +3610,22 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_LINK_DOWN_DEBOUNCE_TIMEOUT,
 
     /**
+     * @brief Link down debounce timeout values supported in microseconds
+     *
+     * @type sai_u32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_LINK_DOWN_DEBOUNCE_TIMEOUT_INTEVALS,
+
+    /**
+     * @brief Link up debounce timeout values supported in microseconds
+     *
+     * @type sai_u32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_LINK_UP_DEBOUNCE_TIMEOUT_INTEVALS,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
