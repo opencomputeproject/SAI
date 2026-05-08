@@ -60,7 +60,7 @@ API completion time consists of the time spent in the SAI adapter and the SDK, i
 These metrics can be used to: 
 - Improve SAI adapter and SDK implementations
 - Provide a baseline for comparing different hardware
-- Instantaneous value: Provides [time, n], where n > 1 represents the number of objects in a bulk API, or n = 1 represents the last observed latency for a single object
+- Instantaneous value: last observed latency for the API call
 - Maximum: The highest value observed across the last n invocations
 - Average: The average value over the last n invocations.
 
@@ -171,16 +171,15 @@ typedef enum _sai_perfmon_attr_t
 ```
 
 #### 4.3.3 Perfmon Object Switch Binding
-List of perfmon objects can be bound to the switch object. This binding can be done as a SET operation when perfmon object is created.
+List of perfmon objects configured can be read using the following switch atribute.
 
 ```
     /**
      * @brief Performance Monitoring enabled on the switch
      *
      * @type sai_object_list_t
-     * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_PERFMO$
-     * @default empty
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_PERFMON
      */
     SAI_SWITCH_ATTR_PERFMON_LIST,
 ```
@@ -196,7 +195,7 @@ This section talks about enabling performance monitoring for a given API and a m
 
 ```
 /*
- * Configure CSIG Compact Tag for ABW signal processing and time interval of 256 micro seconds
+ * Configure Perfmon object for Bulk Set API performance monitoring
  */
 
 // Specify the Object of intererst
@@ -211,13 +210,8 @@ sai_attr_list[1].value.s32 = ﻿SAI_COMMON_API_BULK_SET;
 sai_attr_list[2].id = ﻿SAI_PERFMON_ATTR_PERFMON_METRICS;
 sai_attr_list[2].value.s32 = ﻿SAI_PERFMON_METRICS_AVERAGE_LATENCY;
 
-// Configure Time Interval in msec
-sai_attr_list[3].id = ﻿SAI_PERFMON_ATTR_METRICS_TIME_INTERVAL;
-sai_attr_list[3].value.u32 = ﻿2048;
-
-
 // Create perfmon object
-attr_count = 4;
+attr_count = 3;
 create_perfmon(
 	&sai_perfmon_object,
 	switch_id, 
