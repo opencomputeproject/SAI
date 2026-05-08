@@ -3602,9 +3602,8 @@ typedef enum _sai_switch_attr_t
      * @brief Performance Monitoring enabled on the switch
      *
      * @type sai_object_list_t
-     * @flags CREATE_AND_SET
+     * @flags READ_ONLY
      * @objects SAI_OBJECT_TYPE_PERFMON
-     * @default empty
      */
     SAI_SWITCH_ATTR_PERFMON_LIST,
 

@@ -97,7 +97,7 @@ typedef enum _sai_perfmon_attr_t
     SAI_PERFMON_ATTR_PERFMON_METRICS,
 
     /**
-     * @brief Performance data as collected. This is clear on read.
+     * @brief Latency measure in microseconds. This is clear on read.
      * Performance data is computed once enabled and is cleared once read.
      *
      * @type sai_uint64_t

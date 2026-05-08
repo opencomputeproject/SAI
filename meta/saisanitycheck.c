@@ -5554,6 +5554,18 @@ void check_graph_connected()
             continue;
         }
 
+        if (SAI_OBJECT_TYPE_PERFMON == idx2ot(i))
+        {
+            /*
+             * Allow performance monitor object to be disconnected from main graph
+             * as use case is by querying base object stats and not by direct reference
+             */
+
+            META_LOG_WARN("perfmon object %s is disconnected from graph",
+                    sai_metadata_all_object_type_infos[i]->objecttypename);
+
+            continue;
+        }
         META_ASSERT_FAIL("object %s is disconnected from graph",
                 sai_metadata_all_object_type_infos[i]->objecttypename);
     }
