@@ -3599,6 +3599,49 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PTP_SYNTONIZE_ADJUST,
 
     /**
+     * @brief HW protection switchover notification callback function passed to the adapter.
+     *
+     * @type sai_pointer_t sai_next_hop_group_hw_protection_switchover_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_NEXT_HOP_GROUP_HW_PROTECTION_SWITCHOVER_NOTIFY,
+
+    /**
+     * @brief OFH headers
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_OFH
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_OFH,
+
+    /**
+     * @brief OFH header max size
+     *
+     * @type sai_int8_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_OFH_MAX_SIZE,
+
+    /**
+     * @brief The OFH Route Table size
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_OFH_ROUTE_TABLE_SIZE,
+
+    /**
+     * @brief Available OFH routes
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_OFH_ROUTE_ENTRY,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,

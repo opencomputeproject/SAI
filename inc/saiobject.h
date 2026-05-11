@@ -36,6 +36,7 @@
 #include <sainat.h>
 #include <saisrv6.h>
 #include <saiprefixcompression.h>
+#include <saiofhroute.h>
 
 /* new experimental object type includes */
 #include <saiexperimentaldashtrustedvni.h>
@@ -139,6 +140,9 @@ typedef union _sai_object_key_entry_t
 
     /** @validonly object_type == SAI_OBJECT_TYPE_ENI_TRUSTED_VNI_ENTRY */
     sai_eni_trusted_vni_entry_t eni_trusted_vni_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_OFH_ROUTE_ENTRY */
+    sai_ofh_route_entry_t         ofh_route_entry;
 
     /* Add new experimental entries above this line */
 
