@@ -3268,6 +3268,18 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_CBFC_CREDIT_POOL_LIST,
 
     /**
+     * @brief Link down debounce time in microseconds
+     *
+     * 0 means no delay time so link down events are immediately delivered as usual
+     * This attribute overrides the switch level debounce configuration
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_ATTR_LINK_DOWN_DEBOUNCE_TIMEOUT,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
