@@ -122,7 +122,7 @@ void sai_thrift_parse_[% struct.short_name %](const [% struct.thrift_name %] &th
 #ifdef UNSUPPORTED /* complex struct members are not supported yet */
 
         [%- END -%]
-  [% struct.short_name %]->[% member.name %] = thrift_[% struct.short_name %].[% member.name %];
+  [% struct.short_name %]->[% member.name %] = static_cast<[% member.type.name %]>(thrift_[% struct.short_name %].[% member.name %]);
 
         [%- IF member.type.thrift_name.match(unsupported_fields) -%]
 #endif
