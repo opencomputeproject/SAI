@@ -3599,6 +3599,15 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PTP_SYNTONIZE_ADJUST,
 
     /**
+     * @brief HW protection switchover notification callback function passed to the adapter.
+     *
+     * @type sai_pointer_t sai_next_hop_group_hw_protection_switchover_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_NEXT_HOP_GROUP_HW_PROTECTION_SWITCHOVER_NOTIFY,
+
+    /**
      * @brief Performance Monitoring enabled on the switch
      *
      * @type sai_object_list_t

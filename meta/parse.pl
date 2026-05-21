@@ -2695,6 +2695,7 @@ sub ProcessStructValueType
     my $type = shift;
 
     return "SAI_ATTR_VALUE_TYPE_OBJECT_ID"        if $type eq "sai_object_id_t";
+    return "SAI_ATTR_VALUE_TYPE_OBJECT_LIST"      if $type eq "sai_object_list_t";
     return "SAI_ATTR_VALUE_TYPE_MAC"              if $type eq "sai_mac_t";
     return "SAI_ATTR_VALUE_TYPE_IP_ADDRESS"       if $type eq "sai_ip_address_t";
     return "SAI_ATTR_VALUE_TYPE_IP_PREFIX"        if $type eq "sai_ip_prefix_t";
@@ -2743,7 +2744,7 @@ sub ProcessStructObjects
 
     my $type = $struct->{type};
 
-    return "NULL" if not $type eq "sai_object_id_t" and not $type eq "sai_attribute_t*";
+    return "NULL" if not $type eq "sai_object_id_t" and not $type eq "sai_object_list_t" and not $type eq "sai_attribute_t*";
 
     WriteSource "const sai_object_type_t sai_metadata_struct_member_sai_${rawname}_t_${key}_allowed_objects[] = {";
 
@@ -2767,7 +2768,7 @@ sub ProcessStructObjectLen
 
     my $type = $struct->{type};
 
-    return 0 if not $type eq "sai_object_id_t" and not $type eq "sai_attribute_t*";
+    return 0 if not $type eq "sai_object_id_t" and not $type eq "sai_object_list_t" and not $type eq "sai_attribute_t*";
 
     my @objects = @{ $struct->{objects} };
 
@@ -4172,13 +4173,13 @@ sub ProcessSingleNonObjectId
 
         # allowed entries on object structs
 
-        if (not $type =~ /^sai_(nat_entry_data|mac|object_id|vlan_id|ip_address|ip_prefix|acl_chain|label_id|ip6|uint8|uint16|uint32|u32_range|\w+_type)_t$/)
+        if (not $type =~ /^sai_(nat_entry_data|mac|object_id|object_list|vlan_id|ip_address|ip_prefix|acl_chain|label_id|ip6|uint8|uint16|uint32|u32_range|\w+_type)_t$/)
         {
             LogError "struct member $member type '$type' is not allowed on struct $structname";
             next;
         }
 
-        next if not $type eq "sai_object_id_t";
+        next if not $type eq "sai_object_id_t" and not $type eq "sai_object_list_t";
 
         my $objects = ExtractObjectsFromDesc($structname, $member, $desc);
 
@@ -5298,107 +5299,6 @@ sub CreateSourcePragmaPop
     WriteSource "#pragma GCC diagnostic pop";
 }
 
-sub NeedsTwoPassProcessing
-{
-    #
-    # Detect if XML files require two-pass processing based on their structure.
-    #
-    # In Doxygen 1.9.8+, the XML structure changed:
-    # - sai_*.xml files have empty enum/define sections (just sectiondef exists, no memberdefs)
-    # - group_*.xml files contain the actual enum definitions with enumvalues and defines
-    #
-    # In older Doxygen versions:
-    # - sai_*.xml files contain both defines and enums with enumvalues
-    # - group_*.xml files don't exist or aren't used
-    #
-    # Returns 1 if two-pass processing is needed (new structure):
-    #   - First pass: process all defines from group_*.xml files
-    #   - Second pass: process enums/typedefs/functions from group_*.xml and sai_*.xml files
-    #
-    # Returns 0 if single-pass processing is sufficient (old structure):
-    #   - Process sai_*.xml files only
-    #
-
-    my $sai_file = "$XMLDIR/sai_8h.xml";
-
-    my $saiacl_file = "$XMLDIR/saiacl_8h.xml";
-
-    return 1 if not -f $sai_file or not -f $saiacl_file;
-
-    #
-    # Check sai_8h.xml for enumvalue with name="SAI_API_SWITCH"
-    #
-
-    my $sai_ref = ReadXml $sai_file;
-
-    return 1 if not defined $sai_ref->{compounddef}[0];
-
-    my @sai_sections = @{ $sai_ref->{compounddef}[0]->{sectiondef} };
-
-    my $has_enumvalue = 0;
-
-    for my $section (@sai_sections)
-    {
-        next if not $section->{kind} eq "enum";
-
-        for my $memberdef (@{ $section->{memberdef} })
-        {
-            next if not $memberdef->{kind} eq "enum";
-
-            if (defined $memberdef->{enumvalue})
-            {
-                for my $enumvalue (@{ $memberdef->{enumvalue} })
-                {
-                    if (defined $enumvalue->{name} and defined $enumvalue->{name}[0] and $enumvalue->{name}[0] eq "SAI_API_SWITCH")
-                    {
-                        $has_enumvalue = 1;
-
-                        last;
-                    }
-                }
-            }
-        }
-
-        last if $has_enumvalue;
-    }
-
-    #
-    # Check saiacl_8h.xml for memberdef kind="define"
-    #
-
-    my $saiacl_ref = ReadXml $saiacl_file;
-
-    return 1 if not defined $saiacl_ref->{compounddef}[0];
-
-    my @saiacl_sections = @{ $saiacl_ref->{compounddef}[0]->{sectiondef} };
-
-    my $has_define = 0;
-
-    for my $section (@saiacl_sections)
-    {
-        next if not $section->{kind} eq "define";
-
-        for my $memberdef (@{ $section->{memberdef} })
-        {
-            if ($memberdef->{kind} eq "define")
-            {
-                $has_define = 1;
-
-                last;
-            }
-        }
-
-        last if $has_define;
-    }
-
-    #
-    # If sai_8h.xml has enumvalues and saiacl_8h.xml has defines, it's old structure (single-pass)
-    # Otherwise, use two-pass processing (group_*.xml files contain the actual content)
-    #
-
-    return not ($has_enumvalue and $has_define);
-}
-
 sub ProcessXmlFiles
 {
     if (NeedsTwoPassProcessing())
@@ -5637,7 +5537,7 @@ sub ProcessNotificationStruct
         next if $type =~ /^(uint32_t|bool)$/;
         next if $type =~ /^(sai_twamp_session_stats_data_t)$/;
 
-        if ($type =~ /^(sai_object_id_t|sai_attribute_t\*)$/)
+        if ($type =~ /^(sai_object_id_t|sai_object_list_t|sai_attribute_t\*)$/)
         {
             my $objects = ExtractObjectsFromDesc($structname, $member, $desc);
 
