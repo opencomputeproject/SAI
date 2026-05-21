@@ -171,16 +171,15 @@ typedef enum _sai_perfmon_attr_t
 ```
 
 #### 4.3.3 Perfmon Object Switch Binding
-List of perfmon objects can be bound to the switch object. This binding can be done as a SET operation when perfmon object is created.
+List of perfmon objects configured can be read using the following switch atribute.
 
 ```
     /**
      * @brief Performance Monitoring enabled on the switch
      *
      * @type sai_object_list_t
-     * @flags CREATE_AND_SET
-     * @objects SAI_OBJECT_TYPE_PERFMO$
-     * @default empty
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_PERFMON
      */
     SAI_SWITCH_ATTR_PERFMON_LIST,
 ```
@@ -196,7 +195,7 @@ This section talks about enabling performance monitoring for a given API and a m
 
 ```
 /*
- * Configure CSIG Compact Tag for ABW signal processing and time interval of 256 micro seconds
+ * Configure Perfmon object for Bulk Set API performance monitoring
  */
 
 // Specify the Object of intererst
