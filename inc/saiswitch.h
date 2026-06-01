@@ -3608,12 +3608,22 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_NEXT_HOP_GROUP_HW_PROTECTION_SWITCHOVER_NOTIFY,
 
     /**
-     * @brief OFH headers
+     * @brief Performance Monitoring enabled on the switch
      *
      * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_PERFMON
+     */
+    SAI_SWITCH_ATTR_PERFMON_LIST,
+
+    /**
+     * @brief OFH headers
+     *
+     * @type sai_object_id_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_OFH
-     * @default empty
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_SWITCH_ATTR_OFH,
 

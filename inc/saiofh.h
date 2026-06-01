@@ -60,6 +60,11 @@ typedef enum _sai_ofh_type_t
 typedef enum _sai_ofh_sub_type_t
 {
     /**
+     * @brief No Sub Type
+     */
+    SAI_OFH_SUB_TYPE_NONE,
+
+    /**
      * @brief Type 1
      */
     SAI_OFH_SUB_TYPE_1,
@@ -110,7 +115,7 @@ typedef enum _sai_ofh_attr_t
      *
      * @type sai_ofh_sub_type_t
      * @flags CREATE_ONLY
-     * @default SAI_OFH_SUB_TYPE_1
+     * @default SAI_OFH_SUB_TYPE_NONE
      */
     SAI_OFH_ATTR_SUB_TYPE,
 
@@ -207,19 +212,18 @@ typedef enum _sai_ofh_attr_t
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 0
-     * @validonly SAI_OFH_ATTR_TYPE == SAI_OFH_TYPE_AFH
+     * @validonly SAI_OFH_ATTR_TYPE == SAI_OFH_TYPE_AFH or SAI_OFH_ATTR_TYPE == SAI_OFH_TYPE_ESUN
      */
     SAI_OFH_ATTR_ECN_OFFSET,
 
     /**
      * @brief OFH ECN Field Width in Bits
      * Value of 0 bits means that field is not configured
-     * ESUN: 2 bits
      *
      * @type sai_uint8_t
      * @flags CREATE_AND_SET
      * @default 0
-     * @validonly SAI_OFH_ATTR_TYPE == SAI_OFH_TYPE_AFH
+     * @validonly SAI_OFH_ATTR_TYPE == SAI_OFH_TYPE_AFH or SAI_OFH_ATTR_TYPE == SAI_OFH_TYPE_ESUN
      */
     SAI_OFH_ATTR_ECN_WIDTH,
 
@@ -361,6 +365,27 @@ typedef enum _sai_ofh_attr_t
      * @default 0
      */
     SAI_OFH_ATTR_HDR_SIZE,
+
+    /**
+     * @brief Reserved 1 Field Bit Offset
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_OFH_ATTR_TYPE == SAI_OFH_TYPE_ESUN
+     */
+    SAI_OFH_ATTR_RSVD1_OFFSET,
+
+    /**
+     * @brief Reserved 1 Field Width in Bits
+     * Value of 0 bits means that field is not configured
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_OFH_ATTR_TYPE == SAI_OFH_TYPE_ESUN
+     */
+    SAI_OFH_ATTR_RSVD1_WIDTH,
 
     /**
      * @brief End of attributes

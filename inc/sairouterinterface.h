@@ -437,6 +437,15 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_QOS_TC_AND_COLOR_TO_DOT1P_MAP,
 
     /**
+     * @brief Admin OFH state
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     */
+    SAI_ROUTER_INTERFACE_ATTR_ADMIN_OFH_STATE,
+
+    /**
      * @brief End of attributes
      */
     SAI_ROUTER_INTERFACE_ATTR_END,

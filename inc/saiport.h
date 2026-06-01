@@ -3330,10 +3330,11 @@ typedef enum _sai_port_attr_t
     /**
      * @brief OFH headers
      *
-     * @type sai_object_list_t
-     * @flags CREATE_ONLY
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_OFH
-     * @default empty
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_OFH,
 
