@@ -39,6 +39,9 @@ endif
 
 ifeq ($(platform),vs)
 LIBS = -lthrift -lpthread -lsaivs -lsaimeta -lsaimetadata -lzmq
+else ifeq ($(platform),vpp)
+LIBS = -lthrift -lpthread -lsaivs -lsaimeta -lsaimetadata -lzmq \
+       -lvlib -lvlibapi -lvppapiclient -lvlibmemoryclient -lvppinfra
 else
 LIBS = -lthrift -lpthread -lsai -lsaimetadata
 endif
