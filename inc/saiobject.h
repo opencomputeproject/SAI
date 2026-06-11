@@ -396,6 +396,146 @@ sai_status_t sai_query_object_stage(
         _Out_ sai_object_stage_t *stage);
 
 /**
+ * @brief Query value constraints for a numerical attribute.
+ *
+ * Returns the implementation-enforced value constraints (MIN / MAX /
+ * STEP / DEFAULT / ALLOWED_VALUES, see sai_attribute_constraint_type_t)
+ * for a numerical attribute on a given object type or object instance.
+ *
+ * The API is context-aware. The caller MAY pass a partial attribute
+ * list (attr_count + attr_list) that describes the sibling attribute
+ * values it intends to use for the (possibly yet-to-be-created)
+ * object. The implementation answers the constraint query as if the
+ * object were configured with those sibling attribute values. This is
+ * useful when the legal range of the queried attribute depends on the
+ * value of another (typically CREATE_ONLY) sibling attribute - for
+ * example, the legal range of SAI_POLICER_ATTR_CIR depends on
+ * SAI_POLICER_ATTR_METER_TYPE.
+ *
+ * Some constraints additionally depend on the HW pipeline stage at
+ * which the object will be applied, even though the stage is not
+ * represented as a sibling attribute on the object itself - for
+ * example, the legal range of
+ * SAI_MIRROR_SESSION_ATTR_TRUNCATE_SIZE may differ between ingress
+ * and egress mirror sessions, but the mirror session object has no
+ * direction attribute (the direction is established when the session
+ * is bound to a port via SAI_PORT_ATTR_INGRESS_MIRROR_SESSION /
+ * SAI_PORT_ATTR_EGRESS_MIRROR_SESSION). The optional stage parameter
+ * carries this context.
+ *
+ * The object_key, attr_list and stage parameters compose as follows:
+ *
+ * - If object_key is non-NULL, the constraints are computed for the
+ *    referenced existing object. Sibling attribute values supplied via
+ *    attr_list (if any) override the corresponding current values of
+ *    the existing object for the purpose of this query.
+ *
+ * - If object_key is NULL and attr_list is non-empty, the constraints
+ *    are computed for a hypothetical not-yet-created object of
+ *    object_type configured with the sibling values from attr_list.
+ *
+ * - If object_key is NULL and attr_count is 0, the constraints are
+ *    computed at the object-type level using attribute metadata
+ *    defaults. Implementations MAY return SAI_STATUS_NOT_SUPPORTED when
+ *    the answer depends on a sibling that has no default.
+ *
+ * - stage = SAI_OBJECT_STAGE_BOTH (zero) means stage-unspecified -
+ *    the implementation returns stage-agnostic constraints (typically
+ *    the intersection of the per-stage constraints, i.e. the most
+ *    restrictive bounds that are safe at every stage). stage =
+ *    SAI_OBJECT_STAGE_INGRESS / SAI_OBJECT_STAGE_EGRESS narrows the
+ *    query to that pipeline stage. Implementations MUST accept
+ *    SAI_OBJECT_STAGE_BOTH; the INGRESS / EGRESS selectors are
+ *    honoured only when the queried attribute's constraints are
+ *    actually stage-dependent (and otherwise behave identically to
+ *    SAI_OBJECT_STAGE_BOTH).
+ *
+ * Standard two-pass sizing applies to the returned list, and also to
+ * any embedded list-valued constraint (ALLOWED_VALUES): the caller
+ * first issues the query with constraints->count = 0 and
+ * constraints->list = NULL (or with too-small buffers) to obtain the
+ * required sizes, then re-issues with buffers of those sizes.
+ *
+ * The API reports status on two channels. The function return value is
+ * the authoritative pass/fail for the whole call; it is
+ * SAI_STATUS_SUCCESS (or SAI_STATUS_BUFFER_OVERFLOW during sizing) only
+ * when the API ran and the (attr_id, attr_list, stage) combination is
+ * valid - any other value means constraints MUST NOT be consumed. The
+ * attr_status out-parameter carries the detailed combination verdict;
+ * for an invalid combination it holds the same code as the return
+ * value, and additionally (a) exposes, via the SAI_STATUS_..._0 + i
+ * ranges, the index i of the offending attr_list entry, and (b) reports
+ * combination validity independently of the buffer-sizing return state
+ * (SAI_STATUS_BUFFER_OVERFLOW maps to attr_status being SAI_STATUS_SUCCESS,
+ * because it reflects buffer capacity, not combination validity).
+ * bulk operations. attr_status is written whenever the API can run at
+ * all (i.e. the return value is neither SAI_STATUS_NOT_IMPLEMENTED nor
+ * SAI_STATUS_INVALID_PARAMETER), and is left untouched otherwise.
+ *
+ * A successful call that returns constraints->count == 0 is an explicit,
+ * valid answer: the implementation enforces no constraints on attr_id in
+ * this context (every value in the attribute's native type range is
+ * accepted). Over-supplying attr_list is harmless - a valid sibling that
+ * is irrelevant to attr_id is silently ignored and never causes an
+ * error; only siblings that are invalid for object_type
+ * (SAI_STATUS_INVALID_ATTRIBUTE_0 + i) or carry an out-of-range value
+ * (SAI_STATUS_INVALID_ATTR_VALUE_0 + i), or a sibling combination the
+ * implementation cannot evaluate (SAI_STATUS_ATTR_NOT_SUPPORTED_0 + i),
+ * are reported as errors.
+ *
+ * @param[in] switch_id SAI Switch object id
+ * @param[in] object_type SAI object type of the queried attribute
+ * @param[in] object_key Optional pointer to an existing object
+ *    instance; may be NULL for object-type-level queries
+ * @param[in] attr_count Number of sibling-attribute context entries
+ * @param[in] attr_list Sibling-attribute context (may be NULL when
+ *    attr_count is zero). Entries with attr_id equal to the
+ *    queried attr_id are ignored, as are any valid siblings the
+ *    implementation does not consider relevant to attr_id's
+ *    constraints. The caller need not know which siblings matter:
+ *    if unsure, it MAY pass all of the object's attributes and let
+ *    the implementation pick out the relevant ones.
+ * @param[in] stage Optional pipeline-stage context. Pass
+ *    SAI_OBJECT_STAGE_BOTH (zero) when the caller does not
+ *    need to distinguish stages or when the attribute is not
+ *    stage-dependent.
+ * @param[in] attr_id Numerical attribute id whose constraints are
+ *    being queried. Must refer to an attribute whose
+ *    attrvaluetype is a scalar integer (see
+ *    sai_metadata_is_numerical_attr_value_type()).
+ * @param[inout] attr_status Status of the requested (attr_id,
+ *    attr_list, stage) combination, encoded per saistatus.h. The
+ *    pointer MUST be non-NULL. Carries the semantic result of the
+ *    query, separate from the API-level return value: for an invalid
+ *    combination it holds the same code as the return value (and, in
+ *    the SAI_STATUS_..._0 + i ranges, the index i of the offending
+ *    attr_list entry); on the buffer-sizing pass it is
+ *    SAI_STATUS_SUCCESS even though the return value is
+ *    SAI_STATUS_BUFFER_OVERFLOW. Only consume constraints when
+ *    *attr_status is SAI_STATUS_SUCCESS.
+ * @param[inout] constraints Caller-allocated constraint list. On
+ *    input constraints->count is the caller's buffer
+ *    capacity; on output it is the actual (or required, on
+ *    SAI_STATUS_BUFFER_OVERFLOW) number of entries.
+ *
+ * @return #SAI_STATUS_SUCCESS on success,
+ *    #SAI_STATUS_BUFFER_OVERFLOW if any output buffer (the
+ *    outer list or an inner ALLOWED_VALUES list) is too small
+ *    (count fields are updated with the required sizes),
+ *    failure status code on error.
+ */
+sai_status_t sai_query_attribute_value_constraints(
+        _In_ sai_object_id_t switch_id,
+        _In_ sai_object_type_t object_type,
+        _In_ const sai_object_key_t *object_key,
+        _In_ uint32_t attr_count,
+        _In_ const sai_attribute_t *attr_list,
+        _In_ sai_object_stage_t stage,
+        _In_ sai_attr_id_t attr_id,
+        _Inout_ sai_status_t *attr_status,
+        _Inout_ sai_attribute_constraint_list_t *constraints);
+
+/**
  * @}
  */
 #endif /** __SAIOBJECT_H_ */
