@@ -408,6 +408,22 @@ typedef enum _sai_port_priority_flow_control_mode_t
 } sai_port_priority_flow_control_mode_t;
 
 /**
+ * @brief MACsec PFC mode
+ *
+ * Controls whether PFC frames on a MACsec-enabled port are handled as
+ * normal clear PFC frames or as encrypted/secure PFC frames.
+ */
+typedef enum _sai_port_macsec_pfc_mode_t
+{
+    /** Default behavior: clear PFC */
+    SAI_PORT_MACSEC_PFC_MODE_UNENCRYPTED,
+
+    /** Secure / encrypted PFC */
+    SAI_PORT_MACSEC_PFC_MODE_ENCRYPTED,
+
+} sai_port_macsec_pfc_mode_t;
+
+/**
  * @brief PTP mode
  * These modes can be used at the port and switch level.
  * All ports use the value set at the switch level unless explicitly configured
@@ -1507,6 +1523,18 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_MACSEC_PORT
      */
     SAI_PORT_ATTR_MACSEC_PORT_LIST,
+
+    /**
+     * @brief Configure per-port MACsec PFC mode
+     *
+     * When MACsec is not enabled on the port, implementations may ignore this
+     * attribute and behave as SAI_PORT_MACSEC_PFC_MODE_UNENCRYPTED.
+     *
+     * @type sai_port_macsec_pfc_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_MACSEC_PFC_MODE_UNENCRYPTED
+     */
+    SAI_PORT_ATTR_MACSEC_PFC_MODE,
 
     /**
      * @brief Enable/Disable Mirror session
