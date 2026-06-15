@@ -1,1 +1,2 @@
-debian/usr/local/lib/python2.7/site-packages/* /usr/lib/python2.7/dist-packages/
+#compatiable with bookworm python 3.11 environment and build with python3
+debian/usr/local/local/lib/python3*/dist-packages/* /usr/lib/python3/dist-packages/
