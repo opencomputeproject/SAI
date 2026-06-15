@@ -4205,7 +4205,6 @@ sub ProcessSingleNonObjectId
         my $desc = $struct{$member}{desc};
 
         # allowed entries on object structs
-
         if (not $type =~ /^sai_(nat_entry_data|mac|object_id|object_list|vlan_id|ip_address|ip_prefix|ofh_addr_and_mask|acl_chain|label_id|ip6|uint8|uint16|uint32|u32_range|\w+_type)_t$/)
         {
             LogError "struct member $member type '$type' is not allowed on struct $structname";
