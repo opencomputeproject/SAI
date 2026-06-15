@@ -290,7 +290,8 @@ class RouteConfiger(object):
                                             addr=sai_thrift_ip_addr_t(
                                                 ip6=DEFAULT_IP_V6_PREFIX),
                                             mask=sai_thrift_ip_addr_t(ip6=DEFAULT_IP_V6_PREFIX))
-        self.test_obj.dut.default_ipv6_route_entry = sai_thrift_route_entry_t(vr_id=self.test_obj.dut.default_vrf,
+        self.test_obj.dut.default_ipv6_route_entry = sai_thrift_route_entry_t(switch_id=self.test_obj.dut.switch_id,
+                                                                              vr_id=self.test_obj.dut.default_vrf,
                                                                               destination=v6_default)
         status = sai_thrift_create_route_entry(
             self.client,
@@ -298,7 +299,8 @@ class RouteConfiger(object):
             packet_action=SAI_PACKET_ACTION_DROP)
         self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
 
-        self.test_obj.dut.default_ipv4_route_entry = sai_thrift_route_entry_t(vr_id=self.test_obj.dut.default_vrf,
+        self.test_obj.dut.default_ipv4_route_entry = sai_thrift_route_entry_t(switch_id=self.test_obj.dut.switch_id,
+                                                                              vr_id=self.test_obj.dut.default_vrf,
                                                                               destination=sai_ipprefix(DEFAULT_IP_V4_PREFIX))
         status = sai_thrift_create_route_entry(
             self.client,
@@ -323,22 +325,22 @@ class RouteConfiger(object):
         vr_id = self.choice_virtual_route(virtual_router)
         if dest_device.ip_prefix:
             net_routev4 = sai_thrift_route_entry_t(
-                vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv4+'/'+dest_device.ip_prefix))
+                switch_id=self.test_obj.dut.switch_id, vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv4+'/'+dest_device.ip_prefix))
         else:
             # destination cannot use sai_ipaddress
             net_routev4 = sai_thrift_route_entry_t(
-                vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv4+'/32'))
+                switch_id=self.test_obj.dut.switch_id, vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv4+'/32'))
         status = sai_thrift_create_route_entry(
             self.client, net_routev4, next_hop_id=rif)
         self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
 
         if dest_device.ip_prefix_v6:
             net_routev6 = sai_thrift_route_entry_t(
-                vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv6+'/'+dest_device.ip_prefix_v6))
+                switch_id=self.test_obj.dut.switch_id, vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv6+'/'+dest_device.ip_prefix_v6))
         else:
             # destination cannot use sai_ipaddress
             net_routev6 = sai_thrift_route_entry_t(
-                vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv6+'/128'))
+                switch_id=self.test_obj.dut.switch_id, vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv6+'/128'))
         status = sai_thrift_create_route_entry(
             self.client, net_routev6, next_hop_id=rif)
         self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
@@ -366,22 +368,22 @@ class RouteConfiger(object):
         vr_id = self.choice_virtual_route(virtual_router)
         if dest_device.ip_prefix:
             net_routev4 = sai_thrift_route_entry_t(
-                vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv4+'/'+dest_device.ip_prefix))
+                switch_id=self.test_obj.dut.switch_id, vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv4+'/'+dest_device.ip_prefix))
         else:
             # destination cannot use sai_ipaddress
             net_routev4 = sai_thrift_route_entry_t(
-                vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv4+'/32'))
+                switch_id=self.test_obj.dut.switch_id, vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv4+'/32'))
         status = sai_thrift_create_route_entry(
             self.client, net_routev4, next_hop_id=nexthopv4.oid)
         self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
 
         if dest_device.ip_prefix_v6:
             net_routev6 = sai_thrift_route_entry_t(
-                vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv6+'/'+dest_device.ip_prefix_v6))
+                switch_id=self.test_obj.dut.switch_id, vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv6+'/'+dest_device.ip_prefix_v6))
         else:
             # destination cannot use sai_ipaddress
             net_routev6 = sai_thrift_route_entry_t(
-                vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv6+'/128'))
+                switch_id=self.test_obj.dut.switch_id, vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv6+'/128'))
         status = sai_thrift_create_route_entry(
             self.client, net_routev6, next_hop_id=nexthopv6.oid)
         self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
@@ -406,22 +408,22 @@ class RouteConfiger(object):
         vr_id = self.choice_virtual_route(virtual_router)
         if dest_device.ip_prefix:
             net_routev4 = sai_thrift_route_entry_t(
-                vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv4+'/'+dest_device.ip_prefix))
+                switch_id=self.test_obj.dut.switch_id, vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv4+'/'+dest_device.ip_prefix))
         else:
             # destination cannot use sai_ipaddress
             net_routev4 = sai_thrift_route_entry_t(
-                vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv4+'/32'))
+                switch_id=self.test_obj.dut.switch_id, vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv4+'/32'))
         status = sai_thrift_create_route_entry(
             self.client, net_routev4, next_hop_id=nexthop_groupv4.nhp_grp_id)
         self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
 
         if dest_device.ip_prefix_v6:
             net_routev6 = sai_thrift_route_entry_t(
-                vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv6+'/'+dest_device.ip_prefix_v6))
+                switch_id=self.test_obj.dut.switch_id, vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv6+'/'+dest_device.ip_prefix_v6))
         else:
             # destination cannot use sai_ipaddress
             net_routev6 = sai_thrift_route_entry_t(
-                vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv6+'/128'))
+                switch_id=self.test_obj.dut.switch_id, vr_id=vr_id, destination=sai_ipprefix(dest_device.ipv6+'/128'))
         status = sai_thrift_create_route_entry(
             self.client, net_routev6, next_hop_id=nexthop_groupv6.nhp_grp_id)
         self.test_obj.assertEqual(status, SAI_STATUS_SUCCESS)
@@ -447,6 +449,7 @@ class RouteConfiger(object):
         """
         if nexthop_device.ipv4:
             nbr_entry_v4 = sai_thrift_neighbor_entry_t(
+                switch_id=self.test_obj.dut.switch_id,
                 rif_id=rif,
                 ip_address=sai_ipaddress(nexthop_device.ipv4))
             status = sai_thrift_create_neighbor_entry(
@@ -460,6 +463,7 @@ class RouteConfiger(object):
 
         if nexthop_device.ipv6:
             nbr_entry_v6 = sai_thrift_neighbor_entry_t(
+                switch_id=self.test_obj.dut.switch_id,
                 rif_id=rif,
                 ip_address=sai_ipaddress(nexthop_device.ipv6))
             status = sai_thrift_create_neighbor_entry(
