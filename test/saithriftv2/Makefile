@@ -38,10 +38,10 @@ CTYPESGEN = /usr/local/bin/ctypesgen.py
 endif
 
 ifeq ($(platform),vs)
-LIBS = -lthrift -lpthread -lsaivs -lsaimeta -lsaimetadata -lzmq
+LIBS = -lthrift -lpthread -lsaivs -lsaimeta -lsaimetadata -lzmq -lswsscommon
 else ifeq ($(platform),vpp)
 LIBS = -lthrift -lpthread -lsaivs -lsaimeta -lsaimetadata -lzmq \
-       -lvlib -lvlibapi -lvppapiclient -lvlibmemoryclient -lvppinfra
+       -lvlib -lvlibapi -lvppapiclient -lvlibmemoryclient -lvppinfra -lswsscommon
 else
 LIBS = -lthrift -lpthread -lsai -lsaimetadata
 endif
