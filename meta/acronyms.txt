@@ -2,6 +2,7 @@
 ACK - Acknowledgement
 ACL - Access Control List
 AES - Advanced Encryption Standard
+AFH - AI Fabric Header
 AN - Association Number
 AN - Auto Negotiation
 API - Application Program Interface
@@ -56,6 +57,7 @@ EEPROM - Electrically erasable programmable read-only memory
 ENI - Elastic Network Interface
 ERSPAN - Encapsulated Remote SPAN
 ESN - Extended Sequence Number
+ESUN - Ethernet for Scale Up Networks
 EWMA - Exponentially Weighted Moving Average
 FCS - Frame Check Sequence
 FD - File Descriptor
@@ -118,6 +120,7 @@ NTPSERVER - Network Time Protocol Server
 NVGRE - Network Virtualization using Generic Routing Encapsulation
 OA - Optical Amplifier
 OAM - Operations Administration and Maintenance
+OFH - Optimized Forwarding Header
 ORL - Optical Return Loss
 OTN - Optical Transport Network
 OUI - Organizationally Unique Identifier
@@ -185,6 +188,7 @@ TWAMP - Two-Way Active Measurement Protocol
 UART - Universal Asynchronous Receiver/Transmitter
 UDF - User-Defined Field
 UDP - User Datagram Protocol
+UFH - Unified Forwarding Header
 USD - Ultimate Segment Decapsulation
 USP - Ultimate Segment Pop
 USXGMII - Universal Serial 10 Gigabit Media Independent Interface

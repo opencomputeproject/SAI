@@ -92,6 +92,15 @@ typedef enum _sai_qos_map_type_t
     /** QOS Map to set queue to VC */
     SAI_QOS_MAP_TYPE_QUEUE_TO_VC = 0x00000011,
 
+    /** QOS Map to set OFH COS to Traffic class */
+    SAI_QOS_MAP_TYPE_OFH_COS_TO_TC = 0x00000012,
+
+    /** QOS Map to set OFH COS to color */
+    SAI_QOS_MAP_TYPE_OFH_COS_TO_COLOR = 0x00000013,
+
+    /** QOS Map to set traffic class and color to OFH COS */
+    SAI_QOS_MAP_TYPE_TC_AND_COLOR_TO_OFH_COS = 0x00000014,
+
     /** Custom range base value */
     SAI_QOS_MAP_TYPE_CUSTOM_RANGE_BASE = 0x10000000
 

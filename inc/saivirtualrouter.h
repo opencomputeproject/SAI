@@ -116,6 +116,15 @@ typedef enum _sai_virtual_router_attr_t
     SAI_VIRTUAL_ROUTER_ATTR_LABEL,
 
     /**
+     * @brief Admin OFH state
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     */
+    SAI_VIRTUAL_ROUTER_ATTR_ADMIN_OFH_STATE,
+
+    /**
      * @brief End of attributes
      */
     SAI_VIRTUAL_ROUTER_ATTR_END,

@@ -3328,6 +3328,60 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_UNKNOWN_MULTICAST_STORM_CONTROL_POLICER_ID,
 
     /**
+     * @brief OFH headers
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_OFH
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_OFH,
+
+    /**
+     * @brief Enable OFH COS -> TC MAP on port
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on port.
+     * To enable/disable trust OFH COS, map ID should be added/removed on port.
+     * Default no map.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_QOS_OFH_COS_TO_TC_MAP,
+
+    /**
+     * @brief Enable OFH COS -> COLOR MAP on port
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on port.
+     * To enable/disable trust OFH COS, map ID should be added/removed on port.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_QOS_OFH_COS_TO_COLOR_MAP,
+
+    /**
+     * @brief Enable TC AND COLOR -> OFH COS MAP
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable map on port.
+     * Default no map.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_QOS_TC_AND_COLOR_TO_OFH_COS_MAP,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
@@ -4110,6 +4164,18 @@ typedef enum _sai_port_stat_t
 
     /** Number of transmitted packets with frame size 1519 octets to max MTU supported by the port */
     SAI_PORT_STAT_ETHER_OUT_PKTS_1519_TO_MAX_OCTETS,
+
+    /** SAI port stat OFH in receives */
+    SAI_PORT_STAT_OFH_IN_PKTS,
+
+    /** SAI port stat OFH in octets */
+    SAI_PORT_STAT_OFH_IN_OCTETS,
+
+    /** SAI port stat OFH out pkts */
+    SAI_PORT_STAT_OFH_OUT_PKTS,
+
+    /** SAI port stat OFH out octets */
+    SAI_PORT_STAT_OFH_OUT_OCTETS,
 
     /** Port stat in drop reasons range start */
     SAI_PORT_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,

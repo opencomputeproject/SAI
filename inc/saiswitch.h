@@ -3617,6 +3617,63 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PERFMON_LIST,
 
     /**
+     * @brief OFH headers
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_OFH
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_OFH,
+
+    /**
+     * @brief The hash object for OFH packets with OFH.F=1 going through ECMP
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_HASH
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_ECMP_HASH_OFH_F1,
+
+    /**
+     * @brief The hash object for OFH packets with OFH.F=0 going through ECMP
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_HASH
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_ECMP_HASH_OFH_F0,
+
+    /**
+     * @brief OFH header max size
+     *
+     * @type sai_int8_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_OFH_MAX_SIZE,
+
+    /**
+     * @brief The OFH Route Table size
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_OFH_ROUTE_TABLE_SIZE,
+
+    /**
+     * @brief Available OFH routes
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_AVAILABLE_OFH_ROUTE_ENTRY,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
