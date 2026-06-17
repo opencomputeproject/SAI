@@ -84,6 +84,8 @@
 #include "saiicmpecho.h"
 #include "saisynce.h"
 #include "saivirtualchannel.h"
+#include "saiofh.h"
+#include "saiofhroute.h"
 
 /**
  * @defgroup SAI SAI - Entry point specific API definitions.
@@ -157,6 +159,8 @@ typedef enum _sai_api_t
     SAI_API_SYNCE            = 54, /**< sai_synce_api_t */
     SAI_API_VIRTUAL_CHANNEL  = 55, /**< sai_virtual_channel_api_t */
     SAI_API_PERFMON          = 56, /**< sai_perfmon_api_t */
+    SAI_API_OFH              = 57, /**< sai_ofh_api_t */
+    SAI_API_OFH_ROUTE        = 58, /**< sai_ofh_route_api_t */
     SAI_API_MAX,                   /**< total number of APIs */
 
     /**

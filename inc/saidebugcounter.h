@@ -331,6 +331,21 @@ typedef enum _sai_in_drop_reason_t
     /** IPv4 or IPv6 Routing table (LPM) unicast miss */
     SAI_IN_DROP_REASON_LPM_MISS = 0x00000039,
 
+    /** OFH packet TTL expired */
+    SAI_IN_DROP_REASON_OFH_TTL,
+
+    /** OFH Routing table miss */
+    SAI_IN_DROP_REASON_OFH_MISS,
+
+    /** OFH Routing table action discard */
+    SAI_IN_DROP_REASON_OFH_DISCARD,
+
+    /** OFH VLAN drop */
+    SAI_IN_DROP_REASON_OFH_VLAN_DROP,
+
+    /** OFH VLAN to virtual router id drop */
+    SAI_IN_DROP_REASON_OFH_VLAN_TO_VRID_DROP,
+
     /** End of in drop reasons */
     SAI_IN_DROP_REASON_END,
 
@@ -376,6 +391,9 @@ typedef enum _sai_out_drop_reason_t
      * @brief Tunnel packets dropped if going back to the incoming tunnel
      */
     SAI_OUT_DROP_REASON_TUNNEL_LOOPBACK_PACKET_DROP,
+
+    /** OFH VLAN drop */
+    SAI_OUT_DROP_REASON_OFH_VLAN_DROP,
 
     /** End of out drop reasons */
     SAI_OUT_DROP_REASON_END,
