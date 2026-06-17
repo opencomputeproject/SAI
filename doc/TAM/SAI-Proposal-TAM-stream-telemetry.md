@@ -132,7 +132,7 @@ For more information on IPFIX, refer to the following resources:
 
 #### IPFIX header
 
-The `Version` and `Observation Domain ID` fields of the IPFIX header are identical for each IPFIX message.
+The `Version` field of the IPFIX header is identical for each IPFIX message. `Observation Domain ID` is defined by vendor implementation. `Sequence Number` starts from 0 and is monotonically incremented per `Observation Domain ID` modulo 2^32.
 
 ``` mermaid
 
@@ -143,8 +143,8 @@ packet-beta
 0-15: "Version = 0x000a"
 16-31: "Message Length = (16 + payload) bytes"
 32-63: "Export Timestamp: Second"
-64-95: "Sequence Number = 0, start from 0 and incremental sequence counter modulo 2^32"
-96-127: "Observation Domain ID = 0, always 0"
+64-95: "Sequence Number = 0"
+96-127: "Observation Domain ID = 0"
 
 ```
 
