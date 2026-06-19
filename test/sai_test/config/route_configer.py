@@ -622,9 +622,13 @@ class RouteConfiger(object):
             nhp_grpv4_members.append(nhp_grpv4_member)
             nhp_grpv6_members.append(nhp_grpv6_member)
 
+        # Give each NHG its own copy of the member port-index list. The v4 and v6
+        # groups are mutated independently (remove/re-add member tests), so sharing
+        # one list object would let a v4 mutation corrupt the v6 group's port list
+        # (ValueError: x not in list) when both run in the same config group.
         member_port_indexs = [17, 18, 19, 20, 21, 22, 23, 24]
-        nhp_grpv4: NexthopGroup = NexthopGroup(nhop_groupv4_id, nhp_grpv4_members, member_port_indexs)
-        nhp_grpv6: NexthopGroup = NexthopGroup(nhop_groupv6_id, nhp_grpv6_members, member_port_indexs)
+        nhp_grpv4: NexthopGroup = NexthopGroup(nhop_groupv4_id, nhp_grpv4_members, list(member_port_indexs))
+        nhp_grpv6: NexthopGroup = NexthopGroup(nhop_groupv6_id, nhp_grpv6_members, list(member_port_indexs))
 
         self.test_obj.dut.nhp_grpv4_list.append(nhp_grpv4)
         self.test_obj.dut.nhp_grpv6_list.append(nhp_grpv6)
