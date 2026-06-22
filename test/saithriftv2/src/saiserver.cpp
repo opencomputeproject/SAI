@@ -21,6 +21,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include "sai_rpc.h"
+#include <swss/logger.h>
 
 #define UNREFERENCED_PARAMETER(P)   (P)
 
@@ -269,6 +270,9 @@ void handleInitScript(const std::string& initScript)
 int
 main(int argc, char* argv[])
 {
+    swss::Logger::getInstance().setMinPrio(swss::Logger::SWSS_DEBUG);
+    swss::Logger::getInstance().swssOutputNotify("saiserver", "STDOUT");
+
     int rv = 0;
 
     auto options = handleCmdLine(argc, argv);
