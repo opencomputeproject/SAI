@@ -360,6 +360,19 @@ typedef enum _sai_next_hop_group_attr_t
     SAI_NEXT_HOP_GROUP_ATTR_ADMIN_ROLE,
 
     /**
+     * @brief This attribute indicates the nexthop group members weights
+     *
+     * NOS must query this attribute for the support.
+     * False: All members are with equal cost
+     * True: Members are configured with unequal cost
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_MEMBERS_WITH_UNEQUAL_WEIGHTS,
+
+    /**
      * @brief End of attributes
      */
     SAI_NEXT_HOP_GROUP_ATTR_END,
