@@ -856,6 +856,7 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_PRBS_PER_LANE_RX_STATE_LIST:
         case SAI_ATTR_VALUE_TYPE_PRBS_BIT_ERROR_RATE:
         case SAI_ATTR_VALUE_TYPE_PRBS_PER_LANE_BIT_ERROR_RATE_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_ILT_LANE_TRAINING_STATUS_LIST:
 
             if (md->allowedobjecttypes != NULL)
             {
@@ -3006,6 +3007,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_PRBS_PER_LANE_RX_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_PRBS_PER_LANE_RX_STATE_LIST:
         case SAI_ATTR_VALUE_TYPE_PRBS_PER_LANE_BIT_ERROR_RATE_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_ILT_LANE_TRAINING_STATUS_LIST:
 
             if (md->isprimitive)
             {

@@ -571,6 +571,40 @@ typedef struct _sai_prbs_per_lane_rx_state_list_t
 } sai_prbs_per_lane_rx_state_list_t;
 
 /**
+ * @brief Per-lane ILT training status
+ */
+typedef enum _sai_port_ilt_lane_training_status_t
+{
+    /** Lane training status is reserved */
+    SAI_PORT_ILT_LANE_TRAINING_STATUS_RESERVED,
+
+    /** Lane training failed (training_failure true on this lane) */
+    SAI_PORT_ILT_LANE_TRAINING_STATUS_FAIL,
+
+    /** Lane training is in progress */
+    SAI_PORT_ILT_LANE_TRAINING_STATUS_IN_PROGRESS,
+
+    /** Lane training completed */
+    SAI_PORT_ILT_LANE_TRAINING_STATUS_TRAINED,
+
+    /** Lane training fully trained */
+    SAI_PORT_ILT_LANE_TRAINING_STATUS_OK,
+
+} sai_port_ilt_lane_training_status_t;
+
+typedef struct _sai_ilt_lane_training_status_t
+{
+    uint32_t lane;
+    sai_port_ilt_lane_training_status_t training_status;
+} sai_ilt_lane_training_status_t;
+
+typedef struct _sai_port_ilt_lane_training_status_list_t
+{
+    uint32_t count;
+    sai_ilt_lane_training_status_t *list;
+} sai_port_ilt_lane_training_status_list_t;
+
+/**
  * @brief Field match mask
  *
  * @extraparam const sai_attr_metadata_t *meta
@@ -1806,6 +1840,9 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_UINT64_RANGE_LIST */
     sai_u64_range_list_t u64rangelist;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PORT_ILT_LANE_TRAINING_STATUS_LIST */
+    sai_port_ilt_lane_training_status_list_t port_ilt_lane_training_status_list;
 
 } sai_attribute_value_t;
 

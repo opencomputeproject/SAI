@@ -870,6 +870,50 @@ typedef enum _sai_llr_frame_action_t
 } sai_llr_frame_action_t;
 
 /**
+ * @brief Interface RTS status
+ */
+typedef enum _sai_port_ilt_rts_status_t
+{
+    /** RTS status is unknown */
+    SAI_PORT_ILT_RTS_STATUS_RESERVED,
+
+    /** RTS status is fail */
+    SAI_PORT_ILT_RTS_STATUS_FAIL,
+
+    /** RTS status is in progress */
+    SAI_PORT_ILT_RTS_STATUS_IN_PROGRESS,
+
+    /** RTS status is Ready */
+    SAI_PORT_ILT_RTS_STATUS_READY,
+
+    /** RTS status is OK */
+    SAI_PORT_ILT_RTS_STATUS_OK
+
+} sai_port_ilt_rts_status_t;
+
+/**
+ * @brief Interface ILT Training status
+ */
+typedef enum _sai_port_ilt_training_status_t
+{
+    /** Training status is reserved */
+    SAI_PORT_ILT_TRAINING_STATUS_RESERVED,
+
+    /** Training status is failed */
+    SAI_PORT_ILT_TRAINING_STATUS_FAIL,
+
+    /** Training status is in progress */
+    SAI_PORT_ILT_TRAINING_STATUS_IN_PROGRESS,
+
+    /** Training status is Ready */
+    SAI_PORT_ILT_TRAINING_STATUS_READY,
+
+    /** Training status is OK */
+    SAI_PORT_ILT_TRAINING_STATUS_OK
+
+} sai_port_ilt_training_status_t;
+
+/**
  * @brief Attribute Id in sai_set_port_attribute() and
  * sai_get_port_attribute() calls
  */
@@ -3326,6 +3370,116 @@ typedef enum _sai_port_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_UNKNOWN_MULTICAST_STORM_CONTROL_POLICER_ID,
+
+    /**
+     * @brief Interface ILT Training status
+     *
+     * @type sai_port_ilt_training_status_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_ILT_TRAINING_STATUS,
+
+    /**
+     * @brief ILT per-lane training status
+     *
+     * Per-lane ILT training state.
+     *
+     * @type sai_port_ilt_lane_training_status_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_ILT_LANE_TRAINING_STATUS_LIST,
+
+    /**
+     * @brief Interface RTS status
+     *
+     * @type sai_port_ilt_rts_status_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_ILT_RTS_STATUS,
+
+    /**
+     * @brief APSU MR mr_training_enable variable to enable/disable the training on the interface
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     */
+    SAI_PORT_ATTR_APSU_MR_TRAINING_ENABLE,
+
+    /**
+     * @brief APSU mr_restart variable to restart the RTS and ILT functions when true
+     *
+     * The variable should be self-clearing so that RTS+ILT functions can be restarted multiple times
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_APSU_MR_RESTART,
+
+    /**
+     * @brief APSU local_tf_lock variable
+     *
+     * @type sai_port_lane_latch_status_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_APSU_LOCAL_TF_LOCK_STATUS,
+
+    /**
+     * @brief APSU remote_tf_lock variable
+     *
+     * @type sai_port_lane_latch_status_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_APSU_REMOTE_TF_LOCK_STATUS,
+
+    /**
+     * @brief APSU local_rx_ready variable
+     *
+     * @type sai_port_lane_latch_status_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_APSU_LOCAL_RX_READY_STATUS,
+
+    /**
+     * @brief APSU remote_rx_ready variable
+     *
+     * @type sai_port_lane_latch_status_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_APSU_REMOTE_RX_READY_STATUS,
+
+    /**
+     * @brief Per lane ILT training_failure variable
+     *
+     * @type sai_port_lane_latch_status_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_ILT_TRAINING_FAILURE,
+
+    /**
+     * @brief APSU local_rts variable for the interface
+     *
+     * @type sai_latch_status_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_APSU_LOCAL_RTS_STATUS,
+
+    /**
+     * @brief APSU remote_rts variable for the interface
+     *
+     * @type sai_latch_status_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_APSU_REMOTE_RTS_STATUS,
+
+    /**
+     * @brief APSU isl_ready variable for the interface
+     *
+     * @type sai_latch_status_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_APSU_ISL_READY,
 
     /**
      * @brief End of attributes
