@@ -3617,6 +3617,32 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PERFMON_LIST,
 
     /**
+     * @brief Firmware list
+     *
+     * @type sai_fw_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_SWITCH_ATTR_FW_LIST,
+
+    /**
+     * @brief Firmware enabled on the switch
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_FW
+     */
+    SAI_SWITCH_ATTR_FW,
+
+    /**
+     * @brief Maximum number of cores supported
+     *
+     * @type sai_uint8_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_FW_CORES,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,

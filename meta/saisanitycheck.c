@@ -852,6 +852,8 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST:
         case SAI_ATTR_VALUE_TYPE_POE_PORT_POWER_CONSUMPTION:
         case SAI_ATTR_VALUE_TYPE_TAPS_LIST:
+        case SAI_ATTR_VALUE_TYPE_FW_INST:
+        case SAI_ATTR_VALUE_TYPE_FW_LIST:
         case SAI_ATTR_VALUE_TYPE_PRBS_PER_LANE_RX_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_PRBS_PER_LANE_RX_STATE_LIST:
         case SAI_ATTR_VALUE_TYPE_PRBS_BIT_ERROR_RATE:
@@ -1082,6 +1084,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_IPV4:
         case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG:
         case SAI_ATTR_VALUE_TYPE_IPV6:
+        case SAI_ATTR_VALUE_TYPE_FW_INST:
             break;
 
         case SAI_ATTR_VALUE_TYPE_CHARDATA:
@@ -1123,9 +1126,9 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST:
         case SAI_ATTR_VALUE_TYPE_TAPS_LIST:
+        case SAI_ATTR_VALUE_TYPE_FW_LIST:
 
-            if (((md->objecttype == SAI_OBJECT_TYPE_PORT) || (md->objecttype == SAI_OBJECT_TYPE_PORT_SERDES))
-                 && md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL)
+            if (((md->objecttype == SAI_OBJECT_TYPE_PORT) || (md->objecttype == SAI_OBJECT_TYPE_PORT_SERDES) || (md->objecttype == SAI_OBJECT_TYPE_SWITCH)) && md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL)
             {
                 /*
                  * Allow non object lists on PORT to be set to internal default value.
@@ -1380,6 +1383,7 @@ void check_attr_default_value_type(
         case SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL:
 
             if ((md->objecttype == SAI_OBJECT_TYPE_PORT) ||
+                (md->objecttype == SAI_OBJECT_TYPE_SWITCH) ||
                 (md->objecttype == SAI_OBJECT_TYPE_PORT_SERDES) ||
                 (md->objecttype == SAI_OBJECT_TYPE_SAMPLEPACKET) ||
                 (md->objecttype == SAI_OBJECT_TYPE_NEIGHBOR_ENTRY))
@@ -3003,6 +3007,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST:
         case SAI_ATTR_VALUE_TYPE_TAPS_LIST:
+        case SAI_ATTR_VALUE_TYPE_FW_LIST:
         case SAI_ATTR_VALUE_TYPE_PRBS_PER_LANE_RX_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_PRBS_PER_LANE_RX_STATE_LIST:
         case SAI_ATTR_VALUE_TYPE_PRBS_PER_LANE_BIT_ERROR_RATE_LIST:
@@ -3070,6 +3075,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_LATCH_STATUS:
         case SAI_ATTR_VALUE_TYPE_POE_PORT_POWER_CONSUMPTION:
         case SAI_ATTR_VALUE_TYPE_PRBS_BIT_ERROR_RATE:
+        case SAI_ATTR_VALUE_TYPE_FW_INST:
 
             if (!md->isprimitive)
             {
@@ -5550,6 +5556,19 @@ void check_graph_connected()
             continue;
         }
 
+        if (SAI_OBJECT_TYPE_FW == idx2ot(i))
+        {
+            /*
+             * Allow firmware object to be disconnected from main graph
+             * as use case is by querying base object stats and not by direct reference
+             */
+
+            META_LOG_WARN("firmware object %s is disconnected from graph",
+                    sai_metadata_all_object_type_infos[i]->objecttypename);
+
+            continue;
+        }
+
         if (SAI_OBJECT_TYPE_DEBUG_COUNTER == idx2ot(i))
         {
             /*
@@ -6406,6 +6425,7 @@ void check_struct_and_union_size()
     CHECK_STRUCT_SIZE(sai_prbs_per_lane_rx_state_list_t, 16);
     CHECK_STRUCT_SIZE(sai_prbs_bit_error_rate_t, 16);
     CHECK_STRUCT_SIZE(sai_prbs_per_lane_bit_error_rate_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_fw_list_t, 16)
 }
 #pragma GCC diagnostic pop
 
