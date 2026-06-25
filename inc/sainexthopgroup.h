@@ -142,6 +142,22 @@ typedef struct _sai_next_hop_group_hw_protection_switchover_notification_data_t
 } sai_next_hop_group_hw_protection_switchover_notification_data_t;
 
 /**
+ * @brief Next hop group is configured with weights or not
+ */
+typedef enum _sai_next_hop_group_members_weight_t
+{
+    /** This is for legacy platforms where this attribute is don't care */
+    SAI_NEXT_HOP_GROUP_MEMBERS_WEIGHT_DONT_CARE,
+
+    /** Next hop group members are weighted */
+    SAI_NEXT_HOP_GROUP_MEMBERS_WEIGHT_WEIGHTED,
+
+    /** Next hop group members are unweighted */
+    SAI_NEXT_HOP_GROUP_MEMBERS_WEIGHT_UNWEIGHTED,
+
+} sai_next_hop_group_members_weight_t;
+
+/**
  * @brief Attribute id for next hop
  */
 typedef enum _sai_next_hop_group_attr_t
@@ -360,17 +376,13 @@ typedef enum _sai_next_hop_group_attr_t
     SAI_NEXT_HOP_GROUP_ATTR_ADMIN_ROLE,
 
     /**
-     * @brief This attribute indicates the nexthop group members weights
+     * @brief This attribute indicates if all the members are with weights or are unweighted
      *
-     * NOS must query this attribute for the support.
-     * False: All members are with equal cost
-     * True: Members are configured with unequal cost
-     *
-     * @type bool
+     * @type sai_next_hop_group_members_weight_t
      * @flags CREATE_ONLY
-     * @default false
+     * @default SAI_NEXT_HOP_GROUP_MEMBERS_WEIGHT_DONT_CARE
      */
-    SAI_NEXT_HOP_GROUP_ATTR_MEMBERS_WITH_UNEQUAL_WEIGHTS,
+    SAI_NEXT_HOP_GROUP_ATTR_MEMBERS_WEIGHT,
 
     /**
      * @brief End of attributes
