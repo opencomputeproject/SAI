@@ -198,9 +198,8 @@ struct sai_thrift_route_entry_t {
 }
 
 struct sai_thrift_neighbor_entry_t {
-    1: sai_thrift_object_id_t switch_id;
-    2: sai_thrift_object_id_t rif_id;
-    3: sai_thrift_ip_address_t ip_address;
+    1: sai_thrift_object_id_t rif_id;
+    2: sai_thrift_ip_address_t ip_address;
 }
 
 struct sai_thrift_attribute_list_t {

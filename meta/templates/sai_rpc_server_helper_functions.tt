@@ -136,7 +136,6 @@ void sai_thrift_parse_[% struct.short_name %](const [% struct.thrift_name %] &th
 [%- ######################################################################## -%]
 
 [%- BLOCK special_helper_functions -%]
-extern sai_object_id_t gSwitchId;
 extern sai_object_id_t switch_id;
 
 void sai_thrift_parse_buffer(const std::string &thrift_buffer,
@@ -152,13 +151,11 @@ void sai_thrift_parse_neighbor_entry(const sai_thrift_neighbor_entry_t &thrift_n
     }
 
     // OCP sai_test often omits switch_id on neighbor_entry; fall back to the
-    // RPC-global switch_id (set by sai_thrift_create_switch) then gSwitchId.
+    // RPC-global switch_id set by sai_thrift_create_switch.
     if (thrift_neighbor_entry.switch_id != 0) {
         neighbor_entry->switch_id = (sai_object_id_t)thrift_neighbor_entry.switch_id;
     } else if (switch_id != SAI_NULL_OBJECT_ID) {
         neighbor_entry->switch_id = switch_id;
-    } else if (gSwitchId != SAI_NULL_OBJECT_ID) {
-        neighbor_entry->switch_id = gSwitchId;
     } else {
         neighbor_entry->switch_id = SAI_NULL_OBJECT_ID;
     }
@@ -179,8 +176,6 @@ void sai_thrift_parse_route_entry(const sai_thrift_route_entry_t &thrift_route_e
         route_entry->switch_id = (sai_object_id_t)thrift_route_entry.switch_id;
     } else if (switch_id != SAI_NULL_OBJECT_ID) {
         route_entry->switch_id = switch_id;
-    } else if (gSwitchId != SAI_NULL_OBJECT_ID) {
-        route_entry->switch_id = gSwitchId;
     } else {
         route_entry->switch_id = SAI_NULL_OBJECT_ID;
     }

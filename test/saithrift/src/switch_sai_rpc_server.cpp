@@ -241,13 +241,7 @@ public:
   }
 
   void sai_thrift_parse_neighbor_entry(const sai_thrift_neighbor_entry_t &thrift_neighbor_entry, sai_neighbor_entry_t *neighbor_entry) {
-      // Python saithrift sends switch_id as field 1 (optional). Always fall back to
-      // gSwitchId when the client omits it (OCP sai_test often only passes rif_id).
-      if (thrift_neighbor_entry.switch_id != 0) {
-          neighbor_entry->switch_id = (sai_object_id_t) thrift_neighbor_entry.switch_id;
-      } else {
-          neighbor_entry->switch_id = gSwitchId;
-      }
+      neighbor_entry->switch_id = gSwitchId;
       neighbor_entry->rif_id = (sai_object_id_t) thrift_neighbor_entry.rif_id;
       sai_thrift_parse_ip_address(thrift_neighbor_entry.ip_address, &neighbor_entry->ip_address);
   }
