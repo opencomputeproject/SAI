@@ -34,10 +34,10 @@ Depending on the functionality provided, a firmware may need to be loaded during
 A create only switch attribute SAI_SWITCH_ATTR_FW_LIST is added to specify the details of firmware during switch create time.
 
 NOS will specify the list of firmwares in sai_fw_list_t data structure. Each element in a list specifies
-- name of the firmware with fully the qualified path
+- name of the firmware with the fully qualified path
 - logfile name with the fully qualified path
 - core id on which it is running. IDs are linear integer name space 0, 1,2 and so on
-- administrative state the firmware
+- administrative state of the firmware
 
 ```
     /**
@@ -244,39 +244,6 @@ typedef enum _sai_fw_attr_t
 } sai_fw_attr_t;
 
 ```
-
-### 2.2 Complete Life Cycle of Firmware
-
-Following transition captures the simple linear life cycle of firmware object.
-
-
-```text
-Create Firmware
-      |
-      v
-Firmware Loaded
-      |
-      v
-Start Firmware
-      |
-      v
-Running
-      |
-      v
-Monitor State
-      |
-      v
-Stop Firmware
-      |
-      v
-Stopped
-      |
-      v
-Remove Firmware
-      |
-      v
-Completed
-```
 ---
 
 ## 3.0  Firmware States
@@ -301,7 +268,7 @@ Administrative state controls firmware behavior.
 ### 3.2 Operational State
 
 Once firmware is loaded, NOS need to know its operational state. Operational state is queried using the attribute SAI_FW_ATTR_FW_OP_STATE which is of the data type sai_fw_op_state_t.
-Operational state indicates actual firmware status.
+Operational state indicates the firmware state.
 
 | State                      | Description                     |
 | -------------------------- | ------------------------------- |
@@ -384,7 +351,7 @@ attr.list[1] = OID-FW-2
 ```
 
 #### 4.1.3 Read the operational state of the firmware 
-NOS will perform a GET for the operational state for each OID.
+NOS can get the state and list of FW OIDs using the GET API.
 
 ```
 sai_attribute_t attr;
@@ -508,29 +475,8 @@ This is a simpler case where there are no new OIDs are created post warmboot but
 
 ### 4.5 Workflow for Create and Auto-Start Firmware
 
-#### 4.5.1 Sequence Diagram
 
-```text
-Application
-    |
-    | create_fw()
-    v
-SAI Layer
-    |
-    | Validate Attributes
-    v
-Vendor SDK
-    |
-    | Load Firmware
-    v
-Hardware
-    |
-    | Start Firmware
-    v
-Running State
-```
-
-#### 4.5.2 Example
+#### 4.5.1 Example
 
 ```c
 sai_attribute_t attrs[2];
@@ -548,7 +494,7 @@ status = fw_api->create_fw(
             2,
             attrs);
 ```
-#### 4.5.3 Expected Result
+#### 4.5.2 Expected Result
 
 ```text
 Firmware Object Created
@@ -563,7 +509,7 @@ Operational State = RUNNING
 
 #### 4.6.1 Create Firmware with admin state as LOAD
 
-This will only load the firmware. If there is a previously loaded firmware and is not unloaded, this API sequence should return error.
+This will only load the firmware. If there is a previously loaded firmware and is not unloaded, this API sequence must return error.
 
 ```c
 attrs[1].id = SAI_FW_ATTR_FW_ADMIN_STATE;
@@ -584,7 +530,7 @@ Operational State = LOADED
 ---
 
 #### 4.6.2 Workflow to Start Firmware
-This will start running the loaded firmware
+This will start running the loaded firmware. If there is no firmware loaded and NOS is strying to set the admin state as START, SAI adapter must return error.
 
 ```c
 sai_attribute_t attr;
@@ -607,9 +553,9 @@ Operational State = RUNNING
 ---
 
 ### 4.6.3  Workflow to Stop Firmware
-This will stop the running firmware but not unload it.
+This will stop the running firmware but not unload it. If there is no firmware loaded, or the state of firmware of not RUNNING and NOS is strying to set the admin state as STOP, SAI adapter must return error.
 
-```c
+```
 sai_attribute_t attr;
 
 attr.id = SAI_FW_ATTR_FW_ADMIN_STATE;
@@ -626,9 +572,9 @@ Firmware Running
 Operational State = STOPPED
 ```
 ---
-#### 4.6.4 Create Firmware with admin state as LOAD
+#### 4.6.4 Create Firmware with admin state as UNLOAD
 
-This will unload the firmware. If there is a no previously loaded firmware, this API sequence should return status.
+This will unload the firmware. If there is a no previously loaded firmware, this API sequence must return error.
 
 ```c
 attrs[1].id = SAI_FW_ATTR_FW_ADMIN_STATE;
