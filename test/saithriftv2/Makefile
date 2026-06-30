@@ -77,18 +77,23 @@ $(METADIR)sai.thrift:
 # rm gen-cpp/gen-py is needed since thrift don't override existing files
 # even if sai.thrift file changed :(
 
-$(CPP_SOURCES): $(METADIR)sai.thrift
+gen-cpp/sai_rpc.cpp: $(METADIR)sai.thrift
 	rm -rf gen-cpp
 	$(THRIFT) -o ./ --gen cpp -r $^
 
-$(PY_SOURCES): $(METADIR)sai.thrift
+$(filter-out gen-cpp/sai_rpc.cpp, $(CPP_SOURCES)): gen-cpp/sai_rpc.cpp
+
+gen-py/sai/sai_rpc.py: $(METADIR)sai.thrift
 	rm -rf gen-py
 	$(THRIFT) -o ./ --gen py -r $^
 	$(INSTALL) -vCD $(METADIR)sai_adapter.py gen-py/sai/sai_adapter.py
 
+$(filter-out gen-py/sai/sai_rpc.py, $(PY_SOURCES)): gen-py/sai/sai_rpc.py
+
 # TODO should depend on ../../inc/sai*.h ../../experimental/sai*.h and not /usr/include/sai/sai*.h
 
 $(SAI_PY_HEADERS): $(SAI_HEADERS)
+	mkdir -p gen-py/sai
 	$(CTYPESGEN) --output-language=py32 -I/usr/include -I$(SAI_HEADER_DIR) -I../../experimental -I../../custom --include /usr/include/linux/limits.h $^ -o $@
 	python3 convert_header.py -i $(SAI_PY_HEADERS) -o ./new_header.py
 	mv $(SAI_PY_HEADERS) ./sai_headers.py.bk
@@ -100,7 +105,7 @@ $(METADIR)saimetadata.h:
 $(ODIR)/%.o: gen-cpp/%.cpp
 	$(CXX) $(CPPFLAGS) -c $< -o $@
 
-$(ODIR)/sai_rpc_server.o: $(METADIR)sai_rpc_frontend.cpp $(METADIR)saimetadata.h
+$(ODIR)/sai_rpc_server.o: $(METADIR)sai_rpc_frontend.cpp $(METADIR)saimetadata.h $(CPP_SOURCES)
 	$(CXX) $(CPPFLAGS) -c $(METADIR)sai_rpc_frontend.cpp -o $@ -I$(METADIR) -I./gen-cpp -I../../inc -I../../experimental -I../../custom
 
 $(ODIR)/saiserver.o: src/saiserver.cpp src/switch_sai_rpc_server.h $(CPP_SOURCES)
