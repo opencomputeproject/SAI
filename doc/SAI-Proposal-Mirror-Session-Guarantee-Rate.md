@@ -138,7 +138,63 @@ When `GUARANTEE_RATE > 0`, `SAMPLE_RATE` applies only to the **excess** `(R − 
 
 ---
 
-## 7. API reference
+## 7. NOS workflow
+
+NOS must not assume that every vendor implements `SAI_MIRROR_SESSION_ATTR_GUARANTEE_RATE`. Before configuring the attribute, query vendor support using `sai_query_attribute_capability()`.
+
+### Recommended sequence
+
+1. **Query capability** on create or set of a mirror session:
+
+```c
+sai_status_t status;
+sai_attr_capability_t guarantee_rate_capability = {0};
+
+status = sai_query_attribute_capability(
+    switch_id,
+    SAI_OBJECT_TYPE_MIRROR_SESSION,
+    SAI_MIRROR_SESSION_ATTR_GUARANTEE_RATE,
+    &guarantee_rate_capability);
+```
+
+2. **On create:** include `SAI_MIRROR_SESSION_ATTR_GUARANTEE_RATE` in the attribute list only if:
+
+   - `status == SAI_STATUS_SUCCESS`, and
+   - `guarantee_rate_capability.create_implemented == true`
+
+3. **On set:** call `sai_set_mirror_session_attribute()` for `GUARANTEE_RATE` only if:
+
+   - `status == SAI_STATUS_SUCCESS`, and
+   - `guarantee_rate_capability.set_implemented == true`
+
+4. **If not supported:** omit the attribute and rely on `SAI_MIRROR_SESSION_ATTR_SAMPLE_RATE` only.
+
+### Example (create path)
+
+```c
+sai_attribute_t attr[...];
+uint32_t attr_count = 0;
+sai_attr_capability_t guarantee_rate_capability = {0};
+
+/* ... other mirror session attributes ... */
+
+status = sai_query_attribute_capability(
+    switch_id,
+    SAI_OBJECT_TYPE_MIRROR_SESSION,
+    SAI_MIRROR_SESSION_ATTR_GUARANTEE_RATE,
+    &guarantee_rate_capability);
+
+if (status == SAI_STATUS_SUCCESS && guarantee_rate_capability.create_implemented) {
+    attr[attr_count].id = SAI_MIRROR_SESSION_ATTR_GUARANTEE_RATE;
+    attr[attr_count++].value.u64 = guarantee_rate_pps;
+}
+
+status = sai_create_mirror_session(&mirror_session_id, switch_id, attr_count, attr);
+```
+
+---
+
+## 8. API reference
 
 Defined in `saimirror.h`:
 
@@ -146,12 +202,16 @@ Defined in `saimirror.h`:
 /**
  * @brief Guarantee sample rate in packets per second (pps)
  *
- * While guarantee rate is not breached, all packets will be sampled (100% sampling).
- * Once breached, packets will be sampled based on the mirror statistics (fallback to
- * statistical sampling based on SAI_MIRROR_SESSION_ATTR_SAMPLE_RATE).
+ * When set to a non-zero value, up to this packet rate per second are always
+ * sampled (100% sampling). Traffic above this rate is statistically sampled
+ * using SAI_MIRROR_SESSION_ATTR_SAMPLE_RATE (approximately G + (R - G) / N
+ * sampled packets per second, where G is this attribute, N is SAMPLE_RATE,
+ * and R is the observed mirror session packet rate).
  *
- * This is expected to enable guaranteed sampling for very low pps flows.
  * A value of 0 disables the guarantee rate feature.
+ *
+ * Rate measurement and enforcement (including behavior on rate transitions,
+ * burst handling, and reset) are implementation-defined.
  *
  * @type sai_uint64_t
  * @flags CREATE_AND_SET
