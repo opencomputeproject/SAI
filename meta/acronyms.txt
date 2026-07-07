@@ -2,8 +2,8 @@
 ACK - Acknowledgement
 ACL - Access Control List
 AES - Advanced Encryption Standard
-AN - Association Number
 AN - Auto Negotiation
+ANI - Access Network Interface
 API - Application Program Interface
 APSU - Autonomous Path Start Up
 ARP - Address Resolution Protocol
@@ -33,6 +33,8 @@ CPLD - Complex programmable logic device
 CPU - Central Processing Unit
 CRC - Cyclic Redundancy Code
 CSIG - Congestion Signaling
+CTP - Connection Termination Point
+CVID - Customer VLAN Identifier
 DEI - Drop Elgibility Indicator
 DFE - Decision Feedback Equalizer
 DHCP - Dynamic Host Configuration Protocol
@@ -44,6 +46,7 @@ DLR - Dead Lock Recovery
 DMA - Direct Memory Access
 DNAPT - Destination Network Address Port Translation
 DNAT - Destination Network Address Translation
+DNS - Domain Name System
 DPU - Data Processing Unit
 DSCP - Differentiated Services Code Point
 DTEL - Data Plane Telemetry
@@ -124,6 +127,8 @@ NVGRE - Network Virtualization using Generic Routing Encapsulation
 OA - Optical Amplifier
 OAM - Operations Administration and Maintenance
 OCS - Optical Circuit Switch
+OLT - Optical Line Terminal
+ONU - Optical Network Unit
 ORL - Optical Return Loss
 OTN - Optical Transport Network
 OUI - Organizationally Unique Identifier

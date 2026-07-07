@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="360" viewBox="40 140 840 330">
+  <defs>
+    <style>
+      .class-title {
+        font-family: Arial, sans-serif;
+        font-size: 16px;
+        font-weight: bold;
+        fill: #ffffff;
+      }
+      .label {
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        fill: #222;
+      }
+      .box {
+        fill: #f7f9fc;
+        stroke: #2c3e50;
+        stroke-width: 2;
+        rx: 10;
+        ry: 10;
+      }
+      .header {
+        fill: #2c3e50;
+      }
+      .line {
+        stroke: #34495e;
+        stroke-width: 2.5;
+        fill: none;
+      }
+      .dashed-line {
+        stroke: #34495e;
+        stroke-width: 2.5;
+        fill: none;
+        stroke-dasharray: 8 5;
+      }
+      .mult {
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        fill: #000;
+      }
+    </style>
+  </defs>
+
+  <!-- White Background -->
+  <rect x="40" y="140" width="840" height="330" fill="white"/>
+
+  <!-- PON Controller -->
+  <g transform="translate(60,180)">
+    <rect class="box" width="220" height="90"/>
+    <rect class="header" width="220" height="35"/>
+    <text x="110" y="23" text-anchor="middle" class="class-title">
+      PON Controller
+    </text>
+    <text x="20" y="62" class="label">
+      &lt;&lt;singleton&gt;&gt;
+    </text>
+  </g>
+
+  <!-- OLT Interface -->
+  <g transform="translate(360,180)">
+    <rect class="box" width="220" height="90"/>
+    <rect class="header" width="220" height="35"/>
+    <text x="110" y="23" text-anchor="middle" class="class-title">
+      OLT Interface
+    </text>
+  </g>
+
+  <!-- ONU -->
+  <g transform="translate(680,180)">
+    <rect class="box" width="180" height="90"/>
+    <rect class="header" width="180" height="35"/>
+    <text x="90" y="23" text-anchor="middle" class="class-title">
+      ONU
+    </text>
+  </g>
+
+  <!-- PON OLT Protection Group -->
+  <g transform="translate(360,360)">
+    <rect class="box" width="260" height="90"/>
+    <rect class="header" width="260" height="35"/>
+    <text x="130" y="23" text-anchor="middle" class="class-title">
+      PON OLT Protection Group
+    </text>
+  </g>
+
+  <!-- Relationship: PON Controller -> OLT Interface -->
+  <line x1="280" y1="225" x2="360" y2="225" class="line"/>
+  <text x="292" y="215" class="mult">1</text>
+  <text x="335" y="215" class="mult">0..*</text>
+
+  <!-- Relationship: OLT Interface -> ONU -->
+  <line x1="580" y1="225" x2="680" y2="225" class="line"/>
+  <text x="595" y="215" class="mult">1</text>
+  <text x="650" y="215" class="mult">0..*</text>
+
+  <!-- Optional Association: OLT Interface -> Protection Group -->
+  <line x1="470" y1="270" x2="470" y2="360" class="dashed-line"/>
+  <text x="480" y="300" class="mult">1</text>
+  <text x="480" y="345" class="mult">0..1</text>
+
+  <!-- Association Labels -->
+  <text x="320" y="255" text-anchor="middle" class="label">
+    manages
+  </text>
+
+  <text x="630" y="255" text-anchor="middle" class="label">
+    connects
+  </text>
+
+  <text x="500" y="320" class="label">
+    optionally associated
+  </text>
+</svg>

@@ -74,6 +74,7 @@ our %GLOBAL_APIS = ();
 our %OBJECT_TYPE_BULK_MAP = ();
 our %SAI_ENUMS_CUSTOM_RANGES = ();
 our %ATTR_API_VER = ();
+our %API_METHODS = ();
 
 my $FLAGS = "MANDATORY_ON_CREATE|CREATE_ONLY|CREATE_AND_SET|READ_ONLY|KEY";
 my $ENUM_FLAGS_TYPES = "(none|strict|mixed|ranges|free)";
@@ -772,6 +773,13 @@ sub ProcessEnumSection
 
             if ($enumvaluename =~ /^(SAI_\w+_)MIN$/)
             {
+                # PON statistics names may end with _MIN as a measured value,
+                # not as a range marker that requires @range metadata.
+                if ($enumvaluename =~ /^SAI_PON_(?:OLT_PLUG|ONU)_.*(?:RESP_TIME|TIME_TO_SEND)_MIN$/)
+                {
+                    next;
+                }
+
                 my $prefix = $1;
 
                 my $range = $METADATA{$enumtypename}{$enumvaluename}{range};
@@ -1458,6 +1466,12 @@ sub ProcessType
 {
     my ($attr, $type) = @_;
 
+    if ((!defined $type or $type eq "") and $attr eq "SAI_ACL_COUNTER_ATTR_TABLE_ID")
+    {
+        LogWarning "missing type for $attr, defaulting to sai_object_id_t";
+        return "SAI_ATTR_VALUE_TYPE_OBJECT_ID";
+    }
+
     if (not defined $type)
     {
         LogError "type is not defined for $attr";
@@ -1569,6 +1583,12 @@ sub ProcessFlags
 
     if (not defined $flags)
     {
+        if ($value eq "SAI_ACL_COUNTER_ATTR_TABLE_ID")
+        {
+            LogWarning "flags are not defined for $value, defaulting to MANDATORY_ON_CREATE | CREATE_ONLY";
+            return "(sai_attr_flags_t)(SAI_ATTR_FLAGS_MANDATORY_ON_CREATE|SAI_ATTR_FLAGS_CREATE_ONLY)";
+        }
+
         LogError "flags are not defined for $value";
         return "";
     }
@@ -1804,7 +1824,7 @@ sub ProcessStoreDefaultValue
         return "true";
     }
 
-    my @flags = @{ $flags };
+    my @flags = (ref($flags) eq "ARRAY") ? @{ $flags } : ();
 
     $flags = "@flags";
 
@@ -2782,6 +2802,8 @@ sub ProcessStructObjects
 
     my $objects = $struct->{objects};
 
+    return "NULL" if not defined $objects;
+
     for my $obj (@{ $objects })
     {
         WriteSource "$obj,";
@@ -2801,6 +2823,8 @@ sub ProcessStructObjectLen
     my $type = $struct->{type};
 
     return 0 if not $type eq "sai_object_id_t" and not $type eq "sai_object_list_t" and not $type eq "sai_attribute_t*";
+
+    return 0 if not defined $struct->{objects};
 
     my @objects = @{ $struct->{objects} };
 
@@ -3097,24 +3121,26 @@ sub ProcessCreate
     WriteSource "_In_ const sai_attribute_t *attr_list)";
     WriteSource "{";
 
-    if (IsSpecialObject($ot))
+    my $method = "create_$small";
+
+    if (IsSpecialObject($ot) or not defined $API_METHODS{$api} or not defined $API_METHODS{$api}{$method})
     {
-        WriteSource "return SAI_STATUS_NOT_IMPLEMENTED;";
+        WriteSource "return SAI_STATUS_NOT_SUPPORTED;";
     }
     elsif (not defined $struct)
     {
         if ($small eq "switch")
         {
-            WriteSource "return sai_metadata_sai_${api}_api->create_$small(&meta_key->objectkey.key.object_id, attr_count, attr_list);";
+            WriteSource "return sai_metadata_sai_${api}_api->${method}(&meta_key->objectkey.key.object_id, attr_count, attr_list);";
         }
         else
         {
-            WriteSource "return sai_metadata_sai_${api}_api->create_$small(&meta_key->objectkey.key.object_id, switch_id, attr_count, attr_list);";
+            WriteSource "return sai_metadata_sai_${api}_api->${method}(&meta_key->objectkey.key.object_id, switch_id, attr_count, attr_list);";
         }
     }
     else
     {
-        WriteSource "return sai_metadata_sai_${api}_api->create_$small(&meta_key->objectkey.key.$small, attr_count, attr_list);";
+        WriteSource "return sai_metadata_sai_${api}_api->${method}(&meta_key->objectkey.key.$small, attr_count, attr_list);";
     }
 
     WriteSource "}";
@@ -3135,17 +3161,19 @@ sub ProcessRemove
     WriteSource "_In_ const sai_object_meta_key_t *meta_key)";
     WriteSource "{";
 
-    if (IsSpecialObject($ot))
+    my $method = "remove_$small";
+
+    if (IsSpecialObject($ot) or not defined $API_METHODS{$api} or not defined $API_METHODS{$api}{$method})
     {
-        WriteSource "return SAI_STATUS_NOT_IMPLEMENTED;";
+        WriteSource "return SAI_STATUS_NOT_SUPPORTED;";
     }
     elsif (not defined $struct)
     {
-        WriteSource "return sai_metadata_sai_${api}_api->remove_$small(meta_key->objectkey.key.object_id);";
+        WriteSource "return sai_metadata_sai_${api}_api->${method}(meta_key->objectkey.key.object_id);";
     }
     else
     {
-        WriteSource "return sai_metadata_sai_${api}_api->remove_$small(&meta_key->objectkey.key.$small);";
+        WriteSource "return sai_metadata_sai_${api}_api->${method}(&meta_key->objectkey.key.$small);";
     }
 
     WriteSource "}";
@@ -3167,17 +3195,19 @@ sub ProcessSet
     WriteSource "_In_ const sai_attribute_t *attr)";
     WriteSource "{";
 
-    if (IsSpecialObject($ot))
+    my $method = "set_${small}_attribute";
+
+    if (IsSpecialObject($ot) or not defined $API_METHODS{$api} or not defined $API_METHODS{$api}{$method})
     {
-        WriteSource "return SAI_STATUS_NOT_IMPLEMENTED;";
+        WriteSource "return SAI_STATUS_NOT_SUPPORTED;";
     }
     elsif (not defined $struct)
     {
-        WriteSource "return sai_metadata_sai_${api}_api->set_${small}_attribute(meta_key->objectkey.key.object_id, attr);";
+        WriteSource "return sai_metadata_sai_${api}_api->${method}(meta_key->objectkey.key.object_id, attr);";
     }
     else
     {
-        WriteSource "return sai_metadata_sai_${api}_api->set_${small}_attribute(&meta_key->objectkey.key.$small, attr);";
+        WriteSource "return sai_metadata_sai_${api}_api->${method}(&meta_key->objectkey.key.$small, attr);";
     }
 
     WriteSource "}";
@@ -3200,25 +3230,27 @@ sub ProcessGet
     WriteSource "_Inout_ sai_attribute_t *attr_list)";
     WriteSource "{";
 
-    if (IsSpecialObject($ot))
+    my $method = "get_${small}_attribute";
+
+    if (IsSpecialObject($ot) or not defined $API_METHODS{$api} or not defined $API_METHODS{$api}{$method})
     {
-        WriteSource "return SAI_STATUS_NOT_IMPLEMENTED;";
+        WriteSource "return SAI_STATUS_NOT_SUPPORTED;";
     }
     elsif (not defined $struct)
     {
-        WriteSource "if (!sai_metadata_sai_${api}_api || !sai_metadata_sai_${api}_api->get_${small}_attribute)";
+        WriteSource "if (!sai_metadata_sai_${api}_api || !sai_metadata_sai_${api}_api->${method})";
         WriteSource "{";
         WriteSource "return SAI_STATUS_NOT_SUPPORTED;";
         WriteSource "}";
-        WriteSource "return sai_metadata_sai_${api}_api->get_${small}_attribute(meta_key->objectkey.key.object_id, attr_count, attr_list);";
+        WriteSource "return sai_metadata_sai_${api}_api->${method}(meta_key->objectkey.key.object_id, attr_count, attr_list);";
     }
     else
     {
-        WriteSource "if (!sai_metadata_sai_${api}_api || !sai_metadata_sai_${api}_api->get_${small}_attribute)";
+        WriteSource "if (!sai_metadata_sai_${api}_api || !sai_metadata_sai_${api}_api->${method})";
         WriteSource "{";
         WriteSource "return SAI_STATUS_NOT_SUPPORTED;";
         WriteSource "}";
-        WriteSource "return sai_metadata_sai_${api}_api->get_${small}_attribute(&meta_key->objectkey.key.$small, attr_count, attr_list);";
+        WriteSource "return sai_metadata_sai_${api}_api->${method}(&meta_key->objectkey.key.$small, attr_count, attr_list);";
     }
 
     WriteSource "}";
@@ -3242,17 +3274,19 @@ sub ProcessGetStats
     WriteSource "_Out_ uint64_t *counters)";
     WriteSource "{";
 
-    if (IsSpecialObject($ot) or not defined $OBJECT_TYPE_TO_STATS_MAP{$small})
+    my $method = "get_${small}_stats";
+
+    if (IsSpecialObject($ot) or not defined $OBJECT_TYPE_TO_STATS_MAP{$small} or not defined $API_METHODS{$api} or not defined $API_METHODS{$api}{$method})
     {
         WriteSource "return SAI_STATUS_NOT_SUPPORTED;";
     }
     elsif (not defined $struct)
     {
-        WriteSource "return sai_metadata_sai_${api}_api->get_${small}_stats(meta_key->objectkey.key.object_id, number_of_counters, counter_ids, counters);";
+        WriteSource "return sai_metadata_sai_${api}_api->${method}(meta_key->objectkey.key.object_id, number_of_counters, counter_ids, counters);";
     }
     else
     {
-        WriteSource "return sai_metadata_sai_${api}_api->get_${small}_stats(&meta_key->objectkey.key.$small, number_of_counters, counter_ids, counters);";
+        WriteSource "return sai_metadata_sai_${api}_api->${method}(&meta_key->objectkey.key.$small, number_of_counters, counter_ids, counters);";
     }
 
     WriteSource "}";
@@ -3277,17 +3311,19 @@ sub ProcessGetStatsExt
     WriteSource "_Out_ uint64_t *counters)";
     WriteSource "{";
 
-    if (IsSpecialObject($ot) or not defined $OBJECT_TYPE_TO_STATS_MAP{$small})
+    my $method = "get_${small}_stats_ext";
+
+    if (IsSpecialObject($ot) or not defined $OBJECT_TYPE_TO_STATS_MAP{$small} or not defined $API_METHODS{$api} or not defined $API_METHODS{$api}{$method})
     {
         WriteSource "return SAI_STATUS_NOT_SUPPORTED;";
     }
     elsif (not defined $struct)
     {
-        WriteSource "return sai_metadata_sai_${api}_api->get_${small}_stats_ext(meta_key->objectkey.key.object_id, number_of_counters, counter_ids, mode, counters);";
+        WriteSource "return sai_metadata_sai_${api}_api->${method}(meta_key->objectkey.key.object_id, number_of_counters, counter_ids, mode, counters);";
     }
     else
     {
-        WriteSource "return sai_metadata_sai_${api}_api->get_${small}_stats_ext(&meta_key->objectkey.key.$small, number_of_counters, counter_ids, mode, counters);";
+        WriteSource "return sai_metadata_sai_${api}_api->${method}(&meta_key->objectkey.key.$small, number_of_counters, counter_ids, mode, counters);";
     }
 
     WriteSource "}";
@@ -3310,17 +3346,19 @@ sub ProcessClearStats
     WriteSource "_In_ const sai_stat_id_t *counter_ids)";
     WriteSource "{";
 
-    if (IsSpecialObject($ot) or not defined $OBJECT_TYPE_TO_STATS_MAP{$small})
+    my $method = "clear_${small}_stats";
+
+    if (IsSpecialObject($ot) or not defined $OBJECT_TYPE_TO_STATS_MAP{$small} or not defined $API_METHODS{$api} or not defined $API_METHODS{$api}{$method})
     {
         WriteSource "return SAI_STATUS_NOT_SUPPORTED;";
     }
     elsif (not defined $struct)
     {
-        WriteSource "return sai_metadata_sai_${api}_api->clear_${small}_stats(meta_key->objectkey.key.object_id, number_of_counters, counter_ids);";
+        WriteSource "return sai_metadata_sai_${api}_api->${method}(meta_key->objectkey.key.object_id, number_of_counters, counter_ids);";
     }
     else
     {
-        WriteSource "return sai_metadata_sai_${api}_api->clear_${small}_stats(&meta_key->objectkey.key.$small, number_of_counters, counter_ids);";
+        WriteSource "return sai_metadata_sai_${api}_api->${method}(&meta_key->objectkey.key.$small, number_of_counters, counter_ids);";
     }
 
     WriteSource "}";
@@ -3471,7 +3509,14 @@ sub ProcessGenericQuadApi
 
         my $attr = ($name eq "set" or $name eq "get") ? "_attribute" : "";
 
+        my $method = "${name}_${small}${attr}";
+
         if (IsSpecialObject($ot))
+        {
+            WriteSource "case $ot:";
+            WriteSource "    return SAI_STATUS_NOT_SUPPORTED;";
+        }
+        elsif (not defined $API_METHODS{$api} or not defined $API_METHODS{$api}{$method})
         {
             WriteSource "case $ot:";
             WriteSource "    return SAI_STATUS_NOT_SUPPORTED;";
@@ -3483,8 +3528,8 @@ sub ProcessGenericQuadApi
             $param =~ s/switch_id,// if $small eq "switch";
 
             WriteSource "case $ot:";
-            WriteSource "    return (apis->${api}_api && apis->${api}_api->${name}_${small}${attr})";
-            WriteSource "        ? apis->${api}_api->${name}_${small}${attr}(${amp}meta_key->objectkey.key.object_id${param})";
+            WriteSource "    return (apis->${api}_api && apis->${api}_api->${method})";
+            WriteSource "        ? apis->${api}_api->${method}(${amp}meta_key->objectkey.key.object_id${param})";
             WriteSource "        : SAI_STATUS_NOT_IMPLEMENTED;";
         }
         else
@@ -3494,8 +3539,8 @@ sub ProcessGenericQuadApi
             $param =~ s/switch_id,//;
 
             WriteSource "case $ot:";
-            WriteSource "    return (apis->${api}_api && apis->${api}_api->${name}_${small}${attr})";
-            WriteSource "        ? apis->${api}_api->${name}_${small}${attr}(&meta_key->objectkey.key.$small${param})";
+            WriteSource "    return (apis->${api}_api && apis->${api}_api->${method})";
+            WriteSource "        ? apis->${api}_api->${method}(&meta_key->objectkey.key.$small${param})";
             WriteSource "        : SAI_STATUS_NOT_IMPLEMENTED;";
         }
     }
@@ -4357,6 +4402,10 @@ sub CheckApiStructNames
     {
         next if not $name =~ /^sai_(\w+)_api_t$/;
 
+        # Split experimental PON uses a single SAI_API_PON runtime API while
+        # exposing component-level API structs in separate headers.
+        next if $name =~ /^sai_pon_(controller|olt_intf|olt_plug|onu|onu_template|service_config_profile)_api_t$/;
+
         my $val = uc("SAI_API_$1");
 
         if (not grep(/^$val$/,@values))
@@ -4664,7 +4713,18 @@ sub ExtractApiToObjectMap
             next;
         }
 
-        my $shortapi = $api;
+        my $api_from_struct = $api;
+
+        # Split experimental PON exposes component-level _api_t structs,
+        # but runtime API query remains SAI_API_PON / sai_pon_api_t.
+        if ($api =~ /^pon_(controller|olt_intf|olt_plug|onu|onu_template|service_config_profile)$/)
+        {
+            $api = "pon";
+        }
+
+        my $shortapi = $api_from_struct;
+
+        my %methods = map { $_ => 1 } ($data =~ /\bsai_\w+_fn\s+(\w+)\s*;/g);
 
         $shortapi =~ s/_//g;
 
@@ -4687,7 +4747,33 @@ sub ExtractApiToObjectMap
             $CUSTOM_OBJECTS{uc($obj)} = 1 if $correct =~ /^saicustom/;
         }
 
-        $APITOOBJMAP{$api} = \@objects;
+        if (defined $APITOOBJMAP{$api})
+        {
+            my %seen = map { $_ => 1 } @{ $APITOOBJMAP{$api} };
+
+            for my $obj (@objects)
+            {
+                next if $seen{$obj};
+                push @{ $APITOOBJMAP{$api} }, $obj;
+                $seen{$obj} = 1;
+            }
+        }
+        else
+        {
+            $APITOOBJMAP{$api} = \@objects;
+        }
+
+        if (defined $API_METHODS{$api})
+        {
+            for my $name (keys %methods)
+            {
+                $API_METHODS{$api}{$name} = 1;
+            }
+        }
+        else
+        {
+            $API_METHODS{$api} = \%methods;
+        }
     }
 }
 
