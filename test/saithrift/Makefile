@@ -14,19 +14,6 @@ ifeq ($(shell dpkg --compare-versions $(THRIFT_VERSION) "le" 0.11.0 && echo True
 CFLAGS += -DFORCE_BOOST_SMART_PTR
 endif
 
-ifeq ($(platform),MLNX)
-CDEFS = -DMLNXSAI
-else
-ifeq ($(platform),BFT)
-CDEFS = -DBFTSAI
-else
-ifeq ($(platform),CAVIUM)
-CDEFS = -DCAVIUMSAI
-else
-CDEFS = -DBRCMSAI
-endif
-endif
-endif
 DEPS =  switch_sai_rpc.h  switch_sai_types.h
 OBJS =  switch_sai_rpc.o  switch_sai_types.o
 
