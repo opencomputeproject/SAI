@@ -35,18 +35,34 @@
 # -- it runs the command templates the harness provides via SVI_RIF_SET_IP_CMD (and
 # optional SVI_RIF_PROBE_CMD), so no backend-specific tooling is hardcoded here.
 
+import logging
 import os
 import shlex
 import subprocess
 import time
+
+_logger = logging.getLogger(__name__)
 
 
 def enabled():
     return os.environ.get("SIMULATE_SONIC", "0") == "1"
 
 
-def _run(cmd, check=False):
-    return subprocess.run(cmd, check=check, capture_output=True, text=True)
+def _run(cmd, check=False, quiet=False):
+    result = subprocess.run(cmd, check=False, capture_output=True, text=True)
+    if result.returncode != 0 and not quiet:
+        msg = "command failed (rc={}): {}".format(result.returncode, cmd)
+        stderr = result.stderr.strip() if result.stderr else ""
+        if stderr:
+            msg = "{} stderr: {}".format(msg, stderr)
+        if check:
+            _logger.error(msg)
+            result.check_returncode()
+        else:
+            _logger.warning(msg)
+    elif check:
+        result.check_returncode()
+    return result
 
 
 def _mtu():
@@ -66,7 +82,7 @@ def ensure_portchannel(lag_index):
     pc_if = "PortChannel{}".format(lag_index)
     mtu = _mtu()
 
-    if _run(["ip", "link", "show", pc_if]).returncode != 0:
+    if _run(["ip", "link", "show", pc_if], quiet=True).returncode != 0:
         if _run(["ip", "link", "add", pc_if, "type", "bond"]).returncode != 0:
             _run(["ip", "link", "add", pc_if, "type", "dummy"], check=False)
 
@@ -92,7 +108,7 @@ def assign_lag_rif_ips(lag_index, retries=20, interval=0.3):
     v6_addr = v6_pattern % subnet_id
 
     for _ in range(retries):
-        if _run(["ip", "link", "show", be_if]).returncode == 0:
+        if _run(["ip", "link", "show", be_if], quiet=True).returncode == 0:
             break
         time.sleep(interval)
     else:
@@ -147,7 +163,7 @@ def assign_svi_rif_ips(vlan_id, retries=20, interval=0.3):
 
     if probe_cmd:
         for _ in range(retries):
-            if _run(_templated(probe_cmd, ifname=bvi_if, addr="")).returncode == 0:
+            if _run(_templated(probe_cmd, ifname=bvi_if, addr=""), quiet=True).returncode == 0:
                 break
             time.sleep(interval)
         else:
