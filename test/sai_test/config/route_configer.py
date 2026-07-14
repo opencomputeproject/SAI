@@ -549,7 +549,24 @@ class RouteConfiger(object):
             if not self.test_obj.dut.rif_list:
                 self.test_obj.dut.rif_list = []
             self.test_obj.dut.rif_list.append(rif)
+            self._simulate_sonic_assign_rif_ips(net_interface)
         return net_interface.rif_list[-1]
+
+    def _simulate_sonic_assign_rif_ips(self, net_interface):
+        """When SIMULATE_SONIC=1, assign the connected IPs IntfMgr would set on a
+        LAG/SVI router interface (no-op otherwise)."""
+        try:
+            from config import simulate_sonic
+        except ImportError:
+            return
+        if isinstance(net_interface, Lag):
+            try:
+                lag_index = self.test_obj.dut.lag_list.index(net_interface)
+            except ValueError:
+                return
+            simulate_sonic.assign_lag_rif_ips(lag_index)
+        elif isinstance(net_interface, Vlan):
+            simulate_sonic.assign_svi_rif_ips(net_interface.vlan_id)
 
     def create_nexthop_by_rif(self, rif, nexthop_device: Device):
         """
