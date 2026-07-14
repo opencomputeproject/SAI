@@ -3617,6 +3617,32 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PERFMON_LIST,
 
     /**
+     * @brief List of raw (non-rounded) temperature readings from all sensors.
+     *
+     * Values should be interpreted along with SAI_SWITCH_ATTR_TEMP_BASE_TEN_PRECISION.
+     * Companion to SAI_SWITCH_ATTR_TEMP_LIST (which returns rounded Celsius).
+     *
+     * @type sai_s32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_TEMP_LIST_RAW,
+
+    /**
+     * @brief Power-of-10 exponent for raw temperature precision.
+     *
+     * Defines the scale of values in SAI_SWITCH_ATTR_TEMP_LIST_RAW.
+     * Formula: actual_celsius = raw_value * (10 ^ precision)
+     * Examples:
+     *    precision = 0 => values already in whole Celsius (same as TEMP_LIST)
+     *    precision = -1 => values in 0.1 degrees C steps (445 = 44.5 degrees C)
+     *    precision = -2 => values in 0.01 degrees C steps
+     *
+     * @type sai_int8_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_TEMP_BASE_TEN_PRECISION,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
