@@ -434,10 +434,10 @@ typedef enum _sai_next_hop_group_member_attr_t
      * @brief The object to be monitored for this next hop.
      *
      * If the specified objects fails, the switching entity marks this
-     * next hop as SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_FAILED and does
+     * next hop as SAI_NEXT_HOP_GROUP_MEMBER_OBSERVED_ROLE_INACTIVE and does
      * not use it to forward traffic. If there is a backup next hop available
      * in this group then the backup's observed role is set to
-     * SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_FORWARDING and it is used to
+     * SAI_NEXT_HOP_GROUP_MEMBER_OBSERVED_ROLE_ACTIVE and it is used to
      * forward traffic.
      *
      * @type sai_object_id_t
