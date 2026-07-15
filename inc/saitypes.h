@@ -307,6 +307,7 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_CBFC_CREDIT_POOL         = 117,
     SAI_OBJECT_TYPE_CBFC_CREDIT_PROFILE      = 118,
     SAI_OBJECT_TYPE_PERFMON                  = 119,
+    SAI_OBJECT_TYPE_TAM_EVENT_LEARN_ENTRY    = 120,
 
     /** Must remain in last position */
     SAI_OBJECT_TYPE_MAX,
@@ -1032,8 +1033,10 @@ typedef enum _sai_acl_bind_point_type_t
     SAI_ACL_BIND_POINT_TYPE_ROUTER_INTF = SAI_ACL_BIND_POINT_TYPE_ROUTER_INTERFACE,
 
     /** Bind Point Type Switch */
-    SAI_ACL_BIND_POINT_TYPE_SWITCH
+    SAI_ACL_BIND_POINT_TYPE_SWITCH,
 
+    /** Bind Point Type TAM */
+    SAI_ACL_BIND_POINT_TYPE_TAM,
 } sai_acl_bind_point_type_t;
 
 /**
