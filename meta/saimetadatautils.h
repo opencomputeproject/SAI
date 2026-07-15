@@ -230,6 +230,22 @@ extern bool sai_metadata_is_validonly_met(
 extern sai_api_version_t sai_metadata_query_api_version(void);
 
 /**
+ * @brief Tests whether an attrvaluetype is a scalar numerical integer
+ *        type that is a candidate for sai_query_attribute_value_constraints().
+ *
+ * Returns true for SAI_ATTR_VALUE_TYPE_UINT8 / UINT16 / UINT32 / UINT64
+ * and SAI_ATTR_VALUE_TYPE_INT8 / INT16 / INT32 / INT64. Returns false
+ * for boolean, pointer, MAC, IP, list, range and aggregate types.
+ *
+ * @param[in] attrvaluetype Attribute value type to be checked.
+ *
+ * @return True if attrvaluetype is a scalar numerical integer type,
+ *    false otherwise.
+ */
+extern bool sai_metadata_is_numerical_attr_value_type(
+        _In_ sai_attr_value_type_t attrvaluetype);
+
+/**
  * @}
  */
 #endif /** __SAIMETADATAUTILS_H_ */

@@ -6334,6 +6334,8 @@ void check_struct_and_union_size()
     CHECK_STRUCT_SIZE(sai_acl_resource_list_t, 16);
     CHECK_STRUCT_SIZE(sai_acl_resource_t, 12);
     CHECK_STRUCT_SIZE(sai_attr_capability_t, 3);
+    CHECK_STRUCT_SIZE(sai_attribute_constraint_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_attribute_constraint_t, 48);
     CHECK_STRUCT_SIZE(sai_attribute_t, 48);
     CHECK_STRUCT_SIZE(sai_bfd_session_state_notification_t, 16);
     CHECK_STRUCT_SIZE(sai_fabric_port_reachability_t, 8);

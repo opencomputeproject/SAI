@@ -132,6 +132,18 @@ sai_status_t sai_query_attribute_enum_values_capability(
     _Inout_ sai_s32_list_t *enum_values_capability)
 { return SAI_STATUS_NOT_IMPLEMENTED; }
 
+sai_status_t sai_query_attribute_value_constraints(
+    _In_ sai_object_id_t switch_id,
+    _In_ sai_object_type_t object_type,
+    _In_ const sai_object_key_t *object_key,
+    _In_ uint32_t attr_count,
+    _In_ const sai_attribute_t *attr_list,
+    _In_ sai_object_stage_t stage,
+    _In_ sai_attr_id_t attr_id,
+    _Inout_ sai_status_t *attr_status,
+    _Inout_ sai_attribute_constraint_list_t *constraints)
+{ return SAI_STATUS_NOT_IMPLEMENTED; }
+
 sai_status_t sai_query_object_stage(
     _In_ sai_object_id_t switch_id,
     _In_ sai_object_type_t object_type,
