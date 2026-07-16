@@ -532,6 +532,11 @@ typedef enum _sai_attr_value_type_t
     SAI_ATTR_VALUE_TYPE_PRBS_PER_LANE_BIT_ERROR_RATE_LIST,
 
     /**
+     * @brief Attribute value is a list of ILT lane training status for all lanes in a port.
+     */
+    SAI_ATTR_VALUE_TYPE_PORT_ILT_LANE_TRAINING_STATUS_LIST,
+
+    /**
      * @brief Attribute value is 64 bit unsigned integer range.
      */
     SAI_ATTR_VALUE_TYPE_UINT64_RANGE,

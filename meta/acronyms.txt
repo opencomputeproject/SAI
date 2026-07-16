@@ -5,6 +5,7 @@ AES - Advanced Encryption Standard
 AN - Association Number
 AN - Auto Negotiation
 API - Application Program Interface
+APSU - Autonomous Path Start Up
 ARP - Address Resolution Protocol
 ARS - Adaptiver Routing and Switching
 ASIC - Application Specific Integrated Circuit
@@ -85,6 +86,7 @@ IFA1 - Inband Flow Analyzer version 1
 IFA2 - Inband Flow Analyzer version 2
 IGMP - Internet Group Management Protocol
 IHL - Internet Header Length
+ILT - Inter-sublayer Link Training
 IOAM - In-situ Operations And Management
 IP - Internet Protocol
 IP2ME - IP packets to local router IP
@@ -147,6 +149,7 @@ RPC - Remote Procedure Call
 RPF - Reverse Path Forwarding
 RPN - Reverse Polish Notation
 RSPAN - Remote Span
+RTS - Ready To Send
 SA - Secure Association
 SAI - Switch Abstraction Interface
 SAK - Secure Association Key
