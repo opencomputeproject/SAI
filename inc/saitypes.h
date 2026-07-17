@@ -1078,6 +1078,38 @@ typedef enum _sai_tam_bind_point_type_t
 } sai_tam_bind_point_type_t;
 
 /**
+ * @brief TAM per-flow auto-learn overflow policy
+ *
+ * Attribute data for SAI_SWITCH_ATTR_TAM_FLOW_AUTO_LEARN_OVERFLOW_POLICY.
+ */
+typedef enum _sai_tam_flow_overflow_policy_t
+{
+    /**
+     * @brief Preserve existing flows; reject the new flow
+     *
+     * Flows already being tracked continue unchanged. Visibility of the
+     * new flow is lost until aging or eviction frees capacity, and
+     * SAI_SWITCH_ATTR_TAM_FLOW_AUTO_LEARN_FAILURES is incremented.
+     */
+    SAI_TAM_FLOW_OVERFLOW_POLICY_REJECT_NEW,
+
+    /**
+     * @brief Admit the new flow; displace an existing flow
+     *
+     * The new flow is admitted by evicting one existing tracked flow.
+     * Which flow is chosen (e.g. oldest, least-recently-active) is
+     * implementation-defined. The evicted flow's final record carries
+     * flowEndReason = "lack of resources" (RFC 7011 / RFC 5102).
+     */
+    SAI_TAM_FLOW_OVERFLOW_POLICY_EVICT_EXISTING,
+
+    /*
+     * This enum can be extended with additional values in future
+     * proposals as vendor capabilities converge.
+     */
+} sai_tam_flow_overflow_policy_t;
+
+/**
  * @brief Attribute data for SAI_PREFIX_COMPRESSION_TABLE_ATTR_STAGE
  */
 typedef enum _sai_prefix_compression_stage_t
