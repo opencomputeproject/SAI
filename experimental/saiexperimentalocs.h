@@ -64,6 +64,15 @@ typedef enum _sai_ocs_cross_connect_attr_t
     SAI_OCS_CROSS_CONNECT_ATTR_B_SIDE_PORT_ID,
 
     /**
+     * @brief Global setting of read-clear or read-only for statistics read
+     *
+     * @type sai_stats_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_STATS_MODE_READ_AND_CLEAR
+     */
+    SAI_OCS_CROSS_CONNECT_ATTR_STATS_MODE,
+
+    /**
      * @brief End of attributes
      */
     SAI_OCS_CROSS_CONNECT_ATTR_END,
@@ -213,6 +222,15 @@ typedef enum _sai_ocs_port_attr_t
      * @flags READ_ONLY
      */
     SAI_OCS_PORT_ATTR_PHYSICAL_MAPPING,
+
+    /**
+     * @brief Global setting of read-clear or read-only for statistics read
+     *
+     * @type sai_stats_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_STATS_MODE_READ_AND_CLEAR
+     */
+    SAI_OCS_PORT_ATTR_STATS_MODE,
 
     /**
      * @brief End of attributes

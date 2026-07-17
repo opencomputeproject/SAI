@@ -74,10 +74,12 @@ OCS cross-connect factory data are read-only information about factory beginning
 | ---- | ---- | ---- |
 |SAI_OBJECT_TYPE_OCS_CROSS_CONNECT  | SAI_OCS_CROSS_CONNECT_ATTR_A_SIDE_PORT_ID | sai_object_id_t
 | | SAI_OCS_CROSS_CONNECT_ATTR_B_SIDE_PORT_ID | sai_object_id_t
+| | SAI_OCS_CROSS_CONNECT_ATTR_STATS_MODE | sai_stats_mode_t
 | SAI_OBJECT_TYPE_OCS_PORT   | SAI_OCS_PORT_ATTR_NAME | sai_u8_list_t
 | | SAI_OCS_PORT_ATTR_OVERRIDE_STATE | sai_ocs_port_override_state_t
 | | SAI_OCS_PORT_ATTR_OPER_STATUS | sai_ocs_port_status_t
 | | SAI_OCS_PORT_ATTR_PHYSICAL_MAPPING | sai_u8_list_t
+| | SAI_OCS_PORT_ATTR_STATS_MODE | sai_u8_lsai_stats_mode_tist_t
 SAI_OBJECT_TYPE_OCS_CROSS_CONNECT_FACTORY_DATA | SAI_OCS_CROSS_CONNECT_FACTORY_DATA_ATTR_A_SIDE_PORT_NAME | sai_u8_list_t
 | | SAI_OCS_CROSS_CONNECT_FACTORY_DATA_ATTR_B_SIDE_PORT_NAME | sai_u8_list_t
 | | SAI_OCS_CROSS_CONNECT_FACTORY_DATA_ATTR_FREQUENCY_THZ | sai_s32_list_t
