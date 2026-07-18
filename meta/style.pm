@@ -1012,7 +1012,7 @@ sub CheckHeadersStyle
             {
                 my $param = $1;
 
-                my $pattern = '^(attr_count|object_count|number_of_counters|count|u32|device_addr|start_reg_addr|number_of_registers|reg_val)$';
+                my $pattern = '^(attr_count|object_count|number_of_counters|count|u32|device_addr|start_reg_addr|number_of_registers|reg_val|additional_attr_count)$';
 
                 if (not $param =~ /$pattern/)
                 {
