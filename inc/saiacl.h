@@ -324,6 +324,9 @@ typedef enum _sai_acl_action_type_t
     /** Bind a TAM object */
     SAI_ACL_ACTION_TYPE_TAM_OBJECT = 0x0000003d,
 
+    /** Set Redirect Original Packet */
+    SAI_ACL_ACTION_TYPE_REDIRECT_ORIGINAL_PACKET = 0x0000003e,
+
     /** Custom range base value */
     SAI_ACL_ACTION_TYPE_CUSTOM_RANGE_BASE = 0x10000000
 
@@ -3530,9 +3533,19 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_TAM_OBJECT = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x3d,
 
     /**
+     * @brief Redirect Packet to a port or LAG destination as the original, unmodified packet
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT_ORIGINAL_PACKET = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x3e,
+
+    /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_TAM_OBJECT,
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT_ORIGINAL_PACKET,
 
     /**
      * @brief End of ACL Entry attributes
