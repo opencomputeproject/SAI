@@ -64,15 +64,6 @@ typedef enum _sai_ocs_cross_connect_attr_t
     SAI_OCS_CROSS_CONNECT_ATTR_B_SIDE_PORT_ID,
 
     /**
-     * @brief Global setting of read-clear or read-only for statistics read
-     *
-     * @type sai_stats_mode_t
-     * @flags CREATE_AND_SET
-     * @default SAI_STATS_MODE_READ_AND_CLEAR
-     */
-    SAI_OCS_CROSS_CONNECT_ATTR_STATS_MODE,
-
-    /**
      * @brief End of attributes
      */
     SAI_OCS_CROSS_CONNECT_ATTR_END,
@@ -224,19 +215,27 @@ typedef enum _sai_ocs_port_attr_t
     SAI_OCS_PORT_ATTR_PHYSICAL_MAPPING,
 
     /**
-     * @brief Global setting of read-clear or read-only for statistics read
-     *
-     * @type sai_stats_mode_t
-     * @flags CREATE_AND_SET
-     * @default SAI_STATS_MODE_READ_AND_CLEAR
-     */
-    SAI_OCS_PORT_ATTR_STATS_MODE,
-
-    /**
      * @brief End of attributes
      */
     SAI_OCS_PORT_ATTR_END,
 } sai_ocs_port_attr_t;
+
+/**
+ * @brief OCS port counter IDs in sai_get_ocs_port_stats() call
+ *
+ * @flags ranges
+ */
+typedef enum _sai_ocs_port_stat_t
+{
+    /** OCS port stat range start */
+    SAI_OCS_PORT_STAT_START,
+
+    /** OCS port stat unknown, it is used to make build pass, more stats can be added later. */
+    SAI_OCS_PORT_STAT_UNKNOWN,
+
+    /** OCS port stat range end */
+    SAI_OCS_PORT_STAT_END,
+} sai_ocs_port_stat_t;
 
 /**
  * @brief Defines the operational status of the OCS port
@@ -307,6 +306,54 @@ typedef sai_status_t (*sai_get_ocs_port_attribute_fn)(
         _Inout_ sai_attribute_t *attr_list);
 
 /**
+ * @brief Get OCS port statistics counters. Deprecated for backward compatibility.
+ *
+ * @param[in] ocs_port_id OCS port id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_ocs_port_stats_fn)(
+        _In_ sai_object_id_t ocs_port_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Get OCS port statistics counters extended.
+ *
+ * @param[in] ocs_port_id OCS port id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] mode Statistics mode
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_ocs_port_stats_ext_fn)(
+        _In_ sai_object_id_t ocs_port_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _In_ sai_stats_mode_t mode,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Clear OCS port statistics counters.
+ *
+ * @param[in] ocs_port_id OCS port id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_clear_ocs_port_stats_fn)(
+        _In_ sai_object_id_t ocs_port_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids);
+
+/**
  * @brief OCS port state change notification
  *
  * Passed as a parameter into sai_initialize_switch()
@@ -314,7 +361,7 @@ typedef sai_status_t (*sai_get_ocs_port_attribute_fn)(
  * @count data[count]
  *
  * @param[in] count Number of notifications
- * @param[in] data Array of port operational status
+ * @param[in] data Array of OCS port operational status
  */
 typedef void (*sai_ocs_port_state_change_notification_fn)(
         _In_ uint32_t count,
@@ -459,6 +506,9 @@ typedef struct _sai_ocs_api_t
     sai_bulk_object_remove_fn                                  remove_ocs_ports;
     sai_bulk_object_set_attribute_fn                           set_ocs_ports_attribute;
     sai_bulk_object_get_attribute_fn                           get_ocs_ports_attribute;
+    sai_get_ocs_port_stats_fn                                  get_ocs_port_stats;
+    sai_get_ocs_port_stats_ext_fn                              get_ocs_port_stats_ext;
+    sai_clear_ocs_port_stats_fn                                clear_ocs_port_stats;
     sai_create_ocs_cross_connect_fn                            create_ocs_cross_connect;
     sai_remove_ocs_cross_connect_fn                            remove_ocs_cross_connect;
     sai_set_ocs_cross_connect_attribute_fn                     set_ocs_cross_connect_attribute;

@@ -74,12 +74,10 @@ OCS cross-connect factory data are read-only information about factory beginning
 | ---- | ---- | ---- |
 |SAI_OBJECT_TYPE_OCS_CROSS_CONNECT  | SAI_OCS_CROSS_CONNECT_ATTR_A_SIDE_PORT_ID | sai_object_id_t
 | | SAI_OCS_CROSS_CONNECT_ATTR_B_SIDE_PORT_ID | sai_object_id_t
-| | SAI_OCS_CROSS_CONNECT_ATTR_STATS_MODE | sai_stats_mode_t
 | SAI_OBJECT_TYPE_OCS_PORT   | SAI_OCS_PORT_ATTR_NAME | sai_u8_list_t
 | | SAI_OCS_PORT_ATTR_OVERRIDE_STATE | sai_ocs_port_override_state_t
 | | SAI_OCS_PORT_ATTR_OPER_STATUS | sai_ocs_port_status_t
 | | SAI_OCS_PORT_ATTR_PHYSICAL_MAPPING | sai_u8_list_t
-| | SAI_OCS_PORT_ATTR_STATS_MODE | sai_u8_lsai_stats_mode_tist_t
 SAI_OBJECT_TYPE_OCS_CROSS_CONNECT_FACTORY_DATA | SAI_OCS_CROSS_CONNECT_FACTORY_DATA_ATTR_A_SIDE_PORT_NAME | sai_u8_list_t
 | | SAI_OCS_CROSS_CONNECT_FACTORY_DATA_ATTR_B_SIDE_PORT_NAME | sai_u8_list_t
 | | SAI_OCS_CROSS_CONNECT_FACTORY_DATA_ATTR_FREQUENCY_THZ | sai_s32_list_t
@@ -102,6 +100,9 @@ typedef struct _sai_ocs_api_t
     sai_bulk_object_remove_fn                                  remove_ocs_ports;
     sai_bulk_object_set_attribute_fn                           set_ocs_ports_attribute;
     sai_bulk_object_get_attribute_fn                           get_ocs_ports_attribute;
+    sai_get_ocs_port_stats_fn                                  get_ocs_port_stats;
+    sai_get_ocs_port_stats_ext_fn                              get_ocs_port_stats_ext;
+    sai_clear_ocs_port_stats_fn                                clear_ocs_port_stats;
     sai_create_ocs_cross_connect_fn                            create_ocs_cross_connect;
     sai_remove_ocs_cross_connect_fn                            remove_ocs_cross_connect;
     sai_set_ocs_cross_connect_attribute_fn                     set_ocs_cross_connect_attribute;
