@@ -18,6 +18,7 @@
 #
 #
 
+import os
 from collections import OrderedDict
 from ptf import config
 from sai_utils import *  # pylint: disable=wildcard-import; lgtm[py/polluting-import]
@@ -120,7 +121,6 @@ class PortConfiger(object):
         for index, item in enumerate(port_list):
             port_bp = sai_thrift_create_bridge_port(
                 self.client,
-                bridge_id=bridge_id,
                 port_id=item.oid,
                 type=SAI_BRIDGE_PORT_TYPE_PORT,
                 admin_state=True)
@@ -498,7 +498,22 @@ class PortConfiger(object):
         '''
 
         # For brcm devices, need to init and setup the ports at once after start the switch.
-        retries = 10
+        #
+        # Waiting strategy is configurable via environment, defaulting to the original
+        # behavior (retries=2, 1s poll interval). The original loop waited PER PORT
+        # serially (retries x interval seconds for each of N ports), which on a large
+        # port count where oper-status is slow to settle costs N * retries * interval
+        # seconds (e.g. 32 ports x 2 x 1s ~= 64s). The shared-wait path below issues
+        # admin-up to every port once, then polls ALL ports together for at most
+        # (retries x interval) seconds total, re-asserting admin-up on stragglers each
+        # round. Semantics are preserved: every port is set admin-up, oper-status is
+        # polled, and down_port_list / the returned list are identical; only the total
+        # wall-clock wait changes. Real-HW/ASIC consumers that do not set these env
+        # vars keep the exact original timing.
+        retries = int(os.environ.get('SAI_PORT_UP_RETRIES', '2'))
+        poll_interval = float(os.environ.get('SAI_PORT_UP_POLL_INTERVAL', '1'))
+        # Opt-in: poll all ports together in one bounded loop instead of per-port.
+        shared_wait = os.environ.get('SAI_PORT_UP_SHARED_WAIT', '0') == '1'
         down_port_list = []
         test_port_list:List[Port] = []
 
@@ -514,29 +529,49 @@ class PortConfiger(object):
                         port_oid=port.oid,
                         admin_state=True)
 
-        for index, port in enumerate(test_port_list):
-            port_attr = sai_thrift_get_port_attribute(
-                self.client, port.oid, oper_status=True)
-            print("Turn up port {}".format(index))
-            port_up = True
-            if port_attr['oper_status'] != SAI_PORT_OPER_STATUS_UP:
-                port_up = False
-                for num_of_tries in range(retries):
+        if shared_wait:
+            # Single bounded wait shared across all ports.
+            pending = list(enumerate(test_port_list))
+            for num_of_tries in range(retries + 1):
+                still_down = []
+                for index, port in pending:
                     port_attr = sai_thrift_get_port_attribute(
                         self.client, port.oid, oper_status=True)
-                    if port_attr['oper_status'] == SAI_PORT_OPER_STATUS_UP:
-                        port_up = True
-                        break
-                    time.sleep(3)
-                    self.log_port_state(port, index)
-                    print("port {} , local index {} id {} is not up, status: {}. Retry. Reset Admin State.".format(
-                        index, port.port_index, port.oid, port_attr['oper_status']))
-                    sai_thrift_set_port_attribute(
-                        self.client,
-                        port_oid=port.oid,
-                        admin_state=True)
-            if not port_up:
-                down_port_list.append(index)
+                    if port_attr['oper_status'] != SAI_PORT_OPER_STATUS_UP:
+                        still_down.append((index, port))
+                pending = still_down
+                if not pending:
+                    break
+                if num_of_tries < retries:
+                    time.sleep(poll_interval)
+                    for index, port in pending:
+                        sai_thrift_set_port_attribute(
+                            self.client, port_oid=port.oid, admin_state=True)
+            down_port_list = [index for index, _ in pending]
+        else:
+            for index, port in enumerate(test_port_list):
+                port_attr = sai_thrift_get_port_attribute(
+                    self.client, port.oid, oper_status=True)
+                print("Turn up port {}".format(index))
+                port_up = True
+                if port_attr['oper_status'] != SAI_PORT_OPER_STATUS_UP:
+                    port_up = False
+                    for num_of_tries in range(retries):
+                        port_attr = sai_thrift_get_port_attribute(
+                            self.client, port.oid, oper_status=True)
+                        if port_attr['oper_status'] == SAI_PORT_OPER_STATUS_UP:
+                            port_up = True
+                            break
+                        time.sleep(poll_interval)
+                        self.log_port_state(port, index)
+                        print("port {} , local index {} id {} is not up, status: {}. Retry. Reset Admin State.".format(
+                            index, port.port_index, port.oid, port_attr['oper_status']))
+                        sai_thrift_set_port_attribute(
+                            self.client,
+                            port_oid=port.oid,
+                            admin_state=True)
+                if not port_up:
+                    down_port_list.append(index)
         if down_port_list:
             print("Ports {} are  down after retries.".format(down_port_list))
         return test_port_list

@@ -78,6 +78,13 @@ class LagConfiger(object):
             Lag: lag object
         """
         lag: Lag = Lag(None, [], [])
+        lag_index = len(self.test_obj.dut.lag_list)
+        try:
+            from config import simulate_sonic
+        except ImportError:
+            simulate_sonic = None
+        if simulate_sonic is not None:
+            simulate_sonic.ensure_portchannel(lag_index)
         lag_oid = sai_thrift_create_lag(self.client)
         lag.oid = lag_oid
         self.create_lag_member(lag, lag_port_idxs)

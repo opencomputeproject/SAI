@@ -6482,6 +6482,126 @@ void check_object_type_index()
     }
 }
 
+static int get_status_attr_category(
+        _In_ sai_status_t status)
+{
+    int category = 0;
+    int matches = 0;
+
+    if (SAI_STATUS_IS_INVALID_ATTRIBUTE(status))
+    {
+        category = 1;
+        matches++;
+    }
+
+    if (SAI_STATUS_IS_INVALID_ATTR_VALUE(status))
+    {
+        category = 2;
+        matches++;
+    }
+
+    if (SAI_STATUS_IS_ATTR_NOT_IMPLEMENTED(status))
+    {
+        category = 3;
+        matches++;
+    }
+
+    if (SAI_STATUS_IS_UNKNOWN_ATTRIBUTE(status))
+    {
+        category = 4;
+        matches++;
+    }
+
+    if (SAI_STATUS_IS_ATTR_NOT_SUPPORTED(status))
+    {
+        category = 5;
+        matches++;
+    }
+
+    /* a valid attribute-range code must match exactly one helper */
+
+    return (matches == 1) ? category : 0;
+}
+
+void check_status_attr_ranges()
+{
+    META_LOG_ENTER();
+
+    const sai_status_t base0[] = {
+        SAI_STATUS_INVALID_ATTRIBUTE_0,
+        SAI_STATUS_INVALID_ATTR_VALUE_0,
+        SAI_STATUS_ATTR_NOT_IMPLEMENTED_0,
+        SAI_STATUS_UNKNOWN_ATTRIBUTE_0,
+        SAI_STATUS_ATTR_NOT_SUPPORTED_0,
+    };
+
+    const sai_status_t basemax[] = {
+        SAI_STATUS_INVALID_ATTRIBUTE_MAX,
+        SAI_STATUS_INVALID_ATTR_VALUE_MAX,
+        SAI_STATUS_ATTR_NOT_IMPLEMENTED_MAX,
+        SAI_STATUS_UNKNOWN_ATTRIBUTE_MAX,
+        SAI_STATUS_ATTR_NOT_SUPPORTED_MAX,
+    };
+
+    /* positive magnitude of each *_0 base (0x10000 .. 0x50000) */
+    const int magnitude[] = { 0x10000, 0x20000, 0x30000, 0x40000, 0x50000 };
+
+    /* attribute indices to cover, including _0 and the _MAX boundary */
+    const int indices[] = { 0, 1, 2, 17, 0xFFFE, 0xFFFF };
+
+    size_t r;
+    size_t k;
+
+    /* codes that are not attribute-range errors must not match any helper */
+    META_ASSERT_TRUE(get_status_attr_category(SAI_STATUS_SUCCESS) == 0,
+            "SAI_STATUS_SUCCESS must not match any attribute range");
+    META_ASSERT_TRUE(get_status_attr_category(SAI_STATUS_FAILURE) == 0,
+            "SAI_STATUS_FAILURE must not match any attribute range");
+    META_ASSERT_TRUE(get_status_attr_category(SAI_STATUS_NOT_EXECUTED) == 0,
+            "SAI_STATUS_NOT_EXECUTED must not match any attribute range");
+    META_ASSERT_TRUE(get_status_attr_category((sai_status_t)1) == 0,
+            "value 1 must not match any attribute range");
+    META_ASSERT_TRUE(get_status_attr_category((sai_status_t)-1) == 0,
+            "value -1 must not match any attribute range");
+
+    for (r = 0; r < sizeof(base0) / sizeof(base0[0]); r++)
+    {
+        int category = (int)(r + 1);
+
+        /* _MAX must be the last (index 0xFFFF) code of the range */
+        META_ASSERT_TRUE(basemax[r] == SAI_STATUS_CODE(magnitude[r] + 0xFFFF),
+                "range %d: _MAX must equal SAI_STATUS_CODE(base + 0xFFFF)", category);
+
+        for (k = 0; k < sizeof(indices) / sizeof(indices[0]); k++)
+        {
+            int index = indices[k];
+
+            /* the indexed code must be built as base_0 + SAI_STATUS_CODE(index) */
+            sai_status_t status = base0[r] + SAI_STATUS_CODE(index);
+
+            META_ASSERT_TRUE(status == SAI_STATUS_CODE(magnitude[r] + index),
+                    "range %d: base_0 + SAI_STATUS_CODE(%d) has wrong value", category, index);
+
+            /* it must classify into its own range and no other */
+            META_ASSERT_TRUE(get_status_attr_category(status) == category,
+                    "range %d: indexed status (index %d) classified into wrong/ambiguous range",
+                    category, index);
+
+            /* the encoded attribute index must round-trip */
+            META_ASSERT_TRUE((SAI_STATUS_CODE(status) & 0xFFFF) == index,
+                    "range %d: decoded attribute index != %d", category, index);
+        }
+
+        /* the code just below _0 must not classify into this range */
+        META_ASSERT_TRUE(get_status_attr_category(SAI_STATUS_CODE(magnitude[r] - 1)) != category,
+                "range %d: code below _0 must not match this range", category);
+
+        /* the code just above _MAX must not classify into this range */
+        META_ASSERT_TRUE(get_status_attr_category(SAI_STATUS_CODE(magnitude[r] + 0x10000)) != category,
+                "range %d: code above _MAX must not match this range", category);
+    }
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -6492,6 +6612,7 @@ int main(int argc, char **argv)
     check_all_enums_values();
     check_enums_ignore_values();
     check_sai_status();
+    check_status_attr_ranges();
     check_object_type_index();
     check_object_type();
     check_attr_by_object_type();
