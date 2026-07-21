@@ -1751,6 +1751,10 @@ sub ProcessDefaultValue
     {
         WriteSource "$val = { .chardata = { 0 } };";
     }
+    elsif ($default =~ /^0$/ and $type =~ /^(sai_fw_inst_t)/)
+    {
+        WriteSource "$val = { 0 };";
+    }
     elsif ($default =~ /^0\.0\.0\.0$/ and $type =~ /^(sai_ip4_t)/)
     {
         WriteSource "$val = { 0 };";
