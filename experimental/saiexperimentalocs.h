@@ -218,23 +218,21 @@ typedef enum _sai_ocs_port_attr_t
      * @brief End of attributes
      */
     SAI_OCS_PORT_ATTR_END,
+
+    /** Custom range base value */
+    SAI_OCS_PORT_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_OCS_PORT_ATTR_CUSTOM_RANGE_END,
 } sai_ocs_port_attr_t;
 
 /**
  * @brief OCS port counter IDs in sai_get_ocs_port_stats() call
- *
- * @flags ranges
  */
 typedef enum _sai_ocs_port_stat_t
 {
-    /** OCS port stat range start */
-    SAI_OCS_PORT_STAT_START,
-
     /** OCS port stat unknown, it is used to make build pass, more stats can be added later. */
     SAI_OCS_PORT_STAT_UNKNOWN,
-
-    /** OCS port stat range end */
-    SAI_OCS_PORT_STAT_END,
 } sai_ocs_port_stat_t;
 
 /**
@@ -439,6 +437,12 @@ typedef enum _sai_ocs_cross_connect_factory_data_attr_t
      * @brief End of attributes
      */
     SAI_OCS_CROSS_CONNECT_FACTORY_DATA_ATTR_END,
+
+    /** Custom range base value */
+    SAI_OCS_CROSS_CONNECT_FACTORY_DATA_ATTR_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range base */
+    SAI_OCS_CROSS_CONNECT_FACTORY_DATA_ATTR_CUSTOM_RANGE_END,
 } sai_ocs_cross_connect_factory_data_attr_t;
 
 /**
