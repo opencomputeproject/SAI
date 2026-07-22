@@ -42,10 +42,69 @@ import subprocess
 import time
 
 _logger = logging.getLogger(__name__)
+_IPV6_CONTROL_FILTER_INSTALLED = False
+_ROUTER_SOLICITATION_DESTINATION = bytes.fromhex("ff020000000000000000000000000002")
+_MLDV2_REPORT_DESTINATION = bytes.fromhex("ff020000000000000000000000000016")
 
 
 def enabled():
     return os.environ.get("SIMULATE_SONIC", "0") == "1"
+
+
+def _is_ipv6_control_packet(packet_data, source_mac):
+    """Return whether packet_data is a simulated router RS or MLDv2 frame."""
+    packet_bytes = bytes(packet_data)
+    ethernet_length = 14
+    ipv6_header_length = 40
+    payload_offset = ethernet_length + ipv6_header_length
+
+    if len(packet_bytes) <= payload_offset:
+        return False
+    if packet_bytes[6:12] != source_mac or packet_bytes[12:14] != b"\x86\xdd":
+        return False
+
+    destination = packet_bytes[ethernet_length + 24:ethernet_length + 40]
+    next_header = packet_bytes[ethernet_length + 6]
+    if next_header == 0:
+        if len(packet_bytes) < payload_offset + 2:
+            return False
+        next_header = packet_bytes[payload_offset]
+        payload_offset += (packet_bytes[payload_offset + 1] + 1) * 8
+    if next_header != 58 or len(packet_bytes) <= payload_offset:
+        return False
+
+    icmpv6_type = packet_bytes[payload_offset]
+    return (
+        destination == _ROUTER_SOLICITATION_DESTINATION and icmpv6_type == 133
+    ) or (
+        destination == _MLDV2_REPORT_DESTINATION and icmpv6_type == 143
+    )
+
+
+def install_ipv6_control_filter():
+    """Discard simulated-router IPv6 startup frames when the harness opts in."""
+    global _IPV6_CONTROL_FILTER_INSTALLED
+
+    source_mac = os.environ.get("SIMULATE_SONIC_IPV6_CONTROL_SRC_MAC", "")
+    if _IPV6_CONTROL_FILTER_INSTALLED or not enabled() or not source_mac:
+        return
+
+    from ptf.testutils import add_filter
+
+    try:
+        source_mac_bytes = bytes.fromhex(source_mac.replace(":", ""))
+    except ValueError:
+        _logger.warning("invalid SIMULATE_SONIC_IPV6_CONTROL_SRC_MAC: %s", source_mac)
+        return
+    if len(source_mac_bytes) != 6:
+        _logger.warning("invalid SIMULATE_SONIC_IPV6_CONTROL_SRC_MAC: %s", source_mac)
+        return
+
+    def keep_non_control_packet(packet_data):
+        return not _is_ipv6_control_packet(packet_data, source_mac_bytes)
+
+    add_filter(keep_non_control_packet)
+    _IPV6_CONTROL_FILTER_INSTALLED = True
 
 
 def _run(cmd, check=False, quiet=False):
@@ -79,6 +138,8 @@ def ensure_portchannel(lag_index):
     if not enabled():
         return
 
+    install_ipv6_control_filter()
+
     pc_if = "PortChannel{}".format(lag_index)
     mtu = _mtu()
 
@@ -99,6 +160,8 @@ def assign_lag_rif_ips(lag_index, retries=20, interval=0.3):
     if not enabled() or os.environ.get("LAG_RIF_IPS", "1") != "1":
         return
 
+    install_ipv6_control_filter()
+
     be_prefix = os.environ.get("LAG_BE_TAP_PREFIX", "be")
     v4_pattern = os.environ.get("LAG_RIF_IPV4_PATTERN", "10.1.%d.1/24")
     v6_pattern = os.environ.get("LAG_RIF_IPV6_PATTERN", "fc00:1::%d:1/112")
@@ -114,15 +177,22 @@ def assign_lag_rif_ips(lag_index, retries=20, interval=0.3):
     else:
         return
 
-    disable_v6 = "/proc/sys/net/ipv6/conf/{}/disable_ipv6".format(be_if)
-    accept_dad = "/proc/sys/net/ipv6/conf/{}/accept_dad".format(be_if)
-    try:
-        with open(disable_v6, "w", encoding="ascii") as fh:
-            fh.write("0")
-        with open(accept_dad, "w", encoding="ascii") as fh:
-            fh.write("0")
-    except OSError:
-        pass
+    ipv6_conf = "/proc/sys/net/ipv6/conf/{}".format(be_if)
+    # Re-enabling IPv6 creates the link-local address immediately, so apply all
+    # host-control settings first to prevent DAD and router discovery packets.
+    settings = (
+        ("accept_dad", "0"),
+        ("accept_ra", "0"),
+        ("autoconf", "0"),
+        ("router_solicitations", "0"),
+        ("disable_ipv6", "0"),
+    )
+    for setting, value in settings:
+        try:
+            with open(os.path.join(ipv6_conf, setting), "w", encoding="ascii") as fh:
+                fh.write(value)
+        except OSError:
+            pass
 
     _run(["ip", "addr", "add", v4_addr, "dev", be_if], check=False)
     _run(["ip", "-6", "addr", "add", v6_addr, "dev", be_if, "nodad"], check=False)
@@ -147,6 +217,8 @@ def assign_svi_rif_ips(vlan_id, retries=20, interval=0.3):
     """
     if not enabled() or os.environ.get("SVI_RIF_IPS", "1") != "1":
         return
+
+    install_ipv6_control_filter()
 
     set_ip_cmd = os.environ.get("SVI_RIF_SET_IP_CMD")
     if not set_ip_cmd:
