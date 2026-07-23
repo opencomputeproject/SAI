@@ -1525,18 +1525,6 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_MACSEC_PORT_LIST,
 
     /**
-     * @brief Configure per-port MACsec PFC mode
-     *
-     * When MACsec is not enabled on the port, implementations may ignore this
-     * attribute and behave as SAI_PORT_MACSEC_PFC_MODE_UNENCRYPTED.
-     *
-     * @type sai_port_macsec_pfc_mode_t
-     * @flags CREATE_AND_SET
-     * @default SAI_PORT_MACSEC_PFC_MODE_UNENCRYPTED
-     */
-    SAI_PORT_ATTR_MACSEC_PFC_MODE,
-
-    /**
      * @brief Enable/Disable Mirror session
      *
      * Enable ingress mirroring by assigning list of mirror session object id
@@ -3354,6 +3342,18 @@ typedef enum _sai_port_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_PORT_ATTR_UNKNOWN_MULTICAST_STORM_CONTROL_POLICER_ID,
+
+    /**
+     * @brief Configure per-port MACsec PFC mode
+     *
+     * When MACsec is not enabled on the port, implementations may ignore this
+     * attribute and behave as SAI_PORT_MACSEC_PFC_MODE_UNENCRYPTED.
+     *
+     * @type sai_port_macsec_pfc_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_MACSEC_PFC_MODE_UNENCRYPTED
+     */
+    SAI_PORT_ATTR_MACSEC_PFC_MODE,
 
     /**
      * @brief End of attributes
