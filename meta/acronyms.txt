@@ -118,6 +118,7 @@ NTPSERVER - Network Time Protocol Server
 NVGRE - Network Virtualization using Generic Routing Encapsulation
 OA - Optical Amplifier
 OAM - Operations Administration and Maintenance
+OCS - Optical Circuit Switch
 ORL - Optical Return Loss
 OTN - Optical Transport Network
 OUI - Organizationally Unique Identifier
