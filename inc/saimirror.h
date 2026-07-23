@@ -404,6 +404,26 @@ typedef enum _sai_mirror_session_attr_t
     SAI_MIRROR_SESSION_ATTR_LABEL,
 
     /**
+     * @brief Guarantee sample rate in packets per second (pps)
+     *
+     * When set to a non-zero value, up to this packet rate per second are always
+     * sampled (100% sampling). Traffic above this rate is statistically sampled
+     * using SAI_MIRROR_SESSION_ATTR_SAMPLE_RATE (approximately G + (R - G) / N
+     * sampled packets per second, where G is this attribute, N is SAMPLE_RATE,
+     * and R is the observed mirror session packet rate).
+     *
+     * A value of 0 disables the guarantee rate feature.
+     *
+     * Rate measurement and enforcement (including behavior on rate transitions,
+     * burst handling, and reset) are implementation-defined.
+     *
+     * @type sai_uint64_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_MIRROR_SESSION_ATTR_GUARANTEE_RATE,
+
+    /**
      * @brief End of attributes
      */
     SAI_MIRROR_SESSION_ATTR_END,
