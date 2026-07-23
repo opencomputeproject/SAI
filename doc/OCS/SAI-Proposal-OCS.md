@@ -107,6 +107,9 @@ typedef struct _sai_ocs_api_t
     sai_remove_ocs_cross_connect_fn                            remove_ocs_cross_connect;
     sai_set_ocs_cross_connect_attribute_fn                     set_ocs_cross_connect_attribute;
     sai_get_ocs_cross_connect_attribute_fn                     get_ocs_cross_connect_attribute;
+    sai_get_ocs_cross_connect_stats_fn                         get_ocs_cross_connect_stats;
+    sai_get_ocs_cross_connect_stats_ext_fn                     get_ocs_cross_connect_stats_ext;
+    sai_clear_ocs_cross_connect_stats_fn                       clear_ocs_cross_connect_stats;
     sai_bulk_object_create_fn                                  create_ocs_cross_connects;
     sai_bulk_object_remove_fn                                  remove_ocs_cross_connects;
     sai_bulk_object_set_attribute_fn                           set_ocs_cross_connects_attribute;

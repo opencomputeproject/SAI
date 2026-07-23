@@ -77,6 +77,15 @@ typedef enum _sai_ocs_cross_connect_attr_t
 } sai_ocs_cross_connect_attr_t;
 
 /**
+ * @brief OCS cross-connect counter IDs in sai_get_ocs_cross_connect_stats() call
+ */
+typedef enum _sai_ocs_cross_connect_stat_t
+{
+    /** OCS cross-connect stat unknown, it is used to make build pass, more stats can be added later. */
+    SAI_OCS_CROSS_CONNECT_STAT_UNKNOWN,
+} sai_ocs_cross_connect_stat_t;
+
+/**
  * @brief Create cross connect entry.
  *
  * @param[out] ocs_cross_connect_id OCS cross connect id
@@ -127,6 +136,54 @@ typedef sai_status_t (*sai_get_ocs_cross_connect_attribute_fn)(
         _In_ sai_object_id_t ocs_cross_connect_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
+
+/**
+ * @brief Get OCS cross-connect statistics counters. Deprecated for backward compatibility.
+ *
+ * @param[in] ocs_cross_connect_id OCS cross-connect id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_ocs_cross_connect_stats_fn)(
+        _In_ sai_object_id_t ocs_cross_connect_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Get OCS cross-connect statistics counters extended.
+ *
+ * @param[in] ocs_cross_connect_id OCS cross-connect id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ * @param[in] mode Statistics mode
+ * @param[out] counters Array of resulting counter values.
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_get_ocs_cross_connect_stats_ext_fn)(
+        _In_ sai_object_id_t ocs_cross_connect_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids,
+        _In_ sai_stats_mode_t mode,
+        _Out_ uint64_t *counters);
+
+/**
+ * @brief Clear OCS cross-connect statistics counters.
+ *
+ * @param[in] ocs_cross_connect_id OCS cross-connect id
+ * @param[in] number_of_counters Number of counters in the array
+ * @param[in] counter_ids Specifies the array of counter ids
+ *
+ * @return #SAI_STATUS_SUCCESS on success, failure status code on error
+ */
+typedef sai_status_t (*sai_clear_ocs_cross_connect_stats_fn)(
+        _In_ sai_object_id_t ocs_cross_connect_id,
+        _In_ uint32_t number_of_counters,
+        _In_ const sai_stat_id_t *counter_ids);
 
 /**
  * @brief Attribute data for OCS port override state parameter
@@ -517,6 +574,9 @@ typedef struct _sai_ocs_api_t
     sai_remove_ocs_cross_connect_fn                            remove_ocs_cross_connect;
     sai_set_ocs_cross_connect_attribute_fn                     set_ocs_cross_connect_attribute;
     sai_get_ocs_cross_connect_attribute_fn                     get_ocs_cross_connect_attribute;
+    sai_get_ocs_cross_connect_stats_fn                         get_ocs_cross_connect_stats;
+    sai_get_ocs_cross_connect_stats_ext_fn                     get_ocs_cross_connect_stats_ext;
+    sai_clear_ocs_cross_connect_stats_fn                       clear_ocs_cross_connect_stats;
     sai_bulk_object_create_fn                                  create_ocs_cross_connects;
     sai_bulk_object_remove_fn                                  remove_ocs_cross_connects;
     sai_bulk_object_set_attribute_fn                           set_ocs_cross_connects_attribute;
