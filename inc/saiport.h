@@ -3520,6 +3520,14 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_MRU,
 
     /**
+     * @brief Query list of supported port loopback modes for the port
+     *
+     * @type sai_s32_list_t sai_port_loopback_mode_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_SUPPORTED_LOOPBACK_MODE,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
