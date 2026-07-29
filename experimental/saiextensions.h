@@ -51,6 +51,7 @@
 #include "saiexperimentaldashdirectionlookup.h"
 #include "saiexperimentaldashacl.h"
 #include "saiexperimentalbmtor.h"
+#include "saiexperimentalocs.h"
 
 /* OTN Extensions */
 #include "saiexperimentalotnattenuator.h"
@@ -105,6 +106,8 @@ typedef enum _sai_api_extensions_t
     SAI_API_OTN_ATTENUATOR,
 
     SAI_API_OTN_OA,
+
+    SAI_API_OCS,
 
     /* Add new experimental APIs above this line */
 
