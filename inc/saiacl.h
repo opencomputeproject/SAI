@@ -1850,6 +1850,15 @@ typedef enum _sai_acl_entry_attr_t
      */
     SAI_ACL_ENTRY_ATTR_ADMIN_STATE,
 
+    /**
+     * @brief Attribute used to uniquely identify ACL entry.
+     *
+     * @type sai_s8_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_ACL_ENTRY_ATTR_LABEL,
+
     /*
      * Match fields [sai_acl_field_data_t]
      * - Mandatory to pass at least one field during ACL Rule creation.
