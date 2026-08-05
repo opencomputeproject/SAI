@@ -173,6 +173,7 @@ typedef enum _sai_lag_attr_t
      * @type char
      * @flags CREATE_AND_SET
      * @default ""
+     * @deprecated true
      */
     SAI_LAG_ATTR_LABEL,
 
@@ -212,6 +213,19 @@ typedef enum _sai_lag_attr_t
      * @default SAI_HASH_ALGORITHM_NONE
      */
     SAI_LAG_ATTR_HASH_ALGORITHM,
+
+    /**
+     * @brief Wide label attribute used to uniquely identify empty LAG.
+     *
+     * Replaces #SAI_LAG_ATTR_LABEL, which is limited to 32 bytes.
+     * Exactly one of the two attributes may be set to a non-default
+     * value; setting both is invalid.
+     *
+     * @type sai_s8_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_LAG_ATTR_LABEL_WIDE,
 
     /**
      * @brief End of attributes

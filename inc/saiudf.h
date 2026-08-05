@@ -264,8 +264,22 @@ typedef enum _sai_udf_group_attr_t
      * @type char
      * @flags CREATE_AND_SET
      * @default ""
+     * @deprecated true
      */
     SAI_UDF_GROUP_ATTR_LABEL,
+
+    /**
+     * @brief Wide label attribute used to uniquely identify UDF group.
+     *
+     * Replaces #SAI_UDF_GROUP_ATTR_LABEL, which is limited to 32 bytes.
+     * Exactly one of the two attributes may be set to a non-default
+     * value; setting both is invalid.
+     *
+     * @type sai_s8_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_UDF_GROUP_ATTR_LABEL_WIDE,
 
     /**
      * @brief End of attributes
