@@ -549,7 +549,24 @@ class RouteConfiger(object):
             if not self.test_obj.dut.rif_list:
                 self.test_obj.dut.rif_list = []
             self.test_obj.dut.rif_list.append(rif)
+            self._simulate_sonic_assign_rif_ips(net_interface)
         return net_interface.rif_list[-1]
+
+    def _simulate_sonic_assign_rif_ips(self, net_interface):
+        """When SIMULATE_SONIC=1, assign the connected IPs IntfMgr would set on a
+        LAG/SVI router interface (no-op otherwise)."""
+        try:
+            from config import simulate_sonic
+        except ImportError:
+            return
+        if isinstance(net_interface, Lag):
+            try:
+                lag_index = self.test_obj.dut.lag_list.index(net_interface)
+            except ValueError:
+                return
+            simulate_sonic.assign_lag_rif_ips(lag_index)
+        elif isinstance(net_interface, Vlan):
+            simulate_sonic.assign_svi_rif_ips(net_interface.vlan_id)
 
     def create_nexthop_by_rif(self, rif, nexthop_device: Device):
         """
@@ -622,9 +639,13 @@ class RouteConfiger(object):
             nhp_grpv4_members.append(nhp_grpv4_member)
             nhp_grpv6_members.append(nhp_grpv6_member)
 
+        # Give each NHG its own copy of the member port-index list. The v4 and v6
+        # groups are mutated independently (remove/re-add member tests), so sharing
+        # one list object would let a v4 mutation corrupt the v6 group's port list
+        # (ValueError: x not in list) when both run in the same config group.
         member_port_indexs = [17, 18, 19, 20, 21, 22, 23, 24]
-        nhp_grpv4: NexthopGroup = NexthopGroup(nhop_groupv4_id, nhp_grpv4_members, member_port_indexs)
-        nhp_grpv6: NexthopGroup = NexthopGroup(nhop_groupv6_id, nhp_grpv6_members, member_port_indexs)
+        nhp_grpv4: NexthopGroup = NexthopGroup(nhop_groupv4_id, nhp_grpv4_members, list(member_port_indexs))
+        nhp_grpv6: NexthopGroup = NexthopGroup(nhop_groupv6_id, nhp_grpv6_members, list(member_port_indexs))
 
         self.test_obj.dut.nhp_grpv4_list.append(nhp_grpv4)
         self.test_obj.dut.nhp_grpv6_list.append(nhp_grpv6)

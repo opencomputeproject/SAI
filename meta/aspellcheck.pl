@@ -193,6 +193,7 @@ for my $file (@files)
         next if defined $spellExceptions{$word};
 
         next if $word =~ /_/;
+        next if $word =~ /^0[xX][0-9a-fA-F]+$/; # hexadecimal numbers
         next if $word =~ /xYYY+/;
         next if $word =~ /fe\d+/;
         next if $word =~ /ebe\d+/;

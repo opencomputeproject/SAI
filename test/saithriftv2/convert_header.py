@@ -47,7 +47,7 @@ ENUM_DEF = """
 import enum
 class SAIEnum(enum.IntEnum):
     def __str__(self):      
-        return super().__str__().split(\".\")[1]\n"""
+        return self.name\n"""
 ENUM_PREFIX = "enum__sai_"
 SAI_NAME  = "SAI"
 ENUM_TYPE = "= c_int"
