@@ -3617,6 +3617,86 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PERFMON_LIST,
 
     /**
+     * @brief Enable hardware autonomous flow learning
+     *
+     * When true, the implementation autonomously identifies new flows
+     * from live traffic and populates them into any FLOW tel_type that
+     * is configured on the switch. When false, only flows explicitly
+     * bound via ACL entries with SAI_ACL_ENTRY_ATTR_ACTION_TAM_OBJECT
+     * populate FLOW tel_types; the implementation does not
+     * autonomously identify new flows.
+     *
+     * The handling of flows that were already being tracked at the
+     * moment this attribute transitions from true to false is
+     * implementation-defined.
+     *
+     * Default is false. Autonomous learning must be explicitly enabled.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_SWITCH_ATTR_TAM_FLOW_AUTO_LEARN_ENABLE,
+
+    /**
+     * @brief Aging time for HW-learned flows (seconds)
+     *
+     * Operator-intent aging: a HW-learned flow idle for more than this
+     * long is eligible for reclaim by the implementation. The reclaim
+     * mechanism (autonomous HW sweep, HW-assisted SW loop, or
+     * otherwise) is deliberately implementation-defined.
+     *
+     * Applies only to flows populated by HW auto-learn. Operator-
+     * configured flows (installed via ACL entries) do not age; the
+     * operator owns their lifetime by adding or removing ACL entries.
+     *
+     * A value of 0 means the implementation chooses its own aging time.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_SWITCH_ATTR_TAM_FLOW_AUTO_LEARN_ENABLE == true
+     */
+    SAI_SWITCH_ATTR_TAM_FLOW_AUTO_LEARN_AGING_TIME_S,
+
+    /**
+     * @brief HW auto-learn failure count
+     *
+     * Count of new-flow learn attempts that were rejected because the
+     * implementation could not admit the flow (capacity exhausted).
+     * Without this counter, operators would have no way to distinguish
+     * "table running fine" from "table chronically saturated, missing
+     * new flows".
+     *
+     * Valid only when SAI_SWITCH_ATTR_TAM_FLOW_AUTO_LEARN_ENABLE is true;
+     * otherwise the returned value is 0.
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_TAM_FLOW_AUTO_LEARN_FAILURES,
+
+    /**
+     * @brief Overflow policy for HW-learned flows
+     *
+     * Operator intent for how an implementation behaves when it cannot
+     * admit a newly seen flow because per-flow auto-learn capacity is
+     * exhausted. The cause of overflow is implementation-specific; the
+     * policy response is expressed as an observable outcome.
+     *
+     * SAI_TAM_FLOW_OVERFLOW_POLICY_REJECT_NEW is the default and is the
+     * baseline behavior every implementation supports. An implementation
+     * that cannot honor a requested policy returns
+     * SAI_STATUS_ATTR_NOT_SUPPORTED_0 on set.
+     *
+     * @type sai_tam_flow_overflow_policy_t
+     * @flags CREATE_AND_SET
+     * @default SAI_TAM_FLOW_OVERFLOW_POLICY_REJECT_NEW
+     * @validonly SAI_SWITCH_ATTR_TAM_FLOW_AUTO_LEARN_ENABLE == true
+     */
+    SAI_SWITCH_ATTR_TAM_FLOW_AUTO_LEARN_OVERFLOW_POLICY,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
