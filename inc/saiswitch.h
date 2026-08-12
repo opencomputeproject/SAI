@@ -3617,6 +3617,42 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PERFMON_LIST,
 
     /**
+     * @brief List of supported in drop reasons
+     *
+     * @type sai_s32_list_t sai_in_drop_reason_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_IN_DROP_REASON_LIST,
+
+    /**
+     * @brief List of supported out drop reasons
+     *
+     * @type sai_s32_list_t sai_out_drop_reason_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_OUT_DROP_REASON_LIST,
+
+    /**
+     * @brief List of supported buffer drop reasons
+     *
+     * @type sai_s32_list_t sai_buffer_drop_reason_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_BUFFER_DROP_REASON_LIST,
+
+    /**
+     * @brief Event learn notification callback
+     * function passed to the adapter.
+     *
+     * Use sai_tam_event_learn_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_tam_event_learn_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_TAM_EVENT_LEARN_NOTIFY,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
