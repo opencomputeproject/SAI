@@ -3652,7 +3652,8 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_TAM_EVENT_LEARN_NOTIFY,
 
-    /** @brief Firmware list
+    /**
+     * @brief Firmware list
      *
      * @type sai_fw_list_t
      * @flags CREATE_ONLY
