@@ -77,6 +77,31 @@ typedef enum _sai_debug_counter_bind_method_t
 } sai_debug_counter_bind_method_t;
 
 /**
+ * @brief Attribute data for buffer drop reasons
+ */
+typedef enum _sai_buffer_drop_reason_t
+{
+    /** Start of buffer drop reasons */
+    SAI_BUFFER_DROP_REASON_START,
+
+    /** Any buffer drop */
+    SAI_BUFFER_DROP_REASON_ANY = SAI_BUFFER_DROP_REASON_START,
+
+    /** IPG packet drops */
+    SAI_BUFFER_DROP_REASON_IPG,
+
+    /** End of buffer drop reasons */
+    SAI_BUFFER_DROP_REASON_END,
+
+    /** Custom range base value */
+    SAI_BUFFER_DROP_REASON_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range */
+    SAI_BUFFER_DROP_REASON_CUSTOM_RANGE_END
+
+} sai_buffer_drop_reason_t;
+
+/**
  * @brief Attribute data for in drop reasons
  */
 typedef enum _sai_in_drop_reason_t
