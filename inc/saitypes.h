@@ -308,6 +308,7 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_CBFC_CREDIT_PROFILE      = 118,
     SAI_OBJECT_TYPE_PERFMON                  = 119,
     SAI_OBJECT_TYPE_TAM_EVENT_LEARN_ENTRY    = 120,
+    SAI_OBJECT_TYPE_FW                       = 121,
 
     /** Must remain in last position */
     SAI_OBJECT_TYPE_MAX,
@@ -421,6 +422,60 @@ typedef struct _sai_taps_list_t
     /** List of tap values */
     sai_s32_list_t *list;
 } sai_taps_list_t;
+
+/**
+ * @brief SAI firmware administrative state
+ */
+typedef enum _sai_fw_admin_state_t
+{
+    /** Firmware admin state is automatic loading and running */
+    SAI_FW_ADMIN_STATE_AUTO,
+
+    /** Firmware admin state to start the firmware */
+    SAI_FW_ADMIN_STATE_START_FW,
+
+    /** Firmware admin state is stop the firmware */
+    SAI_FW_ADMIN_STATE_STOP_FW,
+
+    /** Firmware admin state is load the firmware */
+    SAI_FW_ADMIN_STATE_LOAD_FW,
+
+    /** Firmware admin state is unload the firmware */
+    SAI_FW_ADMIN_STATE_UNLOAD_FW,
+} sai_fw_admin_state_t;
+
+/**
+ * @brief Defines a firmware instance
+ */
+typedef struct _sai_fw_inst_t
+{
+    /** Firmware path */
+    sai_s8_list_t fw_path_name;
+
+    /** Firmware log file path */
+    sai_s8_list_t log_path_name;
+
+    /** Firmware core id */
+    uint8_t core_id;
+
+    /** Firmware admin state */
+    sai_fw_admin_state_t admin_state;
+
+    /** Firmware opaque id */
+    sai_s8_list_t fw_opaque_id;
+} sai_fw_inst_t;
+
+/**
+ * @brief Defines a list of firmware instances
+ */
+typedef struct _sai_fw_list_t
+{
+    /** Number of firmware instances */
+    uint32_t count;
+
+    /** List of firmware instances */
+    sai_fw_inst_t *list;
+} sai_fw_list_t;
 
 typedef enum _sai_ip_addr_family_t
 {
@@ -1846,6 +1901,12 @@ typedef union _sai_attribute_value_t
 
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PORT_ILT_LANE_TRAINING_STATUS_LIST */
     sai_port_ilt_lane_training_status_list_t port_ilt_lane_training_status_list;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_FW_INST */
+    sai_fw_inst_t fwinst;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_FW_LIST */
+    sai_fw_list_t fwlist;
 
 } sai_attribute_value_t;
 

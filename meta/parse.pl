@@ -1759,7 +1759,7 @@ sub ProcessDefaultValue
     {
         WriteSource "$val = { .mac = { 0, 0, 0, 0, 0, 0 } };";
     }
-    elsif ($default =~ /^0$/ and $type =~ /^(sai_timespec_t)/)
+    elsif ($default =~ /^0$/ and $type =~ /^(sai_timespec_t|sai_fw_inst_t)/)
     {
         WriteSource "$val = { 0 };";
     }
