@@ -49,6 +49,7 @@ typedef enum _sai_prefix_compression_table_attr_t
      * @type char
      * @flags CREATE_AND_SET
      * @default ""
+     * @deprecated true
      */
     SAI_PREFIX_COMPRESSION_TABLE_ATTR_LABEL = SAI_PREFIX_COMPRESSION_TABLE_ATTR_START,
 
@@ -68,6 +69,20 @@ typedef enum _sai_prefix_compression_table_attr_t
      * @isresourcetype true
      */
     SAI_PREFIX_COMPRESSION_TABLE_ATTR_PREFIX_COMPRESSION_TYPE,
+
+    /**
+     * @brief Wide label attribute used to uniquely identify Table.
+     *
+     * Replaces #SAI_PREFIX_COMPRESSION_TABLE_ATTR_LABEL, which is limited
+     * to 32 bytes.
+     * Exactly one of the two attributes may be set to a non-default
+     * value; setting both is invalid.
+     *
+     * @type sai_s8_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_PREFIX_COMPRESSION_TABLE_ATTR_LABEL_WIDE,
 
     /**
      * @brief End of attributes

@@ -342,6 +342,7 @@ typedef enum _sai_next_hop_group_attr_t
      * @type char
      * @flags CREATE_AND_SET
      * @default ""
+     * @deprecated true
      */
     SAI_NEXT_HOP_GROUP_ATTR_LABEL,
 
@@ -358,6 +359,19 @@ typedef enum _sai_next_hop_group_attr_t
      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_HW_PROTECTION
      */
     SAI_NEXT_HOP_GROUP_ATTR_ADMIN_ROLE,
+
+    /**
+     * @brief Wide label attribute used to uniquely identify next-hop-group.
+     *
+     * Replaces #SAI_NEXT_HOP_GROUP_ATTR_LABEL, which is limited to 32 bytes.
+     * Exactly one of the two attributes may be set to a non-default
+     * value; setting both is invalid.
+     *
+     * @type sai_s8_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_LABEL_WIDE,
 
     /**
      * @brief End of attributes
