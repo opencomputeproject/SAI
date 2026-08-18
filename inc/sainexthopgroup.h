@@ -142,6 +142,22 @@ typedef struct _sai_next_hop_group_hw_protection_switchover_notification_data_t
 } sai_next_hop_group_hw_protection_switchover_notification_data_t;
 
 /**
+ * @brief Next hop group is configured with weights or not
+ */
+typedef enum _sai_next_hop_group_members_weight_t
+{
+    /** This is for legacy platforms where this attribute is don't care */
+    SAI_NEXT_HOP_GROUP_MEMBERS_WEIGHT_UNSPECIFIED,
+
+    /** Next hop group members are weighted */
+    SAI_NEXT_HOP_GROUP_MEMBERS_WEIGHT_WEIGHTED,
+
+    /** Next hop group members are unweighted */
+    SAI_NEXT_HOP_GROUP_MEMBERS_WEIGHT_UNWEIGHTED,
+
+} sai_next_hop_group_members_weight_t;
+
+/**
  * @brief Attribute id for next hop
  */
 typedef enum _sai_next_hop_group_attr_t
@@ -372,6 +388,15 @@ typedef enum _sai_next_hop_group_attr_t
      * @default empty
      */
     SAI_NEXT_HOP_GROUP_ATTR_LABEL_WIDE,
+
+    /**
+     * @brief This attribute indicates if all the members are with weights or are unweighted
+     *
+     * @type sai_next_hop_group_members_weight_t
+     * @flags CREATE_ONLY
+     * @default SAI_NEXT_HOP_GROUP_MEMBERS_WEIGHT_UNSPECIFIED
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_MEMBERS_WEIGHT,
 
     /**
      * @brief End of attributes
