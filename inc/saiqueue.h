@@ -97,6 +97,29 @@ typedef enum _sai_queue_pfc_continuous_deadlock_state_t
 } sai_queue_pfc_continuous_deadlock_state_t;
 
 /**
+ * @brief Queue PFC Watchdog restoration Mode
+ */
+typedef enum _sai_queue_pfc_wd_restoration_mode_t
+{
+    /**
+     * @brief Restore if no PFC frames are received within the restoration threshold period (DLR interval)
+     */
+    SAI_QUEUE_PFC_WD_RESTORATION_MODE_AUTO = 0,
+
+    /**
+     * @brief Restore forcefully after restoration threshold period even if PFC
+     *        frames are received
+     */
+    SAI_QUEUE_PFC_WD_RESTORATION_MODE_FORCE = 1,
+
+    /**
+     * @brief Restore only when user triggers manual restoration
+     */
+    SAI_QUEUE_PFC_WD_RESTORATION_MODE_MANUAL = 2,
+
+} sai_queue_pfc_wd_restoration_mode_t;
+
+/**
  * @brief Enum defining queue attributes.
  */
 typedef enum _sai_queue_attr_t
@@ -305,6 +328,32 @@ typedef enum _sai_queue_attr_t
      * @default true
      */
     SAI_QUEUE_ATTR_PKT_ENQUEUE_ENABLE,
+
+    /**
+     * @brief Attribute type for Queue PFC WD restoration Mode
+     *
+     * In the event of PFC watchdog congestion, use the configured Restoration Mode for PFC deadlock recovery
+     *
+     * @type sai_queue_pfc_wd_restoration_mode_t
+     * @flags CREATE AND SET
+     * @default SAI_QUEUE_PFC_WD_RESTORATION_MODE_AUTO
+     */
+    SAI_QUEUE_ATTR_PFC_WD_RESTORATION_MODE,
+
+    /**
+     * @brief Attribute type for Queue PFC WD Manual Restoration Trigger
+     *
+     * In the event of PFC watchdog congestion, trigger manual PFC watchdog restoration.
+     *
+     * True: Trigger the PFC watchdog manual restoration.
+     * False: Do not trigger the PFC watchdog manual restoration.
+     *
+     * @type bool
+     * @flags CREATE AND SET
+     * @default false
+     * @validonly SAI_QUEUE_ATTR_PFC_WD_RESTORATION_MODE == SAI_QUEUE_PFC_WD_RESTORATION_MODE_MANUAL
+     */
+    SAI_QUEUE_ATTR_PFC_WD_MANUAL_RESTORATION_TRIGGER,
 
     /**
      * @brief End of attributes
