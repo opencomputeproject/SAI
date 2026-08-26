@@ -301,12 +301,14 @@ typedef enum _sai_next_hop_group_attr_t
 
     /**
      * @brief Weighted multi path configuration mode.
+     * NOS should query whether this attribute is supported. If it is supported
+     * the default value is true
      * false: Nexthop group is programmed with repeated member entries proportional to their weight
      * true: Nexthop group is programmed with switch native configuration
      *
      * @type bool
      * @flags CREATE_AND_SET
-     * @default false
+     * @default true
      */
     SAI_NEXT_HOP_GROUP_ATTR_NATIVE_WCMP,
 
