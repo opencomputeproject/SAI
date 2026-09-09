@@ -159,6 +159,7 @@ PHY
 pkts
 policer
 policers
+pps
 Policer
 postcursor
 pre
@@ -169,6 +170,7 @@ qos
 quantization
 Raman
 reachability
+revertive
 routable
 runtime
 rv

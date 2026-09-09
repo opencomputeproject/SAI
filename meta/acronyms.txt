@@ -106,14 +106,17 @@ MAC - Medium Access Control
 MDIO - Management Data Input/Output
 MDIX - Medium Dependent Interface Crossover
 MILLI - milli (1/1000)
+MLD - Multicast Listener Discovery
 MMU - Memory Management Unit
 MPLS - Multi Protocol Label Switching
+MRU - Maximum Receive Unit
 MTU - Maximum Transmission Unit
 NACK - Negative Acknowledgement
 NAPT - Network Address Port Translation
 NHLFE - Next Hop Label Forwarding Entry
 NMOS - N-channel Metal Oxide Semiconductor
 NPU - Numeric Processing Unit
+NRR - Neighbor Rate Ratio
 NRZ - Non Return to Zero
 NTPCLIENT - Network Time Protocol Client
 NTPSERVER - Network Time Protocol Server

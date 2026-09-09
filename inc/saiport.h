@@ -3146,7 +3146,7 @@ typedef enum _sai_port_attr_t
      *
      * If value is 0, receiver sets per-VC credit limits.
      *
-     * @type sai_uint16_t
+     * @type sai_uint32_t
      * @flags READ_ONLY
      * @isvlan false
      */
@@ -3492,6 +3492,138 @@ typedef enum _sai_port_attr_t
      * @default 0
      */
     SAI_PORT_ATTR_LINK_DOWN_DEBOUNCE_TIMEOUT,
+
+    /**
+     * @brief Enable independent Maximum Receive Unit (MRU) enforcement
+     *
+     * When true, SAI_PORT_ATTR_MRU governs the ingress frame-size
+     * admission threshold independently of SAI_PORT_ATTR_MTU.
+     * When false, ingress admission behavior is unchanged and follows
+     * the implementation's existing use of SAI_PORT_ATTR_MTU.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_MRU_ENABLED,
+
+    /**
+     * @brief Maximum Receive Unit (MRU) in bytes
+     *
+     * Frames arriving on this port that exceed this value are dropped.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 1514
+     * @validonly SAI_PORT_ATTR_MRU_ENABLED == true
+     */
+    SAI_PORT_ATTR_MRU,
+
+    /**
+     * @brief Query list of supported port loopback modes for the port
+     *
+     * @type sai_s32_list_t sai_port_loopback_mode_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_SUPPORTED_LOOPBACK_MODE,
+
+    /**
+     * @brief Enable/Disable PTP peer delay functionality
+     *
+     * Enable PTP peer to peer delay functionality by assigning a
+     * valid object ID. Disable functionality by assigning
+     * SAI_NULL_OBJECT_ID as attribute value.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PTP_PDELAY
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_PDELAY_INSTANCE_ID,
+
+    /**
+     * @brief Raw Link Delay in nanoseconds, as calculated by the peer delay mechanism
+     *
+     * Instantaneous link delay computed from the latest available set of T1/T2/T3/T4 timestamps.
+     * This attribute is applicable only when PTP peer delay functionality is enabled.
+     * When PTP peer delay functionality is disabled, 0 should be returned.
+     *
+     * @type sai_int64_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PDELAY_LINK_DELAY,
+
+    /**
+     * @brief Computed Neighbor rate ratio, as calculated by the peer delay mechanism
+     *
+     * Frequency rate ratio computed by P2P initiator in 2^30 scaled fixed-point format.
+     * This attribute is applicable only when PTP peer delay functionality is enabled.
+     * When PTP peer delay functionality is disabled, 0 should be returned.
+     *
+     * @type sai_int32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PDELAY_NEIGHBOR_RATE_RATIO,
+
+    /**
+     * @brief Computed Neighbor propagation delay in nanoseconds,
+     * as calculated by the peer delay mechanism
+     *
+     * Filtered propagation delay computed using Neighbor Rate Ratio (NRR).
+     * This attribute is applicable only when PTP peer delay functionality is enabled.
+     * When PTP peer delay functionality is disabled, 0 should be returned.
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PDELAY_NEIGHBOR_PROPAGATION_DELAY,
+
+    /**
+     * @brief Link Delay in nanoseconds used for updating correction field in the incoming PTP packet
+     *
+     * This attribute configures the link delay to be used while computing the correction
+     * field in the incoming PTP packet. It can either be computed by the peer delay
+     * mechanism or by NOS.
+     *
+     * In non-offload mode, this attribute configures the same data path delay as
+     * #SAI_PORT_ATTR_PTP_PEER_MEAN_PATH_DELAY; if both are set, the last set attribute
+     * takes precedence (last-write-wins), and GET returns the active value in each
+     * attribute's type. In hardware offload mode, this attribute takes precedence and
+     * #SAI_PORT_ATTR_PTP_PEER_MEAN_PATH_DELAY is inactive.
+     *
+     * @type sai_int64_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_ATTR_LINK_DELAY,
+
+    /**
+     * @brief Enable TC -> Queue MAP on port for Multicast(Broadcast, Unknown unicast, Multicast) flows
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to have same map for Multicast as Unicast.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_QOS_TC_TO_QUEUE_MAP_MULTICAST,
+
+    /**
+     * @brief Enable TRIM TC AND COLOR -> DSCP MAP
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable trim map on port.
+     * Default no trim map.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_QOS_TRIM_TC_AND_COLOR_TO_DSCP_MAP,
 
     /**
      * @brief End of attributes
@@ -4438,6 +4570,30 @@ typedef enum _sai_port_stat_t
 
     /** Per Lane PRBS Error Count Range End */
     SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_RANGE_END = 0x00004fff,
+
+    /** SAI port stat PTP peer delay TX Request count */
+    SAI_PORT_STAT_PTP_PDELAY_TX_REQ_COUNT,
+
+    /** SAI port stat PTP peer delay RX Request count */
+    SAI_PORT_STAT_PTP_PDELAY_RX_REQ_COUNT,
+
+    /** SAI port stat PTP peer delay TX Response count */
+    SAI_PORT_STAT_PTP_PDELAY_TX_RESP_COUNT,
+
+    /** SAI port stat PTP peer delay RX Response count */
+    SAI_PORT_STAT_PTP_PDELAY_RX_RESP_COUNT,
+
+    /** SAI port stat PTP peer delay TX Response Followup count */
+    SAI_PORT_STAT_PTP_PDELAY_TX_RESP_FOLLOWUP_COUNT,
+
+    /** SAI port stat PTP peer delay RX Response Followup count */
+    SAI_PORT_STAT_PTP_PDELAY_RX_RESP_FOLLOWUP_COUNT,
+
+    /** SAI port stat PTP peer delay response timeouts */
+    SAI_PORT_STAT_PTP_PDELAY_RESP_TIMEOUT_COUNT,
+
+    /** SAI port stat PTP peer delay response followup timeouts */
+    SAI_PORT_STAT_PTP_PDELAY_RESP_FOLLOWUP_TIMEOUT_COUNT,
 
     /** Port stat range end */
     SAI_PORT_STAT_END,

@@ -1,0 +1,33 @@
+sequenceDiagram
+    participant App as Control Plane
+    participant SAI as SAI FRR API
+
+    App->>SAI: create_next_hop_group(type=PROTECTION)
+    SAI-->>App: nhg1
+
+    App->>SAI: create_next_hop_group(type=ECMP, hw_protection_backup=true)
+    SAI-->>App: nhg2
+
+    rect rgb(230, 244, 234)
+    Note over App,SAI: Create next hops for port1 / port2 / port3 (minimal detail)
+    App->>SAI: create_next_hop(port1)
+    SAI-->>App: nh_1_id
+    App->>SAI: create_next_hop(port2)
+    SAI-->>App: nh_2_id
+    App->>SAI: create_next_hop(port3)
+    SAI-->>App: nh_3_id
+    end
+
+    App->>SAI: create_next_hop_group_member(nhg1, next_hop=nh_1_id, role=PRIMARY)
+    SAI-->>App: nhgm_1_id (member 1 of nhg1)
+
+    App->>SAI: create_next_hop_group_member(nhg1, next_hop=nhg2, role=STANDBY)
+    SAI-->>App: nhgm_2_id (member 2 of nhg1)
+
+    App->>SAI: create_next_hop_group_member(nhg2, next_hop=nh_2_id)
+    SAI-->>App: nhgm_3_id (member of nhg2)
+
+    App->>SAI: create_next_hop_group_member(nhg2, next_hop=nh_3_id)
+    SAI-->>App: nhgm_4_id (member of nhg2)
+
+    Note over App,SAI: nhg1 is now ready: primary=NH1, standby=nhg2[NH2, NH3]

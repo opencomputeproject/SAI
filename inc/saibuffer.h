@@ -645,6 +645,19 @@ typedef enum _sai_buffer_profile_packet_admission_fail_action_t
      * Interface statistics may show sent trimmed packets.
      */
     SAI_BUFFER_PROFILE_PACKET_ADMISSION_FAIL_ACTION_DROP_AND_TRIM,
+
+    /**
+     * @brief Trim the packet and forward it to the sender
+     *
+     * Try sending a shortened packet over a different
+     * queue. Original packet will be dropped and trimmed copy of the packet will be send to the sender.
+     * The IP length and checksum fields will be updated in a trimmed copy.
+     * SAI_QUEUE_STAT_DROPPED_PACKETS as well as SAI_QUEUE_STAT_DROPPED_BYTES
+     * will count the original discarded frames even if they will be trimmed afterwards.
+     * Interface statistics must show dropped packets.
+     * Interface statistics may show sent trimmed packets.
+     */
+    SAI_BUFFER_PROFILE_PACKET_ADMISSION_FAIL_ACTION_DROP_AND_TRIM_TO_SENDER,
 } sai_buffer_profile_packet_admission_fail_action_t;
 
 /**

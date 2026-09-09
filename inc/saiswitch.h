@@ -3680,6 +3680,106 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_LINK_UP_DEBOUNCE_TIMEOUT_INTEVALS,
 
     /**
+     * @brief Firmware list
+     *
+     * @type sai_fw_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_SWITCH_ATTR_FW_LIST,
+
+    /**
+     * @brief Firmware enabled on the switch
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_FW
+     */
+    SAI_SWITCH_ATTR_FW,
+
+    /**
+     * @brief Maximum number of cores supported
+     *
+     * @type sai_uint8_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_FW_CORES,
+
+    /**
+     * @brief Global PTP clock identity (8-octet array formatted as per IEEE 1588)
+     *
+     * @type sai_u8_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_CLOCK_ID,
+
+    /**
+     * @brief Maximum number of ports enabled for peer delay.
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_PTP_PDELAY_MAX_PORTS,
+
+    /**
+     * @brief Maximum number of ports that can support peer delay exchanges
+     *
+     * @type sai_uint16_t
+     * @flags READ_ONLY
+     * @isvlan false
+     */
+    SAI_SWITCH_ATTR_MAX_SUPPORTED_PTP_PDELAY_PORTS,
+
+    /**
+     * @brief Peer delay timestamp mode. True for two-step (with follow-up), False for one-step
+     *
+     * Specifies whether the hardware PTP peer delay engine operates in two-step mode
+     * (transmitting Pdelay_Resp_Follow_Up messages) or one-step mode for peer delay exchanges.
+     * This attribute applies only to the peer delay engine and is independent of #SAI_PORT_ATTR_PTP_MODE.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_SWITCH_ATTR_PTP_PDELAY_IS_TWO_STEP,
+
+    /**
+     * @brief Enable TC -> Queue MAP on switch for Multicast(Broadcast, Unknown unicast, Multicast) flows
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to have same map for Multicast as Unicast.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_QOS_TC_TO_QUEUE_MAP_MULTICAST,
+
+    /**
+     * @brief New packet trim to sender DSCP value
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_SWITCH_ATTR_PACKET_TRIM_DSCP_RESOLUTION_MODE == SAI_PACKET_TRIM_DSCP_RESOLUTION_MODE_DSCP_VALUE
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIM_TO_SENDER_DSCP_VALUE,
+
+    /**
+     * @brief New packet trim to sender TC value
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_SWITCH_ATTR_PACKET_TRIM_DSCP_RESOLUTION_MODE == SAI_PACKET_TRIM_DSCP_RESOLUTION_MODE_FROM_TC
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIM_TO_SENDER_TC_VALUE,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,

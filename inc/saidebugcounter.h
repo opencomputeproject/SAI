@@ -364,6 +364,13 @@ typedef enum _sai_in_drop_reason_t
      */
     SAI_IN_DROP_REASON_EGRESS_LINK_DOWN,
 
+    /**
+     * @brief Packet is dropped during IPv4 or IPv6 routing table (LPM) lookup.
+     * Generic counter across all routing lookup modes when a packet cannot be forwarded.
+     * e.g.: LPM lookup miss, explicit discard route, or any other routing table reason
+     */
+    SAI_IN_DROP_REASON_LPM_ANY,
+
     /** End of in drop reasons */
     SAI_IN_DROP_REASON_END,
 
