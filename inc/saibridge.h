@@ -89,6 +89,14 @@ typedef enum _sai_bridge_port_type_t
 
     /** Nexthop group should be of type bridge port */
     SAI_BRIDGE_PORT_TYPE_BRIDGE_PORT_NEXT_HOP_GROUP,
+
+    /**
+     * @brief Bridge tunnel termination peer port
+     *
+     * Bridge port for traffic terminated from a specific tunnel peer.
+     * Tunnel object should use peer mode P2MP.
+     */
+    SAI_BRIDGE_PORT_TYPE_TUNNEL_TERM_PEER,
 } sai_bridge_port_type_t;
 
 /**
@@ -175,7 +183,7 @@ typedef enum _sai_bridge_port_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_TUNNEL
-     * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_TUNNEL
+     * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_TUNNEL or SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_TUNNEL_TERM_PEER
      */
     SAI_BRIDGE_PORT_ATTR_TUNNEL_ID,
 
@@ -185,7 +193,7 @@ typedef enum _sai_bridge_port_attr_t
      * @type sai_object_id_t
      * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_BRIDGE
-     * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT or SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_1D_ROUTER or SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_TUNNEL or SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_BRIDGE_PORT_NEXT_HOP_GROUP
+     * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_SUB_PORT or SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_1D_ROUTER or SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_TUNNEL or SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_BRIDGE_PORT_NEXT_HOP_GROUP or SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_TUNNEL_TERM_PEER
      */
     SAI_BRIDGE_PORT_ATTR_BRIDGE_ID,
 
@@ -353,6 +361,18 @@ typedef enum _sai_bridge_port_attr_t
      * @validonly SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_PORT
      */
     SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_SET_SWITCHOVER,
+
+    /**
+     * @brief Tunnel peer IP address
+     *
+     * Identifies the peer (remote tunnel endpoint) from which tunnel-terminated
+     * traffic is received on this bridge port.
+     *
+     * @type sai_ip_address_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_TUNNEL_TERM_PEER
+     */
+    SAI_BRIDGE_PORT_ATTR_TUNNEL_TERM_PEER_IP,
 
     /**
      * @brief End of attributes
