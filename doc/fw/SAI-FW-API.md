@@ -392,7 +392,7 @@ SAI_FW_OP_STATE_RUNNING
 ### 4.2 Workflow for Runtime configuration of two firmware
 This is the case where firmware is loaded after the switch create is done. This workflow is applicable for frmware function that can be started after the switch create and init is done and have no dependency on switch init state.
 
-#### 4.1.1 Create SAI_OBJECT_TYPE_FW objects for each firmware
+#### 4.2.1 Create SAI_OBJECT_TYPE_FW objects for each firmware
 
 ```
 // Specify the firmware log file name and path
