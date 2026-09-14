@@ -400,6 +400,7 @@ typedef enum _sai_out_drop_reason_t
      * @brief Packet is destined for neighboring device but neighbor device link is down
      *
      * Counted on egress link
+     * Specific to L3 routing next hop resolution when the egress link is down.
      */
     SAI_OUT_DROP_REASON_L3_EGRESS_LINK_DOWN,
 
@@ -409,6 +410,13 @@ typedef enum _sai_out_drop_reason_t
      * @brief Tunnel packets dropped if going back to the incoming tunnel
      */
     SAI_OUT_DROP_REASON_TUNNEL_LOOPBACK_PACKET_DROP,
+
+    /**
+     * @brief Packet is destined for neighboring device but neighbor device link is down.
+     * Generic counter for egress link-down discards regardless of the original packet forwarding type.
+     * e.g.: L2 bridged, L3 routed, or encapsulated/tunneled traffic
+     */
+    SAI_OUT_DROP_REASON_EGRESS_LINK_DOWN,
 
     /** End of out drop reasons */
     SAI_OUT_DROP_REASON_END,
