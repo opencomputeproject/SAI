@@ -142,6 +142,22 @@ typedef struct _sai_next_hop_group_hw_protection_switchover_notification_data_t
 } sai_next_hop_group_hw_protection_switchover_notification_data_t;
 
 /**
+ * @brief Next hop group is configured with weights or not
+ */
+typedef enum _sai_next_hop_group_members_weight_t
+{
+    /** This is for legacy platforms where this attribute is don't care */
+    SAI_NEXT_HOP_GROUP_MEMBERS_WEIGHT_UNSPECIFIED,
+
+    /** Next hop group members are weighted */
+    SAI_NEXT_HOP_GROUP_MEMBERS_WEIGHT_WEIGHTED,
+
+    /** Next hop group members are unweighted */
+    SAI_NEXT_HOP_GROUP_MEMBERS_WEIGHT_UNWEIGHTED,
+
+} sai_next_hop_group_members_weight_t;
+
+/**
  * @brief Attribute id for next hop
  */
 typedef enum _sai_next_hop_group_attr_t
@@ -342,6 +358,7 @@ typedef enum _sai_next_hop_group_attr_t
      * @type char
      * @flags CREATE_AND_SET
      * @default ""
+     * @deprecated true
      */
     SAI_NEXT_HOP_GROUP_ATTR_LABEL,
 
@@ -358,6 +375,28 @@ typedef enum _sai_next_hop_group_attr_t
      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_HW_PROTECTION
      */
     SAI_NEXT_HOP_GROUP_ATTR_ADMIN_ROLE,
+
+    /**
+     * @brief Wide label attribute used to uniquely identify next-hop-group.
+     *
+     * Replaces #SAI_NEXT_HOP_GROUP_ATTR_LABEL, which is limited to 32 bytes.
+     * Exactly one of the two attributes may be set to a non-default
+     * value; setting both is invalid.
+     *
+     * @type sai_s8_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_LABEL_WIDE,
+
+    /**
+     * @brief This attribute indicates if all the members are with weights or are unweighted
+     *
+     * @type sai_next_hop_group_members_weight_t
+     * @flags CREATE_ONLY
+     * @default SAI_NEXT_HOP_GROUP_MEMBERS_WEIGHT_UNSPECIFIED
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_MEMBERS_WEIGHT,
 
     /**
      * @brief End of attributes
@@ -434,10 +473,10 @@ typedef enum _sai_next_hop_group_member_attr_t
      * @brief The object to be monitored for this next hop.
      *
      * If the specified objects fails, the switching entity marks this
-     * next hop as SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_FAILED and does
+     * next hop as SAI_NEXT_HOP_GROUP_MEMBER_OBSERVED_ROLE_INACTIVE and does
      * not use it to forward traffic. If there is a backup next hop available
      * in this group then the backup's observed role is set to
-     * SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_FORWARDING and it is used to
+     * SAI_NEXT_HOP_GROUP_MEMBER_OBSERVED_ROLE_ACTIVE and it is used to
      * forward traffic.
      *
      * @type sai_object_id_t

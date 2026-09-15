@@ -322,6 +322,7 @@ typedef enum _sai_router_interface_attr_t
      * @type char
      * @flags CREATE_AND_SET
      * @default ""
+     * @deprecated true
      */
     SAI_ROUTER_INTERFACE_ATTR_LABEL,
 
@@ -435,6 +436,19 @@ typedef enum _sai_router_interface_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_ROUTER_INTERFACE_ATTR_QOS_TC_AND_COLOR_TO_DOT1P_MAP,
+
+    /**
+     * @brief Wide label attribute used to uniquely identify router interface.
+     *
+     * Replaces #SAI_ROUTER_INTERFACE_ATTR_LABEL, which is limited to 32 bytes.
+     * Exactly one of the two attributes may be set to a non-default
+     * value; setting both is invalid.
+     *
+     * @type sai_s8_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_ROUTER_INTERFACE_ATTR_LABEL_WIDE,
 
     /**
      * @brief End of attributes

@@ -287,6 +287,7 @@ typedef enum _sai_in_drop_reason_t
      * @brief Packet is destined for neighboring device but neighbor device link is down
      *
      * Counted on ingress link
+     * Specific to L3 routing next hop resolution when the egress link is down.
      */
     SAI_IN_DROP_REASON_L3_EGRESS_LINK_DOWN,
 
@@ -355,6 +356,13 @@ typedef enum _sai_in_drop_reason_t
 
     /** IPv4 or IPv6 Routing table (LPM) unicast miss */
     SAI_IN_DROP_REASON_LPM_MISS = 0x00000039,
+
+    /**
+     * @brief Packet is destined for neighboring device but neighbor device link is down.
+     * Generic counter across all forwarding pipelines when the resolved egress link is down.
+     * e.g.: L2 bridging, L3 routing, tunnels
+     */
+    SAI_IN_DROP_REASON_EGRESS_LINK_DOWN,
 
     /** End of in drop reasons */
     SAI_IN_DROP_REASON_END,
