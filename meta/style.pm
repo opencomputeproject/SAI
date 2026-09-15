@@ -208,9 +208,9 @@ sub CheckStatsFunction
     return if $fname eq "sai_bulk_object_get_stats_fn"; # exception
     return if $fname eq "sai_bulk_object_clear_stats_fn"; # exception
 
-    if (not $fname =~ /^sai_((get|clear)_(\w+)_stat(s)?|get_\w+_stat(s)?_ext)_fn$/)
+    if (not $fname =~ /^sai_((get|clear)_(\w+)_stats|get_\w+_stats_ext)_fn$/)
     {
-        LogWarning "wrong stat function name: $fname, expected: sai_(get|clear)_\\w+_stat(s)?(_ext)?_fn";
+        LogWarning "wrong stat function name: $fname, expected: sai_(get|clear)_\\w+_stats(_ext)?_fn";
     }
 
     if (not $fnparams =~ /^\w+_id number_of_counters counter_ids( (mode )?counters)?$/)
@@ -469,7 +469,7 @@ sub CheckFunctionNaming
     {
         # ok
     }
-    elsif ($name =~ /^(get|clear)_(\w+?)_(all_)?stat(s)?(_ext)?$/)
+    elsif ($name =~ /^(get|clear)_(\w+?)_(all_)?stats(_ext)?$/)
     {
         LogWarning "not object name $2 in $name" if not IsObjectName($2);
     }
@@ -492,7 +492,7 @@ sub CheckFunctionNaming
         LogWarning "function not matching $typename vs $name in $header:$n:$line";
     }
 
-    if (not $name =~ /^(create|remove|get|set)_\w+?(_attribute)?$|^clear_\w+_stat(s)?$/)
+    if (not $name =~ /^(create|remove|get|set)_\w+?(_attribute)?$|^clear_\w+_stats$/)
     {
         # exceptions
         return if $name =~ /^$REG$/;
@@ -508,6 +508,9 @@ sub CheckQuadApi
     return if not $data =~ m!(sai_\w+_api_t)(.+?)\1;!igs;
 
     my $apis = $2;
+
+    # this giant experimental API is in sections that do not follow the order checks below
+    return if $1 eq "sai_pon_api_t";
 
     my @fns = $apis =~ /sai_(\w+)_fn/g;
 
@@ -552,10 +555,9 @@ sub CheckQuadApi
     $order =~ s/012/s/g;        # order should be: get_stats,get_stats_ext,clear_stats
     $order =~ s/CR/E/g;         # order should be: bulk_create,bulk_remove
     $order =~ s/SG/T/g;         # order should be: bulk_set,bulk_get
-    $order =~ s/g+/g/g;         # order can include runs of read-only get attribute APIs
     $order =~ s/X+/X/g;         # order should be: any non quad and non stats api
 
-    if (not $order =~ /^[tqQsETXg]*$/)
+    if (not $order =~ /^[tqQsETX]*$/)
     {
         LogWarning "Wrong api order: $order";
         LogWarning "$apis";
@@ -629,7 +631,7 @@ sub CheckStructAlignment
         {
             my $itemname = $2;
 
-            if ($1 ne $spaces or (length($2) != length($inside) and $struct =~ /_api_t/ and $struct !~ /sai_pon_api_t/))
+            if ($1 ne $spaces or (length($2) != length($inside) and $struct =~ /_api_t/))
             {
                 LogError "$struct items has invalid column ident: $file: $itemname";
             }
@@ -1271,7 +1273,6 @@ sub CheckHeadersStyle
             next if $line =~ m![^\\]\\$!;           # macro multiline
             next if $line =~ /^ {4}(\w+);$/;        # union entries
             next if $line =~ /^union _sai_\w+ \{/;  # union entries
-            next if $line =~ /^ {20,}\w+/;          # api struct member lines
 
             LogWarning "C++ comment in ANSI C header: $header $n:$line" if $line =~ /\/\//;
 

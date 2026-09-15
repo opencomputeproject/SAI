@@ -2,6 +2,7 @@
 ACK - Acknowledgement
 ACL - Access Control List
 AES - Advanced Encryption Standard
+AN - Association Number
 AN - Auto Negotiation
 ANI - Access Network Interface
 API - Application Program Interface

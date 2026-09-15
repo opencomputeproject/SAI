@@ -274,15 +274,15 @@ typedef enum _sai_switch_attr_extensions_t
     SAI_SWITCH_ATTR_OCS_PORT_STATE_CHANGE_NOTIFY,
 
     /**
-     * @brief Switch PON OLT interface state change event notification callback.
+     * @brief Generic PON state change event notification callback.
      *
-     * Use sai_olt_state_change_notification_fn as notification function.
+     * Use sai_pon_state_change_notification_fn as notification function.
      *
-     * @type sai_pointer_t sai_olt_state_change_notification_fn
+     * @type sai_pointer_t sai_pon_state_change_notification_fn
      * @flags CREATE_AND_SET
      * @default NULL
      */
-    SAI_SWITCH_ATTR_PON_OLT_STATE_CHANGE_NOTIFY,
+    SAI_SWITCH_ATTR_PON_STATE_CHANGE_NOTIFY,
 
     SAI_SWITCH_ATTR_EXTENSIONS_RANGE_END
 

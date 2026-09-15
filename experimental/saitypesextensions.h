@@ -113,7 +113,7 @@ typedef enum _sai_object_type_extensions_t
 
     SAI_OBJECT_TYPE_OCS_CROSS_CONNECT_FACTORY_DATA,
 
-    /* PON */
+    /** @brief PON object types */
     SAI_OBJECT_TYPE_PON_CONTROLLER,
     SAI_OBJECT_TYPE_PON_DOWNSTREAM_QOS_MAP_MAP,
     SAI_OBJECT_TYPE_PON_OLT_INTF,
@@ -291,7 +291,7 @@ typedef enum _sai_object_type_extensions_t
     SAI_OBJECT_TYPE_PON_ONU_STATISTICS_STREAMING_ONU_XG_PON_DOWNSTREAM_MGMT_PM,
     SAI_OBJECT_TYPE_PON_ONU_STATISTICS_STREAMING_ONU_XG_PON_UPSTREAM_MGMT_PM,
 
-    /** @brief type for PON action RPC serialization */
+    /** @brief Type for PON action RPC serialization */
     SAI_OBJECT_TYPE_PON_ACTION,
 
     /* Add new experimental object types above this line */

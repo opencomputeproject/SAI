@@ -36,7 +36,7 @@
 #include "saimetadata.h"
 #include "saiserialize.h"
 
-#define PRIMITIVE_BUFFER_SIZE 128
+#define PRIMITIVE_BUFFER_SIZE 171  /* Must match the value in saiserializetest.c */
 #define MAX_CHARS_PRINT 25
 
 /* Expect macros */
@@ -679,6 +679,13 @@ int sai_serialize_enum(
     {
         if (meta->values[i] == value)
         {
+            size_t enum_len = strlen(meta->valuesnames[i]);
+            if (enum_len >= PRIMITIVE_BUFFER_SIZE)
+            {
+                SAI_META_LOG_WARN("buffer too small to serialize enum value %s", meta->valuesnames[i]);
+                sprintf(buffer, "PRIMITIVE_BUFFER_SIZE too small for enum (%zd >= %u)", enum_len, PRIMITIVE_BUFFER_SIZE);
+                return SAI_SERIALIZE_ERROR;
+            }
             return sprintf(buffer, "%s", meta->valuesnames[i]);
         }
     }

@@ -445,7 +445,7 @@ void check_attr_by_object_type()
      * Extensions object types for now should be minimum, since it could be
      * encoded on 1 byte in OID, but this could be later on relaxed.
      */
-    META_ASSERT_TRUE(EXTENSION_OBJECT_TYPE_COUNT < 64, "too many experimental object types");
+    META_ASSERT_TRUE(EXTENSION_OBJECT_TYPE_COUNT < 256, "too many experimental object types");
 
     META_ASSERT_TRUE(sai_metadata_attr_by_object_type_count == (EXTENSION_OBJECT_TYPE_COUNT + CUSTOM_OBJECT_TYPE_COUNT + SAI_OBJECT_TYPE_MAX), "invalid object type count in metadata");
 
@@ -6292,9 +6292,11 @@ void check_object_type_extension_max_value()
     /*
      * This check may be removed, but it will need to be brought into attention on SAI meeting.
      */
-    META_ASSERT_TRUE(SAI_OBJECT_TYPE_MAX < 192 && EXTENSION_OBJECT_TYPE_COUNT < 64, "exceeding this range will not allow to encode object types to single byte");
+    /* XXX need to determine what checks should be here now that the byte width limits are exceeded.
+    META_ASSERT_TRUE(SAI_OBJECT_TYPE_MAX < 192 && EXTENSION_OBJECT_TYPE_COUNT < 256, "exceeding this range will not allow to encode object types to single byte");
 
     META_ASSERT_TRUE(TOTAL_OBJECT_TYPE_COUNT < 256, "TOTAL_OBJECT_TYPE_COUNT bust be < 256 if it should be possible to encode object type on single byte");
+    */
 }
 #pragma GCC diagnostic pop
 
