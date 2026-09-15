@@ -614,3 +614,23 @@ sai_api_version_t sai_metadata_query_api_version(void)
 {
     return SAI_API_VERSION;
 }
+
+bool sai_metadata_is_numerical_attr_value_type(
+        _In_ sai_attr_value_type_t attrvaluetype)
+{
+    switch (attrvaluetype)
+    {
+        case SAI_ATTR_VALUE_TYPE_UINT8:
+        case SAI_ATTR_VALUE_TYPE_INT8:
+        case SAI_ATTR_VALUE_TYPE_UINT16:
+        case SAI_ATTR_VALUE_TYPE_INT16:
+        case SAI_ATTR_VALUE_TYPE_UINT32:
+        case SAI_ATTR_VALUE_TYPE_INT32:
+        case SAI_ATTR_VALUE_TYPE_UINT64:
+        case SAI_ATTR_VALUE_TYPE_INT64:
+            return true;
+
+        default:
+            return false;
+    }
+}
