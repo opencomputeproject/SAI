@@ -36,7 +36,7 @@
 #include "saimetadata.h"
 #include "saiserialize.h"
 
-#define PRIMITIVE_BUFFER_SIZE 171  /* Must match the value in saiserializetest.c */
+#define PRIMITIVE_BUFFER_SIZE 256  /* Must match the value in saiserializetest.c */
 #define MAX_CHARS_PRINT 25
 
 /* Expect macros */
