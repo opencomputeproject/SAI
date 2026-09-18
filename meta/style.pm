@@ -509,9 +509,6 @@ sub CheckQuadApi
 
     my $apis = $2;
 
-    # this giant experimental API is in sections that do not follow the order checks below
-    return if $1 eq "sai_pon_api_t";
-
     my @fns = $apis =~ /sai_(\w+)_fn/g;
 
     # this function forces order of existing and new added apis in api struct
@@ -555,9 +552,11 @@ sub CheckQuadApi
     $order =~ s/012/s/g;        # order should be: get_stats,get_stats_ext,clear_stats
     $order =~ s/CR/E/g;         # order should be: bulk_create,bulk_remove
     $order =~ s/SG/T/g;         # order should be: bulk_set,bulk_get
+    $order =~ s/gG/Z/g;         # order should be: get,bulk_get for read-only fields with no create/remove
     $order =~ s/X+/X/g;         # order should be: any non quad and non stats api
 
-    if (not $order =~ /^[tqQsETX]*$/)
+
+    if (not $order =~ /^[tqQsETZX]*$/)
     {
         LogWarning "Wrong api order: $order";
         LogWarning "$apis";
