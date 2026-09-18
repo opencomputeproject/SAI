@@ -559,10 +559,10 @@ sai_attr_list[3].value.booldata = true;
 sai_attr_list[4].id = SAI_ARS_ATTR_SAMPLEPACKET_ENABLE;
 sai_attr_list[4].value.oid = sai_sampler_id; 
 
-sai_attr_list[5].id = SAI_ARS_ATTR_MAX_PRIMARY_MEMEBERS_PER_GROUP;
+sai_attr_list[5].id = SAI_ARS_ATTR_MAX_PRIMARY_MEMBERS_PER_GROUP;
 sai_attr_list[5].value.u32 = 64;
 
-sai_attr_list[6].id = SAI_ARS_ATTR_MAX_ALT_MEMEBERS_PER_GROUP;
+sai_attr_list[6].id = SAI_ARS_ATTR_MAX_ALT_MEMBERS_PER_GROUP;
 sai_attr_list[6].value.u32 = 64; 
 
 ```
@@ -847,7 +847,7 @@ sai_set_ars_attribute_fn() API can be used to set the scale per ARS object.
      * @flags CREATE_AND_SET
      * @default 16
      */
-    SAI_ARS_ATTR_MAX_PRIMARY_MEMEBERS_PER_GROUP,
+    SAI_ARS_ATTR_MAX_PRIMARY_MEMBERS_PER_GROUP,
 
     /**
      * @brief Maximum number of alternate members per adaptive routing group
@@ -856,7 +856,7 @@ sai_set_ars_attribute_fn() API can be used to set the scale per ARS object.
      * @flags CREATE_AND_SET
      * @default 16
      */
-    SAI_ARS_ATTR_MAX_ALT_MEMEBERS_PER_GROUP,
+    SAI_ARS_ATTR_MAX_ALT_MEMBERS_PER_GROUP,
 ```
 
 ### 12.0 Community meeting Q&A
