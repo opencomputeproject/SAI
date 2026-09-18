@@ -122,7 +122,7 @@ typedef enum _sai_ars_attr_t
      * @flags CREATE_AND_SET
      * @default 16
      */
-    SAI_ARS_ATTR_MAX_ALT_MEMEBERS_PER_GROUP,
+    SAI_ARS_ATTR_MAX_ALT_MEMBERS_PER_GROUP,
 
     /**
      * @brief Maximum number of primary members per adaptive routing group
@@ -131,7 +131,7 @@ typedef enum _sai_ars_attr_t
      * @flags CREATE_AND_SET
      * @default 16
      */
-    SAI_ARS_ATTR_MAX_PRIMARY_MEMEBERS_PER_GROUP,
+    SAI_ARS_ATTR_MAX_PRIMARY_MEMBERS_PER_GROUP,
 
     /**
      * @brief Quality threshold for least cost ARS paths. Crossing down the threshold will result in using the non least cost sub optimal path.
