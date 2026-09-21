@@ -88,7 +88,6 @@ all: toolsversions saisanitycheck saimetadatatest saiserializetest saidepgraph.s
 	./checkenumlock.sh
 	./checkancestry.sh
 	./checkstructs.sh
-	./check_primitive_buffer_size.pl
 	./saimetadatatest >/dev/null
 	./saiserializetest >/dev/null
 	./saisanitycheck

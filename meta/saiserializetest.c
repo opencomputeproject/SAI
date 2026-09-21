@@ -52,7 +52,6 @@
                 __func__, __LINE__, r, strlen(a));                          \
         exit(1);}
 
-#define PRIMITIVE_BUFFER_SIZE 256  /* Must match the value in saiserialize.c */
 #define LONG_BUFFER_SIZE 0x10000
 
 void test_serialize_bool()
