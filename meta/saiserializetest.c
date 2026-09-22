@@ -56,7 +56,7 @@
 
 void test_serialize_bool()
 {
-    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
 
     int res;
 
@@ -117,7 +117,7 @@ void test_serialize_chardata()
 
     memset(&val, 0, sizeof(val));
 
-    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
 
     int res;
 
@@ -182,7 +182,7 @@ void subtest_serialize_object_id(
         _In_ sai_object_id_t id,
         _In_ const char *exp)
 {
-    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
 
     int res = sai_serialize_object_id(buf, id);
     ASSERT_STR_EQ(buf, exp, res);
@@ -244,7 +244,7 @@ void test_deserialize_object_id()
 void test_serialize_mac()
 {
     int res;
-    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
 
     sai_mac_t mac;
 
@@ -307,7 +307,7 @@ void test_deserialize_mac()
 void test_serialize_encrypt_key()
 {
     int res;
-    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
 
     sai_encrypt_key_t encrypt_key;
 
@@ -355,7 +355,7 @@ void test_deserialize_encrypt_key()
 void test_serialize_auth_key()
 {
     int res;
-    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
 
     sai_auth_key_t auth_key;
 
@@ -403,7 +403,7 @@ void test_deserialize_auth_key()
 void test_serialize_macsec_auth_key()
 {
     int res;
-    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
 
     sai_macsec_auth_key_t macsec_auth_key;
 
@@ -451,7 +451,7 @@ void test_deserialize_macsec_auth_key()
 void test_serialize_macsec_salt()
 {
     int res;
-    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
 
     sai_macsec_salt_t macsec_salt;
 
@@ -499,7 +499,7 @@ void test_deserialize_macsec_salt()
 void test_serialize_enum()
 {
     int res;
-    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
 
     sai_object_type_t ot = SAI_OBJECT_TYPE_PORT;
 
@@ -584,7 +584,7 @@ void test_deserialize_enum()
 void test_serialize_ip4()
 {
     int res;
-    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
 
     sai_ip4_t ip = htonl(0x0a000015);
 
@@ -623,7 +623,7 @@ void test_deserialize_ip4()
 void test_serialize_ip6()
 {
     int res;
-    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
 
     sai_ip6_t ip;
 
@@ -699,7 +699,7 @@ void subtest_serialize_ip_addres_v4(
         _In_ uint32_t ip,
         _In_ const char *exp)
 {
-    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
 
     sai_ip_address_t ipaddr;
 
@@ -719,7 +719,7 @@ void test_serialize_ip_address()
     subtest_serialize_ip_addres_v4((uint32_t)-1, "255.255.255.255");
 
     int res;
-    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
 
     sai_ip_address_t ipaddr;
 
@@ -840,7 +840,7 @@ void test_serialize_ip_prefix()
     sai_ip_prefix_t prefix;
 
     int res;
-    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
 
     prefix.addr_family = 2;
     res = sai_serialize_ip_prefix(buf, &prefix);
@@ -990,7 +990,7 @@ void test_deserialize_ip_prefix()
 void test_serialize_ip4_mask()
 {
     int res;
-    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
 
     sai_ip4_t mask = 0;
 
@@ -1007,7 +1007,7 @@ void test_serialize_ip4_mask()
     mask = 0xffffffff;
 
     int i;
-    char exp[PRIMITIVE_BUFFER_SIZE];
+    char exp[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
 
     for (i = 32; i >= 0; i--)
     {
@@ -1030,7 +1030,7 @@ void test_serialize_ip4_mask()
 void test_deserialize_ip4_mask()
 {
     int res;
-    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
 
     sai_ip4_t mask = 1;
 
@@ -1062,7 +1062,7 @@ void test_deserialize_ip4_mask()
 void test_serialize_ip6_mask()
 {
     int res;
-    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
 
     sai_ip6_t mask = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
@@ -1075,8 +1075,8 @@ void test_serialize_ip6_mask()
     uint8_t *m = (uint8_t*)mask;
 
     int n = 0;
-    char bufn[PRIMITIVE_BUFFER_SIZE];
-    char ipv6[PRIMITIVE_BUFFER_SIZE];
+    char bufn[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
+    char ipv6[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
 
     for (; n <= 128; n++)
     {
@@ -1107,7 +1107,7 @@ void test_deserialize_ip6_mask()
 
     int res;
 
-    char bufn[PRIMITIVE_BUFFER_SIZE];
+    char bufn[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
 
     int n = 0;
 
@@ -1141,7 +1141,7 @@ void test_serialize_route_entry()
 {
     sai_route_entry_t re;
 
-    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
     int res;
 
     re.switch_id = 0x123;
@@ -1177,8 +1177,8 @@ void test_deserialize_route_entry()
 {
     sai_route_entry_t re;
 
-    char buf[PRIMITIVE_BUFFER_SIZE];
-    char buf2[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
+    char buf2[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
     int res;
 
     re.switch_id = 0x123;
@@ -1228,7 +1228,7 @@ void test_deserialize_route_entry()
 
 void test_serialize_neighbor_entry()
 {
-    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
     int res;
 
     sai_neighbor_entry_t ne;
@@ -1262,8 +1262,8 @@ void test_serialize_neighbor_entry()
 
 void test_deserialize_neighbor_entry()
 {
-    char buf[PRIMITIVE_BUFFER_SIZE];
-    char buf2[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
+    char buf2[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
     int res;
 
     sai_neighbor_entry_t ne;
@@ -1313,7 +1313,7 @@ void test_deserialize_neighbor_entry()
 
 void test_serialize_fdb_entry()
 {
-    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
     int res;
 
     sai_fdb_entry_t fe;
@@ -1330,8 +1330,8 @@ void test_serialize_fdb_entry()
 
 void test_deserialize_fdb_entry()
 {
-    char buf[PRIMITIVE_BUFFER_SIZE];
-    char buf2[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
+    char buf2[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
     int res;
 
     sai_fdb_entry_t fe;
@@ -1380,7 +1380,7 @@ void test_deserialize_fdb_entry()
 
 void test_serialize_notifications()
 {
-    char buf[0x100 * PRIMITIVE_BUFFER_SIZE];
+    char buf[0x100 * SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
     int res;
     const char* ret;
 
@@ -1463,7 +1463,7 @@ void sai_serialize_log(
         ...)
 {
     char buffer[LONG_BUFFER_SIZE];
-    char logbuffer[PRIMITIVE_BUFFER_SIZE];
+    char logbuffer[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
 
     va_list ap;
     va_start(ap, format);
@@ -1482,7 +1482,7 @@ void sai_serialize_log(
 
 void test_serialize_attr_value_pointer()
 {
-    char buf[0x100 * PRIMITIVE_BUFFER_SIZE];
+    char buf[0x100 * SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
     int res;
     const char* ret;
 
@@ -1504,7 +1504,7 @@ void test_serialize_attr_value_pointer()
 
 void test_deserialize_pointer()
 {
-    char buf[0x100 * PRIMITIVE_BUFFER_SIZE];
+    char buf[0x100 * SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
     sai_pointer_t ptr = 0;
     int res;
 
@@ -1541,7 +1541,7 @@ void test_deserialize_pointer()
 void test_serialize_enum_list()
 {
     int res;
-    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
     sai_s32_list_t list;
 
     sai_object_type_t ot[2] = {SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG};
@@ -1632,7 +1632,7 @@ void test_deserialize_enum_list()
 void test_serialize_attr_id()
 {
     int res;
-    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
     sai_attr_id_t attr_id;
 
     attr_id = SAI_SWITCH_ATTR_NUMBER_OF_ACTIVE_PORTS;
@@ -1685,7 +1685,7 @@ void test_deserialize_attr_id()
 void test_serialize_attribute()
 {
     int res;
-    char buf[PRIMITIVE_BUFFER_SIZE * 2];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE * 2];
     sai_attribute_t attribute = {0};
     const sai_attr_metadata_t* amd;
 
