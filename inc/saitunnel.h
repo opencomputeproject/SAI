@@ -992,8 +992,9 @@ typedef enum _sai_tunnel_term_table_entry_attr_t
      * the termination entry key
      *
      * @type sai_object_id_t
-     * @flags MANDATORY_ON_CREATE | CREATE_AND_SET
+     * @flags CREATE_ONLY
      * @objects SAI_OBJECT_TYPE_VIRTUAL_ROUTER
+     * @default SAI_NULL_OBJECT_ID
      * @deprecated true
      */
     SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_VR_ID = SAI_TUNNEL_TERM_TABLE_ENTRY_ATTR_START,
