@@ -141,7 +141,7 @@ typedef enum _sai_bridge_port_protection_mode_t
  */
 typedef enum _sai_bridge_port_protection_admin_mode_t
 {
-    /** No administrative override. Path is selected per the protection mode */
+    /** No administrative control. Path is selected per the protection mode */
     SAI_BRIDGE_PORT_PROTECTION_ADMIN_MODE_AUTO,
 
     /** Force the traffic onto the bridge port. Protection is locked out */
@@ -173,7 +173,7 @@ typedef enum _sai_bridge_port_protection_state_t
  *
  * Reported only for hardware-initiated transitions. A switchover requested
  * through #SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_SET_SWITCHOVER reports its
- * outcome synchronously and raises no notification.
+ * outcome through API return status and raises no notification.
  */
 typedef enum _sai_bridge_port_protection_event_t
 {
@@ -471,7 +471,7 @@ typedef enum _sai_bridge_port_attr_t
      * SAI_BRIDGE_PORT_PROTECTION_ADMIN_MODE_PROTECTION and setting false
      * is equivalent to SAI_BRIDGE_PORT_PROTECTION_ADMIN_MODE_AUTO. A boolean
      * cannot request SAI_BRIDGE_PORT_PROTECTION_ADMIN_MODE_PRIMARY, and
-     * cannot distinguish holding the bridge port from placing no override on
+     * cannot distinguish holding the bridge port from placing no control on
      * it at all, which is why it is superseded.
      *
      * @type bool
@@ -538,7 +538,10 @@ typedef enum _sai_bridge_port_attr_t
      * @brief Wait to restore time in milliseconds
      *
      * Delay between the bridge port recovering and hardware reverting to it.
-     * Value 0 reverts as soon as the bridge port is available again.
+     * The timer is cancelled if the bridge port fails again before it expires,
+     * so hardware reverts only after the recovered path has been stable for
+     * this duration. Value 0 reverts as soon as the bridge port is available
+     * again.
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
@@ -548,13 +551,13 @@ typedef enum _sai_bridge_port_attr_t
     SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_PROTECTION_WAIT_TO_RESTORE_TIME,
 
     /**
-     * @brief Administrative override of the protection path
+     * @brief Administrative control of the protection path
      *
-     * Overrides the path selection of either protection mode. While an override
-     * is in effect the committed path does not follow bridge port failure or
-     * recovery and no switchover notification is raised. Returning to
-     * SAI_BRIDGE_PORT_PROTECTION_ADMIN_MODE_AUTO releases the override and
-     * resumes selection from the committed path.
+     * Controls the path selection of either protection mode. When set to
+     * anything other than SAI_BRIDGE_PORT_PROTECTION_ADMIN_MODE_AUTO,
+     * committed path does not follow bridge port failure or recovery and
+     * no switchover notification is raised. Returning to AUTO resumes
+     * selection from the committed path.
      *
      * @type sai_bridge_port_protection_admin_mode_t
      * @flags CREATE_AND_SET

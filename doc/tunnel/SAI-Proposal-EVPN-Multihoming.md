@@ -65,9 +65,9 @@ The scope of this document is EVPN MH support for VxLAN networks.
 4. It shall be possible to set the MAC address destination as a remote VTEP group.
 5. It shall be possible to implement the DF functionality at a per port basis. 
 6. It shall be possible to implement the split horizon functionality as described in RFC 7432.
-8. It shall be possible to implement single active redundancy mode as described in RFC 7432.
 7. It shall be possible to implement a fast failover in the event of an ES going down.
-9. It shall be possible for the hardware to autonomously reroute traffic - including L3VNI routed traffic whose next hop resolves to a locally attached, cross-switch multihomed ES/bridge port - to an ECMP group of remote VTEPs upon primary path failure, without waiting on control plane intervention, and to notify the control plane once the switchover has been committed in hardware.
+8. It shall be possible to implement single active redundancy mode as described in RFC 7432.
+9. It shall be possible for the hardware to autonomously reroute traffic.
 
 # 3.0 EVPN-MH SAI Components
 
@@ -382,6 +382,10 @@ group of VXLAN tunnels towards the other PEs of the ES), the same protection nex
 3.2.4. The NOS is notified asynchronously once the switchover has been committed, so it can reconcile control-plane
 state (e.g. re-advertise/withdraw EVPN routes) after the fact instead of driving the switchover itself.
 
+This is preferred over the L3 protection NHG model (`doc/SAI-Proposal-HW-FRR.md`) when hardware resources
+associated with protection next hop groups do not scale to the number of neighbors that resolve to a
+multihomed ES.
+
 ![SAI Object Model - Hardware Fast ReRoute of Routed Traffic](figures/sai_evpnmh_hw_frr_model.png "Figure 1: SAI Object Model - Hardware Fast ReRoute of Routed Traffic")
 __Figure 1: SAI Object Model - Hardware Fast ReRoute of Routed Traffic__
 
@@ -472,6 +476,12 @@ typedef enum _sai_bridge_port_attr_t
     /**
      * @brief Wait to restore time in milliseconds
      *
+     * Delay between the bridge port recovering and hardware reverting to it.
+     * The timer is cancelled if the bridge port fails again before it expires,
+     * so hardware reverts only after the recovered path has been stable for
+     * this duration. Value 0 reverts as soon as the bridge port is available
+     * again.
+     *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default 0
@@ -534,7 +544,7 @@ typedef enum _sai_bridge_port_attr_t
 
 The path also has to be pinnable administratively, for maintenance and for operator-driven traffic placement, and
 the hardware selection must not override that intent. A boolean cannot express it, because it has no value meaning
-"no override in effect" and therefore cannot distinguish holding the traffic on the bridge port from leaving the
+"no administrative control in effect" and therefore cannot distinguish holding the traffic on the bridge port from leaving the
 choice to hardware. An administrative mode attribute carries the three states explicitly and supersedes the
 existing `SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_SET_SWITCHOVER`, which is marked deprecated rather than removed since it
 is already released. For compatibility, setting the deprecated attribute to true is equivalent to forcing the
@@ -544,7 +554,7 @@ selection.
 ```
 typedef enum _sai_bridge_port_protection_admin_mode_t
 {
-    /** No administrative override. Path is selected per the protection mode */
+    /** No administrative control. Path is selected per the protection mode */
     SAI_BRIDGE_PORT_PROTECTION_ADMIN_MODE_AUTO,
 
     /** Force the traffic onto the bridge port. Protection is locked out */
@@ -559,7 +569,13 @@ typedef enum _sai_bridge_port_attr_t
 {
 ...
     /**
-     * @brief Administrative override of the protection path
+     * @brief Administrative control of the protection path
+     *
+     * Controls the path selection of either protection mode. When set to
+     * anything other than SAI_BRIDGE_PORT_PROTECTION_ADMIN_MODE_AUTO,
+     * committed path does not follow bridge port failure or recovery and
+     * no switchover notification is raised. Returning to AUTO resumes
+     * selection from the committed path.
      *
      * @type sai_bridge_port_protection_admin_mode_t
      * @flags CREATE_AND_SET
@@ -571,12 +587,12 @@ typedef enum _sai_bridge_port_attr_t
 }
 ```
 
-While an override is in effect the committed path does not follow bridge port failure or recovery and no switchover
-notification is raised, so operator intent is not silently undone by hardware. The outcome is reported
-synchronously in the return status of `set_bridge_port_attribute()`, and requesting
+While administrative control is in effect the committed path does not follow bridge port failure or recovery and no
+switchover notification is raised, so operator intent is not silently undone by hardware. The outcome is reported
+through the API return status of `set_bridge_port_attribute()`, and requesting
 `SAI_BRIDGE_PORT_PROTECTION_ADMIN_MODE_PROTECTION` when no protection next hop group is associated returns
-`SAI_STATUS_INVALID_PARAMETER`. Returning to `SAI_BRIDGE_PORT_PROTECTION_ADMIN_MODE_AUTO` releases the override and
-selection resumes from the committed path.
+`SAI_STATUS_INVALID_PARAMETER`. Returning to `SAI_BRIDGE_PORT_PROTECTION_ADMIN_MODE_AUTO` resumes
+selection from the committed path.
 This also supplies the recovery step for the non-revertive case: with
 `SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_PROTECTION_REVERTIVE` set to false, the NOS forces the bridge port once it is
 healthy again and then returns to automatic, which moves the traffic back and arms the hardware selection for the
@@ -586,7 +602,7 @@ Support is discovered through the standard SAI capability queries, so no new swi
 `sai_query_attribute_enum_values_capability()` on `SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_PROTECTION_MODE` returns the
 modes the ASIC implements, and the NOS configures hardware switchover only when
 `SAI_BRIDGE_PORT_PROTECTION_MODE_HARDWARE` is among them; the same call on
-`SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_PROTECTION_ADMIN_MODE` reports which administrative overrides are available. For
+`SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_PROTECTION_ADMIN_MODE` reports which administrative controls are available. For
 the remaining attributes `sai_query_attribute_capability()` reports whether they are implemented, and an adapter
 that cannot keep the traffic on the protection path after the bridge port recovers fails a set of
 `SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_PROTECTION_REVERTIVE` to false with `SAI_STATUS_NOT_SUPPORTED`.
@@ -599,7 +615,7 @@ authoritative `current_state`. Notifications are advisory - `SAI_BRIDGE_PORT_ATT
 remains the source of truth. A hardware-origin timestamp is left out for now, pending SAI defining a clock contract.
 
 Notifications cover hardware-initiated transitions only. A path the NOS selects administratively, as described
-below, reports its outcome synchronously in the return status of `set_bridge_port_attribute()`, and the resulting
+below, reports its outcome through the API return status of `set_bridge_port_attribute()`, and the resulting
 path is readable immediately from `SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_PROTECTION_STATE`, so no asynchronous event is
 needed for that case.
 
@@ -1148,7 +1164,7 @@ At VTEP1, the following objects are created.
   - To drain LAG-1 for maintenance while it is still up, the NOS sets
     `SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_PROTECTION_ADMIN_MODE` to
     `SAI_BRIDGE_PORT_PROTECTION_ADMIN_MODE_PROTECTION`. The traffic moves to `nh_grp_oid_2` and stays there,
-    with no switchover notification, until the override is released.
+    with no switchover notification, until administrative control is released.
 
 
 
