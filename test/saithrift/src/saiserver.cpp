@@ -215,7 +215,6 @@ const sai_service_method_table_t test_services = {
     test_profile_get_next_value
 };
 
-#ifdef BRCMSAI
 void sai_diag_shell()
 {
     sai_status_t status;
@@ -234,7 +233,6 @@ void sai_diag_shell()
         sleep(1);
     }
 }
-#endif
 
 struct cmdOptions
 {
@@ -442,7 +440,6 @@ main(int argc, char* argv[])
         exit(EXIT_FAILURE);
     }
 
-    //in case of the brcm switch not (!defined(INCLUDE_KNET) && !defined(BCMSIM))
     sai_attribute_t attr_pkt;
     attr_pkt.id = SAI_SWITCH_ATTR_PACKET_EVENT_NOTIFY;
     attr_pkt.value.ptr = reinterpret_cast<sai_pointer_t>(&on_packet_event);
@@ -454,10 +451,8 @@ main(int argc, char* argv[])
 
     handleInitScript(options.initScript);
 
-#ifdef BRCMSAI
-    std::thread bcm_diag_shell_thread = std::thread(sai_diag_shell);
-    bcm_diag_shell_thread.detach();
-#endif
+    std::thread diag_shell_thread = std::thread(sai_diag_shell);
+    diag_shell_thread.detach();
 
     start_sai_thrift_rpc_server(SWITCH_SAI_THRIFT_RPC_SERVER_PORT);
 
