@@ -270,6 +270,15 @@ typedef enum _sai_next_hop_attr_t
     SAI_NEXT_HOP_ATTR_META_DATA,
 
     /**
+     * @brief Label attribute used to uniquely identify next-hop.
+     *
+     * @type char
+     * @flags CREATE_AND_SET
+     * @default ""
+     */
+    SAI_NEXT_HOP_ATTR_LABEL,
+
+    /**
      * @brief End of attributes
      */
     SAI_NEXT_HOP_ATTR_END,

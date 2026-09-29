@@ -61,6 +61,15 @@ typedef enum _sai_l2mc_group_attr_t
     SAI_L2MC_GROUP_ATTR_L2MC_MEMBER_LIST,
 
     /**
+     * @brief Label attribute used to uniquely identify L2MC-group.
+     *
+     * @type char
+     * @flags CREATE_AND_SET
+     * @default ""
+     */
+    SAI_L2MC_GROUP_ATTR_LABEL,
+
+    /**
      * @brief End of attributes
      */
     SAI_L2MC_GROUP_ATTR_END,
