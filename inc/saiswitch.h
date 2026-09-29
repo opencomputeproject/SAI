@@ -3706,6 +3706,76 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MAX_FW_CORES,
 
     /**
+     * @brief Enable or disable Online Diagnostics
+     *
+     * TRUE - Enable Online Diagnostics.
+     * FALSE - Disable Online Diagnostics.
+     *
+     * When enabled, the SAI implementation starts supported internal diagnostic
+     * paths and periodically injects diagnostic packets. When disabled, the
+     * implementation stops diagnostic paths and releases resources that are not
+     * required while diagnostics are disabled.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_SWITCH_ATTR_ONLINE_DIAG_ENABLE,
+
+    /**
+     * @brief Online Diagnostics packet injection interval in milliseconds
+     *
+     * Specifies the interval between diagnostic probe cycles. A value of zero is
+     * invalid.
+     *
+     * @type sai_uint64_t
+     * @flags CREATE_AND_SET
+     * @default 5000
+     */
+    SAI_SWITCH_ATTR_ONLINE_DIAG_INTERVAL_MS,
+
+    /**
+     * @brief Online Diagnostics consecutive loss threshold
+     *
+     * Number of consecutive packet loss observations before the implementation
+     * records a diagnostic loss condition.
+     *
+     * @type sai_uint64_t
+     * @flags CREATE_AND_SET
+     * @default 1
+     */
+    SAI_SWITCH_ATTR_ONLINE_DIAG_LOSS_THRESHOLD,
+
+    /**
+     * @brief Online Diagnostics payload patterns
+     *
+     * List of 32-bit payload patterns used to fill diagnostic packets. The
+     * implementation may cycle through the configured patterns during probing.
+     * An empty list selects implementation-defined defaults.
+     *
+     * @type sai_u32_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_ONLINE_DIAG_PAYLOAD_PATTERNS,
+
+    /**
+     * @brief Online Diagnostics packet lengths
+     *
+     * List of diagnostic packet lengths in bytes. The implementation may cycle
+     * through the configured lengths during probing. An empty list selects
+     * implementation-defined defaults.
+     *
+     * The recommended valid range is 64 to 9000 bytes. Implementations may
+     * reject unsupported values with #SAI_STATUS_INVALID_PARAMETER.
+     *
+     * @type sai_u32_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_ONLINE_DIAG_PACKET_LENGTHS,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
@@ -3771,6 +3841,18 @@ typedef enum _sai_switch_stat_t
 
     /** Global (switch-wise) counter of packets trimmed and successfully sent on a trim queue */
     SAI_SWITCH_STAT_TX_TRIM_PACKETS,
+
+    /** Get Online Diagnostics transmitted packets count */
+    SAI_SWITCH_STAT_ONLINE_DIAG_TX_PACKETS,
+
+    /** Get Online Diagnostics received packets count */
+    SAI_SWITCH_STAT_ONLINE_DIAG_RX_PACKETS,
+
+    /** Get Online Diagnostics packet loss count */
+    SAI_SWITCH_STAT_ONLINE_DIAG_PACKET_LOSS,
+
+    /** Get Online Diagnostics packet corruption count */
+    SAI_SWITCH_STAT_ONLINE_DIAG_PACKET_CORRUPTIONS,
 
     /** Switch stat in drop reasons range start */
     SAI_SWITCH_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,

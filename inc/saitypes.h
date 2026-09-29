@@ -2152,8 +2152,37 @@ typedef enum _sai_health_data_type_t
     SAI_HEALTH_DATA_TYPE_GENERAL,
 
     /** SER health data type */
-    SAI_HEALTH_DATA_TYPE_SER
+    SAI_HEALTH_DATA_TYPE_SER,
+
+    /** Online Diagnostics health data type */
+    SAI_HEALTH_DATA_TYPE_ONLINE_DIAG
 } sai_health_data_type_t;
+
+/**
+ * @brief Online Diagnostics event type
+ */
+typedef enum _sai_switch_online_diag_event_type_t
+{
+    /** Diagnostic loss condition detected */
+    SAI_SWITCH_ONLINE_DIAG_EVENT_TYPE_LOSS_DETECTED,
+
+    /** Diagnostic packet corruption detected */
+    SAI_SWITCH_ONLINE_DIAG_EVENT_TYPE_CORRUPTION_DETECTED,
+
+    /** Diagnostics returned to healthy state */
+    SAI_SWITCH_ONLINE_DIAG_EVENT_TYPE_RECOVERED
+
+} sai_switch_online_diag_event_type_t;
+
+/**
+ * @brief Online Diagnostics switch health event data
+ */
+typedef struct _sai_online_diag_health_data_t
+{
+    /** Online Diagnostics event type */
+    sai_switch_online_diag_event_type_t event_type;
+
+} sai_online_diag_health_data_t;
 
 typedef enum _sai_ser_type_t
 {
@@ -2280,6 +2309,9 @@ typedef union _sai_health_data_t
 {
     /** @validonly data_type == SAI_HEALTH_DATA_TYPE_SER */
     sai_ser_health_data_t ser;
+
+    /** @validonly data_type == SAI_HEALTH_DATA_TYPE_ONLINE_DIAG */
+    sai_online_diag_health_data_t online_diag;
 } sai_health_data_t;
 
 typedef struct _sai_switch_health_data_t
