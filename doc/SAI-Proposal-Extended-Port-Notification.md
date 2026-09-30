@@ -92,7 +92,7 @@ typedef struct _sai_extended_port_oper_status_notification_t
 } sai_extended_port_oper_status_notification_t;
 ```
 
-This could be strucutre used from SAI v1.16.0.
+This could be structure used from SAI v1.16.0.
 Let's use new extended notification type like this:
 
 ```C
