@@ -3494,6 +3494,32 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_LINK_DOWN_DEBOUNCE_TIMEOUT,
 
     /**
+     * @brief Enable independent Maximum Receive Unit (MRU) enforcement
+     *
+     * When true, SAI_PORT_ATTR_MRU governs the ingress frame-size
+     * admission threshold independently of SAI_PORT_ATTR_MTU.
+     * When false, ingress admission behavior is unchanged and follows
+     * the implementation's existing use of SAI_PORT_ATTR_MTU.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_MRU_ENABLED,
+
+    /**
+     * @brief Maximum Receive Unit (MRU) in bytes
+     *
+     * Frames arriving on this port that exceed this value are dropped.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 1514
+     * @validonly SAI_PORT_ATTR_MRU_ENABLED == true
+     */
+    SAI_PORT_ATTR_MRU,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,

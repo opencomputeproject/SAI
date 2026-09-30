@@ -109,6 +109,7 @@ MILLI - milli (1/1000)
 MLD - Multicast Listener Discovery
 MMU - Memory Management Unit
 MPLS - Multi Protocol Label Switching
+MRU - Maximum Receive Unit
 MTU - Maximum Transmission Unit
 NACK - Negative Acknowledgement
 NAPT - Network Address Port Translation
