@@ -423,6 +423,15 @@ typedef enum _sai_vlan_attr_t
     SAI_VLAN_ATTR_SELECTIVE_COUNTER_LIST,
 
     /**
+     * @brief MLD Snooping enable or disable control for VLAN
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_VLAN_ATTR_MLD_SNOOPING_ENABLE,
+
+    /**
      * @brief End of attributes
      */
     SAI_VLAN_ATTR_END,

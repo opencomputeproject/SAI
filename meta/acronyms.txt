@@ -106,6 +106,7 @@ MAC - Medium Access Control
 MDIO - Management Data Input/Output
 MDIX - Medium Dependent Interface Crossover
 MILLI - milli (1/1000)
+MLD - Multicast Listener Discovery
 MMU - Memory Management Unit
 MPLS - Multi Protocol Label Switching
 MTU - Maximum Transmission Unit
