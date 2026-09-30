@@ -27,11 +27,17 @@
 #include "sai_rpc.h"
 
 extern "C" {
+#include "sai.h"
 #include "saimetadata.h"
 }
 
+#include <cstdint>
+#include <cstddef>
+#include <deque>
 #include <iostream>
 #include <cstring>
+#include <mutex>
+#include <vector>
 
 using namespace ::sai;
 
@@ -889,12 +895,138 @@ static void sai_thrift_nat_type_t_parse(
     *nat_type = (sai_nat_type_t)thrift_nat_type;
 }
 
+namespace
+{
+    constexpr std::int32_t kPortStateChangeNotification = 0;
+    constexpr std::int32_t kBfdSessionStateChangeNotification = 1;
+    constexpr std::size_t kNotificationQueueCapacity = 256;
+
+    std::mutex notification_queue_mutex;
+    std::deque<sai_thrift_notification_event_t> notification_queue;
+
+    void enqueue_notification(
+            std::int32_t notification_type,
+            sai_object_id_t object_id,
+            std::int32_t state)
+    {
+        std::lock_guard<std::mutex> lock(notification_queue_mutex);
+
+        if (notification_queue.size() >= kNotificationQueueCapacity)
+        {
+            notification_queue.pop_front();
+        }
+
+        sai_thrift_notification_event_t event;
+        event.notification_type = notification_type;
+        event.object_id = static_cast<sai_thrift_object_id_t>(object_id);
+        event.state = state;
+        notification_queue.push_back(event);
+    }
+
+    void on_port_state_change(
+            std::uint32_t count,
+            const sai_port_oper_status_notification_t *data)
+    {
+        if (data == nullptr)
+        {
+            return;
+        }
+
+        for (std::uint32_t index = 0; index < count; ++index)
+        {
+            enqueue_notification(
+                    kPortStateChangeNotification,
+                    data[index].port_id,
+                    static_cast<std::int32_t>(data[index].port_state));
+        }
+    }
+
+    void on_bfd_session_state_change(
+            std::uint32_t count,
+            const sai_bfd_session_state_notification_t *data)
+    {
+        if (data == nullptr)
+        {
+            return;
+        }
+
+        for (std::uint32_t index = 0; index < count; ++index)
+        {
+            enqueue_notification(
+                    kBfdSessionStateChangeNotification,
+                    data[index].bfd_session_id,
+                    static_cast<std::int32_t>(data[index].session_state));
+        }
+    }
+}
+
 // including it here we never have to modify the generated file
 #include "sai_rpc_server.cpp"
+
+static sai_status_t set_switch_notification_callback(
+        sai_attr_id_t attribute_id,
+        sai_pointer_t callback)
+{
+    if (switch_id == SAI_NULL_OBJECT_ID)
+    {
+        return SAI_STATUS_INVALID_PARAMETER;
+    }
+
+    sai_switch_api_t *switch_api = nullptr;
+    sai_status_t status = sai_api_query(
+            SAI_API_SWITCH,
+            reinterpret_cast<void **>(&switch_api));
+    if (status != SAI_STATUS_SUCCESS || switch_api == nullptr)
+    {
+        return status != SAI_STATUS_SUCCESS ? status : SAI_STATUS_FAILURE;
+    }
+
+    sai_attribute_t attribute = {};
+    attribute.id = attribute_id;
+    attribute.value.ptr = callback;
+    return switch_api->set_switch_attribute(switch_id, &attribute);
+}
 
 class sai_rpcHandlerFrontend:
     virtual public sai_rpcHandler
 {
+    /**
+     * @brief Enable the server-owned port and BFD notification callbacks.
+     */
+    sai_thrift_status_t sai_thrift_enable_notifications() override
+    {
+        sai_status_t status = set_switch_notification_callback(
+                SAI_SWITCH_ATTR_PORT_STATE_CHANGE_NOTIFY,
+                reinterpret_cast<sai_pointer_t>(&on_port_state_change));
+        if (status != SAI_STATUS_SUCCESS)
+        {
+            return static_cast<sai_thrift_status_t>(status);
+        }
+
+        status = set_switch_notification_callback(
+                SAI_SWITCH_ATTR_BFD_SESSION_STATE_CHANGE_NOTIFY,
+                reinterpret_cast<sai_pointer_t>(&on_bfd_session_state_change));
+        if (status != SAI_STATUS_SUCCESS)
+        {
+            set_switch_notification_callback(
+                    SAI_SWITCH_ATTR_PORT_STATE_CHANGE_NOTIFY,
+                    nullptr);
+        }
+
+        return static_cast<sai_thrift_status_t>(status);
+    }
+
+    /**
+     * @brief Drain all queued asynchronous notification records.
+     */
+    void sai_thrift_drain_notifications(
+            std::vector<sai_thrift_notification_event_t> &notifications) override
+    {
+        std::lock_guard<std::mutex> lock(notification_queue_mutex);
+        notifications.assign(notification_queue.begin(), notification_queue.end());
+        notification_queue.clear();
+    }
+
     /**
      * @brief Thrift wrapper for sai_object_type_get_availability() SAI function
      */
