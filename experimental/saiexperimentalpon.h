@@ -87,6 +87,21 @@ typedef enum _sai_pon_olt_intf_encryption_t
 } sai_pon_olt_intf_encryption_t;
 
 /**
+ * @brief PON OLT interface state encryption mode (from sai_pon_olt_intf_encryption_t)
+ */
+typedef enum _sai_pon_olt_intf_state_encryption_t
+{
+    SAI_PON_OLT_INTF_STATE_ENCRYPTION_DISABLED,
+
+    SAI_PON_OLT_INTF_STATE_ENCRYPTION_BIDIRECTIONAL,
+
+    SAI_PON_OLT_INTF_STATE_ENCRYPTION_BROADCAST,
+
+    SAI_PON_OLT_INTF_STATE_ENCRYPTION_DOWNSTREAM,
+
+} sai_pon_olt_intf_state_encryption_t;
+
+/**
  * @brief Firmware upgrade download format
  */
 typedef enum _sai_fw_upgrade_download_format_t
@@ -212,7 +227,7 @@ typedef struct _sai_pon_state_change_event_data_t
     /**
      * @brief PON object id that generated this state change
      *
-     * @objects SAI_OBJECT_TYPE_PON_CONTROLLER_STATE, SAI_OBJECT_TYPE_PON_CONTROLLER_SYSTEM_STATUS_OLT, SAI_OBJECT_TYPE_PON_CONTROLLER_SYSTEM_STATUS_OLT_ONU, SAI_OBJECT_TYPE_PON_OLT_INTF_STATE, SAI_OBJECT_TYPE_PON_ONU_STATE, SAI_OBJECT_TYPE_PON_CONTROLLER_ONU_FW_UPGRADE_STATE, SAI_OBJECT_TYPE_PON_FIRMWARE_FILENAME_STATE, SAI_OBJECT_TYPE_PON_OLT_INTF_NETWORK_STATE, SAI_OBJECT_TYPE_PON_OLT_INTF_ONU_STATE, SAI_OBJECT_TYPE_PON_OLT_INTF_ONU_FW_UPGRADE_STATE, SAI_OBJECT_TYPE_PON_OLT_INTF_ONU_OPERATIONAL_STATE, SAI_OBJECT_TYPE_PON_OLT_INTF_NNI_NETWORK_LEARNING_TABLE_STATE, SAI_OBJECT_TYPE_PON_OLT_INTF_ONU_SERVICE_TCONT_STATE, SAI_OBJECT_TYPE_PON_OLT_INTF_ONU_SERVICE_GEMPORT_STATE, SAI_OBJECT_TYPE_PON_OLT_PLUG_STATE, SAI_OBJECT_TYPE_PON_OLT_PLUG_FW_UPGRADE_STATUS, SAI_OBJECT_TYPE_PON_OLT_PLUG_FW_BANK_VERSION_STATE, SAI_OBJECT_TYPE_PON_ONU_FW_BANK_VERSION_STATE, SAI_OBJECT_TYPE_PON_ONU_OLT_SERVICE_STATE, SAI_OBJECT_TYPE_PON_ONU_OLT_SERVICE_NETWORK_STATE, SAI_OBJECT_TYPE_PON_ONU_UNI_STATE, SAI_OBJECT_TYPE_PON_ONU_OLT_SERVICE_DOWNSTREAM_QOS_MAP_STATE, SAI_OBJECT_TYPE_PON_ONU_OLT_SERVICE_DOWNSTREAM_QOS_MAP_MAP_STATE, SAI_OBJECT_TYPE_PON_ONU_UNI_LEARNED_ADDRESSES_STATE
+     * @objects SAI_OBJECT_TYPE_PON_CONTROLLER_STATE, SAI_OBJECT_TYPE_PON_CONTROLLER_SYSTEM_STATUS_OLT, SAI_OBJECT_TYPE_PON_CONTROLLER_SYSTEM_STATUS_OLT_ONU, SAI_OBJECT_TYPE_PON_OLT_INTF_STATE, SAI_OBJECT_TYPE_PON_ONU_STATE, SAI_OBJECT_TYPE_PON_CONTROLLER_ONU_FW_UPGRADE_STATE, SAI_OBJECT_TYPE_PON_FIRMWARE_FILENAME_STATE, SAI_OBJECT_TYPE_PON_OLT_INTF_NETWORK_STATE, SAI_OBJECT_TYPE_PON_OLT_INTF_ONU_STATE, SAI_OBJECT_TYPE_PON_OLT_INTF_ONU_FW_UPGRADE_STATE, SAI_OBJECT_TYPE_PON_OLT_INTF_ONU_OPERATIONAL_STATE, SAI_OBJECT_TYPE_PON_OLT_INTF_NNI_NETWORK_LEARNING_TABLE_STATE, SAI_OBJECT_TYPE_PON_OLT_INTF_ONU_SERVICE_TCONT_STATE, SAI_OBJECT_TYPE_PON_OLT_INTF_ONU_SERVICE_GEMPORT_STATE, SAI_OBJECT_TYPE_PON_OLT_PLUG_STATE, SAI_OBJECT_TYPE_PON_OLT_PLUG_FW_UPGRADE_STATUS, SAI_OBJECT_TYPE_PON_OLT_PLUG_FW_BANK_VERSION_STATE, SAI_OBJECT_TYPE_PON_ONU_FW_BANK_VERSION_STATE, SAI_OBJECT_TYPE_PON_ONU_OLT_SERVICE_STATE, SAI_OBJECT_TYPE_PON_ONU_OLT_SERVICE_NETWORK_STATE, SAI_OBJECT_TYPE_PON_ONU_UNI_STATE, SAI_OBJECT_TYPE_PON_ONU_OLT_SERVICE_DOWNSTREAM_QOS_MAP_STATE, SAI_OBJECT_TYPE_PON_ONU_OLT_SERVICE_DOWNSTREAM_QOS_MAP_MAP_STATE
      */
     sai_object_id_t object_id;
 
@@ -278,15 +293,6 @@ typedef enum _sai_pon_controller_attr_t
     SAI_PON_CONTROLLER_ATTR_ALLOW_UNPROVISIONED_ONUS,
 
     /**
-     * @brief Create Date
-     *
-     * @type sai_s8_list_t
-     * @flags CREATE_AND_SET
-     * @default empty
-     */
-    SAI_PON_CONTROLLER_ATTR_CREATE_DATE,
-
-    /**
      * @brief OLT Timeout
      *
      * @type sai_uint32_t
@@ -307,7 +313,7 @@ typedef enum _sai_pon_controller_attr_t
     /**
      * @brief Logging Controller Console
      *
-     * @type sai_uint8_t
+     * @type sai_int32_t
      * @flags CREATE_AND_SET
      * @default 0
      */
@@ -316,7 +322,7 @@ typedef enum _sai_pon_controller_attr_t
     /**
      * @brief Logging Controller File
      *
-     * @type sai_uint8_t
+     * @type sai_int32_t
      * @flags CREATE_AND_SET
      * @default 0
      */
@@ -325,7 +331,7 @@ typedef enum _sai_pon_controller_attr_t
     /**
      * @brief Logging Controller Syslog
      *
-     * @type sai_uint8_t
+     * @type sai_int32_t
      * @flags CREATE_AND_SET
      * @default 0
      */
@@ -334,7 +340,7 @@ typedef enum _sai_pon_controller_attr_t
     /**
      * @brief Logging Controller Database
      *
-     * @type sai_uint8_t
+     * @type sai_int32_t
      * @flags CREATE_AND_SET
      * @default 0
      */
@@ -343,7 +349,7 @@ typedef enum _sai_pon_controller_attr_t
     /**
      * @brief Logging OLT Console
      *
-     * @type sai_uint8_t
+     * @type sai_int32_t
      * @flags CREATE_AND_SET
      * @default 0
      */
@@ -352,7 +358,7 @@ typedef enum _sai_pon_controller_attr_t
     /**
      * @brief Logging OLT File
      *
-     * @type sai_uint8_t
+     * @type sai_int32_t
      * @flags CREATE_AND_SET
      * @default 0
      */
@@ -361,7 +367,7 @@ typedef enum _sai_pon_controller_attr_t
     /**
      * @brief Logging OLT Syslog
      *
-     * @type sai_uint8_t
+     * @type sai_int32_t
      * @flags CREATE_AND_SET
      * @default 0
      */
@@ -384,15 +390,6 @@ typedef enum _sai_pon_controller_attr_t
      * @default 0
      */
     SAI_PON_CONTROLLER_ATTR_UNPROVISIONED_AGE,
-
-    /**
-     * @brief Refresh State On OLT Change
-     *
-     * @type bool
-     * @flags CREATE_AND_SET
-     * @default false
-     */
-    SAI_PON_CONTROLLER_ATTR_REFRESH_STATE_ON_OLT_CHANGE,
 
     /**
      * @brief End of attributes
@@ -592,7 +589,7 @@ typedef enum _sai_pon_controller_system_status_olt_attr_t
     /**
      * @brief OLT State
      *
-     * @type sai_uint8_t
+     * @type sai_s8_list_t
      * @flags READ_ONLY
      */
     SAI_PON_CONTROLLER_SYSTEM_STATUS_OLT_ATTR_OLT_STATE,
@@ -640,7 +637,7 @@ typedef enum _sai_pon_controller_system_status_olt_attr_t
     /**
      * @brief Switch Port ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags READ_ONLY
      */
     SAI_PON_CONTROLLER_SYSTEM_STATUS_OLT_ATTR_SWITCH_PORT_ID,
@@ -752,7 +749,7 @@ typedef enum _sai_pon_controller_system_status_olt_onu_attr_t
     /**
      * @brief ONU State
      *
-     * @type sai_uint8_t
+     * @type sai_s8_list_t
      * @flags READ_ONLY
      */
     SAI_PON_CONTROLLER_SYSTEM_STATUS_OLT_ONU_ATTR_ONU_STATE,
@@ -830,7 +827,7 @@ typedef enum _sai_pon_controller_state_attr_t
     /**
      * @brief Timestamp
      *
-     * @type sai_uint64_t
+     * @type sai_s8_list_t
      * @flags READ_ONLY
      */
     SAI_PON_CONTROLLER_STATE_ATTR_TIMESTAMP,
@@ -890,14 +887,6 @@ typedef enum _sai_pon_controller_state_attr_t
      * @flags READ_ONLY
      */
     SAI_PON_CONTROLLER_STATE_ATTR_UNPROVISIONED_AGE,
-
-    /**
-     * @brief Refresh State On OLT Change
-     *
-     * @type bool
-     * @flags READ_ONLY
-     */
-    SAI_PON_CONTROLLER_STATE_ATTR_REFRESH_STATE_ON_OLT_CHANGE,
 
     /**
      * @brief End of attributes
@@ -972,10 +961,9 @@ typedef enum _sai_pon_controller_onu_fw_upgrade_state_attr_t
     /**
      * @brief ONU ID
      *
-     * @type sai_uint16_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @isvlan false
-     * @default 0
+     * @default empty
      */
     SAI_PON_CONTROLLER_ONU_FW_UPGRADE_STATE_ATTR_ONU_ID,
 
@@ -2010,27 +1998,27 @@ typedef enum _sai_pon_olt_intf_onu_operational_state_attr_t
     SAI_PON_OLT_INTF_ONU_OPERATIONAL_STATE_ATTR_START,
 
     /**
-     * @brief OLT Name
+     * @brief OLT Interface Name
      *
      * @type sai_s8_list_t
      * @flags CREATE_ONLY
      * @default empty
      */
-    SAI_PON_OLT_INTF_ONU_OPERATIONAL_STATE_ATTR_OLT_NAME = SAI_PON_OLT_INTF_ONU_OPERATIONAL_STATE_ATTR_START,
+    SAI_PON_OLT_INTF_ONU_OPERATIONAL_STATE_ATTR_OLT_INTF_NAME = SAI_PON_OLT_INTF_ONU_OPERATIONAL_STATE_ATTR_START,
 
     /**
      * @brief ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_OLT_INTF_ONU_OPERATIONAL_STATE_ATTR_ID,
 
     /**
      * @brief Operational State
      *
-     * @type sai_uint8_t
+     * @type sai_int32_t
      * @flags READ_ONLY
      */
     SAI_PON_OLT_INTF_ONU_OPERATIONAL_STATE_ATTR_OPERATIONAL_STATE,
@@ -2100,7 +2088,8 @@ typedef enum _sai_pon_olt_intf_nni_network_learning_table_state_attr_t
      * @brief OLT Interface Name
      *
      * @type sai_s8_list_t
-     * @flags READ_ONLY
+     * @flags CREATE_ONLY
+     * @default empty
      */
     SAI_PON_OLT_INTF_NNI_NETWORK_LEARNING_TABLE_STATE_ATTR_OLT_INTF_NAME = SAI_PON_OLT_INTF_NNI_NETWORK_LEARNING_TABLE_STATE_ATTR_START,
 
@@ -2275,7 +2264,7 @@ typedef enum _sai_pon_olt_intf_state_attr_t
     /**
      * @brief Timestamp
      *
-     * @type sai_uint64_t
+     * @type sai_s8_list_t
      * @flags READ_ONLY
      */
     SAI_PON_OLT_INTF_STATE_ATTR_TIMESTAMP,
@@ -2291,7 +2280,7 @@ typedef enum _sai_pon_olt_intf_state_attr_t
     /**
      * @brief Fiber Reach
      *
-     * @type sai_uint32_t
+     * @type sai_int32_t
      * @flags READ_ONLY
      */
     SAI_PON_OLT_INTF_STATE_ATTR_FIBER_REACH,
@@ -2299,7 +2288,7 @@ typedef enum _sai_pon_olt_intf_state_attr_t
     /**
      * @brief Laser Shutdown
      *
-     * @type bool
+     * @type sai_s8_list_t
      * @flags READ_ONLY
      */
     SAI_PON_OLT_INTF_STATE_ATTR_LASER_SHUTDOWN,
@@ -2339,7 +2328,7 @@ typedef enum _sai_pon_olt_intf_state_attr_t
     /**
      * @brief Encryption
      *
-     * @type sai_uint8_t
+     * @type sai_pon_olt_intf_state_encryption_t
      * @flags READ_ONLY
      */
     SAI_PON_OLT_INTF_STATE_ATTR_ENCRYPTION,
@@ -3057,7 +3046,7 @@ typedef enum _sai_pon_olt_protection_group_state_attr_t
     /**
      * @brief Last Failover Time
      *
-     * @type sai_uint64_t
+     * @type sai_s8_list_t
      * @flags READ_ONLY
      */
     SAI_PON_OLT_PROTECTION_GROUP_STATE_ATTR_LAST_FAILOVER_TIME,
@@ -3124,27 +3113,27 @@ typedef enum _sai_pon_olt_intf_statistics_binned_attr_t
     SAI_PON_OLT_INTF_STATISTICS_BINNED_ATTR_START,
 
     /**
-     * @brief OLT Name
+     * @brief OLT Interface Name
      *
      * @type sai_s8_list_t
      * @flags CREATE_ONLY
      * @default empty
      */
-    SAI_PON_OLT_INTF_STATISTICS_BINNED_ATTR_OLT_NAME = SAI_PON_OLT_INTF_STATISTICS_BINNED_ATTR_START,
+    SAI_PON_OLT_INTF_STATISTICS_BINNED_ATTR_OLT_INTF_NAME = SAI_PON_OLT_INTF_STATISTICS_BINNED_ATTR_START,
 
     /**
      * @brief OLT Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_OLT_INTF_STATISTICS_BINNED_ATTR_OLT_STATS_ID,
 
     /**
      * @brief Timestamp
      *
-     * @type sai_uint64_t
+     * @type sai_s8_list_t
      * @flags READ_ONLY
      */
     SAI_PON_OLT_INTF_STATISTICS_BINNED_ATTR_TIMESTAMP,
@@ -3464,7 +3453,7 @@ typedef enum _sai_pon_olt_intf_statistics_binned_attr_t
     /**
      * @brief Rx Optical Level Idle
      *
-     * @type sai_uint64_t
+     * @type sai_int64_t
      * @flags READ_ONLY
      */
     SAI_PON_OLT_INTF_STATISTICS_BINNED_ATTR_RX_OPTICAL_LEVEL_IDLE,
@@ -3784,7 +3773,7 @@ typedef enum _sai_pon_olt_intf_statistics_binned_attr_t
     /**
      * @brief Tx Optical Level
      *
-     * @type sai_uint64_t
+     * @type sai_int64_t
      * @flags READ_ONLY
      */
     SAI_PON_OLT_INTF_STATISTICS_BINNED_ATTR_TX_OPTICAL_LEVEL,
@@ -3918,17 +3907,18 @@ typedef enum _sai_pon_olt_statistics_binned_pon_flooding_attr_t
     /**
      * @brief OLT Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_OLT_STATISTICS_BINNED_PON_FLOODING_ATTR_OLT_STATS_ID,
 
     /**
      * @brief Flood ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_OLT_STATISTICS_BINNED_PON_FLOODING_ATTR_FLOOD_ID,
@@ -4190,20 +4180,29 @@ typedef enum _sai_pon_olt_statistics_binned_pon_flooding_network_attr_t
     /**
      * @brief OLT Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_OLT_STATISTICS_BINNED_PON_FLOODING_NETWORK_ATTR_OLT_STATS_ID,
 
     /**
      * @brief Flood ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_OLT_STATISTICS_BINNED_PON_FLOODING_NETWORK_ATTR_FLOOD_ID,
+
+    /**
+     * @brief Vlan ID
+     *
+     * @type sai_s8_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PON_OLT_STATISTICS_BINNED_PON_FLOODING_NETWORK_ATTR_VLAN_ID,
 
     /**
      * @brief End of attributes
@@ -4274,14 +4273,6 @@ typedef enum _sai_pon_olt_statistics_accumulating_attr_t
      * @default empty
      */
     SAI_PON_OLT_STATISTICS_ACCUMULATING_ATTR_OLT_NAME = SAI_PON_OLT_STATISTICS_ACCUMULATING_ATTR_START,
-
-    /**
-     * @brief Timestamp
-     *
-     * @type sai_uint64_t
-     * @flags READ_ONLY
-     */
-    SAI_PON_OLT_STATISTICS_ACCUMULATING_ATTR_TIMESTAMP,
 
     /**
      * @brief Offline Onus Count
@@ -4598,7 +4589,7 @@ typedef enum _sai_pon_olt_statistics_accumulating_attr_t
     /**
      * @brief Rx Optical Level Idle
      *
-     * @type sai_uint64_t
+     * @type sai_int64_t
      * @flags READ_ONLY
      */
     SAI_PON_OLT_STATISTICS_ACCUMULATING_ATTR_RX_OPTICAL_LEVEL_IDLE,
@@ -4918,7 +4909,7 @@ typedef enum _sai_pon_olt_statistics_accumulating_attr_t
     /**
      * @brief Tx Optical Level
      *
-     * @type sai_uint64_t
+     * @type sai_int64_t
      * @flags READ_ONLY
      */
     SAI_PON_OLT_STATISTICS_ACCUMULATING_ATTR_TX_OPTICAL_LEVEL,
@@ -5052,7 +5043,7 @@ typedef enum _sai_pon_olt_statistics_accumulating_env_attr_t
     /**
      * @brief Current
      *
-     * @type sai_uint64_t
+     * @type sai_int64_t
      * @flags READ_ONLY
      */
     SAI_PON_OLT_STATISTICS_ACCUMULATING_ENV_ATTR_CURRENT,
@@ -5060,7 +5051,7 @@ typedef enum _sai_pon_olt_statistics_accumulating_env_attr_t
     /**
      * @brief Transmit Bias
      *
-     * @type sai_uint64_t
+     * @type sai_int64_t
      * @flags READ_ONLY
      */
     SAI_PON_OLT_STATISTICS_ACCUMULATING_ENV_ATTR_TRANSMIT_BIAS,
@@ -5068,7 +5059,7 @@ typedef enum _sai_pon_olt_statistics_accumulating_env_attr_t
     /**
      * @brief Voltage
      *
-     * @type sai_uint64_t
+     * @type sai_int64_t
      * @flags READ_ONLY
      */
     SAI_PON_OLT_STATISTICS_ACCUMULATING_ENV_ATTR_VOLTAGE,
@@ -5240,8 +5231,9 @@ typedef enum _sai_pon_olt_statistics_accumulating_pon_flooding_attr_t
     /**
      * @brief OLT ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_OLT_STATISTICS_ACCUMULATING_PON_FLOODING_ATTR_OLT_ID,
@@ -5503,11 +5495,20 @@ typedef enum _sai_pon_olt_statistics_accumulating_pon_flooding_nni_network_attr_
     /**
      * @brief OLT ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_OLT_STATISTICS_ACCUMULATING_PON_FLOODING_NNI_NETWORK_ATTR_OLT_ID,
+
+    /**
+     * @brief Vlan Tag
+     *
+     * @type sai_s8_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PON_OLT_STATISTICS_ACCUMULATING_PON_FLOODING_NNI_NETWORK_ATTR_VLAN_TAG,
 
     /**
      * @brief End of attributes
@@ -5693,27 +5694,28 @@ typedef enum _sai_pon_olt_plug_attr_t
     /**
      * @brief Debug Log Level
      *
-     * @type sai_s8_list_t
+     * @type sai_int32_t
      * @flags CREATE_AND_SET
-     * @default empty
+     * @default 0
      */
     SAI_PON_OLT_PLUG_ATTR_DEBUG_LOG_LEVEL,
 
     /**
      * @brief FW Bank Pointer
      *
-     * @type sai_s8_list_t
+     * @type sai_uint16_t
      * @flags CREATE_AND_SET
-     * @default empty
+     * @isvlan false
+     * @default 0
      */
     SAI_PON_OLT_PLUG_ATTR_FW_BANK_PTR,
 
     /**
      * @brief NNI Max Frame Size
      *
-     * @type sai_s8_list_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @default empty
+     * @default 0
      */
     SAI_PON_OLT_PLUG_ATTR_NNI_MAX_FRAME_SIZE,
 
@@ -5804,15 +5806,16 @@ typedef enum _sai_pon_olt_plug_fw_upgrade_status_attr_t
     /**
      * @brief Bank
      *
-     * @type sai_uint8_t
+     * @type sai_uint16_t
      * @flags READ_ONLY
+     * @isvlan false
      */
     SAI_PON_OLT_PLUG_FW_UPGRADE_STATUS_ATTR_BANK,
 
     /**
      * @brief Fx Code
      *
-     * @type sai_s8_list_t
+     * @type sai_uint32_t
      * @flags READ_ONLY
      */
     SAI_PON_OLT_PLUG_FW_UPGRADE_STATUS_ATTR_FX_CODE,
@@ -5836,7 +5839,7 @@ typedef enum _sai_pon_olt_plug_fw_upgrade_status_attr_t
     /**
      * @brief Upgrade Duration
      *
-     * @type sai_uint64_t
+     * @type sai_s8_list_t
      * @flags READ_ONLY
      */
     SAI_PON_OLT_PLUG_FW_UPGRADE_STATUS_ATTR_UPGRADE_DURATION,
@@ -6003,7 +6006,7 @@ typedef enum _sai_pon_olt_plug_state_attr_t
     /**
      * @brief Uptime
      *
-     * @type sai_s8_list_t
+     * @type sai_uint64_t
      * @flags READ_ONLY
      */
     SAI_PON_OLT_PLUG_STATE_ATTR_UPTIME,
@@ -6043,7 +6046,7 @@ typedef enum _sai_pon_olt_plug_state_attr_t
     /**
      * @brief Switch Port ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags READ_ONLY
      */
     SAI_PON_OLT_PLUG_STATE_ATTR_SWITCH_PORT_ID,
@@ -6067,15 +6070,16 @@ typedef enum _sai_pon_olt_plug_state_attr_t
     /**
      * @brief FW Upgrade Bank
      *
-     * @type sai_uint8_t
+     * @type sai_uint16_t
      * @flags READ_ONLY
+     * @isvlan false
      */
     SAI_PON_OLT_PLUG_STATE_ATTR_FW_UPGRADE_BANK,
 
     /**
      * @brief FW Upgrade Fx Code
      *
-     * @type sai_s8_list_t
+     * @type sai_uint32_t
      * @flags READ_ONLY
      */
     SAI_PON_OLT_PLUG_STATE_ATTR_FW_UPGRADE_FX_CODE,
@@ -6099,7 +6103,7 @@ typedef enum _sai_pon_olt_plug_state_attr_t
     /**
      * @brief FW Upgrade Duration
      *
-     * @type sai_uint64_t
+     * @type sai_s8_list_t
      * @flags READ_ONLY
      */
     SAI_PON_OLT_PLUG_STATE_ATTR_FW_UPGRADE_DURATION,
@@ -6115,7 +6119,7 @@ typedef enum _sai_pon_olt_plug_state_attr_t
     /**
      * @brief HW Failure
      *
-     * @type bool
+     * @type sai_s8_list_t
      * @flags READ_ONLY
      */
     SAI_PON_OLT_PLUG_STATE_ATTR_HW_FAILURE,
@@ -6280,16 +6284,16 @@ typedef enum _sai_pon_olt_plug_statistics_binned_env_attr_t
     /**
      * @brief OLT Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_OLT_PLUG_STATISTICS_BINNED_ENV_ATTR_OLT_STATS_ID,
 
     /**
      * @brief Current
      *
-     * @type sai_uint64_t
+     * @type sai_int64_t
      * @flags READ_ONLY
      */
     SAI_PON_OLT_PLUG_STATISTICS_BINNED_ENV_ATTR_CURRENT,
@@ -6297,7 +6301,7 @@ typedef enum _sai_pon_olt_plug_statistics_binned_env_attr_t
     /**
      * @brief Transmit Bias
      *
-     * @type sai_uint64_t
+     * @type sai_int64_t
      * @flags READ_ONLY
      */
     SAI_PON_OLT_PLUG_STATISTICS_BINNED_ENV_ATTR_TRANSMIT_BIAS,
@@ -6305,7 +6309,7 @@ typedef enum _sai_pon_olt_plug_statistics_binned_env_attr_t
     /**
      * @brief Voltage
      *
-     * @type sai_uint64_t
+     * @type sai_int64_t
      * @flags READ_ONLY
      */
     SAI_PON_OLT_PLUG_STATISTICS_BINNED_ENV_ATTR_VOLTAGE,
@@ -6383,9 +6387,9 @@ typedef enum _sai_pon_olt_plug_statistics_binned_nni_attr_t
     /**
      * @brief OLT Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_OLT_PLUG_STATISTICS_BINNED_NNI_ATTR_OLT_STATS_ID,
 
@@ -6926,9 +6930,9 @@ typedef enum _sai_pon_olt_plug_statistics_binned_temp_attr_t
     /**
      * @brief OLT Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_OLT_PLUG_STATISTICS_BINNED_TEMP_ATTR_OLT_STATS_ID,
 
@@ -7511,7 +7515,7 @@ typedef enum _sai_pon_onu_service_config_value_attr_t
     /**
      * @brief Value Type
      *
-     * @type sai_uint8_t
+     * @type sai_int32_t
      * @flags CREATE_AND_SET
      * @default 0
      */
@@ -7862,7 +7866,7 @@ typedef enum _sai_pon_onu_olt_service_downstream_qos_map_state_attr_t
     /**
      * @brief Type
      *
-     * @type sai_uint8_t
+     * @type sai_s8_list_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_OLT_SERVICE_DOWNSTREAM_QOS_MAP_STATE_ATTR_TYPE,
@@ -8015,93 +8019,6 @@ typedef sai_status_t (*sai_bulk_get_pon_onu_olt_service_downstream_qos_map_map_s
         _Out_ sai_status_t *object_statuses);
 
 /**
- * @brief Attribute ID for PON ONU uni learned addresses state (STATE_DB)
- */
-typedef enum _sai_pon_onu_uni_learned_addresses_state_attr_t
-{
-    /**
-     * @brief Start of attributes
-     */
-    SAI_PON_ONU_UNI_LEARNED_ADDRESSES_STATE_ATTR_START,
-
-    /**
-     * @brief ONU Name
-     *
-     * @type sai_s8_list_t
-     * @flags CREATE_ONLY
-     * @default empty
-     */
-    SAI_PON_ONU_UNI_LEARNED_ADDRESSES_STATE_ATTR_ONU_NAME = SAI_PON_ONU_UNI_LEARNED_ADDRESSES_STATE_ATTR_START,
-
-    /**
-     * @brief Port ID
-     *
-     * @type sai_uint32_t
-     * @flags CREATE_ONLY
-     * @default 0
-     */
-    SAI_PON_ONU_UNI_LEARNED_ADDRESSES_STATE_ATTR_PORT_ID,
-
-    /**
-     * @brief Learned Address
-     *
-     * @type sai_s8_list_t
-     * @flags READ_ONLY
-     */
-    SAI_PON_ONU_UNI_LEARNED_ADDRESSES_STATE_ATTR_LEARNED_ADDRESS,
-
-    /**
-     * @brief End of attributes
-     */
-    SAI_PON_ONU_UNI_LEARNED_ADDRESSES_STATE_ATTR_END,
-
-    /** Custom range base value */
-    SAI_PON_ONU_UNI_LEARNED_ADDRESSES_STATE_ATTR_CUSTOM_RANGE_START = 0x10000000,
-
-    /** End of custom range base */
-    SAI_PON_ONU_UNI_LEARNED_ADDRESSES_STATE_ATTR_CUSTOM_RANGE_END,
-
-} sai_pon_onu_uni_learned_addresses_state_attr_t;
-
-/**
- * @brief Get attribute for PON ONU uni learned addresses state (STATE_DB, read-only)
- *
- * @param[in] pon_onu_uni_learned_addresses_state_id Entry id
- * @param[in] attr_count Number of attributes
- * @param[inout] attr_list Array of attributes
- *
- * @return #SAI_STATUS_SUCCESS on success Failure status code on error
- */
-typedef sai_status_t (*sai_get_pon_onu_uni_learned_addresses_state_attribute_fn)(
-        _In_ sai_object_id_t pon_onu_uni_learned_addresses_state_id,
-        _In_ uint32_t attr_count,
-        _Inout_ sai_attribute_t *attr_list);
-
-/**
- * @brief Bulk get attribute for PON ONU uni learned addresses state
- *
- * @param[in] object_count Number of objects to get attribute
- * @param[in] object_id List of object ids
- * @param[in] attr_count List of attr_count. Caller passes the number
- *    of attribute for each object to get.
- * @param[inout] attr_list List of attributes for every object.
- * @param[in] mode Bulk operation error handling mode.
- * @param[out] object_statuses List of status for every object. Caller needs to allocate the buffer.
- *
- * @return #SAI_STATUS_SUCCESS when get attribute on all objects succeeded or
- * #SAI_STATUS_FAILURE when any of the objects fails to get attribute. When
- * there is failure, Caller is expected to go through the list of returned
- * statuses to find out which fails and which succeeds.
- */
-typedef sai_status_t (*sai_bulk_get_pon_onu_uni_learned_addresses_state_attribute_fn)(
-        _In_ uint32_t object_count,
-        _In_ const sai_object_id_t *object_id,
-        _In_ const uint32_t *attr_count,
-        _Inout_ sai_attribute_t **attr_list,
-        _In_ sai_bulk_op_error_mode_t mode,
-        _Out_ sai_status_t *object_statuses);
-
-/**
  * @brief Attribute ID for PON ONU state (STATE_DB)
  */
 typedef enum _sai_pon_onu_state_attr_t
@@ -8123,7 +8040,7 @@ typedef enum _sai_pon_onu_state_attr_t
     /**
      * @brief Timestamp
      *
-     * @type sai_uint64_t
+     * @type sai_s8_list_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATE_ATTR_TIMESTAMP,
@@ -8214,7 +8131,7 @@ typedef enum _sai_pon_onu_state_attr_t
     /**
      * @brief Online Time
      *
-     * @type sai_uint64_t
+     * @type sai_s8_list_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATE_ATTR_ONLINE_TIME,
@@ -8255,7 +8172,7 @@ typedef enum _sai_pon_onu_state_attr_t
     /**
      * @brief Laser Bias Current
      *
-     * @type sai_uint32_t
+     * @type sai_uint64_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATE_ATTR_LASER_BIAS_CURRENT,
@@ -8288,7 +8205,7 @@ typedef enum _sai_pon_onu_state_attr_t
     /**
      * @brief Omcc Version
      *
-     * @type sai_uint8_t
+     * @type sai_s8_list_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATE_ATTR_OMCC_VERSION,
@@ -8296,7 +8213,7 @@ typedef enum _sai_pon_onu_state_attr_t
     /**
      * @brief Temperature
      *
-     * @type sai_int32_t
+     * @type sai_int64_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATE_ATTR_TEMPERATURE,
@@ -8312,7 +8229,7 @@ typedef enum _sai_pon_onu_state_attr_t
     /**
      * @brief Voltage
      *
-     * @type sai_uint32_t
+     * @type sai_int64_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATE_ATTR_VOLTAGE,
@@ -8406,12 +8323,12 @@ typedef enum _sai_pon_onu_state_attr_t
     SAI_PON_ONU_STATE_ATTR_FW_UPGRADE_RESPONSE_TIMEOUT,
 
     /**
-     * @brief Server State
+     * @brief SSH Server State
      *
-     * @type sai_uint8_t
+     * @type sai_s8_list_t
      * @flags READ_ONLY
      */
-    SAI_PON_ONU_STATE_ATTR_SERVER_STATE,
+    SAI_PON_ONU_STATE_ATTR_SSH_SERVER_STATE,
 
     /**
      * @brief Registration Disallowed
@@ -8424,15 +8341,16 @@ typedef enum _sai_pon_onu_state_attr_t
     /**
      * @brief Bank
      *
-     * @type sai_uint8_t
+     * @type sai_uint16_t
      * @flags READ_ONLY
+     * @isvlan false
      */
     SAI_PON_ONU_STATE_ATTR_BANK,
 
     /**
      * @brief Current Window
      *
-     * @type sai_uint32_t
+     * @type sai_uint8_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATE_ATTR_CURRENT_WINDOW,
@@ -8456,7 +8374,7 @@ typedef enum _sai_pon_onu_state_attr_t
     /**
      * @brief Negotiated Window
      *
-     * @type sai_uint32_t
+     * @type sai_uint8_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATE_ATTR_NEGOTIATED_WINDOW,
@@ -8464,7 +8382,7 @@ typedef enum _sai_pon_onu_state_attr_t
     /**
      * @brief Progress
      *
-     * @type sai_uint32_t
+     * @type sai_uint8_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATE_ATTR_PROGRESS,
@@ -8472,7 +8390,7 @@ typedef enum _sai_pon_onu_state_attr_t
     /**
      * @brief Retries
      *
-     * @type sai_uint32_t
+     * @type sai_uint8_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATE_ATTR_RETRIES,
@@ -8488,7 +8406,7 @@ typedef enum _sai_pon_onu_state_attr_t
     /**
      * @brief Status
      *
-     * @type sai_uint8_t
+     * @type sai_s8_list_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATE_ATTR_STATUS,
@@ -8504,7 +8422,7 @@ typedef enum _sai_pon_onu_state_attr_t
     /**
      * @brief Upgrade Duration
      *
-     * @type sai_uint64_t
+     * @type sai_s8_list_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATE_ATTR_UPGRADE_DURATION,
@@ -8520,7 +8438,7 @@ typedef enum _sai_pon_onu_state_attr_t
     /**
      * @brief Aborted
      *
-     * @type sai_uint32_t
+     * @type bool
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATE_ATTR_ABORTED,
@@ -8744,7 +8662,7 @@ typedef enum _sai_pon_onu_olt_service_state_attr_t
     /**
      * @brief Upstream Priority Treatment
      *
-     * @type sai_uint8_t
+     * @type sai_int32_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_OLT_SERVICE_STATE_ATTR_UPSTREAM_PRIORITY_TREATMENT,
@@ -8936,9 +8854,8 @@ typedef enum _sai_pon_onu_olt_service_network_state_attr_t
      * @brief Network ID
      *
      * @type sai_uint16_t
-     * @flags CREATE_ONLY
+     * @flags READ_ONLY
      * @isvlan false
-     * @default 0
      */
     SAI_PON_ONU_OLT_SERVICE_NETWORK_STATE_ATTR_NETWORK_ID,
 
@@ -8946,8 +8863,9 @@ typedef enum _sai_pon_onu_olt_service_network_state_attr_t
      * @brief Vlan ID
      *
      * @type sai_uint16_t
-     * @flags READ_ONLY
+     * @flags CREATE_ONLY
      * @isvlan true
+     * @default 0
      */
     SAI_PON_ONU_OLT_SERVICE_NETWORK_STATE_ATTR_VLAN_ID,
 
@@ -9024,16 +8942,16 @@ typedef enum _sai_pon_onu_uni_state_attr_t
     /**
      * @brief Port ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_ONU_UNI_STATE_ATTR_PORT_ID,
 
     /**
      * @brief Duplex
      *
-     * @type sai_duplex_t
+     * @type sai_s8_list_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_UNI_STATE_ATTR_DUPLEX,
@@ -9074,7 +8992,7 @@ typedef enum _sai_pon_onu_uni_state_attr_t
     /**
      * @brief Speed
      *
-     * @type sai_speed_t
+     * @type sai_s8_list_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_UNI_STATE_ATTR_SPEED,
@@ -9082,7 +9000,7 @@ typedef enum _sai_pon_onu_uni_state_attr_t
     /**
      * @brief State
      *
-     * @type sai_uint8_t
+     * @type sai_s8_list_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_UNI_STATE_ATTR_STATE,
@@ -9158,18 +9076,9 @@ typedef enum _sai_pon_onu_statistics_binned_attr_t
     SAI_PON_ONU_STATISTICS_BINNED_ATTR_ONU_NAME = SAI_PON_ONU_STATISTICS_BINNED_ATTR_START,
 
     /**
-     * @brief ONU Stats ID
-     *
-     * @type sai_uint32_t
-     * @flags CREATE_ONLY
-     * @default 0
-     */
-    SAI_PON_ONU_STATISTICS_BINNED_ATTR_ONU_STATS_ID,
-
-    /**
      * @brief OLT PON Rx Optical Level
      *
-     * @type sai_uint64_t
+     * @type sai_int64_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_BINNED_ATTR_OLT_PON_RX_OPTICAL_LEVEL,
@@ -9177,7 +9086,7 @@ typedef enum _sai_pon_onu_statistics_binned_attr_t
     /**
      * @brief OLT PON Tx Optical Level
      *
-     * @type sai_uint64_t
+     * @type sai_int64_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_BINNED_ATTR_OLT_PON_TX_OPTICAL_LEVEL,
@@ -9201,7 +9110,7 @@ typedef enum _sai_pon_onu_statistics_binned_attr_t
     /**
      * @brief OLT PON Fiber Distance
      *
-     * @type sai_uint64_t
+     * @type sai_int64_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_BINNED_ATTR_OLT_PON_FIBER_DISTANCE,
@@ -9257,7 +9166,7 @@ typedef enum _sai_pon_onu_statistics_binned_attr_t
     /**
      * @brief OLT PON Rx Pre FEC BER
      *
-     * @type sai_uint64_t
+     * @type sai_s8_list_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_BINNED_ATTR_OLT_PON_RX_PRE_FEC_BER,
@@ -9265,15 +9174,24 @@ typedef enum _sai_pon_onu_statistics_binned_attr_t
     /**
      * @brief OLT PON Rx Post FEC BER
      *
-     * @type sai_uint64_t
+     * @type sai_s8_list_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_BINNED_ATTR_OLT_PON_RX_POST_FEC_BER,
 
     /**
+     * @brief ONU Stats ID
+     *
+     * @type sai_s8_list_t
+     * @flags CREATE_ONLY
+     * @default empty
+     */
+    SAI_PON_ONU_STATISTICS_BINNED_ATTR_ONU_STATS_ID,
+
+    /**
      * @brief Timestamp
      *
-     * @type sai_uint64_t
+     * @type sai_s8_list_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_BINNED_ATTR_TIMESTAMP,
@@ -9351,16 +9269,16 @@ typedef enum _sai_pon_onu_statistics_binned_olt_pon_attr_t
     /**
      * @brief ONU Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_ONU_STATISTICS_BINNED_OLT_PON_ATTR_ONU_STATS_ID,
 
     /**
      * @brief Rx Optical Level
      *
-     * @type sai_uint64_t
+     * @type sai_int64_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_BINNED_OLT_PON_ATTR_RX_OPTICAL_LEVEL,
@@ -9368,7 +9286,7 @@ typedef enum _sai_pon_onu_statistics_binned_olt_pon_attr_t
     /**
      * @brief Tx Optical Level
      *
-     * @type sai_uint64_t
+     * @type sai_int64_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_BINNED_OLT_PON_ATTR_TX_OPTICAL_LEVEL,
@@ -9392,7 +9310,7 @@ typedef enum _sai_pon_onu_statistics_binned_olt_pon_attr_t
     /**
      * @brief Fiber Distance
      *
-     * @type sai_uint64_t
+     * @type sai_int64_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_BINNED_OLT_PON_ATTR_FIBER_DISTANCE,
@@ -9494,9 +9412,9 @@ typedef enum _sai_pon_onu_statistics_binned_olt_pon_omcc_attr_t
     /**
      * @brief ONU Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_ONU_STATISTICS_BINNED_OLT_PON_OMCC_ATTR_ONU_STATS_ID,
 
@@ -10205,16 +10123,16 @@ typedef enum _sai_pon_onu_statistics_binned_olt_pon_service_attr_t
     /**
      * @brief ONU Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_ONU_STATISTICS_BINNED_OLT_PON_SERVICE_ATTR_ONU_STATS_ID,
 
     /**
      * @brief Service Port ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint8_t
      * @flags CREATE_ONLY
      * @default 0
      */
@@ -11061,9 +10979,9 @@ typedef enum _sai_pon_onu_statistics_binned_onu_enhanced_tc_pm_attr_t
     /**
      * @brief ONU Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_ONU_STATISTICS_BINNED_ONU_ENHANCED_TC_PM_ATTR_ONU_STATS_ID,
 
@@ -11192,9 +11110,8 @@ typedef enum _sai_pon_onu_statistics_binned_onu_enhanced_tc_pm_attr_t
     /**
      * @brief Threshold Data 64 Bit ID
      *
-     * @type sai_uint16_t
+     * @type sai_uint64_t
      * @flags READ_ONLY
-     * @isvlan false
      */
     SAI_PON_ONU_STATISTICS_BINNED_ONU_ENHANCED_TC_PM_ATTR_THRESHOLD_DATA_64_BIT_ID,
 
@@ -11271,9 +11188,9 @@ typedef enum _sai_pon_onu_statistics_binned_onu_ethernet_frame_extended_pm_attr_
     /**
      * @brief ONU Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_ONU_STATISTICS_BINNED_ONU_ETHERNET_FRAME_EXTENDED_PM_ATTR_ONU_STATS_ID,
 
@@ -11290,7 +11207,7 @@ typedef enum _sai_pon_onu_statistics_binned_onu_ethernet_frame_extended_pm_attr_
     /**
      * @brief Direction
      *
-     * @type sai_uint8_t
+     * @type sai_int32_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_BINNED_ONU_ETHERNET_FRAME_EXTENDED_PM_ATTR_DIRECTION,
@@ -11488,9 +11405,9 @@ typedef enum _sai_pon_onu_statistics_binned_onu_ethernet_frame_extended_pm_64bit
     /**
      * @brief ONU Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_ONU_STATISTICS_BINNED_ONU_ETHERNET_FRAME_EXTENDED_PM_64BIT_ATTR_ONU_STATS_ID,
 
@@ -11507,7 +11424,7 @@ typedef enum _sai_pon_onu_statistics_binned_onu_ethernet_frame_extended_pm_64bit
     /**
      * @brief Direction
      *
-     * @type sai_uint8_t
+     * @type sai_int32_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_BINNED_ONU_ETHERNET_FRAME_EXTENDED_PM_64BIT_ATTR_DIRECTION,
@@ -11705,9 +11622,9 @@ typedef enum _sai_pon_onu_statistics_binned_onu_ethernet_frame_pm_downstream_att
     /**
      * @brief ONU Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_ONU_STATISTICS_BINNED_ONU_ETHERNET_FRAME_PM_DOWNSTREAM_ATTR_ONU_STATS_ID,
 
@@ -11834,13 +11751,13 @@ typedef enum _sai_pon_onu_statistics_binned_onu_ethernet_frame_pm_downstream_att
     SAI_PON_ONU_STATISTICS_BINNED_ONU_ETHERNET_FRAME_PM_DOWNSTREAM_ATTR_PACKETS_65_TO_127_OCTETS,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_BINNED_ONU_ETHERNET_FRAME_PM_DOWNSTREAM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_BINNED_ONU_ETHERNET_FRAME_PM_DOWNSTREAM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief Undersize Packets
@@ -11923,9 +11840,9 @@ typedef enum _sai_pon_onu_statistics_binned_onu_ethernet_frame_pm_upstream_attr_
     /**
      * @brief ONU Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_ONU_STATISTICS_BINNED_ONU_ETHERNET_FRAME_PM_UPSTREAM_ATTR_ONU_STATS_ID,
 
@@ -12052,13 +11969,13 @@ typedef enum _sai_pon_onu_statistics_binned_onu_ethernet_frame_pm_upstream_attr_
     SAI_PON_ONU_STATISTICS_BINNED_ONU_ETHERNET_FRAME_PM_UPSTREAM_ATTR_PACKETS_65_TO_127_OCTETS,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_BINNED_ONU_ETHERNET_FRAME_PM_UPSTREAM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_BINNED_ONU_ETHERNET_FRAME_PM_UPSTREAM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief Undersize Packets
@@ -12141,9 +12058,9 @@ typedef enum _sai_pon_onu_statistics_binned_onu_ethernet_pm_attr_t
     /**
      * @brief ONU Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_ONU_STATISTICS_BINNED_ONU_ETHERNET_PM_ATTR_ONU_STATS_ID,
 
@@ -12278,13 +12195,13 @@ typedef enum _sai_pon_onu_statistics_binned_onu_ethernet_pm_attr_t
     SAI_PON_ONU_STATISTICS_BINNED_ONU_ETHERNET_PM_ATTR_SQE_COUNTER,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_BINNED_ONU_ETHERNET_PM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_BINNED_ONU_ETHERNET_PM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief End of attributes
@@ -12359,9 +12276,9 @@ typedef enum _sai_pon_onu_statistics_binned_onu_ethernet_pm3_attr_t
     /**
      * @brief ONU Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_ONU_STATISTICS_BINNED_ONU_ETHERNET_PM3_ATTR_ONU_STATS_ID,
 
@@ -12488,13 +12405,13 @@ typedef enum _sai_pon_onu_statistics_binned_onu_ethernet_pm3_attr_t
     SAI_PON_ONU_STATISTICS_BINNED_ONU_ETHERNET_PM3_ATTR_PACKETS_1024_TO_1518_OCTETS,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_BINNED_ONU_ETHERNET_PM3_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_BINNED_ONU_ETHERNET_PM3_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief Undersize Packets
@@ -12577,9 +12494,9 @@ typedef enum _sai_pon_onu_statistics_binned_onu_fec_pm_attr_t
     /**
      * @brief ONU Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_ONU_STATISTICS_BINNED_ONU_FEC_PM_ATTR_ONU_STATS_ID,
 
@@ -12626,13 +12543,13 @@ typedef enum _sai_pon_onu_statistics_binned_onu_fec_pm_attr_t
     SAI_PON_ONU_STATISTICS_BINNED_ONU_FEC_PM_ATTR_INTERVAL_END_TIME,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_BINNED_ONU_FEC_PM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_BINNED_ONU_FEC_PM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief Total Code Words
@@ -12723,9 +12640,9 @@ typedef enum _sai_pon_onu_statistics_binned_onu_gal_ethernet_pm_attr_t
     /**
      * @brief ONU Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_ONU_STATISTICS_BINNED_ONU_GAL_ETHERNET_PM_ATTR_ONU_STATS_ID,
 
@@ -12764,13 +12681,13 @@ typedef enum _sai_pon_onu_statistics_binned_onu_gal_ethernet_pm_attr_t
     SAI_PON_ONU_STATISTICS_BINNED_ONU_GAL_ETHERNET_PM_ATTR_INTERVAL_END_TIME,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_BINNED_ONU_GAL_ETHERNET_PM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_BINNED_ONU_GAL_ETHERNET_PM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief End of attributes
@@ -12845,9 +12762,9 @@ typedef enum _sai_pon_onu_statistics_binned_onu_gem_port_network_ctp_pm_attr_t
     /**
      * @brief ONU Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_ONU_STATISTICS_BINNED_ONU_GEM_PORT_NETWORK_CTP_PM_ATTR_ONU_STATS_ID,
 
@@ -12894,13 +12811,13 @@ typedef enum _sai_pon_onu_statistics_binned_onu_gem_port_network_ctp_pm_attr_t
     SAI_PON_ONU_STATISTICS_BINNED_ONU_GEM_PORT_NETWORK_CTP_PM_ATTR_RECEIVED_PAYLOAD_BYTES,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_BINNED_ONU_GEM_PORT_NETWORK_CTP_PM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_BINNED_ONU_GEM_PORT_NETWORK_CTP_PM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief Transmitted Gem Frames
@@ -12991,9 +12908,9 @@ typedef enum _sai_pon_onu_statistics_binned_onu_ip_host_perf_mon_hist_data_attr_
     /**
      * @brief ONU Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_ONU_STATISTICS_BINNED_ONU_IP_HOST_PERF_MON_HIST_DATA_ATTR_ONU_STATS_ID,
 
@@ -13064,13 +12981,13 @@ typedef enum _sai_pon_onu_statistics_binned_onu_ip_host_perf_mon_hist_data_attr_
     SAI_PON_ONU_STATISTICS_BINNED_ONU_IP_HOST_PERF_MON_HIST_DATA_ATTR_OUT_OF_MEMORY,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_BINNED_ONU_IP_HOST_PERF_MON_HIST_DATA_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_BINNED_ONU_IP_HOST_PERF_MON_HIST_DATA_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief End of attributes
@@ -13145,9 +13062,9 @@ typedef enum _sai_pon_onu_statistics_binned_onu_mac_bridge_port_pm_attr_t
     /**
      * @brief ONU Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_ONU_STATISTICS_BINNED_ONU_MAC_BRIDGE_PORT_PM_ATTR_ONU_STATS_ID,
 
@@ -13210,13 +13127,13 @@ typedef enum _sai_pon_onu_statistics_binned_onu_mac_bridge_port_pm_attr_t
     SAI_PON_ONU_STATISTICS_BINNED_ONU_MAC_BRIDGE_PORT_PM_ATTR_RECEIVED_FRAME_COUNTER,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_BINNED_ONU_MAC_BRIDGE_PORT_PM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_BINNED_ONU_MAC_BRIDGE_PORT_PM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief End of attributes
@@ -13291,9 +13208,9 @@ typedef enum _sai_pon_onu_statistics_binned_onu_operational_pm_attr_t
     /**
      * @brief ONU Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_ONU_STATISTICS_BINNED_ONU_OPERATIONAL_PM_ATTR_ONU_STATS_ID,
 
@@ -13372,18 +13289,18 @@ typedef enum _sai_pon_onu_statistics_binned_onu_operational_pm_attr_t
     SAI_PON_ONU_STATISTICS_BINNED_ONU_OPERATIONAL_PM_ATTR_SOFTWARE_ERRORS,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_BINNED_ONU_OPERATIONAL_PM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_BINNED_ONU_OPERATIONAL_PM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief Temperature Sensor Description
      *
-     * @type sai_s8_list_t
+     * @type sai_uint64_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_BINNED_ONU_OPERATIONAL_PM_ATTR_TEMPERATURE_SENSOR_DESCRIPTION,
@@ -13469,16 +13386,16 @@ typedef enum _sai_pon_onu_statistics_binned_onu_pon_attr_t
     /**
      * @brief ONU Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_ONU_STATISTICS_BINNED_ONU_PON_ATTR_ONU_STATS_ID,
 
     /**
      * @brief Rx Optical Level
      *
-     * @type sai_uint64_t
+     * @type sai_int64_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_BINNED_ONU_PON_ATTR_RX_OPTICAL_LEVEL,
@@ -13486,7 +13403,7 @@ typedef enum _sai_pon_onu_statistics_binned_onu_pon_attr_t
     /**
      * @brief Tx Optical Level
      *
-     * @type sai_uint64_t
+     * @type sai_int64_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_BINNED_ONU_PON_ATTR_TX_OPTICAL_LEVEL,
@@ -13564,9 +13481,9 @@ typedef enum _sai_pon_onu_statistics_binned_onu_rs232_rs485_perf_mon_hist_data_a
     /**
      * @brief ONU Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_ONU_STATISTICS_BINNED_ONU_RS232_RS485_PERF_MON_HIST_DATA_ATTR_ONU_STATS_ID,
 
@@ -13621,13 +13538,13 @@ typedef enum _sai_pon_onu_statistics_binned_onu_rs232_rs485_perf_mon_hist_data_a
     SAI_PON_ONU_STATISTICS_BINNED_ONU_RS232_RS485_PERF_MON_HIST_DATA_ATTR_OUTGOING_BYTES_FROM_PON,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_BINNED_ONU_RS232_RS485_PERF_MON_HIST_DATA_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_BINNED_ONU_RS232_RS485_PERF_MON_HIST_DATA_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief End of attributes
@@ -13702,9 +13619,9 @@ typedef enum _sai_pon_onu_statistics_binned_onu_tcp_udp_perf_mon_hist_data_attr_
     /**
      * @brief ONU Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_ONU_STATISTICS_BINNED_ONU_TCP_UDP_PERF_MON_HIST_DATA_ATTR_ONU_STATS_ID,
 
@@ -13767,13 +13684,13 @@ typedef enum _sai_pon_onu_statistics_binned_onu_tcp_udp_perf_mon_hist_data_attr_
     SAI_PON_ONU_STATISTICS_BINNED_ONU_TCP_UDP_PERF_MON_HIST_DATA_ATTR_SOCKET_FAILED,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_BINNED_ONU_TCP_UDP_PERF_MON_HIST_DATA_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_BINNED_ONU_TCP_UDP_PERF_MON_HIST_DATA_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief End of attributes
@@ -13848,9 +13765,9 @@ typedef enum _sai_pon_onu_statistics_binned_onu_xg_pon_downstream_mgmt_pm_attr_t
     /**
      * @brief ONU Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_ONU_STATISTICS_BINNED_ONU_XG_PON_DOWNSTREAM_MGMT_PM_ATTR_ONU_STATS_ID,
 
@@ -13873,13 +13790,13 @@ typedef enum _sai_pon_onu_statistics_binned_onu_xg_pon_downstream_mgmt_pm_attr_t
     SAI_PON_ONU_STATISTICS_BINNED_ONU_XG_PON_DOWNSTREAM_MGMT_PM_ATTR_INTERVAL_END_TIME,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_BINNED_ONU_XG_PON_DOWNSTREAM_MGMT_PM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_BINNED_ONU_XG_PON_DOWNSTREAM_MGMT_PM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief Ploam Mic Error Count
@@ -14066,9 +13983,9 @@ typedef enum _sai_pon_onu_statistics_binned_onu_xg_pon_upstream_mgmt_pm_attr_t
     /**
      * @brief ONU Stats ID
      *
-     * @type sai_uint32_t
+     * @type sai_s8_list_t
      * @flags CREATE_ONLY
-     * @default 0
+     * @default empty
      */
     SAI_PON_ONU_STATISTICS_BINNED_ONU_XG_PON_UPSTREAM_MGMT_PM_ATTR_ONU_STATS_ID,
 
@@ -14091,13 +14008,13 @@ typedef enum _sai_pon_onu_statistics_binned_onu_xg_pon_upstream_mgmt_pm_attr_t
     SAI_PON_ONU_STATISTICS_BINNED_ONU_XG_PON_UPSTREAM_MGMT_PM_ATTR_INTERVAL_END_TIME,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_BINNED_ONU_XG_PON_UPSTREAM_MGMT_PM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_BINNED_ONU_XG_PON_UPSTREAM_MGMT_PM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief Upstream Ploam Message Count
@@ -14220,7 +14137,7 @@ typedef enum _sai_pon_onu_statistics_accumulating_olt_pon_attr_t
     /**
      * @brief Rx Optical Level
      *
-     * @type sai_uint64_t
+     * @type sai_int64_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_ATTR_RX_OPTICAL_LEVEL,
@@ -14228,7 +14145,7 @@ typedef enum _sai_pon_onu_statistics_accumulating_olt_pon_attr_t
     /**
      * @brief Tx Optical Level
      *
-     * @type sai_uint64_t
+     * @type sai_int64_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_ATTR_TX_OPTICAL_LEVEL,
@@ -14252,7 +14169,7 @@ typedef enum _sai_pon_onu_statistics_accumulating_olt_pon_attr_t
     /**
      * @brief Fiber Distance
      *
-     * @type sai_uint64_t
+     * @type sai_int64_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_ATTR_FIBER_DISTANCE,
@@ -14360,6 +14277,14 @@ typedef enum _sai_pon_onu_statistics_accumulating_olt_pon_omcc_attr_t
     SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_BAD_KEY_EXCHANGES,
 
     /**
+     * @brief Enable Count
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_ENABLE_COUNT,
+
+    /**
      * @brief Good Key Exchanges
      *
      * @type sai_uint64_t
@@ -14456,6 +14381,70 @@ typedef enum _sai_pon_onu_statistics_accumulating_olt_pon_omcc_attr_t
     SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_RX_ALL_BANDWIDTH_REQS,
 
     /**
+     * @brief Rx BW Best Effort SLA Util
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_RX_BW_BEST_EFFORT_SLA_UTIL,
+
+    /**
+     * @brief Rx BW Best Effort SLA Bps
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_RX_BW_BEST_EFFORT_SLA_BPS,
+
+    /**
+     * @brief Rx BW Fixed SLA Util
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_RX_BW_FIXED_SLA_UTIL,
+
+    /**
+     * @brief Rx BW Fixed SLA Bps
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_RX_BW_FIXED_SLA_BPS,
+
+    /**
+     * @brief Rx BW Guaranteed SLA Util
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_RX_BW_GUARANTEED_SLA_UTIL,
+
+    /**
+     * @brief Rx BW Guaranteed SLA Bps
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_RX_BW_GUARANTEED_SLA_BPS,
+
+    /**
+     * @brief Rx BW Total SLA Util
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_RX_BW_TOTAL_SLA_UTIL,
+
+    /**
+     * @brief Rx BW Total SLA Bps
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_RX_BW_TOTAL_SLA_BPS,
+
+    /**
      * @brief Rx Bad Icv Drops
      *
      * @type sai_uint64_t
@@ -14502,6 +14491,14 @@ typedef enum _sai_pon_onu_statistics_accumulating_olt_pon_omcc_attr_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_RX_EMPTY_SLOTS,
+
+    /**
+     * @brief Rx Encrypted Frames
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_RX_ENCRYPTED_FRAMES,
 
     /**
      * @brief Rx Encrypted Octets
@@ -14712,6 +14709,14 @@ typedef enum _sai_pon_onu_statistics_accumulating_olt_pon_omcc_attr_t
     SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_RX_OVERFLOW_OCTETS,
 
     /**
+     * @brief Rx Plain Frames
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_RX_PLAIN_FRAMES,
+
+    /**
      * @brief Rx Plain Octets
      *
      * @type sai_uint64_t
@@ -14734,6 +14739,14 @@ typedef enum _sai_pon_onu_statistics_accumulating_olt_pon_omcc_attr_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_RX_PLOAM_MIC_ERRORS,
+
+    /**
+     * @brief Rx Reports
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_RX_REPORTS,
 
     /**
      * @brief Rx Rate Bps
@@ -14784,6 +14797,54 @@ typedef enum _sai_pon_onu_statistics_accumulating_olt_pon_omcc_attr_t
     SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_RX_UNICAST_OCTETS,
 
     /**
+     * @brief Tx BW Best Effort SLA Util
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_TX_BW_BEST_EFFORT_SLA_UTIL,
+
+    /**
+     * @brief Tx BW Best Effort SLA Bps
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_TX_BW_BEST_EFFORT_SLA_BPS,
+
+    /**
+     * @brief Tx BW Guaranteed SLA Util
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_TX_BW_GUARANTEED_SLA_UTIL,
+
+    /**
+     * @brief Tx BW Guaranteed SLA Bps
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_TX_BW_GUARANTEED_SLA_BPS,
+
+    /**
+     * @brief Tx BW Total SLA Util
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_TX_BW_TOTAL_SLA_UTIL,
+
+    /**
+     * @brief Tx BW Total SLA Bps
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_TX_BW_TOTAL_SLA_BPS,
+
+    /**
      * @brief Tx Bandwidth Reqs
      *
      * @type sai_uint64_t
@@ -14798,6 +14859,14 @@ typedef enum _sai_pon_onu_statistics_accumulating_olt_pon_omcc_attr_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_TX_CONTROL_OCTETS,
+
+    /**
+     * @brief Tx Encrypted Frames
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_TX_ENCRYPTED_FRAMES,
 
     /**
      * @brief Tx Encrypted Octets
@@ -14904,6 +14973,14 @@ typedef enum _sai_pon_onu_statistics_accumulating_olt_pon_omcc_attr_t
     SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_TX_FRAMES_UNICAST,
 
     /**
+     * @brief Tx Gates
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_TX_GATES,
+
+    /**
      * @brief Tx Grant Ups Tq
      *
      * @type sai_uint64_t
@@ -14936,6 +15013,14 @@ typedef enum _sai_pon_onu_statistics_accumulating_olt_pon_omcc_attr_t
     SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_TX_OAM,
 
     /**
+     * @brief Tx Plain Frames
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_TX_PLAIN_FRAMES,
+
+    /**
      * @brief Tx Plain Octets
      *
      * @type sai_uint64_t
@@ -14958,6 +15043,14 @@ typedef enum _sai_pon_onu_statistics_accumulating_olt_pon_omcc_attr_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_TX_PLOAM_DS_RANGING_TIME,
+
+    /**
+     * @brief Tx Rate Bps
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_OLT_PON_OMCC_ATTR_TX_RATE_BPS,
 
     /**
      * @brief Tx Total Octets
@@ -15056,7 +15149,7 @@ typedef enum _sai_pon_onu_statistics_accumulating_olt_pon_service_attr_t
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint8_t
      * @flags CREATE_ONLY
      * @default 0
      */
@@ -15903,8 +15996,9 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_enhanced_tc_pm_attr_t
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_ENHANCED_TC_PM_ATTR_ONU_ID,
@@ -16024,9 +16118,8 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_enhanced_tc_pm_attr_t
     /**
      * @brief Threshold Data 64 Bit ID
      *
-     * @type sai_uint16_t
+     * @type sai_uint64_t
      * @flags READ_ONLY
-     * @isvlan false
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_ENHANCED_TC_PM_ATTR_THRESHOLD_DATA_64_BIT_ID,
 
@@ -16103,8 +16196,9 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_ethernet_frame_extended_pm
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_ETHERNET_FRAME_EXTENDED_PM_ATTR_ONU_ID,
@@ -16112,7 +16206,7 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_ethernet_frame_extended_pm
     /**
      * @brief Direction
      *
-     * @type sai_uint8_t
+     * @type sai_int32_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_ETHERNET_FRAME_EXTENDED_PM_ATTR_DIRECTION,
@@ -16310,8 +16404,9 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_ethernet_frame_extended_pm
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_ETHERNET_FRAME_EXTENDED_PM_64BIT_ATTR_ONU_ID,
@@ -16319,7 +16414,7 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_ethernet_frame_extended_pm
     /**
      * @brief Direction
      *
-     * @type sai_uint8_t
+     * @type sai_int32_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_ETHERNET_FRAME_EXTENDED_PM_64BIT_ATTR_DIRECTION,
@@ -16517,8 +16612,9 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_ethernet_frame_pm_downstre
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_ETHERNET_FRAME_PM_DOWNSTREAM_ATTR_ONU_ID,
@@ -16636,13 +16732,13 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_ethernet_frame_pm_downstre
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_ETHERNET_FRAME_PM_DOWNSTREAM_ATTR_PACKETS_65_TO_127_OCTETS,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_ETHERNET_FRAME_PM_DOWNSTREAM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_ETHERNET_FRAME_PM_DOWNSTREAM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief Undersize Packets
@@ -16725,8 +16821,9 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_ethernet_frame_pm_upstream
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_ETHERNET_FRAME_PM_UPSTREAM_ATTR_ONU_ID,
@@ -16844,13 +16941,13 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_ethernet_frame_pm_upstream
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_ETHERNET_FRAME_PM_UPSTREAM_ATTR_PACKETS_65_TO_127_OCTETS,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_ETHERNET_FRAME_PM_UPSTREAM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_ETHERNET_FRAME_PM_UPSTREAM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief Undersize Packets
@@ -16933,8 +17030,9 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_ethernet_pm_attr_t
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_ETHERNET_PM_ATTR_ONU_ID,
@@ -17060,13 +17158,13 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_ethernet_pm_attr_t
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_ETHERNET_PM_ATTR_SQE_COUNTER,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_ETHERNET_PM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_ETHERNET_PM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief End of attributes
@@ -17141,8 +17239,9 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_ethernet_pm3_attr_t
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_ETHERNET_PM3_ATTR_ONU_ID,
@@ -17260,13 +17359,13 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_ethernet_pm3_attr_t
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_ETHERNET_PM3_ATTR_PACKETS_1024_TO_1518_OCTETS,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_ETHERNET_PM3_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_ETHERNET_PM3_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief Undersize Packets
@@ -17349,8 +17448,9 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_fec_pm_attr_t
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_FEC_PM_ATTR_ONU_ID,
@@ -17388,13 +17488,13 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_fec_pm_attr_t
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_FEC_PM_ATTR_INTERVAL_END_TIME,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_FEC_PM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_FEC_PM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief Total Code Words
@@ -17485,8 +17585,9 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_gal_ethernet_pm_attr_t
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_GAL_ETHERNET_PM_ATTR_ONU_ID,
@@ -17516,13 +17617,13 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_gal_ethernet_pm_attr_t
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_GAL_ETHERNET_PM_ATTR_INTERVAL_END_TIME,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_GAL_ETHERNET_PM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_GAL_ETHERNET_PM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief End of attributes
@@ -17597,8 +17698,9 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_gem_port_network_ctp_pm_at
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_GEM_PORT_NETWORK_CTP_PM_ATTR_ONU_ID,
@@ -17636,13 +17738,13 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_gem_port_network_ctp_pm_at
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_GEM_PORT_NETWORK_CTP_PM_ATTR_RECEIVED_PAYLOAD_BYTES,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_GEM_PORT_NETWORK_CTP_PM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_GEM_PORT_NETWORK_CTP_PM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief Transmitted Gem Frames
@@ -17733,8 +17835,9 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_ip_host_perf_mon_hist_data
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_IP_HOST_PERF_MON_HIST_DATA_ATTR_ONU_ID,
@@ -17796,13 +17899,13 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_ip_host_perf_mon_hist_data
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_IP_HOST_PERF_MON_HIST_DATA_ATTR_OUT_OF_MEMORY,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_IP_HOST_PERF_MON_HIST_DATA_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_IP_HOST_PERF_MON_HIST_DATA_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief End of attributes
@@ -17877,8 +17980,9 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_mac_bridge_port_pm_attr_t
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_MAC_BRIDGE_PORT_PM_ATTR_ONU_ID,
@@ -17932,13 +18036,13 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_mac_bridge_port_pm_attr_t
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_MAC_BRIDGE_PORT_PM_ATTR_RECEIVED_FRAME_COUNTER,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_MAC_BRIDGE_PORT_PM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_MAC_BRIDGE_PORT_PM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief End of attributes
@@ -18013,8 +18117,9 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_operational_pm_attr_t
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_OPERATIONAL_PM_ATTR_ONU_ID,
@@ -18084,18 +18189,18 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_operational_pm_attr_t
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_OPERATIONAL_PM_ATTR_SOFTWARE_ERRORS,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_OPERATIONAL_PM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_OPERATIONAL_PM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief Temperature Sensor Description
      *
-     * @type sai_s8_list_t
+     * @type sai_uint64_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_OPERATIONAL_PM_ATTR_TEMPERATURE_SENSOR_DESCRIPTION,
@@ -18181,7 +18286,7 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_pon_attr_t
     /**
      * @brief Rx Optical Level
      *
-     * @type sai_uint64_t
+     * @type sai_int64_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_PON_ATTR_RX_OPTICAL_LEVEL,
@@ -18189,7 +18294,7 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_pon_attr_t
     /**
      * @brief Tx Optical Level
      *
-     * @type sai_uint64_t
+     * @type sai_int64_t
      * @flags READ_ONLY
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_PON_ATTR_TX_OPTICAL_LEVEL,
@@ -18267,8 +18372,9 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_rs232_rs485_perf_mon_hist_
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_RS232_RS485_PERF_MON_HIST_DATA_ATTR_ONU_ID,
@@ -18314,13 +18420,13 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_rs232_rs485_perf_mon_hist_
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_RS232_RS485_PERF_MON_HIST_DATA_ATTR_OUTGOING_BYTES_FROM_PON,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_RS232_RS485_PERF_MON_HIST_DATA_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_RS232_RS485_PERF_MON_HIST_DATA_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief End of attributes
@@ -18395,8 +18501,9 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_tcp_udp_perf_mon_hist_data
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_TCP_UDP_PERF_MON_HIST_DATA_ATTR_ONU_ID,
@@ -18450,13 +18557,13 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_tcp_udp_perf_mon_hist_data
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_TCP_UDP_PERF_MON_HIST_DATA_ATTR_SOCKET_FAILED,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_TCP_UDP_PERF_MON_HIST_DATA_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_TCP_UDP_PERF_MON_HIST_DATA_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief End of attributes
@@ -18531,8 +18638,9 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_xg_pon_downstream_mgmt_pm_
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_XG_PON_DOWNSTREAM_MGMT_PM_ATTR_ONU_ID,
@@ -18546,13 +18654,13 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_xg_pon_downstream_mgmt_pm_
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_XG_PON_DOWNSTREAM_MGMT_PM_ATTR_INTERVAL_END_TIME,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_XG_PON_DOWNSTREAM_MGMT_PM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_XG_PON_DOWNSTREAM_MGMT_PM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief Ploam Mic Error Count
@@ -18739,8 +18847,9 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_xg_pon_upstream_mgmt_pm_at
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_XG_PON_UPSTREAM_MGMT_PM_ATTR_ONU_ID,
@@ -18754,13 +18863,13 @@ typedef enum _sai_pon_onu_statistics_accumulating_onu_xg_pon_upstream_mgmt_pm_at
     SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_XG_PON_UPSTREAM_MGMT_PM_ATTR_INTERVAL_END_TIME,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_XG_PON_UPSTREAM_MGMT_PM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_ACCUMULATING_ONU_XG_PON_UPSTREAM_MGMT_PM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief Upstream Ploam Message Count
@@ -18883,8 +18992,9 @@ typedef enum _sai_pon_onu_statistics_streaming_onu_enhanced_tc_pm_attr_t
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_STREAMING_ONU_ENHANCED_TC_PM_ATTR_ONU_ID,
@@ -19004,9 +19114,8 @@ typedef enum _sai_pon_onu_statistics_streaming_onu_enhanced_tc_pm_attr_t
     /**
      * @brief Threshold Data 64 Bit ID
      *
-     * @type sai_uint16_t
+     * @type sai_uint64_t
      * @flags READ_ONLY
-     * @isvlan false
      */
     SAI_PON_ONU_STATISTICS_STREAMING_ONU_ENHANCED_TC_PM_ATTR_THRESHOLD_DATA_64_BIT_ID,
 
@@ -19083,8 +19192,9 @@ typedef enum _sai_pon_onu_statistics_streaming_onu_ethernet_frame_pm_downstream_
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_STREAMING_ONU_ETHERNET_FRAME_PM_DOWNSTREAM_ATTR_ONU_ID,
@@ -19202,13 +19312,13 @@ typedef enum _sai_pon_onu_statistics_streaming_onu_ethernet_frame_pm_downstream_
     SAI_PON_ONU_STATISTICS_STREAMING_ONU_ETHERNET_FRAME_PM_DOWNSTREAM_ATTR_PACKETS_65_TO_127_OCTETS,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_STREAMING_ONU_ETHERNET_FRAME_PM_DOWNSTREAM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_STREAMING_ONU_ETHERNET_FRAME_PM_DOWNSTREAM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief Undersize Packets
@@ -19291,8 +19401,9 @@ typedef enum _sai_pon_onu_statistics_streaming_onu_ethernet_frame_pm_upstream_at
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_STREAMING_ONU_ETHERNET_FRAME_PM_UPSTREAM_ATTR_ONU_ID,
@@ -19410,13 +19521,13 @@ typedef enum _sai_pon_onu_statistics_streaming_onu_ethernet_frame_pm_upstream_at
     SAI_PON_ONU_STATISTICS_STREAMING_ONU_ETHERNET_FRAME_PM_UPSTREAM_ATTR_PACKETS_65_TO_127_OCTETS,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_STREAMING_ONU_ETHERNET_FRAME_PM_UPSTREAM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_STREAMING_ONU_ETHERNET_FRAME_PM_UPSTREAM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief Undersize Packets
@@ -19499,8 +19610,9 @@ typedef enum _sai_pon_onu_statistics_streaming_onu_ethernet_pm_attr_t
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_STREAMING_ONU_ETHERNET_PM_ATTR_ONU_ID,
@@ -19626,13 +19738,13 @@ typedef enum _sai_pon_onu_statistics_streaming_onu_ethernet_pm_attr_t
     SAI_PON_ONU_STATISTICS_STREAMING_ONU_ETHERNET_PM_ATTR_SQE_COUNTER,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_STREAMING_ONU_ETHERNET_PM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_STREAMING_ONU_ETHERNET_PM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief End of attributes
@@ -19707,8 +19819,9 @@ typedef enum _sai_pon_onu_statistics_streaming_onu_fec_pm_attr_t
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_STREAMING_ONU_FEC_PM_ATTR_ONU_ID,
@@ -19746,13 +19859,13 @@ typedef enum _sai_pon_onu_statistics_streaming_onu_fec_pm_attr_t
     SAI_PON_ONU_STATISTICS_STREAMING_ONU_FEC_PM_ATTR_INTERVAL_END_TIME,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_STREAMING_ONU_FEC_PM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_STREAMING_ONU_FEC_PM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief Total Code Words
@@ -19843,8 +19956,9 @@ typedef enum _sai_pon_onu_statistics_streaming_onu_gal_ethernet_pm_attr_t
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_STREAMING_ONU_GAL_ETHERNET_PM_ATTR_ONU_ID,
@@ -19874,13 +19988,13 @@ typedef enum _sai_pon_onu_statistics_streaming_onu_gal_ethernet_pm_attr_t
     SAI_PON_ONU_STATISTICS_STREAMING_ONU_GAL_ETHERNET_PM_ATTR_INTERVAL_END_TIME,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_STREAMING_ONU_GAL_ETHERNET_PM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_STREAMING_ONU_GAL_ETHERNET_PM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief End of attributes
@@ -19955,8 +20069,9 @@ typedef enum _sai_pon_onu_statistics_streaming_onu_gem_port_network_ctp_pm_attr_
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_STREAMING_ONU_GEM_PORT_NETWORK_CTP_PM_ATTR_ONU_ID,
@@ -19994,13 +20109,13 @@ typedef enum _sai_pon_onu_statistics_streaming_onu_gem_port_network_ctp_pm_attr_
     SAI_PON_ONU_STATISTICS_STREAMING_ONU_GEM_PORT_NETWORK_CTP_PM_ATTR_RECEIVED_PAYLOAD_BYTES,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_STREAMING_ONU_GEM_PORT_NETWORK_CTP_PM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_STREAMING_ONU_GEM_PORT_NETWORK_CTP_PM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief Transmitted Gem Frames
@@ -20091,8 +20206,9 @@ typedef enum _sai_pon_onu_statistics_streaming_onu_rs232_rs485_perf_mon_hist_dat
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_STREAMING_ONU_RS232_RS485_PERF_MON_HIST_DATA_ATTR_ONU_ID,
@@ -20138,13 +20254,13 @@ typedef enum _sai_pon_onu_statistics_streaming_onu_rs232_rs485_perf_mon_hist_dat
     SAI_PON_ONU_STATISTICS_STREAMING_ONU_RS232_RS485_PERF_MON_HIST_DATA_ATTR_OUTGOING_BYTES_FROM_PON,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_STREAMING_ONU_RS232_RS485_PERF_MON_HIST_DATA_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_STREAMING_ONU_RS232_RS485_PERF_MON_HIST_DATA_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief End of attributes
@@ -20219,8 +20335,9 @@ typedef enum _sai_pon_onu_statistics_streaming_onu_xg_pon_downstream_mgmt_pm_att
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_STREAMING_ONU_XG_PON_DOWNSTREAM_MGMT_PM_ATTR_ONU_ID,
@@ -20234,13 +20351,13 @@ typedef enum _sai_pon_onu_statistics_streaming_onu_xg_pon_downstream_mgmt_pm_att
     SAI_PON_ONU_STATISTICS_STREAMING_ONU_XG_PON_DOWNSTREAM_MGMT_PM_ATTR_INTERVAL_END_TIME,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_STREAMING_ONU_XG_PON_DOWNSTREAM_MGMT_PM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_STREAMING_ONU_XG_PON_DOWNSTREAM_MGMT_PM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief Ploam Mic Error Count
@@ -20427,8 +20544,9 @@ typedef enum _sai_pon_onu_statistics_streaming_onu_xg_pon_upstream_mgmt_pm_attr_
     /**
      * @brief ONU ID
      *
-     * @type sai_uint32_t
+     * @type sai_uint16_t
      * @flags CREATE_ONLY
+     * @isvlan false
      * @default 0
      */
     SAI_PON_ONU_STATISTICS_STREAMING_ONU_XG_PON_UPSTREAM_MGMT_PM_ATTR_ONU_ID,
@@ -20442,13 +20560,13 @@ typedef enum _sai_pon_onu_statistics_streaming_onu_xg_pon_upstream_mgmt_pm_attr_
     SAI_PON_ONU_STATISTICS_STREAMING_ONU_XG_PON_UPSTREAM_MGMT_PM_ATTR_INTERVAL_END_TIME,
 
     /**
-     * @brief Threshold Data Half ID
+     * @brief Threshold Data 1 2 ID
      *
      * @type sai_uint16_t
      * @flags READ_ONLY
      * @isvlan false
      */
-    SAI_PON_ONU_STATISTICS_STREAMING_ONU_XG_PON_UPSTREAM_MGMT_PM_ATTR_THRESHOLD_DATA_HALF_ID,
+    SAI_PON_ONU_STATISTICS_STREAMING_ONU_XG_PON_UPSTREAM_MGMT_PM_ATTR_THRESHOLD_DATA_1_2_ID,
 
     /**
      * @brief Upstream Ploam Message Count
@@ -21137,7 +21255,7 @@ typedef enum _sai_pon_onu_template_service_config_value_attr_t
     /**
      * @brief Value Type
      *
-     * @type sai_uint8_t
+     * @type sai_int32_t
      * @flags CREATE_AND_SET
      * @default 0
      */
@@ -25527,9 +25645,8 @@ typedef enum _sai_pon_service_config_profile_mac_bridge_port_config_data_attr_t
     /**
      * @brief Port Num
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_MAC_BRIDGE_PORT_CONFIG_DATA_ATTR_PORT_NUM,
@@ -25576,9 +25693,8 @@ typedef enum _sai_pon_service_config_profile_mac_bridge_port_config_data_attr_t
     /**
      * @brief Port Spanning Tree Ind
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_MAC_BRIDGE_PORT_CONFIG_DATA_ATTR_PORT_SPANNING_TREE_IND,
@@ -25586,9 +25702,8 @@ typedef enum _sai_pon_service_config_profile_mac_bridge_port_config_data_attr_t
     /**
      * @brief Deprecated1
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_MAC_BRIDGE_PORT_CONFIG_DATA_ATTR_DEPRECATED1,
@@ -25596,9 +25711,8 @@ typedef enum _sai_pon_service_config_profile_mac_bridge_port_config_data_attr_t
     /**
      * @brief Deprecated2
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_MAC_BRIDGE_PORT_CONFIG_DATA_ATTR_DEPRECATED2,
@@ -25626,9 +25740,8 @@ typedef enum _sai_pon_service_config_profile_mac_bridge_port_config_data_attr_t
     /**
      * @brief MAC Learning Depth
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_MAC_BRIDGE_PORT_CONFIG_DATA_ATTR_MAC_LEARNING_DEPTH,
@@ -25834,9 +25947,8 @@ typedef enum _sai_pon_service_config_profile_mac_bridge_service_profile_attr_t
     /**
      * @brief Spanning Tree Ind
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_MAC_BRIDGE_SERVICE_PROFILE_ATTR_SPANNING_TREE_IND,
@@ -25844,9 +25956,8 @@ typedef enum _sai_pon_service_config_profile_mac_bridge_service_profile_attr_t
     /**
      * @brief Learning Ind
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_MAC_BRIDGE_SERVICE_PROFILE_ATTR_LEARNING_IND,
@@ -25854,9 +25965,8 @@ typedef enum _sai_pon_service_config_profile_mac_bridge_service_profile_attr_t
     /**
      * @brief Port Bridging Ind
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_MAC_BRIDGE_SERVICE_PROFILE_ATTR_PORT_BRIDGING_IND,
@@ -25864,8 +25974,9 @@ typedef enum _sai_pon_service_config_profile_mac_bridge_service_profile_attr_t
     /**
      * @brief Priority
      *
-     * @type sai_uint8_t
+     * @type sai_uint16_t
      * @flags CREATE_AND_SET
+     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_MAC_BRIDGE_SERVICE_PROFILE_ATTR_PRIORITY,
@@ -25903,9 +26014,8 @@ typedef enum _sai_pon_service_config_profile_mac_bridge_service_profile_attr_t
     /**
      * @brief Unknown MAC Address Discard
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_MAC_BRIDGE_SERVICE_PROFILE_ATTR_UNKNOWN_MAC_ADDRESS_DISCARD,
@@ -25913,9 +26023,8 @@ typedef enum _sai_pon_service_config_profile_mac_bridge_service_profile_attr_t
     /**
      * @brief MAC Learning Depth
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_MAC_BRIDGE_SERVICE_PROFILE_ATTR_MAC_LEARNING_DEPTH,
@@ -25923,9 +26032,8 @@ typedef enum _sai_pon_service_config_profile_mac_bridge_service_profile_attr_t
     /**
      * @brief Dynamic Filtering Ageing Time
      *
-     * @type sai_uint16_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_MAC_BRIDGE_SERVICE_PROFILE_ATTR_DYNAMIC_FILTERING_AGEING_TIME,
@@ -26188,9 +26296,8 @@ typedef enum _sai_pon_service_config_profile_multicast_gem_interworking_tp_ipv4_
     /**
      * @brief IPV4 Multicast Address Table Entry ID
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_MULTICAST_GEM_INTERWORKING_TP_IPV4_MULTICAST_ADDRESS_ATTR_IPV4_MULTICAST_ADDRESS_TABLE_ENTRY_ID,
@@ -26218,20 +26325,18 @@ typedef enum _sai_pon_service_config_profile_multicast_gem_interworking_tp_ipv4_
     /**
      * @brief IP Multicast Da Range Start
      *
-     * @type sai_uint16_t
+     * @type sai_s8_list_t
      * @flags CREATE_AND_SET
-     * @isvlan false
-     * @default 0
+     * @default empty
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_MULTICAST_GEM_INTERWORKING_TP_IPV4_MULTICAST_ADDRESS_ATTR_IP_MULTICAST_DA_RANGE_BEGIN,
 
     /**
      * @brief IP Multicast Da Range Stop
      *
-     * @type sai_uint16_t
+     * @type sai_s8_list_t
      * @flags CREATE_AND_SET
-     * @isvlan false
-     * @default 0
+     * @default empty
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_MULTICAST_GEM_INTERWORKING_TP_IPV4_MULTICAST_ADDRESS_ATTR_IP_MULTICAST_DA_RANGE_STOP,
 
@@ -26341,9 +26446,8 @@ typedef enum _sai_pon_service_config_profile_multicast_gem_interworking_tp_ipv6_
     /**
      * @brief IPV6 Multicast Address Table Entry ID
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_MULTICAST_GEM_INTERWORKING_TP_IPV6_MULTICAST_ADDRESS_ATTR_IPV6_MULTICAST_ADDRESS_TABLE_ENTRY_ID,
@@ -26371,30 +26475,27 @@ typedef enum _sai_pon_service_config_profile_multicast_gem_interworking_tp_ipv6_
     /**
      * @brief Lsb IP Multicast Da Range Start
      *
-     * @type sai_uint16_t
+     * @type sai_s8_list_t
      * @flags CREATE_AND_SET
-     * @isvlan false
-     * @default 0
+     * @default empty
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_MULTICAST_GEM_INTERWORKING_TP_IPV6_MULTICAST_ADDRESS_ATTR_LSB_IP_MULTICAST_DA_RANGE_BEGIN,
 
     /**
      * @brief Lsb IP Multicast Da Range Stop
      *
-     * @type sai_uint16_t
+     * @type sai_s8_list_t
      * @flags CREATE_AND_SET
-     * @isvlan false
-     * @default 0
+     * @default empty
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_MULTICAST_GEM_INTERWORKING_TP_IPV6_MULTICAST_ADDRESS_ATTR_LSB_IP_MULTICAST_DA_RANGE_STOP,
 
     /**
      * @brief Msb IP Multicast Da
      *
-     * @type sai_uint16_t
+     * @type sai_s8_list_t
      * @flags CREATE_AND_SET
-     * @isvlan false
-     * @default 0
+     * @default empty
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_MULTICAST_GEM_INTERWORKING_TP_IPV6_MULTICAST_ADDRESS_ATTR_MSB_IP_MULTICAST_DA,
 
@@ -26495,40 +26596,36 @@ typedef enum _sai_pon_service_config_profile_olt_g_attr_t
     /**
      * @brief OLT Vendor ID
      *
-     * @type sai_uint16_t
+     * @type sai_s8_list_t
      * @flags CREATE_AND_SET
-     * @isvlan false
-     * @default 0
+     * @default empty
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_OLT_G_ATTR_OLT_VENDOR_ID,
 
     /**
      * @brief Equipment ID
      *
-     * @type sai_uint16_t
+     * @type sai_s8_list_t
      * @flags CREATE_AND_SET
-     * @isvlan false
-     * @default 0
+     * @default empty
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_OLT_G_ATTR_EQUIPMENT_ID,
 
     /**
      * @brief Version
      *
-     * @type sai_uint16_t
+     * @type sai_s8_list_t
      * @flags CREATE_AND_SET
-     * @isvlan false
-     * @default 0
+     * @default empty
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_OLT_G_ATTR_VERSION,
 
     /**
      * @brief Time Of Day
      *
-     * @type sai_uint16_t
+     * @type sai_s8_list_t
      * @flags CREATE_AND_SET
-     * @isvlan false
-     * @default 0
+     * @default empty
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_OLT_G_ATTR_TIME_OF_DAY,
 
@@ -26629,9 +26726,8 @@ typedef enum _sai_pon_service_config_profile_onu2_g_attr_t
     /**
      * @brief Security Mode
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_ONU2_G_ATTR_SECURITY_MODE,
@@ -26639,9 +26735,8 @@ typedef enum _sai_pon_service_config_profile_onu2_g_attr_t
     /**
      * @brief Current Connectivity Mode
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_ONU2_G_ATTR_CURRENT_CONNECTIVITY_MODE,
@@ -26753,9 +26848,8 @@ typedef enum _sai_pon_service_config_profile_onu_g_attr_t
     /**
      * @brief Battery Backup
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_ONU_G_ATTR_BATTERY_BACKUP,
@@ -26772,9 +26866,8 @@ typedef enum _sai_pon_service_config_profile_onu_g_attr_t
     /**
      * @brief Credentials Status
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_ONU_G_ATTR_CREDENTIALS_STATUS,
@@ -26989,9 +27082,8 @@ typedef enum _sai_pon_service_config_profile_pptp_rs232_rs485_uni_attr_t
     /**
      * @brief Port Mode
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_PPTP_RS232_RS485_UNI_ATTR_PORT_MODE,
@@ -26999,9 +27091,8 @@ typedef enum _sai_pon_service_config_profile_pptp_rs232_rs485_uni_attr_t
     /**
      * @brief Baud Rate
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_PPTP_RS232_RS485_UNI_ATTR_BAUD_RATE,
@@ -27009,9 +27100,8 @@ typedef enum _sai_pon_service_config_profile_pptp_rs232_rs485_uni_attr_t
     /**
      * @brief Data Bits
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_PPTP_RS232_RS485_UNI_ATTR_DATA_BITS,
@@ -27019,9 +27109,8 @@ typedef enum _sai_pon_service_config_profile_pptp_rs232_rs485_uni_attr_t
     /**
      * @brief Parity
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_PPTP_RS232_RS485_UNI_ATTR_PARITY,
@@ -27029,9 +27118,8 @@ typedef enum _sai_pon_service_config_profile_pptp_rs232_rs485_uni_attr_t
     /**
      * @brief Stop Bits
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_PPTP_RS232_RS485_UNI_ATTR_STOP_BITS,
@@ -27039,9 +27127,8 @@ typedef enum _sai_pon_service_config_profile_pptp_rs232_rs485_uni_attr_t
     /**
      * @brief Flow Control
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_PPTP_RS232_RS485_UNI_ATTR_FLOW_CONTROL,
@@ -27173,9 +27260,8 @@ typedef enum _sai_pon_service_config_profile_priority_queue_attr_t
     /**
      * @brief Related Port
      *
-     * @type sai_uint16_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_PRIORITY_QUEUE_ATTR_RELATED_PORT,
@@ -27212,9 +27298,8 @@ typedef enum _sai_pon_service_config_profile_priority_queue_attr_t
     /**
      * @brief Back Pressure Time
      *
-     * @type sai_uint16_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_PRIORITY_QUEUE_ATTR_BACK_PRESSURE_TIME,
@@ -27252,9 +27337,8 @@ typedef enum _sai_pon_service_config_profile_priority_queue_attr_t
     /**
      * @brief Queue Drop W Q
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_PRIORITY_QUEUE_ATTR_QUEUE_DROP_W_Q,
@@ -27262,9 +27346,8 @@ typedef enum _sai_pon_service_config_profile_priority_queue_attr_t
     /**
      * @brief Drop Precedence Colour Marking
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_PRIORITY_QUEUE_ATTR_DROP_PRECEDENCE_COLOUR_MARKING,
@@ -27718,9 +27801,8 @@ typedef enum _sai_pon_service_config_profile_ssh_server_operation_attr_t
     /**
      * @brief Server Action
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_SSH_SERVER_OPERATION_ATTR_SERVER_ACTION,
@@ -28068,9 +28150,8 @@ typedef enum _sai_pon_service_config_profile_tcp_udp_config_data_attr_t
     /**
      * @brief TOS Diffserv Field
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_TCP_UDP_CONFIG_DATA_ATTR_TOS_DIFFSERV_FIELD,
@@ -28286,7 +28367,7 @@ typedef enum _sai_pon_service_config_profile_threshold_data64_bit_attr_t
     /**
      * @brief Threshold Value 1
      *
-     * @type sai_uint16_t
+     * @type sai_uint64_t
      * @flags CREATE_AND_SET
      * @isvlan false
      * @default 0
@@ -28296,7 +28377,7 @@ typedef enum _sai_pon_service_config_profile_threshold_data64_bit_attr_t
     /**
      * @brief Threshold Value 2
      *
-     * @type sai_uint16_t
+     * @type sai_uint64_t
      * @flags CREATE_AND_SET
      * @isvlan false
      * @default 0
@@ -28306,7 +28387,7 @@ typedef enum _sai_pon_service_config_profile_threshold_data64_bit_attr_t
     /**
      * @brief Threshold Value 3
      *
-     * @type sai_uint16_t
+     * @type sai_uint64_t
      * @flags CREATE_AND_SET
      * @isvlan false
      * @default 0
@@ -28316,7 +28397,7 @@ typedef enum _sai_pon_service_config_profile_threshold_data64_bit_attr_t
     /**
      * @brief Threshold Value 4
      *
-     * @type sai_uint16_t
+     * @type sai_uint64_t
      * @flags CREATE_AND_SET
      * @isvlan false
      * @default 0
@@ -28326,7 +28407,7 @@ typedef enum _sai_pon_service_config_profile_threshold_data64_bit_attr_t
     /**
      * @brief Threshold Value 5
      *
-     * @type sai_uint16_t
+     * @type sai_uint64_t
      * @flags CREATE_AND_SET
      * @isvlan false
      * @default 0
@@ -28336,7 +28417,7 @@ typedef enum _sai_pon_service_config_profile_threshold_data64_bit_attr_t
     /**
      * @brief Threshold Value 6
      *
-     * @type sai_uint16_t
+     * @type sai_uint64_t
      * @flags CREATE_AND_SET
      * @isvlan false
      * @default 0
@@ -28346,7 +28427,7 @@ typedef enum _sai_pon_service_config_profile_threshold_data64_bit_attr_t
     /**
      * @brief Threshold Value 7
      *
-     * @type sai_uint16_t
+     * @type sai_uint64_t
      * @flags CREATE_AND_SET
      * @isvlan false
      * @default 0
@@ -28356,7 +28437,7 @@ typedef enum _sai_pon_service_config_profile_threshold_data64_bit_attr_t
     /**
      * @brief Threshold Value 8
      *
-     * @type sai_uint16_t
+     * @type sai_uint64_t
      * @flags CREATE_AND_SET
      * @isvlan false
      * @default 0
@@ -28366,7 +28447,7 @@ typedef enum _sai_pon_service_config_profile_threshold_data64_bit_attr_t
     /**
      * @brief Threshold Value 9
      *
-     * @type sai_uint16_t
+     * @type sai_uint64_t
      * @flags CREATE_AND_SET
      * @isvlan false
      * @default 0
@@ -28376,7 +28457,7 @@ typedef enum _sai_pon_service_config_profile_threshold_data64_bit_attr_t
     /**
      * @brief Threshold Value 10
      *
-     * @type sai_uint16_t
+     * @type sai_uint64_t
      * @flags CREATE_AND_SET
      * @isvlan false
      * @default 0
@@ -28386,7 +28467,7 @@ typedef enum _sai_pon_service_config_profile_threshold_data64_bit_attr_t
     /**
      * @brief Threshold Value 11
      *
-     * @type sai_uint16_t
+     * @type sai_uint64_t
      * @flags CREATE_AND_SET
      * @isvlan false
      * @default 0
@@ -28396,7 +28477,7 @@ typedef enum _sai_pon_service_config_profile_threshold_data64_bit_attr_t
     /**
      * @brief Threshold Value 12
      *
-     * @type sai_uint16_t
+     * @type sai_uint64_t
      * @flags CREATE_AND_SET
      * @isvlan false
      * @default 0
@@ -28406,7 +28487,7 @@ typedef enum _sai_pon_service_config_profile_threshold_data64_bit_attr_t
     /**
      * @brief Threshold Value 13
      *
-     * @type sai_uint16_t
+     * @type sai_uint64_t
      * @flags CREATE_AND_SET
      * @isvlan false
      * @default 0
@@ -28416,7 +28497,7 @@ typedef enum _sai_pon_service_config_profile_threshold_data64_bit_attr_t
     /**
      * @brief Threshold Value 14
      *
-     * @type sai_uint16_t
+     * @type sai_uint64_t
      * @flags CREATE_AND_SET
      * @isvlan false
      * @default 0
@@ -28520,9 +28601,8 @@ typedef enum _sai_pon_service_config_profile_threshold_data_one_attr_t
     /**
      * @brief Threshold Value 1
      *
-     * @type sai_uint16_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_THRESHOLD_DATA_ONE_ATTR_THRESHOLD_VALUE_1,
@@ -28530,9 +28610,8 @@ typedef enum _sai_pon_service_config_profile_threshold_data_one_attr_t
     /**
      * @brief Threshold Value 2
      *
-     * @type sai_uint16_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_THRESHOLD_DATA_ONE_ATTR_THRESHOLD_VALUE_2,
@@ -28540,9 +28619,8 @@ typedef enum _sai_pon_service_config_profile_threshold_data_one_attr_t
     /**
      * @brief Threshold Value 3
      *
-     * @type sai_uint16_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_THRESHOLD_DATA_ONE_ATTR_THRESHOLD_VALUE_3,
@@ -28550,9 +28628,8 @@ typedef enum _sai_pon_service_config_profile_threshold_data_one_attr_t
     /**
      * @brief Threshold Value 4
      *
-     * @type sai_uint16_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_THRESHOLD_DATA_ONE_ATTR_THRESHOLD_VALUE_4,
@@ -28560,9 +28637,8 @@ typedef enum _sai_pon_service_config_profile_threshold_data_one_attr_t
     /**
      * @brief Threshold Value 5
      *
-     * @type sai_uint16_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_THRESHOLD_DATA_ONE_ATTR_THRESHOLD_VALUE_5,
@@ -28570,9 +28646,8 @@ typedef enum _sai_pon_service_config_profile_threshold_data_one_attr_t
     /**
      * @brief Threshold Value 6
      *
-     * @type sai_uint16_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_THRESHOLD_DATA_ONE_ATTR_THRESHOLD_VALUE_6,
@@ -28580,9 +28655,8 @@ typedef enum _sai_pon_service_config_profile_threshold_data_one_attr_t
     /**
      * @brief Threshold Value 7
      *
-     * @type sai_uint16_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_THRESHOLD_DATA_ONE_ATTR_THRESHOLD_VALUE_7,
@@ -28684,9 +28758,8 @@ typedef enum _sai_pon_service_config_profile_threshold_data_two_attr_t
     /**
      * @brief Threshold Value 8
      *
-     * @type sai_uint16_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_THRESHOLD_DATA_TWO_ATTR_THRESHOLD_VALUE_8,
@@ -28694,9 +28767,8 @@ typedef enum _sai_pon_service_config_profile_threshold_data_two_attr_t
     /**
      * @brief Threshold Value 9
      *
-     * @type sai_uint16_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_THRESHOLD_DATA_TWO_ATTR_THRESHOLD_VALUE_9,
@@ -28704,9 +28776,8 @@ typedef enum _sai_pon_service_config_profile_threshold_data_two_attr_t
     /**
      * @brief Threshold Value 10
      *
-     * @type sai_uint16_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_THRESHOLD_DATA_TWO_ATTR_THRESHOLD_VALUE_10,
@@ -28714,9 +28785,8 @@ typedef enum _sai_pon_service_config_profile_threshold_data_two_attr_t
     /**
      * @brief Threshold Value 11
      *
-     * @type sai_uint16_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_THRESHOLD_DATA_TWO_ATTR_THRESHOLD_VALUE_11,
@@ -28724,9 +28794,8 @@ typedef enum _sai_pon_service_config_profile_threshold_data_two_attr_t
     /**
      * @brief Threshold Value 12
      *
-     * @type sai_uint16_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_THRESHOLD_DATA_TWO_ATTR_THRESHOLD_VALUE_12,
@@ -28734,9 +28803,8 @@ typedef enum _sai_pon_service_config_profile_threshold_data_two_attr_t
     /**
      * @brief Threshold Value 13
      *
-     * @type sai_uint16_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_THRESHOLD_DATA_TWO_ATTR_THRESHOLD_VALUE_13,
@@ -28744,9 +28812,8 @@ typedef enum _sai_pon_service_config_profile_threshold_data_two_attr_t
     /**
      * @brief Threshold Value 14
      *
-     * @type sai_uint16_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_THRESHOLD_DATA_TWO_ATTR_THRESHOLD_VALUE_14,
@@ -28884,9 +28951,8 @@ typedef enum _sai_pon_service_config_profile_traffic_descriptor_attr_t
     /**
      * @brief Colour Mode
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_TRAFFIC_DESCRIPTOR_ATTR_COLOUR_MODE,
@@ -28894,9 +28960,8 @@ typedef enum _sai_pon_service_config_profile_traffic_descriptor_attr_t
     /**
      * @brief Ingress Colour Marking
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_TRAFFIC_DESCRIPTOR_ATTR_INGRESS_COLOUR_MARKING,
@@ -28904,9 +28969,8 @@ typedef enum _sai_pon_service_config_profile_traffic_descriptor_attr_t
     /**
      * @brief Egress Colour Marking
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_TRAFFIC_DESCRIPTOR_ATTR_EGRESS_COLOUR_MARKING,
@@ -29027,9 +29091,8 @@ typedef enum _sai_pon_service_config_profile_traffic_scheduler_attr_t
     /**
      * @brief Priority Weight
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_TRAFFIC_SCHEDULER_ATTR_PRIORITY_WEIGHT,
@@ -29140,10 +29203,9 @@ typedef enum _sai_pon_service_config_profile_virtual_ethernet_interface_pt_attr_
     /**
      * @brief Interdomain Service Config Profile Name
      *
-     * @type sai_uint16_t
+     * @type sai_s8_list_t
      * @flags CREATE_AND_SET
-     * @isvlan false
-     * @default 0
+     * @default empty
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_VIRTUAL_ETHERNET_INTERFACE_PT_ATTR_INTERDOMAIN_SERVICE_CONFIG_PROFILE_NAME,
 
@@ -29263,9 +29325,8 @@ typedef enum _sai_pon_service_config_profile_vlan_tagging_filter_data_attr_t
     /**
      * @brief Number Of Entries
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_VLAN_TAGGING_FILTER_DATA_ATTR_NUMBER_OF_ENTRIES,
@@ -29376,9 +29437,8 @@ typedef enum _sai_pon_service_config_profile_vlan_tagging_filter_data_vlan_filte
     /**
      * @brief Vlan Filter Entry ID
      *
-     * @type sai_uint16_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PON_SERVICE_CONFIG_PROFILE_VLAN_TAGGING_FILTER_DATA_VLAN_FILTER_ATTR_VLAN_FILTER_ENTRY_ID,
@@ -29792,99 +29852,99 @@ typedef enum _sai_pon_sla_profile_attr_t
     /**
      * @brief Downstream Guaranteed Rate
      *
-     * @type sai_s8_list_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @default empty
+     * @default 0
      */
     SAI_PON_SLA_PROFILE_ATTR_DOWNSTREAM_GUARANTEED_RATE,
 
     /**
      * @brief Downstream Guaranteed Maximum Burst
      *
-     * @type sai_s8_list_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @default empty
+     * @default 0
      */
     SAI_PON_SLA_PROFILE_ATTR_DOWNSTREAM_GUARANTEED_MAXIMUM_BURST,
 
     /**
      * @brief Downstream Best Effort Rate
      *
-     * @type sai_s8_list_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @default empty
+     * @default 0
      */
     SAI_PON_SLA_PROFILE_ATTR_DOWNSTREAM_BEST_EFFORT_RATE,
 
     /**
      * @brief Downstream Best Effort Maximum Burst
      *
-     * @type sai_s8_list_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @default empty
+     * @default 0
      */
     SAI_PON_SLA_PROFILE_ATTR_DOWNSTREAM_BEST_EFFORT_MAXIMUM_BURST,
 
     /**
      * @brief Upstream Fixed Rate
      *
-     * @type sai_s8_list_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @default empty
+     * @default 0
      */
     SAI_PON_SLA_PROFILE_ATTR_UPSTREAM_FIXED_RATE,
 
     /**
      * @brief Upstream Guaranteed Rate
      *
-     * @type sai_s8_list_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @default empty
+     * @default 0
      */
     SAI_PON_SLA_PROFILE_ATTR_UPSTREAM_GUARANTEED_RATE,
 
     /**
      * @brief Upstream Guaranteed Maximum Burst
      *
-     * @type sai_s8_list_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @default empty
+     * @default 0
      */
     SAI_PON_SLA_PROFILE_ATTR_UPSTREAM_GUARANTEED_MAXIMUM_BURST,
 
     /**
      * @brief Upstream Priority
      *
-     * @type sai_s8_list_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @default empty
+     * @default 0
      */
     SAI_PON_SLA_PROFILE_ATTR_UPSTREAM_PRIORITY,
 
     /**
      * @brief Upstream Best Effort Rate
      *
-     * @type sai_s8_list_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @default empty
+     * @default 0
      */
     SAI_PON_SLA_PROFILE_ATTR_UPSTREAM_BEST_EFFORT_RATE,
 
     /**
      * @brief Upstream Best Effort Maximum Burst
      *
-     * @type sai_s8_list_t
+     * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @default empty
+     * @default 0
      */
     SAI_PON_SLA_PROFILE_ATTR_UPSTREAM_BEST_EFFORT_MAXIMUM_BURST,
 
     /**
      * @brief Upstream Best Effort Priority
      *
-     * @type sai_s8_list_t
+     * @type sai_uint8_t
      * @flags CREATE_AND_SET
-     * @default empty
+     * @default 0
      */
     SAI_PON_SLA_PROFILE_ATTR_UPSTREAM_BEST_EFFORT_PRIORITY,
 
@@ -30359,9 +30419,6 @@ typedef struct _sai_pon_api_t
 
     sai_get_pon_onu_olt_service_downstream_qos_map_map_state_attribute_fn                                                             get_pon_onu_olt_service_downstream_qos_map_map_state_attribute;
     sai_bulk_get_pon_onu_olt_service_downstream_qos_map_map_state_attribute_fn                                                        get_pon_onu_olt_service_downstream_qos_map_map_states_attribute;
-
-    sai_get_pon_onu_uni_learned_addresses_state_attribute_fn                                                                          get_pon_onu_uni_learned_addresses_state_attribute;
-    sai_bulk_get_pon_onu_uni_learned_addresses_state_attribute_fn                                                                     get_pon_onu_uni_learned_addresses_states_attribute;
 
     sai_get_pon_onu_state_attribute_fn                                                                                                get_pon_onu_state_attribute;
     sai_bulk_get_pon_onu_state_attribute_fn                                                                                           get_pon_onu_states_attribute;

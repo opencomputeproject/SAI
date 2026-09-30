@@ -93,7 +93,6 @@ leafrefs back to its `onu-name`.
 | PON_ONU_OLT_SERVICE_DOWNSTREAM_QOS_MAP_MAP_STATE | onu-name, olt-service-id, priority | onu-name -> PON_ONU_OLT_SERVICE_DOWNSTREAM_QOS_MAP_STATE/onu-name; olt-service-id -> PON_ONU_OLT_SERVICE_DOWNSTREAM_QOS_MAP_STATE/olt-service-id |
 | PON_ONU_OLT_SERVICE_NETWORK_STATE                | onu-name, olt-service-id, vlan-id  | onu-name -> PON_ONU_STATE/onu-name; olt-service-id -> PON_ONU_OLT_SERVICE_STATE/olt-service-id                                                   |
 | PON_ONU_UNI_STATE                                | onu-name, port-id                  | onu-name -> PON_ONU_STATE/onu-name                                                                                                               |
-| PON_ONU_UNI_LEARNED_ADDRESSES_STATE              | onu-name, port-id                  | onu-name -> PON_ONU_STATE/onu-name; port-id -> PON_ONU_UNI_STATE/port-id                                                                         |
 | PON_ONU_FW_BANK_VERSION_STATE                    | onu-name, bank-id                  | onu-name -> PON_ONU_STATE/onu-name                                                                                                               |
 
 ## Table Form — BINNED Statistics
@@ -183,7 +182,6 @@ Shared leafref on every row: `onu-name` -> `PON_ONU_STATE/onu-name`. All are key
 | PON_ONU_UNI                  | PON_ONU_UNI_STATE                               | none                         |
 | PON_ONU_FW_BANK_FILE         | PON_ONU_FW_BANK_VERSION_STATE                   | none (`onu-name`, `bank-id`) |
 | PON_ONU_SERVICE_CONFIG_VALUE | _(no state counterpart)_                        | —                            |
-| _(no config counterpart)_    | PON_ONU_UNI_LEARNED_ADDRESSES_STATE             | —                            |
 | _(no config counterpart)_    | PON_ONU_OLT_SERVICE_DOWNSTREAM_QOS_MAP\*\_STATE | —                            |
 
 Note: the same logical PM counter set is keyed on `me-id` in the BINNED family but on
