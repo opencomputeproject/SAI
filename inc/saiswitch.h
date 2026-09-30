@@ -3706,6 +3706,70 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_MAX_FW_CORES,
 
     /**
+     * @brief Alternate marking interval time in seconds
+     *
+     * Zero disables alternate marking. Nonzero configures the global IPM
+     * loss-measurement marking cadence in seconds.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_IPM_ALTERNATE_MARKING_INTERVAL,
+
+    /**
+     * @brief IPM sessions instantiated on the switch
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_IPM_SESSION
+     */
+    SAI_SWITCH_ATTR_IPM_SESSION_LIST,
+
+    /**
+     * @brief IPM local UDP port range
+     *
+     * Switch-wide inclusive range of local UDP ports used for IPM receive processing.
+     * The default zero range leaves IPM receive ports unconfigured.
+     *
+     * @type sai_u16_range_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_IPM_LOCAL_UDP_PORT_RANGE,
+
+    /**
+     * @brief Maximum number of bins in a single IPM histogram profile
+     *
+     * @type sai_uint16_t
+     * @flags READ_ONLY
+     * @isvlan false
+     */
+    SAI_SWITCH_ATTR_IPM_MAX_HISTOGRAM_BINS,
+
+    /**
+     * @brief Set Switch IPM session state change event notification callback function passed to the adapter.
+     *
+     * Use sai_ipm_session_state_change_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_ipm_session_state_change_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_IPM_SESSION_STATE_CHANGE_NOTIFY,
+
+    /**
+     * @brief Set Switch IPM session alternate marking change event notification callback function passed to the adapter.
+     *
+     * Use sai_ipm_session_alternate_marking_change_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_ipm_session_alternate_marking_change_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_IPM_SESSION_ALTERNATE_MARKING_CHANGE_NOTIFY,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,

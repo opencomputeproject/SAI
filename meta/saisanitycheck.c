@@ -1077,6 +1077,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_INT16:
         case SAI_ATTR_VALUE_TYPE_UINT32:
         case SAI_ATTR_VALUE_TYPE_UINT64:
+        case SAI_ATTR_VALUE_TYPE_UINT16_RANGE:
         case SAI_ATTR_VALUE_TYPE_MAC:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
