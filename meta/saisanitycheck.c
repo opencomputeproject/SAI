@@ -466,11 +466,11 @@ void check_attr_by_object_type()
             META_ASSERT_TRUE(current == sai_metadata_all_object_type_infos[idx]->objecttype, "object type must be equal on object type list");
 
             /*
-             * For Switch Attribute we have crossed > 300 with Vendor extension
-             * for SAI v1.8.0 so increasing threshold.
+             * For Switch/Port Attribute we have crossed > 300 with Vendor extension
+             * so increasing threshold.
              */
 
-            META_ASSERT_TRUE(index < 300, "object defines > 300 attributes, metadata bug?");
+            META_ASSERT_TRUE(index < 400, "object defines > 400 attributes, metadata bug?");
             META_ASSERT_TRUE(current > SAI_OBJECT_TYPE_NULL, "object type must be > NULL");
 
             if (current > SAI_OBJECT_TYPE_NULL && current < SAI_OBJECT_TYPE_MAX)
@@ -1077,6 +1077,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_INT16:
         case SAI_ATTR_VALUE_TYPE_UINT32:
         case SAI_ATTR_VALUE_TYPE_UINT64:
+        case SAI_ATTR_VALUE_TYPE_INT64:
         case SAI_ATTR_VALUE_TYPE_MAC:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX:

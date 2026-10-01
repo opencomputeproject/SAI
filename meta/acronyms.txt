@@ -116,6 +116,7 @@ NAPT - Network Address Port Translation
 NHLFE - Next Hop Label Forwarding Entry
 NMOS - N-channel Metal Oxide Semiconductor
 NPU - Numeric Processing Unit
+NRR - Neighbor Rate Ratio
 NRZ - Non Return to Zero
 NTPCLIENT - Network Time Protocol Client
 NTPSERVER - Network Time Protocol Server
