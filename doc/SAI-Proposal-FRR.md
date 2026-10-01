@@ -93,7 +93,7 @@ interface, BFD session, ICMP ECHO session etc.
 
 It is preferred that the switchover is triggered by the switching entity without
 involving control plane in the process.  This way the amount of time it takes to
-switch traffic to the backup next hop is signifficantly smaller.
+switch traffic to the backup next hop is significantly smaller.
 
 However, different models of hardware have different capabilities with respect
 to the object that they can monitor.  For example, not all chipsets support running
@@ -102,7 +102,7 @@ to trigger a switchover.  In the mentioned example, it is the control plane that
 runs a BFD process and triggers a switchover when a particular BFD session fails.
 
 Therefore, this proposal has to meet the following requirements:
--   Control plane must be able to learn about monitoring capabilities of the swithing entity.
+-   Control plane must be able to learn about monitoring capabilities of the switching entity.
 -   If the switching entity supports monitoring of a particular object, control plane
     must be able to inform the switch which instance of this object should be
     monitored for a given next hop.
@@ -140,12 +140,20 @@ program more than two next hops within a single Protection Next Hop
 Group. It is outside the scope of this proposal to specify how the
 Adapter or Adapter Host should enforce this condition.
 
-Additionally, new attribute is added to allow the Control Plane stack to
-initiate and revert the failover. The new attribute is
-SAI\_NEXT\_HOP\_GROUP\_ATTR\_SET\_SWITCHOVER. This is required for
-example in the scenario when the BFD process runs in the Control Plane
-process rather than in the Switching Entity and the Control Plane stack
-has to trigger a switchover “manually”.
+- SAI_NEXT_HOP_GROUP_ATTR_ADMIN_ROLE
+  - This attribute controls the administrative role of a protection group when the switching entity manages failover automatically.
+  - It allows the Control Plane to enforce the desired protection-group role on the switching entity.
+  - The Control Plane can set the role to AUTO (default), PRIMARY, or STANDBY.
+  - When set to Auto
+    - On protection groups with monitored objects, the switching entity determines the active role based on its failover policy and monitored state.
+    - On Software switching groups (no MONITORED_OBJECT is configured), AUTO would behave as PRIMARY
+  - See SAI_NEXT_HOP_GROUP_MEMBER_ATTR_MONITORED_OBJECT below for details on monitored state.
+- SAI_NEXT_HOP_GROUP_ATTR_SET_SWITCHOVER
+  - This attribute allows the Control Plane stack to initiate and revert the failover.
+  - This is required in the scenarios such as when the BFD process runs in the Control Plane
+    rather than in the Switching Entity. The Control Plane stack has to trigger the
+    switchover based upon state of the BFD session.
+
 
 ### Next Hop Group Member
 
@@ -167,28 +175,28 @@ in a protection group. The attributes are:
         - SAI\_NEXT\_HOP\_GROUP\_MEMBER\_OBSERVED\_ROLE\_INACTIVE - This next hop is currently not forwarding any traffic.
 
 Furthermore, an attribute is added to the Next Hop Group Member to identify
-the object that needs to be monitored by the swithing entity.  The object must
+the object that needs to be monitored by the switching entity.  The object must
 be of one of the types that the hardware is able to monitor.
 
 -  SAI\_NEXT\_HOP\_GROUP\_MEMBER\_ATTR\_MONITORED\_OBJECT
+   This attribute allows the switching entity to monitor a specified object
+   (BFD session, ICMP ECHO session, physical port, tunnel interface, etc.) and in case of its failure,
+   trigger a switchover.
+   This attribute is valid only in the Primary member.
 
-This attribute allows the switching entity to monitor a specified object
-(BFD session, ICMP ECHO session, physical port, tunnel interface etc) and in case of its failure,
-trigger a switchover.
-
-If the referred object fails, then the switch marks the next hop as FAILED and does not use it for forwarding.
-If the next hop group is a Protection type and there is a backup next hop available in the group, then it is no longer STANDBY, but FORWARDING and is used to forward traffic.
+   When the monitored object fails, the switch marks the Primary member role as INACTIVE and is not used for forwarding.
+   If there is a backup next hop available in the group, then the backup is used to forward traffic and its role is changed to ACTIVE.
 
 ### SAI SWITCH
 
-New attribute is added to SAI SWITCH to allow control plane to query the swtiching entity for the
-list of object tpyes that it can monitor.
+New attribute is added to SAI SWITCH to allow control plane to query the switching entity for the
+list of object types that it can monitor.
 -  SAI\_SWITCH\_ATTR\_SUPPORTED\_PROTECTED\_OBJECT\_TYPE
 
 # Specification
 
 ## Addition to file saiswitch.h
-```
+```diff
     /**
      * @brief Egress ACL stage.
      *
@@ -217,7 +225,7 @@ list of object tpyes that it can monitor.
 ### Data Structures and Enumerations
 
 #### Changes to Next Hop Group
-```
+```diff
 typedef enum _sai_next_hop_group_type_t
 {
     /** Next hop group is ECMP */
@@ -235,7 +243,7 @@ typedef enum _sai_next_hop_group_type_t
 + */
 +typedef enum _sai_next_hop_group_admin_role_t
 +{
-+    /** Auto mode - hardware controlled switching (default) */
++    /** Auto mode (default) - hardware controlled switching or Primary for software controlled switching */
 +    SAI_NEXT_HOP_GROUP_ADMIN_ROLE_AUTO,
 +
 +    /** Force primary role - manual override to primary */
@@ -300,9 +308,25 @@ typedef enum _sai_next_hop_group_attr_t
 +      * @type sai_next_hop_group_admin_role_t
 +      * @flags CREATE_AND_SET
 +      * @default SAI_NEXT_HOP_GROUP_ADMIN_ROLE_AUTO
-+      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_HW_PROTECTION
++      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
 +      */
 +     SAI_NEXT_HOP_GROUP_ATTR_ADMIN_ROLE,
++
++     /**
++      * @brief Revert to the primary member once it recovers
++      *
++      * When false the hardware switchover is one way: hardware still switches
++      * from primary to standby on failure of the monitored object, but never
++      * switches back once the monitored object recovers, so a recovering or
++      * flapping object does not move traffic. The control plane moves it back
++      * through SAI_NEXT_HOP_GROUP_ATTR_ADMIN_ROLE.
++      *
++      * @type bool
++      * @flags CREATE_AND_SET
++      * @default true
++      * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
++      */
++     SAI_NEXT_HOP_GROUP_ATTR_PROTECTION_REVERTIVE,
 
     /**
      * @brief End of attributes
@@ -320,7 +344,7 @@ typedef enum _sai_next_hop_group_attr_t
 ```
 
 #### Changes to Next Hop Group Member
-```
+```diff
 +/**
 + * @brief Next hop group member configured protection role
 + */
@@ -405,11 +429,11 @@ typedef enum _sai_next_hop_group_member_attr_t
 +    /**
 +     * @brief The object to be monitored for this next hop.
 +     *
-+     * If the specified objects fails, the switching entity marks this
++     * If the specified object fails, the switching entity marks this
 +     * next hop as SAI_NEXT_HOP_GROUP_MEMBER_OBSERVED_ROLE_INACTIVE and does
 +     * not use it to forward traffic. If there is a backup next hop available
 +     * in this group then the backup's observed role is set to
-+     * SAI_NEXT_HOP_GROUP_MEMBER_OBSERVED_ROLE_ACTIVE and it is used to
++     * SAI_NEXT_HOP_GROUP_MEMBER_OBSERVED_ROLE_ACTIVE and is used to
 +     * forward traffic.
 +     *
 +     * @type sai_object_id_t
@@ -417,6 +441,7 @@ typedef enum _sai_next_hop_group_member_attr_t
 +     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_ROUTER_INTERFACE, SAI_OBJECT_TYPE_VLAN_MEMBER, SAI_OBJECT_TYPE_TUNNEL, SAI_OBJECT_TYPE_BRIDGE_PORT
 +     * @allownull true
 +     * @default SAI_NULL_OBJECT_ID
++     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
 +     */
 +    SAI_NEXT_HOP_GROUP_MEMBER_ATTR_MONITORED_OBJECT,
 
@@ -450,7 +475,7 @@ The examples illustrate the following scenario:
 - Read the status again.
 
 ## Create a protection Next Hop Group
-```
+```c
 nh_1_interface_id = 1
 nh_2_interface_id = 2
 switch_id = 0;
@@ -501,7 +526,7 @@ nhgm_entry_attrs[0].value.oid = nhg_id;
 nhgm_entry_attrs[1].id = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_NEXT_HOP_ID;
 nhgm_entry_attrs[1].value.oid = nh_2_id;
 nhgm_entry_attrs[2].id = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_CONFIGURED_ROLE;
-nhgm_entry_attrs[2].value.u32 = SAI_NEXT_HOP_GROUP_MEMBER_CONFIGURED_ROLE_PRIMARY;
+nhgm_entry_attrs[2].value.u32 = SAI_NEXT_HOP_GROUP_MEMBER_CONFIGURED_ROLE_STANDBY;
 saistatus = sai_frr_api->create_next_hop_group_member(&nhgm_2_id, switch_id, 2, nhgm_entry_attrs);
 if (saistatus != SAI_STATUS_SUCCESS) {
     return saistatus;
@@ -521,7 +546,7 @@ if (saistatus != SAI_STATUS_SUCCESS) {
 ```
 
 ## Query the status of next hop group members.
-```
+```c
 
 attr_count = 5;
 
@@ -532,7 +557,7 @@ if (saistatus != SAI_STATUS_SUCCESS) {
 }
 
 // Find the value of observed protection role.  In the previous step we triggered
-// a switchover so the observed role must be "FAILED".
+// a switchover so the observed role must be "INACTIVE".
 for (attr_id = 0; attr_id < attr_count; attr_id++) {
     if (nhgm_entry_attrs[attr_id].id == SAI_NEXT_HOP_GROUP_MEMBER_ATTR_OBSERVED_ROLE) {
         assert(nhgm_entry_attrs[attr_id].value.u32 == SAI_NEXT_HOP_GROUP_MEMBER_OBSERVED_ROLE_INACTIVE);
@@ -545,7 +570,7 @@ if (saistatus != SAI_STATUS_SUCCESS) {
     return saistatus;
 }
 
-// This time the observed role will be "FORWARDING".
+// This time the observed role will be "ACTIVE".
 for (attr_id = 0; attr_id < attr_count; attr_id++) {
     if (nhgm_entry_attrs[attr_id].id == SAI_NEXT_HOP_GROUP_MEMBER_ATTR_OBSERVED_ROLE) {
         assert(nhgm_entry_attrs[attr_id].value.u32 == SAI_NEXT_HOP_GROUP_MEMBER_OBSERVED_ROLE_ACTIVE);
@@ -555,7 +580,7 @@ for (attr_id = 0; attr_id < attr_count; attr_id++) {
 ```
 
 ## Clear the switchover
-```
+```c
 nhg_entry_attrs[1].id = SAI_NEXT_HOP_GROUP_ATTR_SET_SWITCHOVER;
 nhg_entry_attrs[1].value.u32 = false;
 saistatus = sai_set_next_hop_group_attribute_fn(nhg_id, nhg_entry_attrs);
@@ -593,7 +618,7 @@ for (attr_id = 0; attr_id < attr_count; attr_id++) {
 ## Manual Admin Role Control
 
 ### Force primary role
-```
+```c
 // Force the next hop group to use primary path regardless of hardware state
 nhg_entry_attrs[1].id = SAI_NEXT_HOP_GROUP_ATTR_ADMIN_ROLE;
 nhg_entry_attrs[1].value.u32 = SAI_NEXT_HOP_GROUP_ADMIN_ROLE_PRIMARY;
@@ -605,7 +630,7 @@ if (saistatus != SAI_STATUS_SUCCESS) {
 ```
 
 ### Force standby role
-```
+```c
 // Force the next hop group to use backup path regardless of hardware state
 nhg_entry_attrs[1].id = SAI_NEXT_HOP_GROUP_ATTR_ADMIN_ROLE;
 nhg_entry_attrs[1].value.u32 = SAI_NEXT_HOP_GROUP_ADMIN_ROLE_STANDBY;
@@ -616,8 +641,77 @@ if (saistatus != SAI_STATUS_SUCCESS) {
 
 ```
 
-### Reset to auto mode
+### Non-revertive mode
+This mode is applicable for Next hop group with monitored object where hardware does the switchover.
+With `SAI_NEXT_HOP_GROUP_ATTR_PROTECTION_REVERTIVE` set to false the hardware switchover is one way.
+Hardware still switches from primary to standby when the monitored object fails, but it never
+switches back once the monitored object recovers, so a recovering or flapping object does not move
+traffic on its own.
+
+Recovery policy is kept separate from `SAI_NEXT_HOP_GROUP_ATTR_ADMIN_ROLE` because the two are
+independent. The admin role says which path is used right now, the revertive flag says what hardware
+is allowed to do on recovery while the role is AUTO. Keeping them apart means a forced role does not
+disturb the recovery policy, and the NOS can read either one back at any time.
+
+```c
+// Let hardware switch to standby on failure, but not back on recovery
+nhg_entry_attrs[0].id = SAI_NEXT_HOP_GROUP_ATTR_PROTECTION_REVERTIVE;
+nhg_entry_attrs[0].value.booldata = false;
+saistatus = sai_set_next_hop_group_attribute_fn(nhg_id, nhg_entry_attrs);
+if (saistatus != SAI_STATUS_SUCCESS) {
+    return saistatus;
+}
+
 ```
+
+### Restore to primary in non-revertive mode
+Since hardware does not revert on its own, moving back to primary is driven by the NOS. The NOS
+decides when the primary is trustworthy again, moves traffic back with a forced role, and then
+releases the override. The revertive flag is untouched throughout, so the group stays non-revertive.
+
+```c
+// 1. Confirm the monitored object has recovered, for example a monitored port
+port_attr.id = SAI_PORT_ATTR_OPER_STATUS;
+saistatus = sai_port_api->get_port_attribute(port_id, 1, &port_attr);
+if (saistatus != SAI_STATUS_SUCCESS) {
+    return saistatus;
+}
+if (port_attr.value.u32 != SAI_PORT_OPER_STATUS_UP) {
+    return SAI_STATUS_FAILURE;
+}
+
+// 2. Move traffic back to the primary member
+nhg_entry_attrs[0].id = SAI_NEXT_HOP_GROUP_ATTR_ADMIN_ROLE;
+nhg_entry_attrs[0].value.u32 = SAI_NEXT_HOP_GROUP_ADMIN_ROLE_PRIMARY;
+saistatus = sai_set_next_hop_group_attribute_fn(nhg_id, nhg_entry_attrs);
+if (saistatus != SAI_STATUS_SUCCESS) {
+    return saistatus;
+}
+
+// 3. Release the override so hardware resumes autonomous switching
+nhg_entry_attrs[0].id = SAI_NEXT_HOP_GROUP_ATTR_ADMIN_ROLE;
+nhg_entry_attrs[0].value.u32 = SAI_NEXT_HOP_GROUP_ADMIN_ROLE_AUTO;
+saistatus = sai_set_next_hop_group_attribute_fn(nhg_id, nhg_entry_attrs);
+if (saistatus != SAI_STATUS_SUCCESS) {
+    return saistatus;
+}
+
+// 4. Verify the primary member is forwarding again
+nhgm_entry_attrs[0].id = SAI_NEXT_HOP_GROUP_MEMBER_ATTR_OBSERVED_ROLE;
+saistatus = sai_get_next_hop_group_member_attribute_fn(nhgm_1_id, 1, nhgm_entry_attrs);
+if (saistatus != SAI_STATUS_SUCCESS) {
+    return saistatus;
+}
+assert(nhgm_entry_attrs[0].value.u32 == SAI_NEXT_HOP_GROUP_MEMBER_OBSERVED_ROLE_ACTIVE);
+
+```
+
+Step 2 is what makes the restore deterministic, since it moves traffic at a moment the NOS picks.
+Going straight to AUTO would leave the move to whenever hardware next re-evaluates the monitored
+object. If the monitored object is down again by step 3, hardware switches to standby immediately.
+
+### Reset to auto mode
+```c
 // Return control back to hardware-based switching
 nhg_entry_attrs[1].id = SAI_NEXT_HOP_GROUP_ATTR_ADMIN_ROLE;
 nhg_entry_attrs[1].value.u32 = SAI_NEXT_HOP_GROUP_ADMIN_ROLE_AUTO;
@@ -629,7 +723,7 @@ if (saistatus != SAI_STATUS_SUCCESS) {
 ```
 
 ### Query current admin role
-```
+```c
 // Get the current admin role setting
 nhg_entry_attrs[0].id = SAI_NEXT_HOP_GROUP_ATTR_ADMIN_ROLE;
 saistatus = sai_get_next_hop_group_attribute_fn(nhg_id, 1, nhg_entry_attrs);
