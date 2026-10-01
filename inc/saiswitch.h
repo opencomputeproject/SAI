@@ -3747,6 +3747,19 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PTP_PDELAY_IS_TWO_STEP,
 
     /**
+     * @brief Enable TC -> Queue MAP on switch for Multicast(Broadcast, Unknown unicast, Multicast) flows
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to have same map for Multicast as Unicast.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_QOS_TC_TO_QUEUE_MAP_MULTICAST,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
