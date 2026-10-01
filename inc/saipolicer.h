@@ -63,6 +63,12 @@ typedef enum _sai_policer_mode_t
     /** Storm control mode. Single Rate Two color CIR, CBS, G and R */
     SAI_POLICER_MODE_STORM_CONTROL = 0x00000002,
 
+    /** MEF 10.2 with Coupling Flag = 0 (RFC 4115 compliant) */
+    SAI_POLICER_MODE_MEF0 = 0x00000003,
+
+    /** MEF 10.2 with Coupling Flag = 1 */
+    SAI_POLICER_MODE_MEF1 = 0x00000004,
+
     /** Custom range base value */
     SAI_POLICER_MODE_CUSTOM_RANGE_BASE = 0x10000000
 
@@ -156,7 +162,7 @@ typedef enum _sai_policer_attr_t
      * @type sai_uint64_t
      * @flags CREATE_AND_SET
      * @default 0
-     * @validonly SAI_POLICER_ATTR_MODE == SAI_POLICER_MODE_TR_TCM
+     * @validonly SAI_POLICER_ATTR_MODE == SAI_POLICER_MODE_TR_TCM or SAI_POLICER_ATTR_MODE == SAI_POLICER_MODE_MEF0 or SAI_POLICER_ATTR_MODE == SAI_POLICER_MODE_MEF1
      */
     SAI_POLICER_ATTR_PIR = 0x00000006,
 
@@ -253,6 +259,68 @@ typedef enum _sai_policer_attr_t
      * @default empty
      */
     SAI_POLICER_ATTR_LABEL_WIDE,
+
+    /**
+     * @brief Operational committed burst size
+     *
+     * Returns the committed burst size programmed by the implementation in
+     * bytes or packets, based on #SAI_POLICER_ATTR_METER_TYPE.
+     *
+     * The operational value may differ from the configured value due to hardware
+     * granularity or implementation limitations.
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_POLICER_ATTR_OPER_CBS,
+
+    /**
+     * @brief Operational committed information rate
+     *
+     * Returns the committed information rate programmed by the implementation in
+     * bytes per second or packets per second, based on
+     * #SAI_POLICER_ATTR_METER_TYPE.
+     *
+     * The operational value may differ from the configured value due to hardware
+     * granularity or implementation limitations.
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_POLICER_ATTR_OPER_CIR,
+
+    /**
+     * @brief Operational peak burst size
+     *
+     * Returns the peak burst size programmed by the implementation in bytes or
+     * packets, based on #SAI_POLICER_ATTR_METER_TYPE.
+     *
+     * The operational value may differ from the configured value due to hardware
+     * granularity or implementation limitations.
+     *
+     * Applicable only for SR_TCM, TR_TCM, MEF policing modes.
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_POLICER_ATTR_OPER_PBS,
+
+    /**
+     * @brief Operational peak information rate
+     *
+     * Returns the peak information rate programmed by the implementation in
+     * bytes per second or packets per second, based on
+     * #SAI_POLICER_ATTR_METER_TYPE.
+     *
+     * The operational value may differ from the configured value due to hardware
+     * granularity.
+     *
+     * Applicable only for TR_TCM, MEF policing modes.
+     *
+     * @type sai_uint64_t
+     * @flags READ_ONLY
+     */
+    SAI_POLICER_ATTR_OPER_PIR,
 
     /**
      * @brief End of attributes
