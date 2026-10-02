@@ -70,6 +70,38 @@ typedef enum _sai_acl_ip_type_t
 
 } sai_acl_ip_type_t;
 
+typedef enum _sai_acl_table_ip_type_t
+{
+    /**
+     * @brief Packet type is not restricted.
+     *
+     * The table may contain ACL entries matching IPv4, IPv6,
+     * and non-IP packets.
+     */
+    SAI_ACL_TABLE_IP_TYPE_ANY,
+
+    /**
+     * @brief IPv4 and IPv6 packets.
+     */
+    SAI_ACL_TABLE_IP_TYPE_IP,
+
+    /**
+     * @brief IPv4 packets (including ARP).
+     */
+    SAI_ACL_TABLE_IP_TYPE_IPV4,
+
+    /**
+     * @brief IPv6 packets.
+     */
+    SAI_ACL_TABLE_IP_TYPE_IPV6,
+
+    /**
+     * @brief Non-IP packets.
+     */
+    SAI_ACL_TABLE_IP_TYPE_NON_IP
+
+} sai_acl_table_ip_type_t;
+
 /**
  * @brief ACL IP Fragment
  */
@@ -696,6 +728,17 @@ typedef enum _sai_acl_table_attr_t
      * Mandatory to pass at least one field during ACL Table creation.
      * Match fields cannot be changed after the table is created.
      */
+
+    /**
+     * @brief ACL Table IP Type
+     *
+     * Defines the packet domain supported by the ACL table.
+     *
+     * @type sai_acl_table_ip_type_t
+     * @flags CREATE_ONLY
+     * @default SAI_ACL_TABLE_IP_TYPE_ANY
+     */
+    SAI_ACL_TABLE_ATTR_IP_TYPE,
 
     /**
      * @brief Start of Table Match Field
