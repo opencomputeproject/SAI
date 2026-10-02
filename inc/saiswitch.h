@@ -3679,6 +3679,15 @@ typedef enum _sai_switch_attr_t
      */
     SAI_SWITCH_ATTR_LINK_UP_DEBOUNCE_TIMEOUT_INTEVALS,
 
+    /**     
+     * @brief Bridge port HW protection switchover notification callback function passed to the adapter.
+     *
+     * @type sai_pointer_t sai_bridge_port_hw_protection_switchover_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_BRIDGE_PORT_HW_PROTECTION_SWITCHOVER_NOTIFY,
+
     /**
      * @brief Firmware list
      *
