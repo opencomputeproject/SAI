@@ -100,6 +100,19 @@ typedef enum _sai_object_type_extensions_t
 
     SAI_OBJECT_TYPE_ENI_TRUSTED_VNI_ENTRY,
 
+    /**
+     * @brief OTN Extensions
+     */
+    SAI_OBJECT_TYPE_OTN_ATTENUATOR,
+
+    SAI_OBJECT_TYPE_OTN_OA,
+
+    SAI_OBJECT_TYPE_OCS_CROSS_CONNECT,
+
+    SAI_OBJECT_TYPE_OCS_PORT,
+
+    SAI_OBJECT_TYPE_OCS_CROSS_CONNECT_FACTORY_DATA,
+
     /* Add new experimental object types above this line */
 
     SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END
@@ -141,6 +154,8 @@ typedef enum _sai_dash_tunnel_dscp_mode_t
  */
 typedef enum _sai_dash_routing_actions_t
 {
+    SAI_DASH_ROUTING_ACTIONS_NONE = 0,
+
     SAI_DASH_ROUTING_ACTIONS_STATIC_ENCAP = 1,
 
     SAI_DASH_ROUTING_ACTIONS_NAT = 2,
@@ -174,6 +189,8 @@ typedef enum _sai_dash_ha_role_t
  */
 typedef enum _sai_dash_flow_enabled_key_t
 {
+    SAI_DASH_FLOW_ENABLED_KEY_NONE = 0,
+
     SAI_DASH_FLOW_ENABLED_KEY_ENI_MAC = 1,
 
     SAI_DASH_FLOW_ENABLED_KEY_VNI = 2,

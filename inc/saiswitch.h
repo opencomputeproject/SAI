@@ -187,8 +187,11 @@ typedef enum _sai_switch_switching_mode_t
  */
 typedef enum _sai_hash_algorithm_t
 {
+    /**  Start of hash algorithms */
+    SAI_HASH_ALGORITHM_START = 0,
+
     /** CRC based hash algorithm */
-    SAI_HASH_ALGORITHM_CRC = 0,
+    SAI_HASH_ALGORITHM_CRC = SAI_HASH_ALGORITHM_START,
 
     /** XOR-based hash algorithm */
     SAI_HASH_ALGORITHM_XOR = 1,
@@ -220,6 +223,8 @@ typedef enum _sai_hash_algorithm_t
     /** Upper 16 bits of Jenkins hash algorithm */
     SAI_HASH_ALGORITHM_JENKINS_HI = 10,
 
+    /** End of hash algorithms */
+    SAI_HASH_ALGORITHM_END
 } sai_hash_algorithm_t;
 
 /**
@@ -3592,6 +3597,187 @@ typedef enum _sai_switch_attr_t
      * @default 0
      */
     SAI_SWITCH_ATTR_PTP_SYNTONIZE_ADJUST,
+
+    /**
+     * @brief HW protection switchover notification callback function passed to the adapter.
+     *
+     * @type sai_pointer_t sai_next_hop_group_hw_protection_switchover_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_NEXT_HOP_GROUP_HW_PROTECTION_SWITCHOVER_NOTIFY,
+
+    /**
+     * @brief Performance Monitoring enabled on the switch
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_PERFMON
+     */
+    SAI_SWITCH_ATTR_PERFMON_LIST,
+
+    /**
+     * @brief List of supported in drop reasons
+     *
+     * @type sai_s32_list_t sai_in_drop_reason_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_IN_DROP_REASON_LIST,
+
+    /**
+     * @brief List of supported out drop reasons
+     *
+     * @type sai_s32_list_t sai_out_drop_reason_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_OUT_DROP_REASON_LIST,
+
+    /**
+     * @brief List of supported buffer drop reasons
+     *
+     * @type sai_s32_list_t sai_buffer_drop_reason_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_BUFFER_DROP_REASON_LIST,
+
+    /**
+     * @brief Event learn notification callback
+     * function passed to the adapter.
+     *
+     * Use sai_tam_event_learn_notification_fn as notification function.
+     *
+     * @type sai_pointer_t sai_tam_event_learn_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_TAM_EVENT_LEARN_NOTIFY,
+
+    /**
+     * @brief Link down debounce time in microseconds
+     *
+     * 0 means no delay time so link down events are immediately delivered as usual
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_LINK_DOWN_DEBOUNCE_TIMEOUT,
+
+    /**
+     * @brief Link down debounce timeout values supported in microseconds
+     *
+     * @type sai_u32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_LINK_DOWN_DEBOUNCE_TIMEOUT_INTEVALS,
+
+    /**
+     * @brief Link up debounce timeout values supported in microseconds
+     *
+     * @type sai_u32_list_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_LINK_UP_DEBOUNCE_TIMEOUT_INTEVALS,
+
+    /**
+     * @brief Firmware list
+     *
+     * @type sai_fw_list_t
+     * @flags CREATE_ONLY
+     * @default internal
+     */
+    SAI_SWITCH_ATTR_FW_LIST,
+
+    /**
+     * @brief Firmware enabled on the switch
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_FW
+     */
+    SAI_SWITCH_ATTR_FW,
+
+    /**
+     * @brief Maximum number of cores supported
+     *
+     * @type sai_uint8_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_MAX_FW_CORES,
+
+    /**
+     * @brief Global PTP clock identity (8-octet array formatted as per IEEE 1588)
+     *
+     * @type sai_u8_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_SWITCH_ATTR_CLOCK_ID,
+
+    /**
+     * @brief Maximum number of ports enabled for peer delay.
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_PTP_PDELAY_MAX_PORTS,
+
+    /**
+     * @brief Maximum number of ports that can support peer delay exchanges
+     *
+     * @type sai_uint16_t
+     * @flags READ_ONLY
+     * @isvlan false
+     */
+    SAI_SWITCH_ATTR_MAX_SUPPORTED_PTP_PDELAY_PORTS,
+
+    /**
+     * @brief Peer delay timestamp mode. True for two-step (with follow-up), False for one-step
+     *
+     * Specifies whether the hardware PTP peer delay engine operates in two-step mode
+     * (transmitting Pdelay_Resp_Follow_Up messages) or one-step mode for peer delay exchanges.
+     * This attribute applies only to the peer delay engine and is independent of #SAI_PORT_ATTR_PTP_MODE.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_SWITCH_ATTR_PTP_PDELAY_IS_TWO_STEP,
+
+    /**
+     * @brief Enable TC -> Queue MAP on switch for Multicast(Broadcast, Unknown unicast, Multicast) flows
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to have same map for Multicast as Unicast.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_SWITCH_ATTR_QOS_TC_TO_QUEUE_MAP_MULTICAST,
+
+    /**
+     * @brief New packet trim to sender DSCP value
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_SWITCH_ATTR_PACKET_TRIM_DSCP_RESOLUTION_MODE == SAI_PACKET_TRIM_DSCP_RESOLUTION_MODE_DSCP_VALUE
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIM_TO_SENDER_DSCP_VALUE,
+
+    /**
+     * @brief New packet trim to sender TC value
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_SWITCH_ATTR_PACKET_TRIM_DSCP_RESOLUTION_MODE == SAI_PACKET_TRIM_DSCP_RESOLUTION_MODE_FROM_TC
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIM_TO_SENDER_TC_VALUE,
 
     /**
      * @brief End of attributes

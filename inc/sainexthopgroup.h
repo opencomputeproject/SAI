@@ -56,7 +56,18 @@ typedef enum _sai_next_hop_group_type_t
     /** Next hop group is class-based, with members selected by Forwarding class */
     SAI_NEXT_HOP_GROUP_TYPE_CLASS_BASED,
 
-    /** Next hop hardware protection group. This is the group backing up the primary in the protection group type and is managed by hardware */
+    /**
+     * @brief Next hop hardware protection group
+     *
+     * This is the group backing up the primary in the
+     * SAI_NEXT_HOP_GROUP_TYPE_PROTECTION group.
+     *
+     * Deprecated, use SAI_NEXT_HOP_GROUP_ATTR_HW_PROTECTION_BACKUP instead. A
+     * group has a single type, so spending it on this hint leaves the group
+     * unable to state how traffic is spread across its own members. The hint
+     * also does not carry over to a standby member that is a single next hop,
+     * which has no group and therefore no group type to set.
+     */
     SAI_NEXT_HOP_GROUP_TYPE_HW_PROTECTION,
 
     /** Next hop group is ECMP, with members specified with the group */
@@ -100,7 +111,7 @@ typedef enum _sai_next_hop_group_member_observed_role_t
  */
 typedef enum _sai_next_hop_group_admin_role_t
 {
-    /** Auto mode - hardware controlled switching (default) */
+    /** Auto mode (default) - hardware controlled switching or act as Primary in software controlled switching */
     SAI_NEXT_HOP_GROUP_ADMIN_ROLE_AUTO,
 
     /** Force primary role - manual override to primary */
@@ -110,6 +121,52 @@ typedef enum _sai_next_hop_group_admin_role_t
     SAI_NEXT_HOP_GROUP_ADMIN_ROLE_STANDBY,
 
 } sai_next_hop_group_admin_role_t;
+
+/**
+ * @brief Defines the notification of HW protection switchover data.
+ */
+typedef struct _sai_next_hop_group_hw_protection_switchover_notification_data_t
+{
+    /**
+     * @brief Monitored object id
+     *
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG, SAI_OBJECT_TYPE_ROUTER_INTERFACE, SAI_OBJECT_TYPE_VLAN_MEMBER, SAI_OBJECT_TYPE_TUNNEL, SAI_OBJECT_TYPE_BRIDGE_PORT, SAI_OBJECT_TYPE_ICMP_ECHO_SESSION, SAI_OBJECT_TYPE_BFD_SESSION
+     */
+    sai_object_id_t monitored_oid;
+
+    /**
+     * @brief Current role after the switchover
+     */
+    sai_next_hop_group_member_observed_role_t new_role;
+
+    /**
+     * @brief Number of protection groups that switched over successfully
+     */
+    uint32_t switchover_success_count;
+
+    /**
+     * @brief List of protection groups that failed switchover.
+     *
+     * @objects SAI_OBJECT_TYPE_NEXT_HOP_GROUP
+     */
+    sai_object_list_t failed_next_hop_groups;
+} sai_next_hop_group_hw_protection_switchover_notification_data_t;
+
+/**
+ * @brief Next hop group is configured with weights or not
+ */
+typedef enum _sai_next_hop_group_members_weight_t
+{
+    /** This is for legacy platforms where this attribute is don't care */
+    SAI_NEXT_HOP_GROUP_MEMBERS_WEIGHT_UNSPECIFIED,
+
+    /** Next hop group members are weighted */
+    SAI_NEXT_HOP_GROUP_MEMBERS_WEIGHT_WEIGHTED,
+
+    /** Next hop group members are unweighted */
+    SAI_NEXT_HOP_GROUP_MEMBERS_WEIGHT_UNWEIGHTED,
+
+} sai_next_hop_group_members_weight_t;
 
 /**
  * @brief Attribute id for next hop
@@ -312,6 +369,7 @@ typedef enum _sai_next_hop_group_attr_t
      * @type char
      * @flags CREATE_AND_SET
      * @default ""
+     * @deprecated true
      */
     SAI_NEXT_HOP_GROUP_ATTR_LABEL,
 
@@ -319,15 +377,71 @@ typedef enum _sai_next_hop_group_attr_t
      * @brief Admin role to manually control switching between primary and standby
      *
      * This attribute allows manual switching between primary and standby roles,
-     * overriding hardware-controlled switching.
-     * Enables planned operations without any traffic loss.
+     * On hardware protected switching, AUTO would allow hardware to switch automatically.
+     * On Software switching, AUTO is same as setting it to PRIMARY.
      *
      * @type sai_next_hop_group_admin_role_t
      * @flags CREATE_AND_SET
      * @default SAI_NEXT_HOP_GROUP_ADMIN_ROLE_AUTO
-     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_HW_PROTECTION
+     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
      */
     SAI_NEXT_HOP_GROUP_ATTR_ADMIN_ROLE,
+
+    /**
+     * @brief Wide label attribute used to uniquely identify next-hop-group.
+     *
+     * Replaces #SAI_NEXT_HOP_GROUP_ATTR_LABEL, which is limited to 32 bytes.
+     * Exactly one of the two attributes may be set to a non-default
+     * value; setting both is invalid.
+     *
+     * @type sai_s8_list_t
+     * @flags CREATE_AND_SET
+     * @default empty
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_LABEL_WIDE,
+
+    /**
+     * @brief This attribute indicates if all the members are with weights or are unweighted
+     *
+     * @type sai_next_hop_group_members_weight_t
+     * @flags CREATE_ONLY
+     * @default SAI_NEXT_HOP_GROUP_MEMBERS_WEIGHT_UNSPECIFIED
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_MEMBERS_WEIGHT,
+
+    /**
+     * @brief Revert to the primary member once it recovers
+     *
+     * When false the hardware switchover is one way: hardware still switches
+     * from primary to standby on failure of the monitored object, but never
+     * switches back once the monitored object recovers, so a recovering or
+     * flapping object does not move traffic. The control plane moves it back
+     * through #SAI_NEXT_HOP_GROUP_ATTR_ADMIN_ROLE.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     * @validonly SAI_NEXT_HOP_GROUP_ATTR_TYPE == SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_PROTECTION_REVERTIVE,
+
+    /**
+     * @brief Next hop group is a backup of a protection group
+     *
+     * Hint to hardware that this group is going to be added as a standby
+     * member of a SAI_NEXT_HOP_GROUP_TYPE_PROTECTION group, to be used when
+     * AUTO mode is used.
+     *
+     * This supersedes SAI_NEXT_HOP_GROUP_TYPE_HW_PROTECTION, and allows
+     * #SAI_NEXT_HOP_GROUP_ATTR_TYPE to state how traffic is spread across the
+     * members of this group.
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     * @isresourcetype true
+     */
+    SAI_NEXT_HOP_GROUP_ATTR_HW_PROTECTION_BACKUP,
 
     /**
      * @brief End of attributes
@@ -393,7 +507,7 @@ typedef enum _sai_next_hop_group_member_attr_t
     /**
      * @brief The actual role in protection group
      *
-     * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_PROTECTION or SAI_NEXT_HOP_GROUP_TYPE_HW_PROTECTION
+     * Should only be used if the type of owning group is SAI_NEXT_HOP_GROUP_TYPE_PROTECTION
      *
      * @type sai_next_hop_group_member_observed_role_t
      * @flags READ_ONLY
@@ -403,12 +517,15 @@ typedef enum _sai_next_hop_group_member_attr_t
     /**
      * @brief The object to be monitored for this next hop.
      *
-     * If the specified objects fails, the switching entity marks this
-     * next hop as SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_FAILED and does
+     * If the specified object fails, the switching entity marks this
+     * next hop as SAI_NEXT_HOP_GROUP_MEMBER_OBSERVED_ROLE_INACTIVE and does
      * not use it to forward traffic. If there is a backup next hop available
      * in this group then the backup's observed role is set to
-     * SAI_NEXT_HOP_GROUP_MEMBER_PROTECTION_ROLE_FORWARDING and it is used to
+     * SAI_NEXT_HOP_GROUP_MEMBER_OBSERVED_ROLE_ACTIVE and is used to
      * forward traffic.
+     *
+     * A monitored object makes the switchover autonomous: hardware switches to
+     * the standby member on its own. Without one the control plane drives it.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
@@ -682,6 +799,20 @@ typedef sai_status_t (*sai_get_next_hop_group_map_attribute_fn)(
         _In_ sai_object_id_t next_hop_group_map_id,
         _In_ uint32_t attr_count,
         _Inout_ sai_attribute_t *attr_list);
+
+/**
+ * @brief Next Hop Group HW protection switchover notification callback
+ *
+ * Passed as a parameter into sai_initialize_switch().
+ *
+ * @count data[count]
+ *
+ * @param[in] count Number of notifications
+ * @param[in] data Array of notification data
+ */
+typedef void (*sai_next_hop_group_hw_protection_switchover_notification_fn)(
+        _In_ uint32_t count,
+        _In_ const sai_next_hop_group_hw_protection_switchover_notification_data_t *data);
 
 /**
  * @brief Next Hop methods table retrieved with sai_api_query()

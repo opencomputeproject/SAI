@@ -132,7 +132,7 @@ For more information on IPFIX, refer to the following resources:
 
 #### IPFIX header
 
-The `Version` and `Observation Domain ID` fields of the IPFIX header are identical for each IPFIX message.
+The `Version` field of the IPFIX header is identical for each IPFIX message. `Observation Domain ID` is defined by vendor implementation. `Sequence Number` starts from 0 and is monotonically incremented per `Observation Domain ID` modulo 2^32.
 
 ``` mermaid
 
@@ -143,8 +143,8 @@ packet-beta
 0-15: "Version = 0x000a"
 16-31: "Message Length = (16 + payload) bytes"
 32-63: "Export Timestamp: Second"
-64-95: "Sequence Number = 0, start from 0 and incremental sequence counter modulo 2^32"
-96-127: "Observation Domain ID = 0, always 0"
+64-95: "Sequence Number = 0"
+96-127: "Observation Domain ID = 0"
 
 ```
 
@@ -176,7 +176,7 @@ packet-beta
 
 - For high-frequency counters, the native IPFIX timestamp unit of seconds is insufficient. Therefore, we introduce an additional element, `observationTimeNanoseconds`, for each record to meet our requirements.
 - The element ID of IPFIX is derived from the object index. For example, for `Ethernet5`, the element ID will be `0x5 | 0x8000 = 0x8005`, where `0x8000` indicates that the enterprise bit is set to 1.
-- The enterprise number is derived from the combination of the [SAI_OBJECT_TYPE](https://github.com/opencomputeproject/SAI/blob/master/inc/saitypes.h) and its corresponding stats ID. The high bits are used to indicate the SAI extension flag. For example, for `SAI_QUEUE_STAT_WRED_ECN_MARKED_PACKETS=0x00000022` of `SAI_OBJECT_TYPE_QUEUE=0x00000015`, the enterprise number will be `0x00000022 << 16 | 0x00000015 = 0x00220015`.
+- The first 16 bits of the enterprise number on the wire encode the [SAI_OBJECT_TYPE](https://github.com/opencomputeproject/SAI/blob/master/inc/saitypes.h), and the following 16 bits encode its stats ID. Multi-byte values use network byte order. Therefore, for `SAI_OBJECT_TYPE_QUEUE=0x00000015` and `SAI_QUEUE_STAT_WRED_ECN_MARKED_PACKETS=0x00000022`, the enterprise number is `0x00000015 << 16 | 0x00000022 = 0x00150022` (wire bytes `00 15 00 22`).
 
 ``` mermaid
 ---

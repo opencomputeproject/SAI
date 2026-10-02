@@ -532,6 +532,11 @@ typedef enum _sai_attr_value_type_t
     SAI_ATTR_VALUE_TYPE_PRBS_PER_LANE_BIT_ERROR_RATE_LIST,
 
     /**
+     * @brief Attribute value is a list of ILT lane training status for all lanes in a port.
+     */
+    SAI_ATTR_VALUE_TYPE_PORT_ILT_LANE_TRAINING_STATUS_LIST,
+
+    /**
      * @brief Attribute value is 64 bit unsigned integer range.
      */
     SAI_ATTR_VALUE_TYPE_UINT64_RANGE,
@@ -539,7 +544,17 @@ typedef enum _sai_attr_value_type_t
     /**
      * @brief Attribute value is 64 bit unsigned integer range list.
      */
-    SAI_ATTR_VALUE_TYPE_UINT64_RANGE_LIST
+    SAI_ATTR_VALUE_TYPE_UINT64_RANGE_LIST,
+
+    /**
+     * @brief Attribute value is firmware instance.
+     */
+    SAI_ATTR_VALUE_TYPE_FW_INST,
+
+    /**
+     * @brief Attribute value is firmware list.
+     */
+    SAI_ATTR_VALUE_TYPE_FW_LIST,
 } sai_attr_value_type_t;
 
 /**
@@ -549,6 +564,13 @@ typedef enum _sai_attr_value_type_t
  */
 typedef enum _sai_attr_flags_t
 {
+    /**
+     * @brief No flags defined.
+     *
+     * This member should not be used.
+     */
+    SAI_ATTR_FLAGS_NONE = (0 << 0),
+
     /**
      * @brief Mandatory on create flag.
      *
@@ -1359,6 +1381,13 @@ typedef struct _sai_attr_metadata_t
      * will be v1.15 and next release set to true.
      */
     bool                                        nextrelease;
+
+    /**
+     * @brief Specifies value decimal precision for this attribute.
+     *
+     * For example, if precision is 2, then value 1234 means 12.34.
+     */
+    size_t                                      valueprecision;
 
 } sai_attr_metadata_t;
 

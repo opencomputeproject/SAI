@@ -224,3 +224,47 @@ typedef enum _sai_packet_trim_dscp_resolution_mode_t
 |saiqueue.h |SAI_QUEUE_STAT_TRIM_PACKETS|Per-queue counter of packets trimmed on trimming-eligible queue due to failed shared buffer admission|
 |           |SAI_QUEUE_STAT_DROPPED_TRIM_PACKETS|Per-queue counter of packets trimmed on trimming-eligible queue but dropped due to failed shared buffer admission on a trim queue|
 |           |SAI_QUEUE_STAT_TX_TRIM_PACKETS|Per-queue counter of packets trimmed on trimming-eligible queue and successfully sent via a trim queue|
+
+## TRIM or Data Packet DSCP Marking
+The current SAI specification defines a single port attribute, SAI_PORT_ATTR_QOS_TC_AND_COLOR_TO_DSCP_MAP, for specifying TRIM and/or Data Packet TC to DSCP marking.
+
+This creates an issue when data packet remarking is not needed and there is no corresponding entry in the TC map. According to the SAI specification, the default value of TC 0 becomes effective and maps to the default DSCP value, which inadvertently changes the DSCP value of the data packet.
+
+To address this unintended behavior, we are introducing a new port-based attribute: SAI_PORT_ATTR_QOS_TRIM_TC_AND_COLOR_TO_DSCP_MAP. This attribute handles TC to DSCP mapping exclusively for TRIM packets.
+
+### Capability Query
+NOS can do a cpability query for SAI_PORT_ATTR_QOS_TRIM_TC_AND_COLOR_TO_DSCP_MAP attribure to check an implementation's support.
+
+If both SAI_PORT_ATTR_QOS_TRIM_TC_AND_COLOR_TO_DSCP_MAP and SAI_PORT_ATTR_QOS_TC_AND_COLOR_TO_DSCP_MAP are configured then TRIM packets will use SAI_PORT_ATTR_QOS_TRIM_TC_AND_COLOR_TO_DSCP_MAP and data packets will use SAI_PORT_ATTR_QOS_TC_AND_COLOR_TO_DSCP_MAP.
+
+If only SAI_PORT_ATTR_QOS_TC_AND_COLOR_TO_DSCP_MAP is confiured then NOS can configure both data packet TC and TRIM TC as long as the desired behavior of DSCP value of data packets is maintained.
+
+If only SAI_PORT_ATTR_QOS_TRIM_TC_AND_COLOR_TO_DSCP_MAP is configured then data packets do not undergo any DSCP remarking and only TRIM packets will use the configured map for DSCP marking.
+
+### TRIM to Sender TC and DSCP Value
+Trim to Sender may use a different TC value if in DSCP resolution mode or may use a different DSCP value from TRIM to receiver.
+
+Two new switch attributes are introduced specific to TRIM to sender. Note that the SAI_SWITCH_ATTR_PACKET_TRIM_DSCP_RESOLUTION_MODE is same for TRIM to sender and TRIM to reciever. 
+Also note that a queue can only be eligible for TRIM or TRIM_TO_SENDER but not for both.
+
+```
+    /**
+     * @brief New packet trim to sender DSCP value
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_SWITCH_ATTR_PACKET_TRIM_DSCP_RESOLUTION_MODE == SAI_PACKET_TRIM_DSCP_RESOLUTION_MODE_DSCP_VALUE
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIM_TO_SENDER_DSCP_VALUE,
+
+    /**
+     * @brief New packet trim to sender TC value
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_SWITCH_ATTR_PACKET_TRIM_DSCP_RESOLUTION_MODE == SAI_PACKET_TRIM_DSCP_RESOLUTION_MODE_FROM_TC
+     */
+    SAI_SWITCH_ATTR_PACKET_TRIM_TO_SENDER_TC_VALUE,
+```

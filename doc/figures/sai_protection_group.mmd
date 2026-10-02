@@ -1,0 +1,32 @@
+graph TD
+    NHG_PROT["<b>SAI_NEXT_HOP_GROUP</b>&nbsp;(Protection Group)<br/>ATTR_TYPE = SAI_NEXT_HOP_GROUP_TYPE_PROTECTION<br/>ATTR_ADMIN_ROLE = AUTO&nbsp;/&nbsp;PRIMARY&nbsp;/&nbsp;STANDBY<br/>ATTR_PROTECTION_REVERTIVE = true&nbsp;/&nbsp;false"]
+
+    M1["<b>SAI_NEXT_HOP_GROUP_MEMBER</b> (Primary)<br/>CONFIGURED_ROLE = PRIMARY"]
+    M2["<b>SAI_NEXT_HOP_GROUP_MEMBER</b> (Standby)<br/>CONFIGURED_ROLE = STANDBY"]
+
+    NH1["<b>SAI_NEXT_HOP</b><br/>(regular next hop, e.g. IP nexthop)"]
+    MON["<b>Monitored Object</b><br/>PORT / LAG / RIF / VLAN_MEMBER /<br/>TUNNEL / BRIDGE_PORT /<br/>ICMP_ECHO_SESSION / BFD_SESSION"]
+
+    NHG_HW["<b>SAI_NEXT_HOP_GROUP</b>&nbsp;(Backup Group)<br/>ATTR_TYPE = SAI_NEXT_HOP_GROUP_TYPE_DYNAMIC_UNORDERED_ECMP<br/>ATTR_HW_PROTECTION_BACKUP = true"]
+    NH2["<b>SAI_NEXT_HOP_GROUP_MEMBER(s)</b>"]
+    NH3["<b>SAI_NEXT_HOP(s)</b><br/>(HW-managed backup path)"]
+
+    NHG_PROT -- member 1 --> M1
+    NHG_PROT -- member 2 --> M2
+
+    M1 -- NEXT_HOP_ID --> NH1
+    M1 -- MONITORED_OBJECT --> MON
+
+    M2 -- NEXT_HOP_ID --> NHG_HW
+    NHG_HW -- NEXT_HOP_GROUP_MEMBER_LIST --> NH2
+    NH2 -- NEXT_HOP_ID --> NH3
+
+    classDef group fill:#dbe9ff,stroke:#3366cc,stroke-width:1.5px,color:#0b1b33;
+    classDef member fill:#fff2cc,stroke:#d6a400,stroke-width:1.5px,color:#3a2c00;
+    classDef leaf fill:#e6f4ea,stroke:#2e7d32,stroke-width:1.5px,color:#0b3d16;
+    classDef monitor fill:#fde2e2,stroke:#c0392b,stroke-width:1.5px,color:#4a0e0e;
+
+    class NHG_PROT,NHG_HW group;
+    class M1,M2,NH2 member;
+    class NH1,NH3 leaf;
+    class MON monitor;

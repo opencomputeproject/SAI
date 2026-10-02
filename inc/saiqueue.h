@@ -281,6 +281,32 @@ typedef enum _sai_queue_attr_t
     SAI_QUEUE_ATTR_SELECTIVE_COUNTER_LIST,
 
     /**
+     * @brief Queue packet dequeue enable
+     *
+     * True: Enable packet transmission of a queue.
+     * False: Disable packet transmission of a queue.
+     * When packet transmission is disabled on a queue, packets are still subject
+     * to regular ingress and egress admission control to determine the actions on a packet
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     */
+    SAI_QUEUE_ATTR_PKT_DEQUEUE_ENABLE,
+
+    /**
+     * @brief Queue packet enqueue enable
+     *
+     * True: Enable packet enqueue to a queue.
+     * False: Disable packet enqueue to a queue.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     */
+    SAI_QUEUE_ATTR_PKT_ENQUEUE_ENABLE,
+
+    /**
      * @brief End of attributes
      */
     SAI_QUEUE_ATTR_END,

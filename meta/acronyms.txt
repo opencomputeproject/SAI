@@ -5,6 +5,7 @@ AES - Advanced Encryption Standard
 AN - Association Number
 AN - Auto Negotiation
 API - Application Program Interface
+APSU - Autonomous Path Start Up
 ARP - Address Resolution Protocol
 ARS - Adaptiver Routing and Switching
 ASIC - Application Specific Integrated Circuit
@@ -19,8 +20,11 @@ BW - Bandwidth
 CAM - Content Addressable Memory
 CAUI - 100 Gigabit Attachment Unit Interface
 CB - Callback
+CBFC - Credit Based Flow Control
 CBS - Committed Burst Size
 CCITT - Comite Consultatif International de Telegraphique et Telephonique
+CEILR - Common Electrical Interface Long Reach Normal
+CEIMR - Common Electrical Interface Medium Reach
 CFI - Canonical Format Indicator
 CIDR - Classless Inter Domain Routing
 CIR - Committed Information Rate
@@ -29,6 +33,7 @@ CPLD - Complex programmable logic device
 CPU - Central Processing Unit
 CRC - Cyclic Redundancy Code
 CSIG - Congestion Signaling
+DEI - Drop Elgibility Indicator
 DFE - Decision Feedback Equalizer
 DHCP - Dynamic Host Configuration Protocol
 DHCPV6 - Dynamic Host Configuration Protocol for IPv6
@@ -81,6 +86,7 @@ IFA1 - Inband Flow Analyzer version 1
 IFA2 - Inband Flow Analyzer version 2
 IGMP - Internet Group Management Protocol
 IHL - Internet Header Length
+ILT - Inter-sublayer Link Training
 IOAM - In-situ Operations And Management
 IP - Internet Protocol
 IP2ME - IP packets to local router IP
@@ -100,19 +106,26 @@ MAC - Medium Access Control
 MDIO - Management Data Input/Output
 MDIX - Medium Dependent Interface Crossover
 MILLI - milli (1/1000)
+MLD - Multicast Listener Discovery
 MMU - Memory Management Unit
 MPLS - Multi Protocol Label Switching
+MRU - Maximum Receive Unit
 MTU - Maximum Transmission Unit
 NACK - Negative Acknowledgement
 NAPT - Network Address Port Translation
 NHLFE - Next Hop Label Forwarding Entry
 NMOS - N-channel Metal Oxide Semiconductor
 NPU - Numeric Processing Unit
+NRR - Neighbor Rate Ratio
 NRZ - Non Return to Zero
 NTPCLIENT - Network Time Protocol Client
 NTPSERVER - Network Time Protocol Server
 NVGRE - Network Virtualization using Generic Routing Encapsulation
+OA - Optical Amplifier
 OAM - Operations Administration and Maintenance
+OCS - Optical Circuit Switch
+ORL - Optical Return Loss
+OTN - Optical Transport Network
 OUI - Organizationally Unique Identifier
 P4RT - Programming Protocol-independent Packet Processors Runtime
 PAM4 - Pulse Amplitude Modulation 4-level
@@ -128,6 +141,7 @@ PMOS - P-channel Metal Oxide Semiconductor
 PN - Packet Number
 POE - Power over Ethernet
 PRBS - Pseudorandom binary sequence
+PRI - Priority Code Point
 PSC - PHB Scheduling Class
 PSE - Power Sourcing Equipment
 PSP - Penultimate Segment Pop
@@ -140,6 +154,7 @@ RPC - Remote Procedure Call
 RPF - Reverse Path Forwarding
 RPN - Reverse Polish Notation
 RSPAN - Remote Span
+RTS - Ready To Send
 SA - Secure Association
 SAI - Switch Abstraction Interface
 SAK - Secure Association Key
@@ -163,6 +178,7 @@ SRV6 - Segment Routing with IPv6
 SSCI - Short Secure Channel Identifier
 SSH - Secure Shell
 SSL - Secure Socket Layer
+SSPRQ - Short Stress Pattern Random Quaternary
 STP - Spanning Tree Protocol
 SYNCE - Synchronous Ethernet
 TC - Traffic Control
@@ -180,6 +196,7 @@ UDP - User Datagram Protocol
 USD - Ultimate Segment Decapsulation
 USP - Ultimate Segment Pop
 USXGMII - Universal Serial 10 Gigabit Media Independent Interface
+VC - Virtual Channel
 VGA - Variable Gain Amplifier
 VNET - Virtual Network
 VNI - Virtual Network Interface

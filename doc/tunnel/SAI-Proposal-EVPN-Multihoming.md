@@ -32,6 +32,7 @@
 | ---- | ---------  | ------------------------------------------------ | ------------------ |
 | 0.1  | Sep 23' 2024   | Jai Kumar, Rajesh Sankaran                   | Initial draft  |
 | 0.2  | Oct 23' 2024   | Rajesh Sankaran                              | Changed DF, single active attributes |
+| 0.3  | May 18' 2026   | James Andrew                                 | Added split-horizon support for P2MP tunnels |
 
 
 # 1.0  Introduction
@@ -199,11 +200,59 @@ typedef enum _sai_vlan_member_attr_t
 
 ### 3.2.3 Split Horizon support
 
-  - Tunnels of peer mode SAI_TUNNEL_PEER_MODE_P2P are only considered here. 
   - The isolation group object of type SAI_ISOLATION_GROUP_TYPE_BRIDGE_PORT is used to achieve the split horizon functionality.
   - There is no change to the Isolation group and group member definition.
-  - Bridgeport of type SAI_BRIDGE_PORT_TYPE_TUNNEL will have the isolation group attribute set.
+  - For SAI_TUNNEL_PEER_MODE_P2P tunnels:
+    - each tunnel is associated with a particular remote VTEP and has an
+    associated bridge port of type SAI_BRIDGE_PORT_TYPE_TUNNEL.
+    - This per-remote-VTEP bridge port of type SAI_BRIDGE_PORT_TYPE_TUNNEL will
+    have the isolation group attribute set.
+  - For SAI_TUNNEL_PEER_MODE_P2MP tunnels:
+    - We introduce a new bridge port type SAI_BRIDGE_PORT_TYPE_TUNNEL_TERM_PEER
+    with an associated attribute SAI_BRIDGE_PORT_ATTR_TUNNEL_TERM_PEER_IP. This
+    bridge port represents decapsulated tunnel-terminated traffic from a
+    specific remote VTEP. It is explicitly rx-only and cannot be used for
+    encap/tx.
+    - THis per-remote_VTEP bridge port of type
+      SAI_BRIDGE_PORT_TYPE_TUNNEL_TERM_PEER will have the isolation group
+      attribute set.
   - The isolation group members will be the client side bridge ports of type SAI_BRIDGE_PORT_TYPE_PORT which share the ESI with the peering VTEPs.
+
+
+```
+typedef enum _sai_bridge_port_type_t
+...
+
+    /**
+     * @brief Bridge tunnel peer termination port
+     *
+     * Bridge port for traffic terminated from a specific tunnel peer.
+     * Tunnel should use peer mode P2MP.
+     */
+    SAI_BRIDGE_PORT_TYPE_TUNNEL_TERM_PEER,
+} sai_bridge_port_type_t;
+```
+
+The Bridge-port of type SAI_BRIDGE_PORT_TYPE_TUNNEL_TERM_PEER should have SAI_BRIDGE_PORT_ATTR_TUNNEL_ID and SAI_BRIDGE_PORT_ATTR_TUNNEL_TERM_PEER_IP attributes set.
+
+```
+typedef enum _sai_bridge_port_attr_t
+{
+...
+    /**
+     * @brief Tunnel peer IP address
+     *
+     * Identifies the peer (remote tunnel endpoint) from which tunnel-terminated
+     * traffic is received on this bridge port.
+     *
+     * @type sai_ip_address_t
+     * @flags MANDATORY_ON_CREATE | CREATE_ONLY
+     * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_TUNNEL_TERM_PEER
+     */
+    SAI_BRIDGE_PORT_ATTR_TUNNEL_TERM_PEER_IP,
+...
+}
+```
 
 ### 3.2.4 Fast Failover support
 
@@ -486,12 +535,14 @@ At VTEP5 the following objects are created.
 
 ## 4.2 Split Horizon workflow
 
+![EVPN Multihoming](figures/sai_evpnmh_splithorizon.png "Figure 1: Split Horizon")
+__Figure 2: Split Horizon Flow__
+
+## 4.2.1 Tunnel peer mode type P2P
+
   When Tunnel objects of peer mode type P2P are created, the isolation group objects can be re-used 
   to achieve the split horizon functionality and do not need the attributes being introduced as part of this
   PR. It is being elaborated here for completeness.
-
-![EVPN Multihoming](figures/sai_evpnmh_splithorizon.png "Figure 1: Split Horizon")
-__Figure 2: Split Horizon Flow__
 
   At VTEP1 the following SAI objects with sub types are created.
 
@@ -537,9 +588,25 @@ __Figure 2: Split Horizon Flow__
         /* Repeat for all combinations */
         .............
         .............
-                                                                        
+
 ```
 
+## 4.2.2 Tunnel peer mode type P2MP
+
+When Tunnel objects of peer mode type P2MP are used, we use bridge ports of
+type SAI_BRIDGE_PORT_TYPE_TUNNEL_TERM_PEER with the
+SAI_BRIDGE_PORT_ATTR_TUNNEL_TERM_PEER_IP attribute to associate the isolation
+group object with tunnel-terminated packets from a particular remote VTEP.
+
+At VTEP1 the following SAI objects with sub types are created.
+
+- SAI_OBJECT_TYPE_TUNNEL with peer mode as SAI_TUNNEL_PEER_MODE_P2MP, tnl_oid.
+- SAI_OBJECT_TYPE_BRIDGE_PORT of type SAI_BRIDGE_PORT_TYPE_TUNNEL_TERM_PEER, bp_tnl_oid_2-4 corresponding to each remote VTEP, with SAI_BRIDGE_PORT_ATTR_REMOTE_TUNNEL_TERM_PEER_IP set to the IP of VTEPs2-4 respectively. All bridge ports bp_tnl_oid_2-4 set the SAI_BRIDGE_PORT_ATTR_TUNNEL_ID to the same P2MP tunnel tnl_oid.
+- SAI_OBJECT_TYPE_BRIDGE_PORT of type SAI_BRIDGE_PORT_TYPE_PORT, bp_lag_oid_1-2 corresponding to client side LAGs 1,2.
+- SAI_OBJECT_TYPE_ISOLATION_GROUP of type SAI_ISOLATION_GROUP_TYPE_BRIDGE_PORT, isogrp_oid_2-4 corresponding to bp_tnl_oid_2-4 as above.
+- bp_tnl_oid_2-4 have SAI_BRIDGE_PORT_ATTR_ISOLATION_GROUP set as isogrp_oid_2-4 respectively.
+
+The remainder of the flow is identical to [4.2.1 Tunnel peer mode type P2P](421-tunnel-peer-mode-type-p2p).
 
 ## 4.3 DF workflow
 

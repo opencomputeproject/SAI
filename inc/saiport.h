@@ -507,6 +507,15 @@ typedef enum _sai_port_interface_type_t
     /** Interface type USXGMII */
     SAI_PORT_INTERFACE_TYPE_USXGMII,
 
+    /** Interface type CEIMR */
+    SAI_PORT_INTERFACE_TYPE_CEIMR,
+
+    /** Interface type CEILR */
+    SAI_PORT_INTERFACE_TYPE_CEILR,
+
+    /** Interface type CEILR extended reach */
+    SAI_PORT_INTERFACE_TYPE_CEILR_ER,
+
     /** Interface type MAX */
     SAI_PORT_INTERFACE_TYPE_MAX,
 
@@ -562,6 +571,79 @@ typedef enum _sai_port_prbs_config_t
     /** Enable PRBS Transmitter */
     SAI_PORT_PRBS_CONFIG_ENABLE_TX
 } sai_port_prbs_config_t;
+
+/**
+ * @brief Attribute data for #SAI_PORT_ATTR_PRBS_PATTERN
+ * PRBS polynomial pattern
+ */
+typedef enum _sai_port_prbs_pattern_t
+{
+    /** Vendor determined PRBS polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_AUTO,
+
+    /** PRBS-7 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS7,
+
+    /** PRBS-9 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS9,
+
+    /** PRBS-10 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS10,
+
+    /** PRBS-11 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS11,
+
+    /** PRBS-13 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS13,
+
+    /** PRBS-15 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS15,
+
+    /** PRBS-16 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS16,
+
+    /** PRBS-20 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS20,
+
+    /** PRBS-23 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS23,
+
+    /** PRBS-31 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS31,
+
+    /** PRBS-32 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS32,
+
+    /** PRBS-49 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS49,
+
+    /** PRBS-58 polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS58,
+
+    /** PRBS-7Q polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS7Q,
+
+    /** PRBS-9Q polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS9Q,
+
+    /** PRBS-13Q polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS13Q,
+
+    /** PRBS-15Q polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS15Q,
+
+    /** PRBS-23Q polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS23Q,
+
+    /** PRBS-31Q polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_PRBS31Q,
+
+    /** SSPRQ polynomial pattern */
+    SAI_PORT_PRBS_PATTERN_SSPRQ,
+
+    /** Custom range base value */
+    SAI_PORT_PRBS_PATTERN_CUSTOM_RANGE_BASE = 0x10000000
+} sai_port_prbs_pattern_t;
 
 /**
  * @brief Attribute data for #SAI_PORT_CONNECTOR_ATTR_FAILOVER_MODE
@@ -786,6 +868,50 @@ typedef enum _sai_llr_frame_action_t
     SAI_LLR_FRAME_ACTION_BEST_EFFORT
 
 } sai_llr_frame_action_t;
+
+/**
+ * @brief Interface RTS status
+ */
+typedef enum _sai_port_ilt_rts_status_t
+{
+    /** RTS status is unknown */
+    SAI_PORT_ILT_RTS_STATUS_RESERVED,
+
+    /** RTS status is fail */
+    SAI_PORT_ILT_RTS_STATUS_FAIL,
+
+    /** RTS status is in progress */
+    SAI_PORT_ILT_RTS_STATUS_IN_PROGRESS,
+
+    /** RTS status is Ready */
+    SAI_PORT_ILT_RTS_STATUS_READY,
+
+    /** RTS status is OK */
+    SAI_PORT_ILT_RTS_STATUS_OK
+
+} sai_port_ilt_rts_status_t;
+
+/**
+ * @brief Interface ILT Training status
+ */
+typedef enum _sai_port_ilt_training_status_t
+{
+    /** Training status is reserved */
+    SAI_PORT_ILT_TRAINING_STATUS_RESERVED,
+
+    /** Training status is failed */
+    SAI_PORT_ILT_TRAINING_STATUS_FAIL,
+
+    /** Training status is in progress */
+    SAI_PORT_ILT_TRAINING_STATUS_IN_PROGRESS,
+
+    /** Training status is Ready */
+    SAI_PORT_ILT_TRAINING_STATUS_READY,
+
+    /** Training status is OK */
+    SAI_PORT_ILT_TRAINING_STATUS_OK
+
+} sai_port_ilt_training_status_t;
 
 /**
  * @brief Attribute Id in sai_set_port_attribute() and
@@ -1300,6 +1426,9 @@ typedef enum _sai_port_attr_t
      * @brief Enable flood (unknown unicast or unknown multicast)
      * storm control policer on port.
      *
+     * Deprecated. Use SAI_PORT_ATTR_UNKNOWN_UNICAST_STORM_CONTROL_POLICER_ID
+     * and SAI_PORT_ATTR_UNKNOWN_MULTICAST_STORM_CONTROL_POLICER_ID.
+     *
      * Set policer id = #SAI_NULL_OBJECT_ID to disable policer on port.
      *
      * @type sai_object_id_t
@@ -1307,6 +1436,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_POLICER
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
+     * @deprecated true
      */
     SAI_PORT_ATTR_FLOOD_STORM_CONTROL_POLICER_ID,
 
@@ -1326,6 +1456,9 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Enable multicast storm control policer on port.
      *
+     * Deprecated. Use SAI_PORT_ATTR_KNOWN_MULTICAST_STORM_CONTROL_POLICER_ID
+     * and SAI_PORT_ATTR_UNKNOWN_MULTICAST_STORM_CONTROL_POLICER_ID.
+     *
      * Set policer id = #SAI_NULL_OBJECT_ID to disable policer on port.
      *
      * @type sai_object_id_t
@@ -1333,6 +1466,7 @@ typedef enum _sai_port_attr_t
      * @objects SAI_OBJECT_TYPE_POLICER
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
+     * @deprecated true
      */
     SAI_PORT_ATTR_MULTICAST_STORM_CONTROL_POLICER_ID,
 
@@ -1972,9 +2106,13 @@ typedef enum _sai_port_attr_t
     /**
      * @brief Port PRBS Polynomial
      *
+     * Deprecated. Use SAI_PORT_ATTR_PRBS_PATTERN.
+     * This attribute is mutually exclusive with SAI_PORT_ATTR_PRBS_PATTERN.
+     *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
      * @default internal
+     * @deprecated true
      */
     SAI_PORT_ATTR_PRBS_POLYNOMIAL,
 
@@ -2966,6 +3104,528 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_PTP_PEER_MEAN_PATH_DELAY,
 
     /**
+     * @brief Port PRBS Polynomial Pattern
+     *
+     * This attribute is mutually exclusive with the deprecated SAI_PORT_ATTR_PRBS_POLYNOMIAL.
+     *
+     * @type sai_port_prbs_pattern_t
+     * @flags CREATE_AND_SET
+     * @default SAI_PORT_PRBS_PATTERN_AUTO
+     */
+    SAI_PORT_ATTR_PRBS_PATTERN,
+
+    /**
+     * @brief Supported list of PRBS Polynomial Patterns for the port
+     *
+     * @type sai_s32_list_t sai_port_prbs_pattern_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_SUPPORTED_PRBS_PATTERN,
+
+    /**
+     * @brief Get CBFC Native Credit Size in bytes.
+     *
+     * Receiver's input buffer is typically divided into cells, and the native credit size is this cell size (in bytes).
+     *
+     * @type sai_uint16_t
+     * @flags READ_ONLY
+     * @isvlan false
+     */
+    SAI_PORT_ATTR_CBFC_RECEIVER_NATIVE_CREDIT_SIZE,
+
+    /**
+     * @brief Get CBFC Receiver Native Packet Overhead in bytes.
+     *
+     * @type sai_int16_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_CBFC_RECEIVER_NATIVE_PACKET_OVERHEAD,
+
+    /**
+     * @brief Get CBFC Receiver Total Port Credits in Credits.
+     *
+     * If value is 0, receiver sets per-VC credit limits.
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     * @isvlan false
+     */
+    SAI_PORT_ATTR_CBFC_RECEIVER_NATIVE_TOTAL_CREDITS,
+
+    /**
+     * @brief Configure CBFC Receiver Credit Size in bytes.
+     *
+     * If value is 0, CBFC_RECEIVER_NATIVE_CREDIT_SIZE will be used.
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 0
+     */
+    SAI_PORT_ATTR_CBFC_RECEIVER_CREDIT_SIZE,
+
+    /**
+     * @brief Configure CBFC Receiver Packet Overhead in bytes.
+     *
+     * Range: -16 to 127
+     * If value is 128, SAI_PORT_ATTR_CBFC_RECEIVER_NATIVE_PACKET_OVERHEAD will be used
+     *
+     * @type sai_int16_t
+     * @flags CREATE_AND_SET
+     * @default 128
+     */
+    SAI_PORT_ATTR_CBFC_RECEIVER_PACKET_OVERHEAD,
+
+    /**
+     * @brief Get CBFC supported Credit Size in bytes.
+     *
+     * @type sai_u16_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_CBFC_SENDER_SUPPORTED_CREDIT_SIZE,
+
+    /**
+     * @brief Configure CBFC Sender Credit Size in bytes.
+     *
+     * To maximize utilization of the receiver's input buffer, set to largest value in CBFC_SENDER_SUPPORTED_CREDIT_SIZE that does not exceed CBFC_RECEIVER_NATIVE_CREDIT_SIZE.
+     *
+     * @type sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default 128
+     */
+    SAI_PORT_ATTR_CBFC_SENDER_CREDIT_SIZE,
+
+    /**
+     * @brief Configure CBFC Sender Packet Overhead in bytes.
+     *
+     * Range: -16 to 127.
+     *
+     * @type sai_int16_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_ATTR_CBFC_SENDER_PACKET_OVERHEAD,
+
+    /**
+     * @brief Configure CBFC Sender Port Credit Limit.
+     *
+     * Range; 0 to (2^20 - 1).
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_ATTR_CBFC_SENDER_CREDIT_LIMIT,
+
+    /**
+     * @brief Configure CBFC CC_Update message timer in  microseconds.
+     *
+     * Range: 1us to 250000us.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 256
+     */
+    SAI_PORT_ATTR_CBFC_CC_MESSAGE_TIMER,
+
+    /**
+     * @brief Configure minimum space between CBFC CF_Update messages in bytes.
+     *
+     * Must be >=800B.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 6400
+     */
+    SAI_PORT_ATTR_CBFC_CF_MIN_SPACING,
+
+    /**
+     * @brief Configure minimum space in bytes between CtlOS messages
+     * like CBFC CF_Update, LLR ACK etc.
+     * Must be >=800B.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 6400
+     */
+    SAI_PORT_ATTR_CTLOS_MIN_SPACING,
+
+    /**
+     * @brief Configure maximum space between CBFC CF_Update messages in bytes.
+     *
+     * Range: 16 KB to 1 MB with minimum granularity of 16 KB.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 262144
+     */
+    SAI_PORT_ATTR_CBFC_CF_MAX_SPACING,
+
+    /**
+     * @brief Enable Queue to VC MAP on port
+     *
+     * QOS_MAP of type SAI_QOS_MAP_TYPE_QUEUE_TO_VC
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_QOS_QUEUE_TO_VC_MAP,
+
+    /**
+     * @brief Enable TC to VC MAP on port.
+     *
+     * QOS_MAP of type SAI_QOS_MAP_TYPE_TC_TO_VC
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_QOS_TC_TO_VC_MAP,
+
+    /**
+     * @brief Enable {DOT1P,DEI} -> TC MAP on port.
+     *
+     * Cannot co-exist with SAI_PORT_ATTR_QOS_DOT1P_TO_TC_MAP.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_QOS_DOT1P_DEI_TO_TC_MAP,
+
+    /**
+     * @brief List of virtual channels for the port.
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_VIRTUAL_CHANNEL
+     */
+    SAI_PORT_ATTR_QOS_VIRTUAL_CHANNEL_LIST,
+
+    /**
+     * @brief List of CBFC credit pools for the port.
+     *
+     * @type sai_object_list_t
+     * @flags READ_ONLY
+     * @objects SAI_OBJECT_TYPE_CBFC_CREDIT_POOL
+     */
+    SAI_PORT_ATTR_CBFC_CREDIT_POOL_LIST,
+
+    /**
+     * @brief Enable known unicast storm control policer on port.
+     *
+     * Set policer id = #SAI_NULL_OBJECT_ID to disable policer on port.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_POLICER
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_KNOWN_UNICAST_STORM_CONTROL_POLICER_ID,
+
+    /**
+     * @brief Enable unknown unicast storm control policer on port.
+     *
+     * Set policer id = #SAI_NULL_OBJECT_ID to disable policer on port.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_POLICER
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_UNKNOWN_UNICAST_STORM_CONTROL_POLICER_ID,
+
+    /**
+     * @brief Enable known multicast storm control policer on port.
+     *
+     * Set Policer id = #SAI_NULL_OBJECT_ID to disable policer on port.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_POLICER
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_KNOWN_MULTICAST_STORM_CONTROL_POLICER_ID,
+
+    /**
+     * @brief Enable unknown multicast storm control policer on port.
+     *
+     * Set Policer id = #SAI_NULL_OBJECT_ID to disable policer on port.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_POLICER
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_UNKNOWN_MULTICAST_STORM_CONTROL_POLICER_ID,
+
+    /**
+     * @brief Interface ILT Training status
+     *
+     * @type sai_port_ilt_training_status_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_ILT_TRAINING_STATUS,
+
+    /**
+     * @brief ILT per-lane training status
+     *
+     * Per-lane ILT training state.
+     *
+     * @type sai_port_ilt_lane_training_status_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_ILT_LANE_TRAINING_STATUS_LIST,
+
+    /**
+     * @brief Interface RTS status
+     *
+     * @type sai_port_ilt_rts_status_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_ILT_RTS_STATUS,
+
+    /**
+     * @brief APSU MR mr_training_enable variable to enable/disable the training on the interface
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     */
+    SAI_PORT_ATTR_APSU_MR_TRAINING_ENABLE,
+
+    /**
+     * @brief APSU mr_restart variable to restart the RTS and ILT functions when true
+     *
+     * The variable should be self-clearing so that RTS+ILT functions can be restarted multiple times
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_APSU_MR_RESTART,
+
+    /**
+     * @brief APSU local_tf_lock variable
+     *
+     * @type sai_port_lane_latch_status_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_APSU_LOCAL_TF_LOCK_STATUS,
+
+    /**
+     * @brief APSU remote_tf_lock variable
+     *
+     * @type sai_port_lane_latch_status_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_APSU_REMOTE_TF_LOCK_STATUS,
+
+    /**
+     * @brief APSU local_rx_ready variable
+     *
+     * @type sai_port_lane_latch_status_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_APSU_LOCAL_RX_READY_STATUS,
+
+    /**
+     * @brief APSU remote_rx_ready variable
+     *
+     * @type sai_port_lane_latch_status_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_APSU_REMOTE_RX_READY_STATUS,
+
+    /**
+     * @brief Per lane ILT training_failure variable
+     *
+     * @type sai_port_lane_latch_status_list_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_ILT_TRAINING_FAILURE,
+
+    /**
+     * @brief APSU local_rts variable for the interface
+     *
+     * @type sai_latch_status_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_APSU_LOCAL_RTS_STATUS,
+
+    /**
+     * @brief APSU remote_rts variable for the interface
+     *
+     * @type sai_latch_status_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_APSU_REMOTE_RTS_STATUS,
+
+    /**
+     * @brief APSU isl_ready variable for the interface
+     *
+     * @type sai_latch_status_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_APSU_ISL_READY,
+
+    /**
+     * @brief Link down debounce time in microseconds
+     *
+     * 0 means no delay time so link down events are immediately delivered as usual
+     * This attribute overrides the switch level debounce configuration
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_ATTR_LINK_DOWN_DEBOUNCE_TIMEOUT,
+
+    /**
+     * @brief Enable independent Maximum Receive Unit (MRU) enforcement
+     *
+     * When true, SAI_PORT_ATTR_MRU governs the ingress frame-size
+     * admission threshold independently of SAI_PORT_ATTR_MTU.
+     * When false, ingress admission behavior is unchanged and follows
+     * the implementation's existing use of SAI_PORT_ATTR_MTU.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     */
+    SAI_PORT_ATTR_MRU_ENABLED,
+
+    /**
+     * @brief Maximum Receive Unit (MRU) in bytes
+     *
+     * Frames arriving on this port that exceed this value are dropped.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 1514
+     * @validonly SAI_PORT_ATTR_MRU_ENABLED == true
+     */
+    SAI_PORT_ATTR_MRU,
+
+    /**
+     * @brief Query list of supported port loopback modes for the port
+     *
+     * @type sai_s32_list_t sai_port_loopback_mode_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_SUPPORTED_LOOPBACK_MODE,
+
+    /**
+     * @brief Enable/Disable PTP peer delay functionality
+     *
+     * Enable PTP peer to peer delay functionality by assigning a
+     * valid object ID. Disable functionality by assigning
+     * SAI_NULL_OBJECT_ID as attribute value.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PTP_PDELAY
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_PDELAY_INSTANCE_ID,
+
+    /**
+     * @brief Raw Link Delay in nanoseconds, as calculated by the peer delay mechanism
+     *
+     * Instantaneous link delay computed from the latest available set of T1/T2/T3/T4 timestamps.
+     * This attribute is applicable only when PTP peer delay functionality is enabled.
+     * When PTP peer delay functionality is disabled, 0 should be returned.
+     *
+     * @type sai_int64_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PDELAY_LINK_DELAY,
+
+    /**
+     * @brief Computed Neighbor rate ratio, as calculated by the peer delay mechanism
+     *
+     * Frequency rate ratio computed by P2P initiator in 2^30 scaled fixed-point format.
+     * This attribute is applicable only when PTP peer delay functionality is enabled.
+     * When PTP peer delay functionality is disabled, 0 should be returned.
+     *
+     * @type sai_int32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PDELAY_NEIGHBOR_RATE_RATIO,
+
+    /**
+     * @brief Computed Neighbor propagation delay in nanoseconds,
+     * as calculated by the peer delay mechanism
+     *
+     * Filtered propagation delay computed using Neighbor Rate Ratio (NRR).
+     * This attribute is applicable only when PTP peer delay functionality is enabled.
+     * When PTP peer delay functionality is disabled, 0 should be returned.
+     *
+     * @type sai_uint32_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_PDELAY_NEIGHBOR_PROPAGATION_DELAY,
+
+    /**
+     * @brief Link Delay in nanoseconds used for updating correction field in the incoming PTP packet
+     *
+     * This attribute configures the link delay to be used while computing the correction
+     * field in the incoming PTP packet. It can either be computed by the peer delay
+     * mechanism or by NOS.
+     *
+     * In non-offload mode, this attribute configures the same data path delay as
+     * #SAI_PORT_ATTR_PTP_PEER_MEAN_PATH_DELAY; if both are set, the last set attribute
+     * takes precedence (last-write-wins), and GET returns the active value in each
+     * attribute's type. In hardware offload mode, this attribute takes precedence and
+     * #SAI_PORT_ATTR_PTP_PEER_MEAN_PATH_DELAY is inactive.
+     *
+     * @type sai_int64_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_PORT_ATTR_LINK_DELAY,
+
+    /**
+     * @brief Enable TC -> Queue MAP on port for Multicast(Broadcast, Unknown unicast, Multicast) flows
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to have same map for Multicast as Unicast.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_QOS_TC_TO_QUEUE_MAP_MULTICAST,
+
+    /**
+     * @brief Enable TRIM TC AND COLOR -> DSCP MAP
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable trim map on port.
+     * Default no trim map.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_QOS_TRIM_TC_AND_COLOR_TO_DSCP_MAP,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
@@ -3722,6 +4382,33 @@ typedef enum _sai_port_stat_t
     /** Number of times that LLR Rx detected the start of a replay */
     SAI_PORT_STAT_LLR_RX_REPLAY,
 
+    /** SAI port stat sender credits used */
+    SAI_PORT_STAT_CBFC_SENDER_CREDITS_USED,
+
+    /** SAI port stat sender credits used watermark */
+    SAI_PORT_STAT_CBFC_SENDER_CREDITS_USED_WATERMARK,
+
+    /** SAI port stat credits consumed update messages tx */
+    SAI_PORT_STAT_CBFC_NUM_CC_UPDATE_MESSAGES_TX,
+
+    /** SAI port stat credits freed update messages tx */
+    SAI_PORT_STAT_CBFC_NUM_CF_UPDATE_MESSAGES_TX,
+
+    /** SAI port stat credits consumed update messages rx */
+    SAI_PORT_STAT_CBFC_NUM_CC_UPDATE_MESSAGES_RX,
+
+    /** SAI port stat credits freed update messages rx */
+    SAI_PORT_STAT_CBFC_NUM_CF_UPDATE_MESSAGES_RX,
+
+    /** Number of packets with frame size 1519 octets to max MTU supported by the port */
+    SAI_PORT_STAT_ETHER_STATS_PKTS_1519_TO_MAX_OCTETS,
+
+    /** Number of received packets with frame size 1519 octets to max MTU supported by the port */
+    SAI_PORT_STAT_ETHER_IN_PKTS_1519_TO_MAX_OCTETS,
+
+    /** Number of transmitted packets with frame size 1519 octets to max MTU supported by the port */
+    SAI_PORT_STAT_ETHER_OUT_PKTS_1519_TO_MAX_OCTETS,
+
     /** Port stat in drop reasons range start */
     SAI_PORT_STAT_IN_DROP_REASON_RANGE_BASE = 0x00001000,
 
@@ -3883,6 +4570,30 @@ typedef enum _sai_port_stat_t
 
     /** Per Lane PRBS Error Count Range End */
     SAI_PORT_STAT_PRBS_ERROR_COUNT_LANE_RANGE_END = 0x00004fff,
+
+    /** SAI port stat PTP peer delay TX Request count */
+    SAI_PORT_STAT_PTP_PDELAY_TX_REQ_COUNT,
+
+    /** SAI port stat PTP peer delay RX Request count */
+    SAI_PORT_STAT_PTP_PDELAY_RX_REQ_COUNT,
+
+    /** SAI port stat PTP peer delay TX Response count */
+    SAI_PORT_STAT_PTP_PDELAY_TX_RESP_COUNT,
+
+    /** SAI port stat PTP peer delay RX Response count */
+    SAI_PORT_STAT_PTP_PDELAY_RX_RESP_COUNT,
+
+    /** SAI port stat PTP peer delay TX Response Followup count */
+    SAI_PORT_STAT_PTP_PDELAY_TX_RESP_FOLLOWUP_COUNT,
+
+    /** SAI port stat PTP peer delay RX Response Followup count */
+    SAI_PORT_STAT_PTP_PDELAY_RX_RESP_FOLLOWUP_COUNT,
+
+    /** SAI port stat PTP peer delay response timeouts */
+    SAI_PORT_STAT_PTP_PDELAY_RESP_TIMEOUT_COUNT,
+
+    /** SAI port stat PTP peer delay response followup timeouts */
+    SAI_PORT_STAT_PTP_PDELAY_RESP_FOLLOWUP_TIMEOUT_COUNT,
 
     /** Port stat range end */
     SAI_PORT_STAT_END,

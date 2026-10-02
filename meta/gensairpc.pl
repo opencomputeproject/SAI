@@ -377,9 +377,17 @@ sub get_definitions {
     my %apis;
     my $i = 0;
 
-    # Iterate over files
-    for ( GetSaiXmlFiles($XMLDIR) ) {
+    my @xml_files = GetSaiXmlFiles($XMLDIR);
+    if (NeedsTwoPassProcessing())
+    {
+        unshift @xml_files, GetGroupXmlFiles($XMLDIR);
+    }
+
+    for ( @xml_files )
+    {
         my $xml = ReadXml($_);
+
+        next unless defined $xml->{compounddef}[0];
 
         # Iterate over definitions
         for ( @{ $xml->{compounddef}[0]->{sectiondef} } ) {

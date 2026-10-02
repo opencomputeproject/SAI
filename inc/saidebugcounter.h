@@ -77,6 +77,31 @@ typedef enum _sai_debug_counter_bind_method_t
 } sai_debug_counter_bind_method_t;
 
 /**
+ * @brief Attribute data for buffer drop reasons
+ */
+typedef enum _sai_buffer_drop_reason_t
+{
+    /** Start of buffer drop reasons */
+    SAI_BUFFER_DROP_REASON_START,
+
+    /** Any buffer drop */
+    SAI_BUFFER_DROP_REASON_ANY = SAI_BUFFER_DROP_REASON_START,
+
+    /** IPG packet drops */
+    SAI_BUFFER_DROP_REASON_IPG,
+
+    /** End of buffer drop reasons */
+    SAI_BUFFER_DROP_REASON_END,
+
+    /** Custom range base value */
+    SAI_BUFFER_DROP_REASON_CUSTOM_RANGE_START = 0x10000000,
+
+    /** End of custom range */
+    SAI_BUFFER_DROP_REASON_CUSTOM_RANGE_END
+
+} sai_buffer_drop_reason_t;
+
+/**
  * @brief Attribute data for in drop reasons
  */
 typedef enum _sai_in_drop_reason_t
@@ -262,6 +287,7 @@ typedef enum _sai_in_drop_reason_t
      * @brief Packet is destined for neighboring device but neighbor device link is down
      *
      * Counted on ingress link
+     * Specific to L3 routing next hop resolution when the egress link is down.
      */
     SAI_IN_DROP_REASON_L3_EGRESS_LINK_DOWN,
 
@@ -330,6 +356,20 @@ typedef enum _sai_in_drop_reason_t
 
     /** IPv4 or IPv6 Routing table (LPM) unicast miss */
     SAI_IN_DROP_REASON_LPM_MISS = 0x00000039,
+
+    /**
+     * @brief Packet is destined for neighboring device but neighbor device link is down.
+     * Generic counter across all forwarding pipelines when the resolved egress link is down.
+     * e.g.: L2 bridging, L3 routing, tunnels
+     */
+    SAI_IN_DROP_REASON_EGRESS_LINK_DOWN,
+
+    /**
+     * @brief Packet is dropped during IPv4 or IPv6 routing table (LPM) lookup.
+     * Generic counter across all routing lookup modes when a packet cannot be forwarded.
+     * e.g.: LPM lookup miss, explicit discard route, or any other routing table reason
+     */
+    SAI_IN_DROP_REASON_LPM_ANY,
 
     /** End of in drop reasons */
     SAI_IN_DROP_REASON_END,

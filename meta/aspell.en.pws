@@ -9,6 +9,8 @@ api
 APIs
 Args
 armhf
+attenuator
+Attenuator
 attr
 attrid
 attrs
@@ -30,6 +32,7 @@ couldn
 cpp
 cpu
 CtlOS
+dBm
 debounce
 decap
 decapsulation
@@ -37,6 +40,7 @@ Decrement
 defaultvalue
 defaultvaluetype
 defgroup
+dequeue
 deserialize
 deserialized
 didn
@@ -50,6 +54,7 @@ Encaps
 eni
 Eni
 ENI
+enqueue
 enum
 Enum
 enums
@@ -105,6 +110,7 @@ loopback
 Loopback
 lossless
 lu
+mA
 MACsec
 maincursor
 Marvell
@@ -133,6 +139,7 @@ netlink
 nexthop
 nexthopgroup
 nextrelease
+nm
 NPUs
 NRZ
 objlist
@@ -142,6 +149,7 @@ OID
 OIDs
 ok
 opcode
+openconfig
 optimizations
 outsegment
 param
@@ -151,6 +159,7 @@ PHY
 pkts
 policer
 policers
+pps
 Policer
 postcursor
 pre
@@ -159,7 +168,9 @@ psec
 PVID
 qos
 quantization
+Raman
 reachability
+revertive
 routable
 runtime
 rv
@@ -193,6 +204,7 @@ SysFS
 syslog
 timespec
 timestamp
+THz
 TLV
 TODO
 tx
@@ -210,10 +222,12 @@ Uninitialize
 unordered
 untagged
 Untagged
+Upto
 uSID
 Utils
 validonly
 validonlys
+VCs
 versa
 vlan
 Vlan

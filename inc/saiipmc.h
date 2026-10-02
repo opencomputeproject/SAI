@@ -97,14 +97,15 @@ typedef enum _sai_ipmc_entry_attr_t
      * @brief IPMC entry output group id
      *
      * This attribute only takes effect when ATTR_PACKET_ACTION is set to
-     * FORWARD If the group has no member, packets will be discarded.
+     * FORWARD, COPY, LOG, TRANSIT, or DO NOT DROP. If the group has no member,
+     * packets will be discarded.
      *
      * @type sai_object_id_t
      * @flags CREATE_AND_SET
      * @objects SAI_OBJECT_TYPE_IPMC_GROUP
      * @allownull true
      * @default SAI_NULL_OBJECT_ID
-     * @validonly SAI_IPMC_ENTRY_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_FORWARD
+     * @validonly SAI_IPMC_ENTRY_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_FORWARD or SAI_IPMC_ENTRY_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_COPY or SAI_IPMC_ENTRY_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_LOG or SAI_IPMC_ENTRY_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_TRANSIT or SAI_IPMC_ENTRY_ATTR_PACKET_ACTION == SAI_PACKET_ACTION_DONOTDROP
      */
     SAI_IPMC_ENTRY_ATTR_OUTPUT_GROUP_ID,
 
@@ -131,6 +132,19 @@ typedef enum _sai_ipmc_entry_attr_t
      * @default SAI_NULL_OBJECT_ID
      */
     SAI_IPMC_ENTRY_ATTR_COUNTER_ID,
+
+    /**
+     * @brief Generate User Defined Trap ID for trap/log/copy actions
+     *
+     * When it is SAI_NULL_OBJECT_ID, then packet will not be trapped.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_HOSTIF_USER_DEFINED_TRAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_IPMC_ENTRY_ATTR_USER_TRAP_ID,
 
     /**
      * @brief End of attributes

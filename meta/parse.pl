@@ -96,6 +96,7 @@ my %ATTR_TAGS = (
         "relaxed"        , \&ProcessTagRelaxed,
         "isresourcetype" , \&ProcessTagIsRecourceType,
         "deprecated"     , \&ProcessTagDeprecated,
+        "precision"      , \&ProcessTagPrecision,
         );
 
 my %options = ();
@@ -422,6 +423,18 @@ sub ProcessTagDeprecated
     return undef;
 }
 
+sub ProcessTagPrecision
+{
+    my ($precision, $value, $val) = @_;
+
+    # allow only integers >= 0
+    return $val if $val =~ /^\d+$/;
+
+    LogError "precision tag value '$val', expected an integer >= 0";
+
+    return undef;
+}
+
 sub ProcessTagRange
 {
     my ($type, $attrName, $value) = @_;
@@ -514,7 +527,7 @@ sub ProcessDescription
 
     return if scalar@order == 0;
 
-    my $rightOrder = 'type:flags(:objects)?(:allownull)?(:allowempty)?(:isvlan)?(:default)?(:range)?(:condition|:validonly)?(:relaxed)?(:isresourcetype)?(:deprecated)?';
+    my $rightOrder = 'type:flags(:objects)?(:allownull)?(:allowempty)?(:isvlan)?(:default)?(:range)?(:condition|:validonly)?(:relaxed)?(:isresourcetype)?(:deprecated)?(:precision)?';
 
     my $order = join(":",@order);
 
@@ -1746,7 +1759,7 @@ sub ProcessDefaultValue
     {
         WriteSource "$val = { .mac = { 0, 0, 0, 0, 0, 0 } };";
     }
-    elsif ($default =~ /^0$/ and $type =~ /^(sai_timespec_t)/)
+    elsif ($default =~ /^0$/ and $type =~ /^(sai_timespec_t|sai_fw_inst_t)/)
     {
         WriteSource "$val = { 0 };";
     }
@@ -2357,6 +2370,23 @@ sub ProcessNextRelease
     return "true";
 }
 
+sub ProcessPrecision {
+    my ($stat, $precision) = @_;
+
+    # Default 0 if precision is not provided
+    return 0 unless defined $precision;
+
+    # Must be an integer >= 0
+    if ($precision =~ /^\d+$/)
+    {
+        return int($precision);
+    }
+
+    LogError "Unsupported precision value '$precision'. Expected an integer >= 0";
+
+    return undef;
+}
+
 sub ProcessSingleObjectType
 {
     my ($typedef, $objecttype) = @_;
@@ -2420,6 +2450,7 @@ sub ProcessSingleObjectType
         my $isrelaxed       = ProcessRelaxedType($attr, $meta{relaxed});
         my $apiversion      = ProcessApiVersion($attr);
         my $nextrelease     = ProcessNextRelease($attr);
+        my $precision       = ProcessPrecision($attr, $meta{precision});
 
         my $ismandatoryoncreate = ($flags =~ /MANDATORY/)       ? "true" : "false";
         my $iscreateonly        = ($flags =~ /CREATE_ONLY/)     ? "true" : "false";
@@ -2481,6 +2512,7 @@ sub ProcessSingleObjectType
         WriteSource ".iscustom                      = ($attr >= 0x10000000) && ($attr < 0x20000000),";
         WriteSource ".apiversion                    = $apiversion,";
         WriteSource ".nextrelease                   = $nextrelease,";
+        WriteSource ".valueprecision                = $precision,";
 
         WriteSource "};";
 
@@ -2695,6 +2727,7 @@ sub ProcessStructValueType
     my $type = shift;
 
     return "SAI_ATTR_VALUE_TYPE_OBJECT_ID"        if $type eq "sai_object_id_t";
+    return "SAI_ATTR_VALUE_TYPE_OBJECT_LIST"      if $type eq "sai_object_list_t";
     return "SAI_ATTR_VALUE_TYPE_MAC"              if $type eq "sai_mac_t";
     return "SAI_ATTR_VALUE_TYPE_IP_ADDRESS"       if $type eq "sai_ip_address_t";
     return "SAI_ATTR_VALUE_TYPE_IP_PREFIX"        if $type eq "sai_ip_prefix_t";
@@ -2743,7 +2776,7 @@ sub ProcessStructObjects
 
     my $type = $struct->{type};
 
-    return "NULL" if not $type eq "sai_object_id_t" and not $type eq "sai_attribute_t*";
+    return "NULL" if not $type eq "sai_object_id_t" and not $type eq "sai_object_list_t" and not $type eq "sai_attribute_t*";
 
     WriteSource "const sai_object_type_t sai_metadata_struct_member_sai_${rawname}_t_${key}_allowed_objects[] = {";
 
@@ -2767,7 +2800,7 @@ sub ProcessStructObjectLen
 
     my $type = $struct->{type};
 
-    return 0 if not $type eq "sai_object_id_t" and not $type eq "sai_attribute_t*";
+    return 0 if not $type eq "sai_object_id_t" and not $type eq "sai_object_list_t" and not $type eq "sai_attribute_t*";
 
     my @objects = @{ $struct->{objects} };
 
@@ -4172,13 +4205,13 @@ sub ProcessSingleNonObjectId
 
         # allowed entries on object structs
 
-        if (not $type =~ /^sai_(nat_entry_data|mac|object_id|vlan_id|ip_address|ip_prefix|acl_chain|label_id|ip6|uint8|uint16|uint32|u32_range|\w+_type)_t$/)
+        if (not $type =~ /^sai_(nat_entry_data|mac|object_id|object_list|vlan_id|ip_address|ip_prefix|acl_chain|label_id|ip6|uint8|uint16|uint32|u32_range|\w+_type)_t$/)
         {
             LogError "struct member $member type '$type' is not allowed on struct $structname";
             next;
         }
 
-        next if not $type eq "sai_object_id_t";
+        next if not $type eq "sai_object_id_t" and not $type eq "sai_object_list_t";
 
         my $objects = ExtractObjectsFromDesc($structname, $member, $desc);
 
@@ -5298,107 +5331,6 @@ sub CreateSourcePragmaPop
     WriteSource "#pragma GCC diagnostic pop";
 }
 
-sub NeedsTwoPassProcessing
-{
-    #
-    # Detect if XML files require two-pass processing based on their structure.
-    #
-    # In Doxygen 1.9.8+, the XML structure changed:
-    # - sai_*.xml files have empty enum/define sections (just sectiondef exists, no memberdefs)
-    # - group_*.xml files contain the actual enum definitions with enumvalues and defines
-    #
-    # In older Doxygen versions:
-    # - sai_*.xml files contain both defines and enums with enumvalues
-    # - group_*.xml files don't exist or aren't used
-    #
-    # Returns 1 if two-pass processing is needed (new structure):
-    #   - First pass: process all defines from group_*.xml files
-    #   - Second pass: process enums/typedefs/functions from group_*.xml and sai_*.xml files
-    #
-    # Returns 0 if single-pass processing is sufficient (old structure):
-    #   - Process sai_*.xml files only
-    #
-
-    my $sai_file = "$XMLDIR/sai_8h.xml";
-
-    my $saiacl_file = "$XMLDIR/saiacl_8h.xml";
-
-    return 1 if not -f $sai_file or not -f $saiacl_file;
-
-    #
-    # Check sai_8h.xml for enumvalue with name="SAI_API_SWITCH"
-    #
-
-    my $sai_ref = ReadXml $sai_file;
-
-    return 1 if not defined $sai_ref->{compounddef}[0];
-
-    my @sai_sections = @{ $sai_ref->{compounddef}[0]->{sectiondef} };
-
-    my $has_enumvalue = 0;
-
-    for my $section (@sai_sections)
-    {
-        next if not $section->{kind} eq "enum";
-
-        for my $memberdef (@{ $section->{memberdef} })
-        {
-            next if not $memberdef->{kind} eq "enum";
-
-            if (defined $memberdef->{enumvalue})
-            {
-                for my $enumvalue (@{ $memberdef->{enumvalue} })
-                {
-                    if (defined $enumvalue->{name} and defined $enumvalue->{name}[0] and $enumvalue->{name}[0] eq "SAI_API_SWITCH")
-                    {
-                        $has_enumvalue = 1;
-
-                        last;
-                    }
-                }
-            }
-        }
-
-        last if $has_enumvalue;
-    }
-
-    #
-    # Check saiacl_8h.xml for memberdef kind="define"
-    #
-
-    my $saiacl_ref = ReadXml $saiacl_file;
-
-    return 1 if not defined $saiacl_ref->{compounddef}[0];
-
-    my @saiacl_sections = @{ $saiacl_ref->{compounddef}[0]->{sectiondef} };
-
-    my $has_define = 0;
-
-    for my $section (@saiacl_sections)
-    {
-        next if not $section->{kind} eq "define";
-
-        for my $memberdef (@{ $section->{memberdef} })
-        {
-            if ($memberdef->{kind} eq "define")
-            {
-                $has_define = 1;
-
-                last;
-            }
-        }
-
-        last if $has_define;
-    }
-
-    #
-    # If sai_8h.xml has enumvalues and saiacl_8h.xml has defines, it's old structure (single-pass)
-    # Otherwise, use two-pass processing (group_*.xml files contain the actual content)
-    #
-
-    return not ($has_enumvalue and $has_define);
-}
-
 sub ProcessXmlFiles
 {
     if (NeedsTwoPassProcessing())
@@ -5637,7 +5569,7 @@ sub ProcessNotificationStruct
         next if $type =~ /^(uint32_t|bool)$/;
         next if $type =~ /^(sai_twamp_session_stats_data_t)$/;
 
-        if ($type =~ /^(sai_object_id_t|sai_attribute_t\*)$/)
+        if ($type =~ /^(sai_object_id_t|sai_object_list_t|sai_attribute_t\*)$/)
         {
             my $objects = ExtractObjectsFromDesc($structname, $member, $desc);
 

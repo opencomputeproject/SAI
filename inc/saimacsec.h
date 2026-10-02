@@ -375,6 +375,27 @@ typedef enum _sai_macsec_port_post_status_t
 } sai_macsec_port_post_status_t;
 
 /**
+ * @brief Attribute Data for MACsec Security Mode
+ */
+typedef enum _sai_macsec_port_security_mode_t
+{
+    /**
+     * @brief Must Secure Mode: Only successfully validated
+     * MACsec-protected frames are permitted. All unprotected
+     * or invalid frames must be dropped.
+     */
+    SAI_MACSEC_PORT_SECURITY_MODE_MUST_SECURE,
+
+    /**
+     * @brief Should Secure Mode: Both MACsec-protected and
+     * unprotected frames are permitted. MACsec-protected frames
+     * are validated when present.
+     */
+    SAI_MACSEC_PORT_SECURITY_MODE_SHOULD_SECURE,
+
+} sai_macsec_port_security_mode_t;
+
+/**
  * @brief Attribute Id for sai_macsec_port
  */
 typedef enum _sai_macsec_port_attr_t
@@ -461,6 +482,17 @@ typedef enum _sai_macsec_port_attr_t
      * @flags READ_ONLY
      */
     SAI_MACSEC_PORT_ATTR_POST_STATUS,
+
+    /**
+     * @brief Security mode configuration for MACsec port
+     *
+     * Attribute to set the type of security mode for a MACSEC port
+     *
+     * @type sai_macsec_port_security_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_MACSEC_PORT_SECURITY_MODE_MUST_SECURE
+     */
+    SAI_MACSEC_PORT_ATTR_SECURITY_MODE,
 
     /**
      * @brief End of MACsec Port attributes
@@ -806,6 +838,35 @@ typedef enum _sai_macsec_sc_attr_t
     SAI_MACSEC_SC_ATTR_MACSEC_PORT_ID,
 
     /**
+     * @brief Confidentiality Offset for this Secure Channel
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_MACSEC_SC_ATTR_CONFIDENTIALITY_OFFSET,
+
+    /**
+     * @brief End Station bit in the Tag Control Information field of SecTAG
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_MACSEC_SC_ATTR_MACSEC_DIRECTION == SAI_MACSEC_DIRECTION_EGRESS
+     */
+    SAI_MACSEC_SC_ATTR_USE_ES,
+
+    /**
+     * @brief Single Copy Broadcast bit in the Tag Control Information field of SecTAG
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default false
+     * @validonly SAI_MACSEC_SC_ATTR_MACSEC_DIRECTION == SAI_MACSEC_DIRECTION_EGRESS
+     */
+    SAI_MACSEC_SC_ATTR_USE_SCB,
+
+    /**
      * @brief End of MACsec Secure Channel attributes
      */
     SAI_MACSEC_SC_ATTR_END,
@@ -1047,6 +1108,22 @@ typedef enum _sai_macsec_sa_stat_t
      * Valid for ingress, always returns 0 for egress.
      */
     SAI_MACSEC_SA_STAT_IN_PKTS_OK,
+
+    /**
+     * @brief IEEE 802.1ae defined inOctetsDecrypted.
+     * Valid for ingress, always returns 0 for egress.
+     * The number of octets of User Data recovered from received
+     * frames that were both integrity protected and encrypted.
+     */
+    SAI_MACSEC_SA_STAT_IN_OCTETS_DECRYPTED,
+
+    /**
+     * @brief IEEE 802.1ae defined inOctetsValidated.
+     * Valid for ingress, always returns 0 for egress.
+     * The number of octets of User Data recovered from received
+     * frames that were integrity protected but not encrypted.
+     */
+    SAI_MACSEC_SA_STAT_IN_OCTETS_VALIDATED,
 } sai_macsec_sa_stat_t;
 
 /**

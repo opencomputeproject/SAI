@@ -32,6 +32,7 @@
 #include "saibuffer.h"
 #include "saicounter.h"
 #include "saifdb.h"
+#include "saifw.h"
 #include "saihash.h"
 #include "saihostif.h"
 #include "saiipmcgroup.h"
@@ -48,6 +49,7 @@
 #include "sainexthopgroup.h"
 #include "sainexthop.h"
 #include "saiobject.h"
+#include "saiperfmon.h"
 #include "saipolicer.h"
 #include "saiport.h"
 #include "saiqosmap.h"
@@ -82,6 +84,8 @@
 #include "saipoe.h"
 #include "saiicmpecho.h"
 #include "saisynce.h"
+#include "saivirtualchannel.h"
+#include "saiptppdelay.h"
 
 /**
  * @defgroup SAI SAI - Entry point specific API definitions.
@@ -153,6 +157,10 @@ typedef enum _sai_api_t
     SAI_API_ICMP_ECHO        = 52, /**< sai_icmp_echo_api_t */
     SAI_API_PREFIX_COMPRESSION = 53, /**< sai_prefix_compression_api_t */
     SAI_API_SYNCE            = 54, /**< sai_synce_api_t */
+    SAI_API_VIRTUAL_CHANNEL  = 55, /**< sai_virtual_channel_api_t */
+    SAI_API_PERFMON          = 56, /**< sai_perfmon_api_t */
+    SAI_API_FW               = 57, /**< sai_fw_api_t */
+    SAI_API_PTP_PDELAY       = 58, /**< sai_ptp_pdelay_api_t */
     SAI_API_MAX,                   /**< total number of APIs */
 
     /**

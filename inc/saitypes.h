@@ -303,6 +303,13 @@ typedef enum _sai_object_type_t
     SAI_OBJECT_TYPE_PREFIX_COMPRESSION_ENTRY = 113,
     SAI_OBJECT_TYPE_SYNCE_CLOCK              = 114,
     SAI_OBJECT_TYPE_PORT_LLR_PROFILE         = 115,
+    SAI_OBJECT_TYPE_VIRTUAL_CHANNEL          = 116,
+    SAI_OBJECT_TYPE_CBFC_CREDIT_POOL         = 117,
+    SAI_OBJECT_TYPE_CBFC_CREDIT_PROFILE      = 118,
+    SAI_OBJECT_TYPE_PERFMON                  = 119,
+    SAI_OBJECT_TYPE_TAM_EVENT_LEARN_ENTRY    = 120,
+    SAI_OBJECT_TYPE_FW                       = 121,
+    SAI_OBJECT_TYPE_PTP_PDELAY               = 122,
 
     /** Must remain in last position */
     SAI_OBJECT_TYPE_MAX,
@@ -416,6 +423,60 @@ typedef struct _sai_taps_list_t
     /** List of tap values */
     sai_s32_list_t *list;
 } sai_taps_list_t;
+
+/**
+ * @brief SAI firmware administrative state
+ */
+typedef enum _sai_fw_admin_state_t
+{
+    /** Firmware admin state is automatic loading and running */
+    SAI_FW_ADMIN_STATE_AUTO,
+
+    /** Firmware admin state to start the firmware */
+    SAI_FW_ADMIN_STATE_START_FW,
+
+    /** Firmware admin state is stop the firmware */
+    SAI_FW_ADMIN_STATE_STOP_FW,
+
+    /** Firmware admin state is load the firmware */
+    SAI_FW_ADMIN_STATE_LOAD_FW,
+
+    /** Firmware admin state is unload the firmware */
+    SAI_FW_ADMIN_STATE_UNLOAD_FW,
+} sai_fw_admin_state_t;
+
+/**
+ * @brief Defines a firmware instance
+ */
+typedef struct _sai_fw_inst_t
+{
+    /** Firmware path */
+    sai_s8_list_t fw_path_name;
+
+    /** Firmware log file path */
+    sai_s8_list_t log_path_name;
+
+    /** Firmware core id */
+    uint8_t core_id;
+
+    /** Firmware admin state */
+    sai_fw_admin_state_t admin_state;
+
+    /** Firmware opaque id */
+    sai_s8_list_t fw_opaque_id;
+} sai_fw_inst_t;
+
+/**
+ * @brief Defines a list of firmware instances
+ */
+typedef struct _sai_fw_list_t
+{
+    /** Number of firmware instances */
+    uint32_t count;
+
+    /** List of firmware instances */
+    sai_fw_inst_t *list;
+} sai_fw_list_t;
 
 typedef enum _sai_ip_addr_family_t
 {
@@ -565,6 +626,40 @@ typedef struct _sai_prbs_per_lane_rx_state_list_t
     uint32_t count;
     sai_prbs_per_lane_rx_state_t *list;
 } sai_prbs_per_lane_rx_state_list_t;
+
+/**
+ * @brief Per-lane ILT training status
+ */
+typedef enum _sai_port_ilt_lane_training_status_t
+{
+    /** Lane training status is reserved */
+    SAI_PORT_ILT_LANE_TRAINING_STATUS_RESERVED,
+
+    /** Lane training failed (training_failure true on this lane) */
+    SAI_PORT_ILT_LANE_TRAINING_STATUS_FAIL,
+
+    /** Lane training is in progress */
+    SAI_PORT_ILT_LANE_TRAINING_STATUS_IN_PROGRESS,
+
+    /** Lane training completed */
+    SAI_PORT_ILT_LANE_TRAINING_STATUS_TRAINED,
+
+    /** Lane training fully trained */
+    SAI_PORT_ILT_LANE_TRAINING_STATUS_OK,
+
+} sai_port_ilt_lane_training_status_t;
+
+typedef struct _sai_ilt_lane_training_status_t
+{
+    uint32_t lane;
+    sai_port_ilt_lane_training_status_t training_status;
+} sai_ilt_lane_training_status_t;
+
+typedef struct _sai_port_ilt_lane_training_status_list_t
+{
+    uint32_t count;
+    sai_ilt_lane_training_status_t *list;
+} sai_port_ilt_lane_training_status_list_t;
 
 /**
  * @brief Field match mask
@@ -836,6 +931,12 @@ typedef struct _sai_qos_map_params_t
     /** Forwarding class */
     sai_uint8_t fc;
 
+    /** DEI used in SAI_QOS_MAP_TYPE_DOT1P_DEI_TO_TC */
+    sai_uint8_t dei;
+
+    /** Virtual Channel */
+    sai_uint8_t vc;
+
 } sai_qos_map_params_t;
 
 typedef struct _sai_qos_map_t
@@ -1022,8 +1123,10 @@ typedef enum _sai_acl_bind_point_type_t
     SAI_ACL_BIND_POINT_TYPE_ROUTER_INTF = SAI_ACL_BIND_POINT_TYPE_ROUTER_INTERFACE,
 
     /** Bind Point Type Switch */
-    SAI_ACL_BIND_POINT_TYPE_SWITCH
+    SAI_ACL_BIND_POINT_TYPE_SWITCH,
 
+    /** Bind Point Type TAM */
+    SAI_ACL_BIND_POINT_TYPE_TAM,
 } sai_acl_bind_point_type_t;
 
 /**
@@ -1797,6 +1900,15 @@ typedef union _sai_attribute_value_t
     /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_UINT64_RANGE_LIST */
     sai_u64_range_list_t u64rangelist;
 
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_PORT_ILT_LANE_TRAINING_STATUS_LIST */
+    sai_port_ilt_lane_training_status_list_t port_ilt_lane_training_status_list;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_FW_INST */
+    sai_fw_inst_t fwinst;
+
+    /** @validonly meta->attrvaluetype == SAI_ATTR_VALUE_TYPE_FW_LIST */
+    sai_fw_list_t fwlist;
+
 } sai_attribute_value_t;
 
 /**
@@ -1925,6 +2037,11 @@ typedef sai_status_t (*sai_bulk_object_get_attribute_fn)(
  */
 typedef enum _sai_stats_mode_t
 {
+    /**
+     * @brief No mode defined
+     */
+    SAI_STATS_MODE_NONE = 0 << 0,
+
     /**
      * @brief Read statistics
      */
@@ -2102,6 +2219,11 @@ typedef enum _sai_ser_correction_type_t
  */
 typedef enum _sai_ser_log_type_t
 {
+    /**
+     * @brief No errors
+     */
+    SAI_SER_LOG_TYPE_NONE = 0 << 0,
+
     /**
      * @brief Error happens on memory
      */

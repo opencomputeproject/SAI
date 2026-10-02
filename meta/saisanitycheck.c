@@ -466,11 +466,11 @@ void check_attr_by_object_type()
             META_ASSERT_TRUE(current == sai_metadata_all_object_type_infos[idx]->objecttype, "object type must be equal on object type list");
 
             /*
-             * For Switch Attribute we have crossed > 300 with Vendor extension
-             * for SAI v1.8.0 so increasing threshold.
+             * For Switch/Port Attribute we have crossed > 300 with Vendor extension
+             * so increasing threshold.
              */
 
-            META_ASSERT_TRUE(index < 300, "object defines > 300 attributes, metadata bug?");
+            META_ASSERT_TRUE(index < 400, "object defines > 400 attributes, metadata bug?");
             META_ASSERT_TRUE(current > SAI_OBJECT_TYPE_NULL, "object type must be > NULL");
 
             if (current > SAI_OBJECT_TYPE_NULL && current < SAI_OBJECT_TYPE_MAX)
@@ -856,6 +856,9 @@ void check_attr_object_type_provided(
         case SAI_ATTR_VALUE_TYPE_PRBS_PER_LANE_RX_STATE_LIST:
         case SAI_ATTR_VALUE_TYPE_PRBS_BIT_ERROR_RATE:
         case SAI_ATTR_VALUE_TYPE_PRBS_PER_LANE_BIT_ERROR_RATE_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_ILT_LANE_TRAINING_STATUS_LIST:
+        case SAI_ATTR_VALUE_TYPE_FW_INST:
+        case SAI_ATTR_VALUE_TYPE_FW_LIST:
 
             if (md->allowedobjecttypes != NULL)
             {
@@ -1071,8 +1074,10 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_INT32:
         case SAI_ATTR_VALUE_TYPE_UINT8:
         case SAI_ATTR_VALUE_TYPE_UINT16:
+        case SAI_ATTR_VALUE_TYPE_INT16:
         case SAI_ATTR_VALUE_TYPE_UINT32:
         case SAI_ATTR_VALUE_TYPE_UINT64:
+        case SAI_ATTR_VALUE_TYPE_INT64:
         case SAI_ATTR_VALUE_TYPE_MAC:
         case SAI_ATTR_VALUE_TYPE_IP_ADDRESS:
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX:
@@ -1081,6 +1086,7 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_IPV4:
         case SAI_ATTR_VALUE_TYPE_SYSTEM_PORT_CONFIG:
         case SAI_ATTR_VALUE_TYPE_IPV6:
+        case SAI_ATTR_VALUE_TYPE_FW_INST:
             break;
 
         case SAI_ATTR_VALUE_TYPE_CHARDATA:
@@ -1122,9 +1128,9 @@ void check_attr_default_required(
         case SAI_ATTR_VALUE_TYPE_IP_PREFIX_LIST:
         case SAI_ATTR_VALUE_TYPE_ACL_CHAIN_LIST:
         case SAI_ATTR_VALUE_TYPE_TAPS_LIST:
+        case SAI_ATTR_VALUE_TYPE_FW_LIST:
 
-            if (((md->objecttype == SAI_OBJECT_TYPE_PORT) || (md->objecttype == SAI_OBJECT_TYPE_PORT_SERDES))
-                 && md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL)
+            if (((md->objecttype == SAI_OBJECT_TYPE_PORT) || (md->objecttype == SAI_OBJECT_TYPE_PORT_SERDES) || (md->objecttype == SAI_OBJECT_TYPE_SWITCH)) && md->defaultvaluetype == SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL)
             {
                 /*
                  * Allow non object lists on PORT to be set to internal default value.
@@ -1379,6 +1385,7 @@ void check_attr_default_value_type(
         case SAI_DEFAULT_VALUE_TYPE_SWITCH_INTERNAL:
 
             if ((md->objecttype == SAI_OBJECT_TYPE_PORT) ||
+                (md->objecttype == SAI_OBJECT_TYPE_SWITCH) ||
                 (md->objecttype == SAI_OBJECT_TYPE_PORT_SERDES) ||
                 (md->objecttype == SAI_OBJECT_TYPE_SAMPLEPACKET) ||
                 (md->objecttype == SAI_OBJECT_TYPE_NEIGHBOR_ENTRY))
@@ -2177,7 +2184,8 @@ void check_attr_key(
                 if ((md->objecttype == SAI_OBJECT_TYPE_QUEUE && md->attrid == SAI_QUEUE_ATTR_PORT) ||
                     (md->objecttype == SAI_OBJECT_TYPE_INGRESS_PRIORITY_GROUP && md->attrid == SAI_INGRESS_PRIORITY_GROUP_ATTR_PORT) ||
                     (md->objecttype == SAI_OBJECT_TYPE_PORT_CONNECTOR && md->attrid == SAI_PORT_CONNECTOR_ATTR_SYSTEM_SIDE_PORT_ID) ||
-                    (md->objecttype == SAI_OBJECT_TYPE_PORT_CONNECTOR && md->attrid == SAI_PORT_CONNECTOR_ATTR_LINE_SIDE_PORT_ID))
+                    (md->objecttype == SAI_OBJECT_TYPE_PORT_CONNECTOR && md->attrid == SAI_PORT_CONNECTOR_ATTR_LINE_SIDE_PORT_ID) ||
+                    (md->objecttype == SAI_OBJECT_TYPE_VIRTUAL_CHANNEL && md->attrid == SAI_VIRTUAL_CHANNEL_ATTR_PORT))
                 {
                     /*
                      * This is also special case, OBJECT_ID at should not be a
@@ -3004,6 +3012,8 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_PRBS_PER_LANE_RX_STATUS_LIST:
         case SAI_ATTR_VALUE_TYPE_PRBS_PER_LANE_RX_STATE_LIST:
         case SAI_ATTR_VALUE_TYPE_PRBS_PER_LANE_BIT_ERROR_RATE_LIST:
+        case SAI_ATTR_VALUE_TYPE_PORT_ILT_LANE_TRAINING_STATUS_LIST:
+        case SAI_ATTR_VALUE_TYPE_FW_LIST:
 
             if (md->isprimitive)
             {
@@ -3068,6 +3078,7 @@ void check_attr_is_primitive(
         case SAI_ATTR_VALUE_TYPE_LATCH_STATUS:
         case SAI_ATTR_VALUE_TYPE_POE_PORT_POWER_CONSUMPTION:
         case SAI_ATTR_VALUE_TYPE_PRBS_BIT_ERROR_RATE:
+        case SAI_ATTR_VALUE_TYPE_FW_INST:
 
             if (!md->isprimitive)
             {
@@ -3751,6 +3762,14 @@ void check_attr_version(
     }
 }
 
+void check_attr_precision(
+        _In_ const sai_attr_metadata_t* md)
+{
+    META_LOG_ENTER();
+
+    META_ASSERT_TRUE(md->valueprecision <= 18, "expected precision in range [0, 18]");
+}
+
 void check_single_attribute(
         _In_ const sai_attr_metadata_t* md)
 {
@@ -3799,6 +3818,7 @@ void check_single_attribute(
     check_attr_mixed_validonly(md);
     check_attr_condition_relaxed(md);
     check_attr_version(md);
+    check_attr_precision(md);
 
     define_attr(md);
 }
@@ -5322,6 +5342,12 @@ void check_object_ro_list(
         return;
     }
 
+    if (SAI_OBJECT_TYPE_TAM_EVENT_LEARN_ENTRY == oi->objecttype)
+    {
+        META_LOG_WARN("tam event learn entry object %s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
+        return;
+    }
+
     META_ASSERT_FAIL("%s not present on any object list (eg. VLAN_MEMBER is present on SAI_VLAN_ATTR_MEMBER_LIST)", oi->objecttypename);
 }
 
@@ -5539,6 +5565,19 @@ void check_graph_connected()
             continue;
         }
 
+        if (SAI_OBJECT_TYPE_FW == idx2ot(i))
+        {
+            /*
+             * Allow firmware object to be disconnected from main graph
+             * as use case is by querying base object stats and not by direct reference
+             */
+
+            META_LOG_WARN("firmware object %s is disconnected from graph",
+                    sai_metadata_all_object_type_infos[i]->objecttypename);
+
+            continue;
+        }
+
         if (SAI_OBJECT_TYPE_DEBUG_COUNTER == idx2ot(i))
         {
             /*
@@ -5547,6 +5586,32 @@ void check_graph_connected()
              */
 
             META_LOG_WARN("debug counter object %s is disconnected from graph",
+                    sai_metadata_all_object_type_infos[i]->objecttypename);
+
+            continue;
+        }
+
+        if (SAI_OBJECT_TYPE_PERFMON == idx2ot(i))
+        {
+            /*
+             * Allow performance monitor object to be disconnected from main graph
+             * as use case is by querying base object stats and not by direct reference
+             */
+
+            META_LOG_WARN("perfmon object %s is disconnected from graph",
+                    sai_metadata_all_object_type_infos[i]->objecttypename);
+
+            continue;
+        }
+
+        if (SAI_OBJECT_TYPE_TAM_EVENT_LEARN_ENTRY == idx2ot(i))
+        {
+            /*
+             * Allow learn entry event notification to be disconnected from main graph
+             * as use case is by querying base object stats and not by direct reference
+             */
+
+            META_LOG_WARN("tam event learn entry object %s is disconnected from graph",
                     sai_metadata_all_object_type_infos[i]->objecttypename);
 
             continue;
@@ -6110,6 +6175,36 @@ void check_enum_flags_type(
     META_ASSERT_FAIL("enum %s flags type %d not supported yet, FIXME", emd->name, emd->flagstype);
 }
 
+void check_enum_flag_zero(
+        _In_ const sai_enum_metadata_t* emd)
+{
+    META_LOG_ENTER();
+
+    /*
+     * this check tests whether each strict flag has value at index 0 which
+     * enum value is zero (no flags defined) this will be handy during
+     * serialization of empty flags
+     */
+
+    if (emd->flagstype != SAI_ENUM_FLAGS_TYPE_STRICT)
+        return;
+
+    /* enum contains strict flags */
+
+    if (emd->valuescount == 0)
+    {
+        META_ASSERT_FAIL("enum %s (flags strict) don't contain any values!", emd->name);
+    }
+
+    if (emd->values[0] != 0)
+    {
+        META_ASSERT_FAIL("enum %s (flags strict) value %s = %d at index 0 is not zero (no flags):",
+                emd->name,
+                emd->valuesnames[0],
+                emd->values[0]);
+    }
+}
+
 void check_single_enum(
         _In_ const sai_enum_metadata_t* emd)
 {
@@ -6121,6 +6216,7 @@ void check_single_enum(
     check_enum_flags_type_ranges(emd);
     check_enum_flags_type_free(emd);
     check_enum_object_type(emd);
+    check_enum_flag_zero(emd);
 }
 
 void check_all_enums()
@@ -6265,7 +6361,7 @@ void check_struct_and_union_size()
     CHECK_STRUCT_SIZE(sai_acl_action_parameter_t, 24);
     CHECK_STRUCT_SIZE(sai_acl_field_data_data_t, 16);
     CHECK_STRUCT_SIZE(sai_acl_field_data_mask_t, 16);
-    CHECK_STRUCT_SIZE(sai_attribute_value_t, 40);
+    CHECK_STRUCT_SIZE(sai_attribute_value_t, 56);
     CHECK_STRUCT_SIZE(sai_ip_addr_t, 16);
     CHECK_STRUCT_SIZE(sai_object_key_entry_t, 64);
     CHECK_STRUCT_SIZE(sai_tlv_entry_t, 36);
@@ -6280,7 +6376,7 @@ void check_struct_and_union_size()
     CHECK_STRUCT_SIZE(sai_acl_resource_list_t, 16);
     CHECK_STRUCT_SIZE(sai_acl_resource_t, 12);
     CHECK_STRUCT_SIZE(sai_attr_capability_t, 3);
-    CHECK_STRUCT_SIZE(sai_attribute_t, 48);
+    CHECK_STRUCT_SIZE(sai_attribute_t, 64);
     CHECK_STRUCT_SIZE(sai_bfd_session_state_notification_t, 16);
     CHECK_STRUCT_SIZE(sai_fabric_port_reachability_t, 8);
     CHECK_STRUCT_SIZE(sai_fdb_entry_t, 24);
@@ -6352,6 +6448,8 @@ void check_struct_and_union_size()
     CHECK_STRUCT_SIZE(sai_prbs_per_lane_rx_state_list_t, 16);
     CHECK_STRUCT_SIZE(sai_prbs_bit_error_rate_t, 16);
     CHECK_STRUCT_SIZE(sai_prbs_per_lane_bit_error_rate_list_t, 16);
+    CHECK_STRUCT_SIZE(sai_tam_event_learn_notification_data_t, 24);
+    CHECK_STRUCT_SIZE(sai_fw_list_t, 16)
 }
 #pragma GCC diagnostic pop
 
@@ -6408,6 +6506,126 @@ void check_object_type_index()
     }
 }
 
+static int get_status_attr_category(
+        _In_ sai_status_t status)
+{
+    int category = 0;
+    int matches = 0;
+
+    if (SAI_STATUS_IS_INVALID_ATTRIBUTE(status))
+    {
+        category = 1;
+        matches++;
+    }
+
+    if (SAI_STATUS_IS_INVALID_ATTR_VALUE(status))
+    {
+        category = 2;
+        matches++;
+    }
+
+    if (SAI_STATUS_IS_ATTR_NOT_IMPLEMENTED(status))
+    {
+        category = 3;
+        matches++;
+    }
+
+    if (SAI_STATUS_IS_UNKNOWN_ATTRIBUTE(status))
+    {
+        category = 4;
+        matches++;
+    }
+
+    if (SAI_STATUS_IS_ATTR_NOT_SUPPORTED(status))
+    {
+        category = 5;
+        matches++;
+    }
+
+    /* a valid attribute-range code must match exactly one helper */
+
+    return (matches == 1) ? category : 0;
+}
+
+void check_status_attr_ranges()
+{
+    META_LOG_ENTER();
+
+    const sai_status_t base0[] = {
+        SAI_STATUS_INVALID_ATTRIBUTE_0,
+        SAI_STATUS_INVALID_ATTR_VALUE_0,
+        SAI_STATUS_ATTR_NOT_IMPLEMENTED_0,
+        SAI_STATUS_UNKNOWN_ATTRIBUTE_0,
+        SAI_STATUS_ATTR_NOT_SUPPORTED_0,
+    };
+
+    const sai_status_t basemax[] = {
+        SAI_STATUS_INVALID_ATTRIBUTE_MAX,
+        SAI_STATUS_INVALID_ATTR_VALUE_MAX,
+        SAI_STATUS_ATTR_NOT_IMPLEMENTED_MAX,
+        SAI_STATUS_UNKNOWN_ATTRIBUTE_MAX,
+        SAI_STATUS_ATTR_NOT_SUPPORTED_MAX,
+    };
+
+    /* positive magnitude of each *_0 base (0x10000 .. 0x50000) */
+    const int magnitude[] = { 0x10000, 0x20000, 0x30000, 0x40000, 0x50000 };
+
+    /* attribute indices to cover, including _0 and the _MAX boundary */
+    const int indices[] = { 0, 1, 2, 17, 0xFFFE, 0xFFFF };
+
+    size_t r;
+    size_t k;
+
+    /* codes that are not attribute-range errors must not match any helper */
+    META_ASSERT_TRUE(get_status_attr_category(SAI_STATUS_SUCCESS) == 0,
+            "SAI_STATUS_SUCCESS must not match any attribute range");
+    META_ASSERT_TRUE(get_status_attr_category(SAI_STATUS_FAILURE) == 0,
+            "SAI_STATUS_FAILURE must not match any attribute range");
+    META_ASSERT_TRUE(get_status_attr_category(SAI_STATUS_NOT_EXECUTED) == 0,
+            "SAI_STATUS_NOT_EXECUTED must not match any attribute range");
+    META_ASSERT_TRUE(get_status_attr_category((sai_status_t)1) == 0,
+            "value 1 must not match any attribute range");
+    META_ASSERT_TRUE(get_status_attr_category((sai_status_t)-1) == 0,
+            "value -1 must not match any attribute range");
+
+    for (r = 0; r < sizeof(base0) / sizeof(base0[0]); r++)
+    {
+        int category = (int)(r + 1);
+
+        /* _MAX must be the last (index 0xFFFF) code of the range */
+        META_ASSERT_TRUE(basemax[r] == SAI_STATUS_CODE(magnitude[r] + 0xFFFF),
+                "range %d: _MAX must equal SAI_STATUS_CODE(base + 0xFFFF)", category);
+
+        for (k = 0; k < sizeof(indices) / sizeof(indices[0]); k++)
+        {
+            int index = indices[k];
+
+            /* the indexed code must be built as base_0 + SAI_STATUS_CODE(index) */
+            sai_status_t status = base0[r] + SAI_STATUS_CODE(index);
+
+            META_ASSERT_TRUE(status == SAI_STATUS_CODE(magnitude[r] + index),
+                    "range %d: base_0 + SAI_STATUS_CODE(%d) has wrong value", category, index);
+
+            /* it must classify into its own range and no other */
+            META_ASSERT_TRUE(get_status_attr_category(status) == category,
+                    "range %d: indexed status (index %d) classified into wrong/ambiguous range",
+                    category, index);
+
+            /* the encoded attribute index must round-trip */
+            META_ASSERT_TRUE((SAI_STATUS_CODE(status) & 0xFFFF) == index,
+                    "range %d: decoded attribute index != %d", category, index);
+        }
+
+        /* the code just below _0 must not classify into this range */
+        META_ASSERT_TRUE(get_status_attr_category(SAI_STATUS_CODE(magnitude[r] - 1)) != category,
+                "range %d: code below _0 must not match this range", category);
+
+        /* the code just above _MAX must not classify into this range */
+        META_ASSERT_TRUE(get_status_attr_category(SAI_STATUS_CODE(magnitude[r] + 0x10000)) != category,
+                "range %d: code above _MAX must not match this range", category);
+    }
+}
+
 int main(int argc, char **argv)
 {
     debug = (argc > 1);
@@ -6418,6 +6636,7 @@ int main(int argc, char **argv)
     check_all_enums_values();
     check_enums_ignore_values();
     check_sai_status();
+    check_status_attr_ranges();
     check_object_type_index();
     check_object_type();
     check_attr_by_object_type();

@@ -67,7 +67,7 @@ typedef enum _sai_neighbor_entry_attr_t
     SAI_NEIGHBOR_ENTRY_ATTR_PACKET_ACTION,
 
     /**
-     * @brief Generate User Defined Trap ID for trap/log actions
+     * @brief Generate User Defined Trap ID for trap/log/copy actions
      *
      * When it is SAI_NULL_OBJECT_ID, then packet will not be trapped.
      *
