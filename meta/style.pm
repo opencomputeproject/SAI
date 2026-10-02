@@ -284,6 +284,7 @@ sub CheckFunctionsParams
         next if $fname eq "sai_switch_mdio_read_fn";
         next if $fname eq "sai_switch_mdio_cl22_write_fn";
         next if $fname eq "sai_switch_mdio_cl22_read_fn";
+        next if $fname eq "sai_execute_pon_action_fn";
 
         my @paramsFlags = lc($comment) =~ /\@param\[(\w+)]/gis;
         my @fnparamsFlags = lc($fn) =~ /_(\w+)_.+?(?:\.\.\.|\w+)\s*[,\)]/gis;
@@ -459,7 +460,8 @@ sub CheckFunctionNaming
     switch_mdio_cl22_read
     switch_mdio_cl22_write
     switch_register_read
-    switch_register_write);
+    switch_register_write
+    execute_pon_action);
 
     my $REG = "(" . (join"|",@listex) . ")";
 
@@ -550,9 +552,11 @@ sub CheckQuadApi
     $order =~ s/012/s/g;        # order should be: get_stats,get_stats_ext,clear_stats
     $order =~ s/CR/E/g;         # order should be: bulk_create,bulk_remove
     $order =~ s/SG/T/g;         # order should be: bulk_set,bulk_get
+    $order =~ s/gG/Z/g;         # order should be: get,bulk_get for read-only fields with no create/remove
     $order =~ s/X+/X/g;         # order should be: any non quad and non stats api
 
-    if (not $order =~ /^[tqQsETX]*$/)
+
+    if (not $order =~ /^[tqQsETZX]*$/)
     {
         LogWarning "Wrong api order: $order";
         LogWarning "$apis";
