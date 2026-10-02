@@ -3612,6 +3612,20 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_QOS_TC_TO_QUEUE_MAP_MULTICAST,
 
     /**
+     * @brief Enable TRIM TC AND COLOR -> DSCP MAP
+     *
+     * Map id = #SAI_NULL_OBJECT_ID to disable trim map on port.
+     * Default no trim map.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_QOS_MAP
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_PORT_ATTR_QOS_TRIM_TC_AND_COLOR_TO_DSCP_MAP,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
