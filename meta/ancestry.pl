@@ -36,15 +36,27 @@ use utils;
 
 my %options = ();
 
-getopts("dsASlDH:", \%options);
+use Getopt::Long qw(GetOptions Configure);
+Configure(qw(no_ignore_case));
 
-our $optionPrintDebug        = 1 if defined $options{d};
-our $optionDisableAspell     = 1 if defined $options{A};
-our $optionUseXmlSimple      = 1 if defined $options{s};
-our $optionDisableStyleCheck = 1 if defined $options{S};
-our $optionShowLogCaller     = 1 if defined $options{l};
-our $optionDumpHistoryFile   = 1 if defined $options{D};
-our $optionHistoryFile       = $options{H} if defined $options{H};
+my ($optionPrintDebug, $optionDisableAspell, $optionUseXmlSimple,
+    $optionDisableStyleCheck, $optionShowLogCaller, $optionDumpHistoryFile,
+    $optionHistoryFile, $mydir);
+
+my @mycommits;
+
+GetOptions(
+    'd|debug'          => \$optionPrintDebug,
+    'A|no-aspell'      => \$optionDisableAspell,
+    's|xmlsimple'      => \$optionUseXmlSimple,
+    'S|no-style'       => \$optionDisableStyleCheck,
+    'l|show-caller'    => \$optionShowLogCaller,
+    'D|dump-history'   => \$optionDumpHistoryFile,
+    'H|history-file=s' => \$optionHistoryFile,
+
+    'dir=s'            => \$mydir,       # Directory to process, e.g. inc or meta (default: inc)
+    'commits=s{,}'     => \@mycommits,   # --commits c1 c2 c3 ...
+) or die "Usage: $0 [opts] --dir <dir> --commits <c1> [c2 ...]\n";
 
 $SIG{__DIE__} = sub
 {
@@ -127,13 +139,15 @@ sub ProcessHeaders
 {
     my $commit = shift;
 
-    my @headers = GetHeaderFiles("temp/commit-$commit/inc");
+    my $dir = defined($mydir) ? $mydir : 'inc';
+    my $path = "temp/commit-$commit/$dir";
+
+    my @headers = GetHeaderFiles($path);
 
     for my $header (@headers)
     {
-        LogDebug "Processing $header";
-
-        ProcessSingleHeader "temp/commit-$commit/inc/$header";
+        LogDebug "Processing $path/$header";
+        ProcessSingleHeader "$path/$header";
     }
 }
 
@@ -245,7 +259,7 @@ if (defined $optionHistoryFile)
     LogInfo "loaded history from $optionHistoryFile";
 }
 
-for my $commit (@ARGV)
+for my $commit (@mycommits)
 {
     # reset
 
@@ -264,7 +278,7 @@ for my $commit (@ARGV)
 
 ExitOnErrorsOrWarnings();
 
-if (defined $optionDumpHistoryFile and (scalar @ARGV > 0))
+if (defined $optionDumpHistoryFile and (scalar @mycommits > 0))
 {
     $Data::Dumper::Indent = 0;
 
@@ -272,7 +286,7 @@ if (defined $optionDumpHistoryFile and (scalar @ARGV > 0))
 
     $history =~ s/ //g;
 
-    my $lastCommit = $ARGV[-1];
+    my $lastCommit = $mycommits[-1];
 
     WriteFile("ancestry.$lastCommit.history", $history);
 
