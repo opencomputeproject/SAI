@@ -772,6 +772,13 @@ sub ProcessEnumSection
 
             if ($enumvaluename =~ /^(SAI_\w+_)MIN$/)
             {
+                # PON statistics names may end with _MIN as a measured value,
+                # not as a range marker that requires @range metadata.
+                if ($enumvaluename =~ /^SAI_PON_(?:OLT_PLUG|ONU)_.*(?:RESP_TIME|TIME_TO_SEND)_MIN$/)
+                {
+                    next;
+                }
+
                 my $prefix = $1;
 
                 my $range = $METADATA{$enumtypename}{$enumvaluename}{range};
@@ -2575,6 +2582,22 @@ sub ProcessAttrVersion
     WriteHeader "#define SAI_METADATA_HAVE_ATTR_VERSION ($count)";
 }
 
+sub CreateEnumPrimitiveBufferSize
+{
+    WriteSectionComment "buffer size based on enum name length";
+
+    my $longest_enum_len = 0;
+
+    for my $enum (@ALL_ENUMS)
+    {
+        $longest_enum_len = length($enum) if length($enum) > $longest_enum_len;
+    }
+
+    my $primitive_buffer_size = $longest_enum_len + 1;
+
+    WriteHeader "#define SAI_METADATA_PRIMITIVE_BUFFER_SIZE ($primitive_buffer_size)";
+}
+
 sub ProcessCustomObjectCount
 {
     WriteSectionComment "Custom object count";
@@ -3101,6 +3124,10 @@ sub ProcessCreate
     {
         WriteSource "return SAI_STATUS_NOT_IMPLEMENTED;";
     }
+    elsif (not defined $FUNCTION_DEF{"sai_create_${small}_fn"})
+    {
+        WriteSource "return SAI_STATUS_NOT_SUPPORTED; /* sai_create_${small}_fn not defined */";
+    }
     elsif (not defined $struct)
     {
         if ($small eq "switch")
@@ -3139,6 +3166,10 @@ sub ProcessRemove
     {
         WriteSource "return SAI_STATUS_NOT_IMPLEMENTED;";
     }
+    elsif (not defined $FUNCTION_DEF{"sai_remove_${small}_fn"})
+    {
+        WriteSource "return SAI_STATUS_NOT_SUPPORTED; /* sai_remove_${small}_fn not defined */";
+    }
     elsif (not defined $struct)
     {
         WriteSource "return sai_metadata_sai_${api}_api->remove_$small(meta_key->objectkey.key.object_id);";
@@ -3170,6 +3201,10 @@ sub ProcessSet
     if (IsSpecialObject($ot))
     {
         WriteSource "return SAI_STATUS_NOT_IMPLEMENTED;";
+    }
+    elsif (not defined $FUNCTION_DEF{"sai_set_${small}_attribute_fn"})
+    {
+        WriteSource "return SAI_STATUS_NOT_SUPPORTED; /* sai_set_${small}_attribute_fn not defined */";
     }
     elsif (not defined $struct)
     {
@@ -3203,6 +3238,10 @@ sub ProcessGet
     if (IsSpecialObject($ot))
     {
         WriteSource "return SAI_STATUS_NOT_IMPLEMENTED;";
+    }
+    elsif (not defined $FUNCTION_DEF{"sai_get_${small}_attribute_fn"})
+    {
+        WriteSource "return SAI_STATUS_NOT_SUPPORTED; /* sai_get_${small}_attribute_fn not defined */";
     }
     elsif (not defined $struct)
     {
@@ -3474,7 +3513,12 @@ sub ProcessGenericQuadApi
         if (IsSpecialObject($ot))
         {
             WriteSource "case $ot:";
-            WriteSource "    return SAI_STATUS_NOT_SUPPORTED;";
+            WriteSource "    return SAI_STATUS_NOT_SUPPORTED; /* special object */";
+        }
+        elsif (not defined $FUNCTION_DEF{"sai_${name}_${small}${attr}_fn"})
+        {
+            WriteSource "case $ot:";
+            WriteSource "    return SAI_STATUS_NOT_SUPPORTED; /* no function defined for sai_${name}_${small}${attr}_fn */";
         }
         elsif (not defined $struct)
         {
@@ -5788,6 +5832,8 @@ ExtractObjectTypeBulkMap();
 WriteHeaderHeader();
 
 ProcessAttrVersion();
+
+CreateEnumPrimitiveBufferSize();
 
 ProcessCustomObjectCount();
 

@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1280" height="720" overflow="hidden">
+  <g>
+    <rect x="0" y="0" width="1280" height="720" fill="#FFFFFF"/>
+    <rect x="175" y="375" width="223" height="325" stroke="#1F4E79" stroke-width="2.24892" stroke-miterlimit="8" fill="#FBE3D6"/>
+    <rect x="195" y="434" width="180" height="90" stroke="#1F4E79" stroke-width="2.24892" stroke-miterlimit="8" fill="#D9ECFF"/>
+    <text fill="#222222" font-family="Arial,Arial_MSFontService,sans-serif" font-weight="700" font-size="16" transform="translate(228.139 484)">OLT Interface</text>
+    <path d="M375.5 468.5 797.5 392.5" stroke="#0070C0" stroke-width="3.37333" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
+    <path d="M375.5 273.5 796.5 375.5" stroke="#0070C0" stroke-width="3.37333" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
+    <rect x="970" y="345" width="158" height="67" stroke="#38761D" stroke-width="2.24892" stroke-miterlimit="8" fill="#E2F0D9"/>
+    <text fill="#222222" font-family="Arial,Arial_MSFontService,sans-serif" font-weight="700" font-size="16" transform="translate(1028.98 384)">ONU</text>
+    <text fill="#003366" font-family="Arial,Arial_MSFontService,sans-serif" font-weight="700" font-size="24" transform="translate(524.202 42)">O</text>
+    <text fill="#003366" font-family="Arial,Arial_MSFontService,sans-serif" font-weight="700" font-size="24" transform="translate(542.869 42)">NU</text>
+    <text fill="#003366" font-family="Arial,Arial_MSFontService,sans-serif" font-weight="700" font-size="24" transform="translate(584.202 42)">protectio</text>
+    <text fill="#003366" font-family="Arial,Arial_MSFontService,sans-serif" font-weight="700" font-size="24" transform="translate(686.869 42)">n</text>
+    <rect x="195" y="583" width="180" height="90" stroke="#1F4E79" stroke-width="2.24892" stroke-miterlimit="8" fill="#D9ECFF"/>
+    <text fill="#222222" font-family="Arial,Arial_MSFontService,sans-serif" font-weight="700" font-size="16" transform="translate(228.139 633)">OLT Interface</text>
+    <text fill="#555555" font-family="Cambria Math,Cambria Math_MSFontService,sans-serif" font-weight="700" font-size="36" transform="translate(278.779 565)">&#x22EE;</text>
+    <text fill="#222222" font-family="Arial,Arial_MSFontService,sans-serif" font-weight="700" font-size="16" transform="translate(237.817 413)">OLT / Router</text>
+    <rect x="175" y="19" width="223" height="324" stroke="#1F4E79" stroke-width="2.24892" stroke-miterlimit="8" fill="#FBE3D6"/>
+    <rect x="195" y="77" width="180" height="90" stroke="#1F4E79" stroke-width="2.24892" stroke-miterlimit="8" fill="#D9ECFF"/>
+    <text fill="#222222" font-family="Arial,Arial_MSFontService,sans-serif" font-weight="700" font-size="16" transform="translate(228.139 127)">OLT Interface</text>
+    <rect x="195" y="226" width="180" height="90" stroke="#1F4E79" stroke-width="2.24892" stroke-miterlimit="8" fill="#D9ECFF"/>
+    <text fill="#222222" font-family="Arial,Arial_MSFontService,sans-serif" font-weight="700" font-size="16" transform="translate(228.139 276)">OLT Interface</text>
+    <text fill="#555555" font-family="Cambria Math,Cambria Math_MSFontService,sans-serif" font-weight="700" font-size="36" transform="translate(278.779 208)">&#x22EE;</text>
+    <text fill="#222222" font-family="Arial,Arial_MSFontService,sans-serif" font-weight="700" font-size="16" transform="translate(237.817 56)">OLT / Router</text>
+    <path d="M797 362.5 797 407.5 875 430 875 340Z" stroke="#BF9000" stroke-width="2.24892" stroke-miterlimit="8" fill="#FFF2CC" fill-rule="evenodd"/>
+    <text fill="#222222" font-family="Arial,Arial_MSFontService,sans-serif" font-weight="700" font-size="16" transform="translate(827.004 381)">2:1</text>
+    <text fill="#222222" font-family="Arial,Arial_MSFontService,sans-serif" font-weight="700" font-size="16" transform="translate(811.837 400)">s</text>
+    <text fill="#222222" font-family="Arial,Arial_MSFontService,sans-serif" font-weight="700" font-size="16" transform="translate(820.671 400)">plitter</text>
+    <path d="M875.5 378.5 970.5 374.5" stroke="#0070C0" stroke-width="3.37333" stroke-miterlimit="8" fill="none" fill-rule="evenodd"/>
+  </g>
+</svg>

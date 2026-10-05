@@ -36,7 +36,6 @@
 #include "saimetadata.h"
 #include "saiserialize.h"
 
-#define PRIMITIVE_BUFFER_SIZE 128
 #define MAX_CHARS_PRINT 25
 
 /* Expect macros */
@@ -863,8 +862,8 @@ int sai_serialize_ip_prefix(
 {
     int ret = 0;
 
-    char addr[PRIMITIVE_BUFFER_SIZE];
-    char mask[PRIMITIVE_BUFFER_SIZE];
+    char addr[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
+    char mask[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
 
     switch (ip_prefix->addr_family)
     {
@@ -1046,7 +1045,7 @@ int sai_serialize_ip6_mask(
         }
     }
 
-    char buf[PRIMITIVE_BUFFER_SIZE];
+    char buf[SAI_METADATA_PRIMITIVE_BUFFER_SIZE];
 
     sai_serialize_ip6(buf, mask);
 
