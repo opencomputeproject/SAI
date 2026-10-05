@@ -1,6 +1,6 @@
 [%- unsupported_attrs = '(list)' # Should be supported now '(list|data|range|addr|string|time|capability|prefix)' #TODO: all of them should be supported -%]
 
-[%- unsupported_functions = '(bulk|send_hostif|recv_hostif|hostif_packet|mdio|register)' #TODO: all of them should be supported -%]
+[%- unsupported_functions = '(bulk|send_hostif|recv_hostif|hostif_packet|mdio|register|execute_pon_action)' #TODO: all of them should be supported -%]
 
 [%- create_switch_function = 'create_switch' %]
 [%- remove_switch_function = 'remove_switch' %]

@@ -57,6 +57,9 @@
 #include "saiexperimentalotnattenuator.h"
 #include "saiexperimentalotnoa.h"
 
+/* PON */
+#include "saiexperimentalpon.h"
+
 /**
  * @brief Extensions to SAI APIs
  *
@@ -108,6 +111,8 @@ typedef enum _sai_api_extensions_t
     SAI_API_OTN_OA,
 
     SAI_API_OCS,
+
+    SAI_API_PON,
 
     /* Add new experimental APIs above this line */
 
