@@ -113,6 +113,116 @@ typedef enum _sai_bridge_port_tagging_mode_t
 } sai_bridge_port_tagging_mode_t;
 
 /**
+ * @brief Attribute data for #SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_PROTECTION_MODE
+ *
+ * In hardware mode the switchover is triggered by a qualified failure of the
+ * bridge port, that is, the point at which the adapter determines the bridge
+ * port is unavailable for forwarding, and the switchover budget is measured
+ * from that point. Link event debounce and damping controls govern the delivery
+ * of operational status notifications to the NOS and do not gate the hardware
+ * selection, so hardware may select the protection path before the NOS observes
+ * the corresponding operational status change.
+ *
+ * Recovery behavior is controlled separately by
+ * #SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_PROTECTION_REVERTIVE.
+ */
+typedef enum _sai_bridge_port_protection_mode_t
+{
+    /** Software switchover. Control plane determines the switchover behavior */
+    SAI_BRIDGE_PORT_PROTECTION_MODE_SOFTWARE,
+
+    /** Hardware switchover. Hardware selects the path autonomously */
+    SAI_BRIDGE_PORT_PROTECTION_MODE_HARDWARE,
+
+} sai_bridge_port_protection_mode_t;
+
+/**
+ * @brief Attribute data for #SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_PROTECTION_ADMIN_MODE
+ */
+typedef enum _sai_bridge_port_protection_admin_mode_t
+{
+    /** No administrative control. Path is selected per the protection mode */
+    SAI_BRIDGE_PORT_PROTECTION_ADMIN_MODE_AUTO,
+
+    /** Force the traffic onto the bridge port. Protection is locked out */
+    SAI_BRIDGE_PORT_PROTECTION_ADMIN_MODE_PRIMARY,
+
+    /** Force the traffic onto the protection next hop group */
+    SAI_BRIDGE_PORT_PROTECTION_ADMIN_MODE_PROTECTION,
+
+} sai_bridge_port_protection_admin_mode_t;
+
+/**
+ * @brief Attribute data for #SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_PROTECTION_STATE
+ */
+typedef enum _sai_bridge_port_protection_state_t
+{
+    /** Primary path is committed in hardware */
+    SAI_BRIDGE_PORT_PROTECTION_STATE_PRIMARY,
+
+    /** Protection path is committed in hardware */
+    SAI_BRIDGE_PORT_PROTECTION_STATE_PROTECTION,
+
+    /** Protection is not configured or not applicable for this bridge port */
+    SAI_BRIDGE_PORT_PROTECTION_STATE_NOT_APPLICABLE,
+
+} sai_bridge_port_protection_state_t;
+
+/**
+ * @brief Defines the reason for a bridge port HW protection switchover
+ *
+ * Reported only for hardware-initiated transitions. A switchover requested
+ * through #SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_SET_SWITCHOVER reports its
+ * outcome through API return status and raises no notification.
+ */
+typedef enum _sai_bridge_port_protection_event_t
+{
+    /** Primary path failed */
+    SAI_BRIDGE_PORT_PROTECTION_EVENT_PRIMARY_FAILURE,
+
+    /** Primary path recovered */
+    SAI_BRIDGE_PORT_PROTECTION_EVENT_PRIMARY_RECOVERY,
+
+    /** Switchover attempt failed. Committed state is unchanged */
+    SAI_BRIDGE_PORT_PROTECTION_EVENT_SWITCHOVER_FAILED,
+
+} sai_bridge_port_protection_event_t;
+
+/**
+ * @brief Defines the bridge port HW protection switchover status
+ *
+ * A notification is emitted after the data plane selection is committed. A
+ * SAI_BRIDGE_PORT_PROTECTION_EVENT_SWITCHOVER_FAILED notification reports the
+ * unchanged authoritative current_state. Notifications are advisory; the NOS
+ * shall reconcile with #SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_PROTECTION_STATE.
+ */
+typedef struct _sai_bridge_port_hw_protection_switchover_notification_data_t
+{
+    /**
+     * @brief Bridge port id
+     *
+     * @objects SAI_OBJECT_TYPE_BRIDGE_PORT
+     */
+    sai_object_id_t bridge_port_id;
+
+    /**
+     * @brief Protection state before the switchover
+     */
+    sai_bridge_port_protection_state_t previous_state;
+
+    /**
+     * @brief Protection state after the switchover
+     */
+    sai_bridge_port_protection_state_t current_state;
+
+    /**
+     * @brief Reason for the switchover
+     */
+    sai_bridge_port_protection_event_t reason;
+
+} sai_bridge_port_hw_protection_switchover_notification_data_t;
+
+/**
  * @brief SAI attributes for Bridge Port
  */
 typedef enum _sai_bridge_port_attr_t
@@ -355,10 +465,20 @@ typedef enum _sai_bridge_port_attr_t
     /**
      * @brief Trigger a switch-over to backup next hop group
      *
+     * This attribute is deprecated, use
+     * #SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_PROTECTION_ADMIN_MODE instead. Setting
+     * true is equivalent to
+     * SAI_BRIDGE_PORT_PROTECTION_ADMIN_MODE_PROTECTION and setting false
+     * is equivalent to SAI_BRIDGE_PORT_PROTECTION_ADMIN_MODE_AUTO. A boolean
+     * cannot request SAI_BRIDGE_PORT_PROTECTION_ADMIN_MODE_PRIMARY, and
+     * cannot distinguish holding the bridge port from placing no control on
+     * it at all, which is why it is superseded.
+     *
      * @type bool
      * @flags CREATE_AND_SET
      * @default false
      * @validonly SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_PORT
+     * @deprecated true
      */
     SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_SET_SWITCHOVER,
 
@@ -373,6 +493,78 @@ typedef enum _sai_bridge_port_attr_t
      * @condition SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_TUNNEL_TERM_PEER
      */
     SAI_BRIDGE_PORT_ATTR_TUNNEL_TERM_PEER_IP,
+
+    /**
+     * @brief Protection switchover mode
+     *
+     * Applies only when SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_PROTECTION_NEXT_HOP_GROUP_ID
+     * is set; otherwise the value is ignored.
+     *
+     * @type sai_bridge_port_protection_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_BRIDGE_PORT_PROTECTION_MODE_SOFTWARE
+     * @validonly SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_PORT
+     */
+    SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_PROTECTION_MODE,
+
+    /**
+     * @brief Protection switchover state
+     *
+     * Path currently committed in hardware. Returns
+     * SAI_BRIDGE_PORT_PROTECTION_STATE_NOT_APPLICABLE when the bridge port type
+     * is not SAI_BRIDGE_PORT_TYPE_PORT, or when no protection next hop group is
+     * associated.
+     *
+     * @type sai_bridge_port_protection_state_t
+     * @flags READ_ONLY
+     */
+    SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_PROTECTION_STATE,
+
+    /**
+     * @brief Revert to the bridge port once it recovers
+     *
+     * When false, hardware keeps the traffic on the protection next hop group
+     * after the bridge port recovers, until the control plane moves it back
+     * through #SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_PROTECTION_ADMIN_MODE.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     * @validonly SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_PROTECTION_MODE == SAI_BRIDGE_PORT_PROTECTION_MODE_HARDWARE
+     */
+    SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_PROTECTION_REVERTIVE,
+
+    /**
+     * @brief Wait to restore time in milliseconds
+     *
+     * Delay between the bridge port recovering and hardware reverting to it.
+     * The timer is cancelled if the bridge port fails again before it expires,
+     * so hardware reverts only after the recovered path has been stable for
+     * this duration. Value 0 reverts as soon as the bridge port is available
+     * again.
+     *
+     * @type sai_uint32_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     * @validonly SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_PROTECTION_REVERTIVE == true
+     */
+    SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_PROTECTION_WAIT_TO_RESTORE_TIME,
+
+    /**
+     * @brief Administrative control of the protection path
+     *
+     * Controls the path selection of either protection mode. When set to
+     * anything other than SAI_BRIDGE_PORT_PROTECTION_ADMIN_MODE_AUTO,
+     * committed path does not follow bridge port failure or recovery and
+     * no switchover notification is raised. Returning to AUTO resumes
+     * selection from the committed path.
+     *
+     * @type sai_bridge_port_protection_admin_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_BRIDGE_PORT_PROTECTION_ADMIN_MODE_AUTO
+     * @validonly SAI_BRIDGE_PORT_ATTR_TYPE == SAI_BRIDGE_PORT_TYPE_PORT
+     */
+    SAI_BRIDGE_PORT_ATTR_BRIDGE_PORT_PROTECTION_ADMIN_MODE,
 
     /**
      * @brief End of attributes
@@ -505,6 +697,20 @@ typedef sai_status_t (*sai_clear_bridge_port_stats_fn)(
         _In_ sai_object_id_t bridge_port_id,
         _In_ uint32_t number_of_counters,
         _In_ const sai_stat_id_t *counter_ids);
+
+/**
+ * @brief Bridge port HW protection switchover notification callback
+ *
+ * Passed as a parameter into sai_initialize_switch().
+ *
+ * @count events[count]
+ *
+ * @param[in] count Number of notifications
+ * @param[in] events Array of notification data
+ */
+typedef void (*sai_bridge_port_hw_protection_switchover_notification_fn)(
+        _In_ uint32_t count,
+        _In_ const sai_bridge_port_hw_protection_switchover_notification_data_t *events);
 
 /**
  * @brief Attribute data for #SAI_BRIDGE_ATTR_TYPE
