@@ -324,6 +324,9 @@ typedef enum _sai_acl_action_type_t
     /** Bind a TAM object */
     SAI_ACL_ACTION_TYPE_TAM_OBJECT = 0x0000003d,
 
+    /** Redirect original packet to a destination which can be a port or LAG */
+    SAI_ACL_ACTION_TYPE_REDIRECT_ORIGINAL_PACKET = 0x0000003e,
+
     /** Custom range base value */
     SAI_ACL_ACTION_TYPE_CUSTOM_RANGE_BASE = 0x10000000
 
@@ -3561,9 +3564,34 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_TAM_OBJECT = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x3d,
 
     /**
+     * @brief Redirect original packet to a destination which can be a port or LAG
+     *
+     * The packet delivered to the destination is the same as the original packet
+     * seen by the ingress port. The packet is not modified in any way, including
+     * TTL decrement, MAC rewrite, VLAN rewrite and tunnel encapsulation or
+     * decapsulation. This is unlike SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT, where the
+     * packet may be modified.
+     *
+     * This action conflicts with SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT and with actions
+     * that modify the packet. In case of parallel lookup, non conflicting actions are
+     * resolved and applied from multiple matched ACL entries. Conflicting actions are
+     * resolved based on the ACL table priorities.
+     *
+     * This action is not limited to a specific ACL stage. Support for this action is
+     * based on the ACL capability per stage obtained from the switch attributes
+     * #SAI_SWITCH_ATTR_ACL_STAGE_INGRESS and #SAI_SWITCH_ATTR_ACL_STAGE_EGRESS.
+     *
+     * @type sai_acl_action_data_t sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_PORT, SAI_OBJECT_TYPE_LAG
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT_ORIGINAL_PACKET = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x3e,
+
+    /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_TAM_OBJECT,
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT_ORIGINAL_PACKET,
 
     /**
      * @brief End of ACL Entry attributes
