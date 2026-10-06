@@ -826,6 +826,19 @@ typedef enum _sai_tunnel_attr_t
     SAI_TUNNEL_ATTR_SELECTIVE_COUNTER_LIST,
 
     /**
+     * @brief VXLAN tunnel MAC
+     *
+     * Inner destination MAC used for routed packets encapsulated by this
+     * P2P VXLAN tunnel.
+     *
+     * @type sai_mac_t
+     * @flags CREATE_AND_SET
+     * @default attrvalue SAI_SWITCH_ATTR_VXLAN_DEFAULT_ROUTER_MAC
+     * @validonly SAI_TUNNEL_ATTR_TYPE == SAI_TUNNEL_TYPE_VXLAN and SAI_TUNNEL_ATTR_PEER_MODE == SAI_TUNNEL_PEER_MODE_P2P
+     */
+    SAI_TUNNEL_ATTR_VXLAN_TUNNEL_MAC,
+
+    /**
      * @brief End of attributes
      */
     SAI_TUNNEL_ATTR_END,

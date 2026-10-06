@@ -3780,6 +3780,15 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_PACKET_TRIM_TO_SENDER_TC_VALUE,
 
     /**
+     * @brief Bridge port HW protection switchover notification callback function passed to the adapter.
+     *
+     * @type sai_pointer_t sai_bridge_port_hw_protection_switchover_notification_fn
+     * @flags CREATE_AND_SET
+     * @default NULL
+     */
+    SAI_SWITCH_ATTR_BRIDGE_PORT_HW_PROTECTION_SWITCHOVER_NOTIFY,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
