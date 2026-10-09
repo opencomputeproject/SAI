@@ -327,6 +327,9 @@ typedef enum _sai_acl_action_type_t
     /** Redirect original packet to a destination which can be a port or LAG */
     SAI_ACL_ACTION_TYPE_REDIRECT_ORIGINAL_PACKET = 0x0000003e,
 
+    /** Set Packet OFH COS */
+    SAI_ACL_ACTION_TYPE_SET_OFH_COS = 0x0000003f,
+
     /** Custom range base value */
     SAI_ACL_ACTION_TYPE_CUSTOM_RANGE_BASE = 0x10000000
 
@@ -1696,9 +1699,99 @@ typedef enum _sai_acl_table_attr_t
     SAI_ACL_TABLE_ATTR_FIELD_ROUTE_DST = SAI_ACL_TABLE_ATTR_FIELD_START + 0x169,
 
     /**
+     * @brief OFH Type
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_ACL_OFH_TYPE = SAI_ACL_TABLE_ATTR_FIELD_START + 0x16a,
+
+    /**
+     * @brief OFH COS
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_OFH_COS = SAI_ACL_TABLE_ATTR_FIELD_START + 0x16b,
+
+    /**
+     * @brief OFH ECN
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_OFH_ECN = SAI_ACL_TABLE_ATTR_FIELD_START + 0x16c,
+
+    /**
+     * @brief OFH TTL
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_OFH_TTL = SAI_ACL_TABLE_ATTR_FIELD_START + 0x16d,
+
+    /**
+     * @brief OFH F
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_OFH_F = SAI_ACL_TABLE_ATTR_FIELD_START + 0x16e,
+
+    /**
+     * @brief OFH Flow Label
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_OFH_FLOW_LABEL = SAI_ACL_TABLE_ATTR_FIELD_START + 0x16f,
+
+    /**
+     * @brief OFH User Defined Field
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_OFH_UD = SAI_ACL_TABLE_ATTR_FIELD_START + 0x170,
+
+    /**
+     * @brief OFH AR Field
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_OFH_AR = SAI_ACL_TABLE_ATTR_FIELD_START + 0x171,
+
+    /**
+     * @brief OFH Congestion Notification Message Eligible Field
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_OFH_C = SAI_ACL_TABLE_ATTR_FIELD_START + 0x172,
+
+    /**
+     * @brief OFH Congestion Notification Message Field
+     *
+     * @type bool
+     * @flags CREATE_ONLY
+     * @default false
+     */
+    SAI_ACL_TABLE_ATTR_FIELD_OFH_CNM = SAI_ACL_TABLE_ATTR_FIELD_START + 0x173,
+
+    /**
      * @brief End of ACL Table Match Field
      */
-    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_ROUTE_DST,
+    SAI_ACL_TABLE_ATTR_FIELD_END = SAI_ACL_TABLE_ATTR_FIELD_OFH_CNM,
 
     /**
      * @brief ACL table entries associated with this table.
@@ -2915,9 +3008,100 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_FIELD_ROUTE_DST = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x169,
 
     /**
+     * @brief OFH Type (field mask is not needed)
+     *
+     * @type sai_acl_field_data_t sai_ofh_type_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_ACL_OFH_TYPE = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x167,
+
+    /**
+     * @brief OFH COS (6 bits)
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_OFH_COS = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x168,
+
+    /**
+     * @brief OFH ECN (2 bits)
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_OFH_ECN = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x169,
+
+    /**
+     * @brief OFH TTL
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_OFH_TTL = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x16a,
+
+    /**
+     * @brief OFH F Bit
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_OFH_F = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x16b,
+
+    /**
+     * @brief OFH Flow Label (16 bits)
+     *
+     * @type sai_acl_field_data_t sai_uint16_t
+     * @flags CREATE_AND_SET
+     * @isvlan false
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_OFH_FLOW_LABEL = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x16c,
+
+    /**
+     * @brief OFH User Defined Field (2 bits)
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_OFH_UD = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x16d,
+
+    /**
+     * @brief OFH AR Bit
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_OFH_AR = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x16e,
+
+    /**
+     * @brief OFH Congestion Notification Message Eligible Field
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_OFH_C = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x16f,
+
+    /**
+     * @brief OFH Congestion Notification Message Field
+     *
+     * @type sai_acl_field_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_FIELD_OFH_CNM = SAI_ACL_ENTRY_ATTR_FIELD_START + 0x170,
+
+    /**
      * @brief End of Rule Match Fields
      */
-    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_ROUTE_DST,
+    SAI_ACL_ENTRY_ATTR_FIELD_END = SAI_ACL_ENTRY_ATTR_FIELD_OFH_CNM,
 
     /*
      * Actions [sai_acl_action_data_t]
@@ -3589,9 +3773,18 @@ typedef enum _sai_acl_entry_attr_t
     SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT_ORIGINAL_PACKET = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x3e,
 
     /**
+     * @brief Set Packet OFH COS (6 bits)
+     *
+     * @type sai_acl_action_data_t sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default disabled
+     */
+    SAI_ACL_ENTRY_ATTR_ACTION_SET_OFH_COS = SAI_ACL_ENTRY_ATTR_ACTION_START + 0x3f,
+
+    /**
      * @brief End of Rule Actions
      */
-    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_REDIRECT_ORIGINAL_PACKET,
+    SAI_ACL_ENTRY_ATTR_ACTION_END = SAI_ACL_ENTRY_ATTR_ACTION_SET_OFH_COS,
 
     /**
      * @brief End of ACL Entry attributes
