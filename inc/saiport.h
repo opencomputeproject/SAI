@@ -50,6 +50,9 @@ typedef enum _sai_port_type_t
     /** Recycle Port */
     SAI_PORT_TYPE_RECYCLE,
 
+    /** Management Port */
+    SAI_PORT_TYPE_MGMT,
+
 } sai_port_type_t;
 
 /**
