@@ -3150,7 +3150,6 @@ typedef enum _sai_port_attr_t
      *
      * @type sai_uint32_t
      * @flags CREATE_AND_SET
-     * @isvlan false
      * @default 0
      */
     SAI_PORT_ATTR_CBFC_RECEIVER_NATIVE_TOTAL_CREDITS,
