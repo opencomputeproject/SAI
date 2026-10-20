@@ -352,7 +352,7 @@ client.[% function.thrift_name %](
     [%- END -%]
 
     [%- IF function.operation == 'stats' %]
-    [% function.rpc_return.name %] = [0] * [% apis.$api.objects.${function.object}.stats.all.size %]
+    [% function.rpc_return.name %] = [0] * len(counter_ids)
 
     [%- END -%]
 [%- END -%]
