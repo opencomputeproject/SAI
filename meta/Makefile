@@ -135,6 +135,7 @@ sai.thrift sai_rpc_server.cpp sai_adapter.py &: xml $(XMLDEPS) gensairpc.pl temp
 	perl -Irpc gensairpc.pl $(GEN_SAIRPC_OPTS)
 
 rpc: sai.thrift sai_rpc_server.cpp sai_adapter.py
+	python3 -c 'from pathlib import Path; [compile(p.read_bytes(), str(p), "exec") for p in Path(".").rglob("*.py")]'
 
 HEADERS = saimetadata.h saimetadatasize.h $(CONSTHEADERS)
 
