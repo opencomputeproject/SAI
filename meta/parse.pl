@@ -690,7 +690,7 @@ sub ProcessEnumSection
         $SAI_ENUMS_CUSTOM_RANGES{$enumtypename}{customranges} = \@custom;
 
         @values = grep(!/^SAI_\w+_(START|END)$/, @values);
-        @values = grep(!/^SAI_\w+(RANGE_BASE)$/, @values);
+        @values = grep(!/^SAI_\w+(RANGE_BASE)$/ || /^SAI_HOSTIF_TRAP_TYPE_\w*CUSTOM_RANGE_BASE$/, @values);
 
         if ($enumtypename =~ /^(sai_\w+)_t$/)
         {
