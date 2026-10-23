@@ -228,6 +228,104 @@ typedef enum _sai_lag_attr_t
     SAI_LAG_ATTR_LABEL_WIDE,
 
     /**
+     * @brief Enable/Disable ingress Samplepacket session on LAG
+     *
+     * Enable ingress sampling by assigning
+     * samplepacket object id. Disable ingress sampling by assigning
+     * #SAI_NULL_OBJECT_ID as attribute value.
+     *
+     * While this attribute is set on a LAG, it is not possible to set the value of
+     * the following 4 attributes for a member port:
+     * SAI_PORT_ATTR_INGRESS_SAMPLEPACKET_ENABLE
+     * SAI_PORT_ATTR_INGRESS_SAMPLE_MIRROR_SESSION
+     * SAI_PORT_ATTR_EGRESS_SAMPLEPACKET_ENABLE
+     * SAI_PORT_ATTR_EGRESS_SAMPLE_MIRROR_SESSION
+     *
+     * A port with any of the above attributes set cannot become a member
+     * of a LAG that has this attribute set.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_SAMPLEPACKET
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_LAG_ATTR_INGRESS_SAMPLEPACKET_ENABLE,
+
+    /**
+     * @brief Enable/Disable egress Samplepacket session on LAG
+     *
+     * Enable egress sampling by assigning
+     * samplepacket object id. Disable egress sampling by assigning
+     * #SAI_NULL_OBJECT_ID as attribute value.
+     *
+     * While this attribute is set on a LAG, it is not possible to set the value of
+     * the following 4 attributes for a member port:
+     * SAI_PORT_ATTR_INGRESS_SAMPLEPACKET_ENABLE
+     * SAI_PORT_ATTR_INGRESS_SAMPLE_MIRROR_SESSION
+     * SAI_PORT_ATTR_EGRESS_SAMPLEPACKET_ENABLE
+     * SAI_PORT_ATTR_EGRESS_SAMPLE_MIRROR_SESSION
+     *
+     * A port with any of the above attributes set cannot become a member
+     * of a LAG that has this attribute set.
+     *
+     * @type sai_object_id_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_SAMPLEPACKET
+     * @allownull true
+     * @default SAI_NULL_OBJECT_ID
+     */
+    SAI_LAG_ATTR_EGRESS_SAMPLEPACKET_ENABLE,
+
+    /**
+     * @brief Enable/Disable ingress sample mirroring on LAG
+     *
+     * Enable sample ingress mirroring by
+     * assigning list of mirror object ids. Disable sample ingress mirroring
+     * by assigning object_count as 0 in objlist.
+     *
+     * While this attribute is set on a LAG, it is not possible to set the value of
+     * the following 4 attributes for a member port:
+     * SAI_PORT_ATTR_INGRESS_SAMPLEPACKET_ENABLE
+     * SAI_PORT_ATTR_INGRESS_SAMPLE_MIRROR_SESSION
+     * SAI_PORT_ATTR_EGRESS_SAMPLEPACKET_ENABLE
+     * SAI_PORT_ATTR_EGRESS_SAMPLE_MIRROR_SESSION
+     *
+     * A port with any of the above attributes set cannot become a member
+     * of a LAG that has this attribute set.
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_MIRROR_SESSION
+     * @default empty
+     */
+    SAI_LAG_ATTR_INGRESS_SAMPLE_MIRROR_SESSION_LIST,
+
+    /**
+     * @brief Enable/Disable egress sample mirroring on LAG
+     *
+     * Enable sample egress mirroring by
+     * assigning list of mirror object ids. Disable sample egress mirroring
+     * by assigning object_count as 0 in objlist.
+     *
+     * While this attribute is set on a LAG, it is not possible to set the value of
+     * the following 4 attributes for a member port:
+     * SAI_PORT_ATTR_INGRESS_SAMPLEPACKET_ENABLE
+     * SAI_PORT_ATTR_INGRESS_SAMPLE_MIRROR_SESSION
+     * SAI_PORT_ATTR_EGRESS_SAMPLEPACKET_ENABLE
+     * SAI_PORT_ATTR_EGRESS_SAMPLE_MIRROR_SESSION
+     *
+     * A port with any of the above attributes set cannot become a member
+     * of a LAG that has this attribute set.
+     *
+     * @type sai_object_list_t
+     * @flags CREATE_AND_SET
+     * @objects SAI_OBJECT_TYPE_MIRROR_SESSION
+     * @default empty
+     */
+    SAI_LAG_ATTR_EGRESS_SAMPLE_MIRROR_SESSION_LIST,
+
+    /**
      * @brief End of attributes
      */
     SAI_LAG_ATTR_END,

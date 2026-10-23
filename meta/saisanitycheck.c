@@ -4416,6 +4416,15 @@ void check_objects_for_loops_recursive(
             }
         }
 
+        if (m->objecttype == SAI_OBJECT_TYPE_LAG)
+        {
+            if (m->attrid == SAI_LAG_ATTR_INGRESS_SAMPLE_MIRROR_SESSION_LIST ||
+                    m->attrid == SAI_LAG_ATTR_EGRESS_SAMPLE_MIRROR_SESSION_LIST)
+            {
+                continue;
+            }
+        }
+
         if (m->objecttype == SAI_OBJECT_TYPE_SCHEDULER_GROUP &&
                 m->attrid == SAI_SCHEDULER_GROUP_ATTR_PARENT_NODE)
         {
