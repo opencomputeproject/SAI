@@ -396,6 +396,22 @@ typedef enum _sai_macsec_port_security_mode_t
 } sai_macsec_port_security_mode_t;
 
 /**
+ * @brief Attribute Data for MACsec PFC mode
+ *
+ * Controls whether PFC frames on a MACsec port are handled as clear
+ * (unencrypted) or secure (encrypted) frames.
+ */
+typedef enum _sai_macsec_port_pfc_mode_t
+{
+    /** Clear PFC: PFC frames bypass MACsec encryption */
+    SAI_MACSEC_PORT_PFC_MODE_UNENCRYPTED,
+
+    /** Secure PFC: PFC frames are MACsec-encrypted */
+    SAI_MACSEC_PORT_PFC_MODE_ENCRYPTED,
+
+} sai_macsec_port_pfc_mode_t;
+
+/**
  * @brief Attribute Id for sai_macsec_port
  */
 typedef enum _sai_macsec_port_attr_t
@@ -493,6 +509,15 @@ typedef enum _sai_macsec_port_attr_t
      * @default SAI_MACSEC_PORT_SECURITY_MODE_MUST_SECURE
      */
     SAI_MACSEC_PORT_ATTR_SECURITY_MODE,
+
+    /**
+     * @brief Configure MACsec PFC mode
+     *
+     * @type sai_macsec_port_pfc_mode_t
+     * @flags CREATE_AND_SET
+     * @default SAI_MACSEC_PORT_PFC_MODE_UNENCRYPTED
+     */
+    SAI_MACSEC_PORT_ATTR_PFC_MODE,
 
     /**
      * @brief End of MACsec Port attributes
