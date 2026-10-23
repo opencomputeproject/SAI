@@ -104,6 +104,8 @@ sub GetEnums
 
     for my $file (@files)
     {
+        next if $file eq "saimetadata.h";
+
         my $data = ReadHeaderFile("$dir/$file");
 
         my %en = FilterEnums($data, "$dir/$file");
@@ -122,7 +124,21 @@ sub ConstructSource
 
     my $source = "#include <stdio.h>\n";
 
-    $source .= "#include \"$dir/sai.h\"\n";
+    $source .= "#include \"$dir/../inc/sai.h\"\n";
+
+    if( ! -e "$dir/sai.h") {
+
+        my @files = GetHeaderFiles $dir;
+
+        for my $file (@files)
+        {
+            if ($file =~ /\.h$/)
+            {
+                $source .= "#include \"$dir/$file\"\n";
+            }
+        }
+    }
+
     $source .="int main() { ";
 
     for my $en (sort keys %enums)
@@ -149,7 +165,7 @@ sub GetValues
 
     my ($fhb, $bin) = tempfile( SUFFIX => '.bin', UNLINK => 1  );
 
-    system("gcc $src -I. -I '$dir'/../experimental -I '$dir/../custom/' -I '$dir' -o $bin") == 0 or die "gcc failed! $!";
+    system("gcc $src -I. -I '$dir'/../experimental -I '$dir/../custom/' -I '$dir/../inc/' -I '$dir' -o $bin") == 0 or die "gcc failed! $!";
 
     close $fhs;
     close $fhb;

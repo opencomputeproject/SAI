@@ -76,16 +76,18 @@ function create_temp_dir()
 
 function checkout_inc_directories()
 {
-    echo "git checkout work tree commits:" $LIST
+    echo "git checkout work tree commits:" $LIST_INC
 
-    for commit in $LIST
+    for commit in $LIST_INC
     do
         #echo working on commit $commit
 
         mkdir temp/commit-$commit
         mkdir temp/commit-$commit/inc
+        mkdir temp/commit-$commit/meta
 
         git --work-tree=temp/commit-$commit checkout $commit inc 2>/dev/null
+        git --work-tree=temp/commit-$commit checkout $commit meta 2>/dev/null
 
     done
 }
@@ -101,12 +103,21 @@ function create_commit_list()
 
     echo "git rev list from $begin to $end"
 
-    LIST=$(git rev-list --ancestry-path ${begin}^..${end} | xargs -n 1 git rev-parse --short | tac)
+    local FULL_LIST=$(git rev-list --ancestry-path ${begin}^..${end} | xargs -n 1 git rev-parse --short | tac)
+
+    local skip_begin=$3
+    local skip_end=$4
+    local SKIP_LIST=$(git rev-list --ancestry-path ${skip_begin}^..${skip_end} | xargs -n 1 git rev-parse --short | tac)
+
+    LIST_INC=$FULL_LIST
+    LIST_META=$(grep -vxFf <(echo "$SKIP_LIST") <<< "$FULL_LIST")
+
 }
 
 function check_enum_history()
 {
-    perl ancestry.pl -H "ancestry.1f2bca1.history" $LIST
+    perl ancestry.pl -H "ancestry.1f2bca1.history" --dir "inc" --commits $LIST_INC
+    perl ancestry.pl -H "ancestry.1f2bca1.history" --dir "meta" --commits $LIST_META
 }
 
 #
@@ -123,11 +134,17 @@ function check_enum_history()
 
 BEGIN_COMMIT=3132018 # from this commit we are backward compatible
 BEGIN_COMMIT=1f2bca1 # to this commit we have history file
+
+# commits from skip_begin to skip_end are skipped from backward compatibility check
+# due to a regression in meta directory which was earlier excluded from this check
+SKIP_BEGIN=401bd1f
+SKIP_END=77578c8
+
 END_COMMIT=HEAD
 
 clean_temp_dir
 create_temp_dir
-create_commit_list $BEGIN_COMMIT $END_COMMIT
+create_commit_list $BEGIN_COMMIT $END_COMMIT $SKIP_BEGIN $SKIP_END
 checkout_inc_directories
 check_enum_history
 clean_temp_dir
