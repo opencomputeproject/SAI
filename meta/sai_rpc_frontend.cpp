@@ -157,6 +157,17 @@ static void sai_thrift_u32_range_t_parse(
 }
 
 /**
+ * @brief Convert u16 range from Thrift to SAI format
+ */
+static void sai_thrift_u16_range_t_parse(
+        const sai_thrift_u16_range_t &thrift_u16_range,
+        sai_u16_range_t *u16_range)
+{
+    u16_range->min = thrift_u16_range.min;
+    u16_range->max = thrift_u16_range.max;
+}
+
+/**
  * @brief Convert s32 range from Thrift to SAI format
  */
 static void sai_thrift_s32_range_t_parse(
@@ -320,6 +331,9 @@ void convert_attr_thrift_to_sai(
             break;
         case SAI_ATTR_VALUE_TYPE_UINT32_RANGE:
             sai_thrift_u32_range_t_parse(thrift_attr.value.u32range, &attr->value.u32range);
+            break;
+        case SAI_ATTR_VALUE_TYPE_UINT16_RANGE:
+            sai_thrift_u16_range_t_parse(thrift_attr.value.u16range, &attr->value.u16range);
             break;
         case SAI_ATTR_VALUE_TYPE_INT32_RANGE:
             sai_thrift_s32_range_t_parse(thrift_attr.value.s32range, &attr->value.s32range);
@@ -777,6 +791,10 @@ void convert_attr_sai_to_thrift(
         case SAI_ATTR_VALUE_TYPE_UINT32_RANGE:
             thrift_attr.value.u32range.min = attr.value.u32range.min;
             thrift_attr.value.u32range.max = attr.value.u32range.max;
+            break;
+        case SAI_ATTR_VALUE_TYPE_UINT16_RANGE:
+            thrift_attr.value.u16range.min = attr.value.u16range.min;
+            thrift_attr.value.u16range.max = attr.value.u16range.max;
             break;
         case SAI_ATTR_VALUE_TYPE_INT32_RANGE:
             thrift_attr.value.s32range.min = attr.value.s32range.min;
