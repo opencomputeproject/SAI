@@ -451,6 +451,16 @@ typedef enum _sai_router_interface_attr_t
     SAI_ROUTER_INTERFACE_ATTR_LABEL_WIDE,
 
     /**
+     * @brief Admin OFH state
+     * Router MAC check is ignored when OFH is enabled.
+     *
+     * @type bool
+     * @flags CREATE_AND_SET
+     * @default true
+     */
+    SAI_ROUTER_INTERFACE_ATTR_ADMIN_OFH_STATE,
+
+    /**
      * @brief End of attributes
      */
     SAI_ROUTER_INTERFACE_ATTR_END,
