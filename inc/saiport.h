@@ -3142,13 +3142,15 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_CBFC_RECEIVER_NATIVE_PACKET_OVERHEAD,
 
     /**
-     * @brief Get CBFC Receiver Total Port Credits in Credits.
+     * @brief Configure CBFC Receiver Total Port Credits in Credits.
      *
      * If value is 0, receiver sets per-VC credit limits.
      *
+     * Range; 0 to (2^20 - 1).
+     *
      * @type sai_uint32_t
-     * @flags READ_ONLY
-     * @isvlan false
+     * @flags CREATE_AND_SET
+     * @default 0
      */
     SAI_PORT_ATTR_CBFC_RECEIVER_NATIVE_TOTAL_CREDITS,
 
