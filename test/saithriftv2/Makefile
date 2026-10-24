@@ -17,20 +17,6 @@ CPPFLAGS = -I$(SAI_HEADER_DIR) -I. -std=c++11 -O0 -ggdb
 # specify add'l libraries along with libsai
 SAIRPC_EXTRA_LIBS?=
 
-ifeq ($(platform),MLNX)
-CDEFS = -DMLNXSAI
-else
-ifeq ($(platform),BFN)
-CDEFS = -DBFNSAI
-else
-ifeq ($(platform),CAVIUM)
-CDEFS = -DCAVIUMSAI
-else
-CDEFS = -DBRCMSAI
-endif
-endif
-endif
-
 ifneq (, $(wildcard /usr/local/bin/ctypesgen))
 CTYPESGEN = /usr/local/bin/ctypesgen
 else
