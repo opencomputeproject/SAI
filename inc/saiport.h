@@ -3626,6 +3626,27 @@ typedef enum _sai_port_attr_t
     SAI_PORT_ATTR_QOS_TRIM_TC_AND_COLOR_TO_DSCP_MAP,
 
     /**
+     * @brief Latched port operational status, clear on read
+     *
+     * current_status is true when the port is operationally up at the time of
+     * the read, and false when it is down. changed is true if the operational
+     * state changed at least once since the previous read, and false otherwise.
+     *
+     * The changed field is maintained across warm boot. Transitions while the
+     * application is detached, including during warm shutdown, state
+     * reconstruction, and sai_create_switch, must be accumulated and reported
+     * on the first read after sai_create_switch returns. The attribute must be
+     * readable then.
+     *
+     * Both fields form a coherent snapshot. If an implementation cannot provide
+     * an atomic snapshot, it must sample current_status before clearing changed.
+     *
+     * @type sai_latch_status_t
+     * @flags READ_ONLY
+     */
+    SAI_PORT_ATTR_OPER_STATUS_LATCH,
+
+    /**
      * @brief End of attributes
      */
     SAI_PORT_ATTR_END,
