@@ -37,10 +37,14 @@ rm -rf $TEMP_DIR
 
 mkdir $TEMP_DIR
 
-git --work-tree=$TEMP_DIR/ checkout origin/master inc experimental
+git --work-tree=$TEMP_DIR/ checkout origin/master inc experimental meta
 
 echo "Checking for possible enum values shift (current branch vs origin/master) ..."
 
 ./checkheaders.pl -s ../inc/ $TEMP_DIR/inc/
+
+./checkheaders.pl -s ../meta/ $TEMP_DIR/meta/
+
+./checkheaders.pl -s ../experimental/ $TEMP_DIR/experimental/
 
 rm -rf $TEMP_DIR
