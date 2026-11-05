@@ -293,6 +293,8 @@ typedef enum _sai_object_type_extensions_t
     /** @brief Type for PON action RPC serialization */
     SAI_OBJECT_TYPE_PON_ACTION,
 
+    SAI_OBJECT_TYPE_QP_ROUTE_ENTRY,
+
     /* Add new experimental object types above this line */
 
     SAI_OBJECT_TYPE_EXTENSIONS_RANGE_END
