@@ -56,6 +56,7 @@
 #include <saiexperimentaldashacl.h>
 #include <saiexperimentalbmtor.h>
 #include <saiexperimentalocs.h>
+#include <saiexperimentalqproute.h>
 
 /**
  * @defgroup SAIOBJECT SAI - Object API definitions.
@@ -83,6 +84,9 @@ typedef union _sai_object_key_entry_t
 
     /** @validonly object_type == SAI_OBJECT_TYPE_ROUTE_ENTRY */
     sai_route_entry_t         route_entry;
+
+    /** @validonly object_type == SAI_OBJECT_TYPE_QP_ROUTE_ENTRY */
+    sai_qp_route_entry_t      qp_route_entry;
 
     /** @validonly object_type == SAI_OBJECT_TYPE_MCAST_FDB_ENTRY */
     sai_mcast_fdb_entry_t     mcast_fdb_entry;
