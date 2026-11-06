@@ -146,6 +146,52 @@ static void sai_thrift_ip_prefix_t_parse(
 }
 
 /**
+ * @brief Convert OFH address from Thrift to SAI format
+ */
+static void sai_thrift_ofh_addr_t_parse(
+        sai_ofh_addr_family_t ofh_addr_family,
+        const sai_thrift_ofh_addr_t &thrift_ofh_addr,
+        sai_ofh_addr_t *ofh_addr)
+{
+    memset(ofh_addr, 0, sizeof(*ofh_addr));
+
+    switch (ofh_addr_family)
+    {
+        case SAI_OFH_ADDR_FAMILY_ESUN:
+            sai_thrift_mac_t_parse(thrift_ofh_addr.esun, ofh_addr->esun);
+            break;
+
+        case SAI_OFH_ADDR_FAMILY_AFH:
+            sai_thrift_mac_t_parse(thrift_ofh_addr.afh, ofh_addr->afh);
+            break;
+
+        case SAI_OFH_ADDR_FAMILY_UFH:
+            ofh_addr->ufh = (sai_uint32_t)thrift_ofh_addr.ufh;
+            break;
+
+        default:
+            break;
+    }
+}
+
+/**
+ * @brief Convert OFH address and mask from Thrift to SAI format
+ */
+static void sai_thrift_ofh_addr_and_mask_t_parse(
+        const sai_thrift_ofh_addr_and_mask_t &thrift_ofh_addr_and_mask,
+        sai_ofh_addr_and_mask_t *ofh_addr_and_mask)
+{
+    ofh_addr_and_mask->ofh_addr_family = (sai_ofh_addr_family_t)thrift_ofh_addr_and_mask.ofh_addr_family;
+
+    sai_thrift_ofh_addr_t_parse(ofh_addr_and_mask->ofh_addr_family,
+                                thrift_ofh_addr_and_mask.ofh_addr,
+                                &ofh_addr_and_mask->ofh_addr);
+    sai_thrift_ofh_addr_t_parse(ofh_addr_and_mask->ofh_addr_family,
+                                thrift_ofh_addr_and_mask.ofh_mask,
+                                &ofh_addr_and_mask->ofh_mask);
+}
+
+/**
  * @brief Convert u32 range from Thrift to SAI format
  */
 static void sai_thrift_u32_range_t_parse(
