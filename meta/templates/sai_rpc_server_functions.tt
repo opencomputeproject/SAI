@@ -33,6 +33,7 @@
 [% END -%]
 if ([% api %]_api->[% name = function.name; GET methods.$name %] == (void *)0) {
         std::cerr << "NULL ptr: [% api %]_api->[% name = function.name; GET methods.$name %]" << std::endl;
+        [%- PROCESS free_malloced_args free_indentation = 4 %]
         [%- PROCESS throw_null_api_exception %]
     }
 
@@ -274,6 +275,20 @@ if ([% api %]_api->[% name = function.name; GET methods.$name %] == (void *)0) {
 
 [%- ######################################################################## -%]
 
+[%- # Own variable names: PROCESS shares the caller's stash, where indentation and arg are in use. -%]
+[%- BLOCK free_malloced_args -%]
+    [%- free_indent = ' '; free_indent = free_indent.repeat(2 * free_indentation) -%]
+    [%- FOREACH free_arg IN function.preprocessed_args -%]
+        [%- IF free_arg.requires_malloc %]
+[% free_indent %]free(sai_[% free_arg.name %]);
+        [%- END -%]
+    [%- END -%]
+[%- END -%]
+
+[%- ######################################################################## -%]
+
+[%- ######################################################################## -%]
+
 [%- BLOCK postprocess_argument -%]
     [%- IF arg.requires_parsing AND arg.out -%]
         [%- PROCESS deparse_arg -%]
@@ -377,12 +392,14 @@ if ([% api %]_api->[% name = function.name; GET methods.$name %] == (void *)0) {
 
         [%- IF function.operation != 'stats' -%]
     if (status != SAI_STATUS_SUCCESS) {
+      [%- PROCESS free_malloced_args free_indentation = 3 %]
       [%- PROCESS throw_exception indentation = 3 status_variable = 'status' %]
     }
         [%- ELSE %]
     // sai_adapter always takes all [% api %] stats. Since some of them may be
     // not supported, SAI_STATUS_INVALID_PARAMETER should not be raised.
     if (status != SAI_STATUS_SUCCESS && status != SAI_STATUS_INVALID_PARAMETER) {
+      [%- PROCESS free_malloced_args free_indentation = 3 %]
       [%- PROCESS throw_exception indentation = 3 status_variable = 'status' %]
     }
         [%- END %]
