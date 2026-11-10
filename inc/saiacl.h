@@ -71,6 +71,27 @@ typedef enum _sai_acl_ip_type_t
 } sai_acl_ip_type_t;
 
 /**
+ * @brief ACL table packet types
+ *
+ * Packet types that the entries of an ACL table may match.
+ */
+typedef enum _sai_acl_packet_type_t
+{
+    /** IPv4 packets (excluding ARP) */
+    SAI_ACL_PACKET_TYPE_IPV4,
+
+    /** IPv6 packets */
+    SAI_ACL_PACKET_TYPE_IPV6,
+
+    /** Non-IP packets (excluding ARP) */
+    SAI_ACL_PACKET_TYPE_NON_IP,
+
+    /** ARP packets, including ARP request and reply */
+    SAI_ACL_PACKET_TYPE_ARP
+
+} sai_acl_packet_type_t;
+
+/**
  * @brief ACL IP Fragment
  */
 typedef enum _sai_acl_ip_frag_t
@@ -693,6 +714,23 @@ typedef enum _sai_acl_table_attr_t
      * @default empty
      */
     SAI_ACL_TABLE_ATTR_ACL_ACTION_TYPE_LIST,
+
+    /**
+     * @brief ACL Table Packet Type list
+     *
+     * Packet types that the entries of this table may match, for example
+     * [IPV4, NON_IP, ARP].
+     *
+     * Empty list: the attribute is not configured. The table is
+     * unrestricted and behaves as if all packet types were listed. No
+     * packet-type validation is applied to entries, and the implementation
+     * selects the table resources based on match qualifiers configured.
+     *
+     * @type sai_s32_list_t sai_acl_packet_type_t
+     * @flags CREATE_ONLY
+     * @default empty
+     */
+    SAI_ACL_TABLE_ATTR_ACL_PACKET_TYPE_LIST,
 
     /*
      * Match fields [bool]
