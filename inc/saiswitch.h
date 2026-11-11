@@ -3789,6 +3789,25 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_BRIDGE_PORT_HW_PROTECTION_SWITCHOVER_NOTIFY,
 
     /**
+     * @brief Set queue of mirrored packets
+     *
+     * This setting will apply to all mirror sessions. The value is the
+     * #SAI_QUEUE_ATTR_INDEX of the egress queue on the monitor port.
+     *
+     * Default of 255 = disabled. When this attribute is disabled, the
+     * queue of the mirrored frame will be selected by the platform
+     * default behavior.
+     *
+     * If both this attribute and #SAI_SWITCH_ATTR_MIRROR_TC are set, the
+     * last set attribute takes precedence.
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 255
+     */
+    SAI_SWITCH_ATTR_MIRROR_QUEUE_INDEX,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
