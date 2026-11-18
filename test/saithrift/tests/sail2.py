@@ -1561,3 +1561,202 @@ class L2MacMoveTestIII (sai_base_test.ThriftInterfaceDataPlane):
             self.client.sai_thrift_remove_vlan_member(vlan_member3)
             self.client.sai_thrift_remove_vlan(vlan_oid)
 
+@group('l2')
+class L2TripleTaggedTest(sai_base_test.ThriftInterfaceDataPlane):
+    def runTest(self):
+        print ""
+        switch_init(self.client)
+        pcp_list=[0,0,0]
+        cfi_list=[0,0,0]
+        tpid_list=[0x8100, 0x88a8, 0x8100]
+        vlan_list=[1000, 100, 10]
+
+        vlan_id = vlan_list[0]
+        tagged_packet_size = 100
+        untagged_packet_size = tagged_packet_size - 4
+
+        port1 = port_list[0]
+        port2 = port_list[1]
+
+        mac1 = '00:11:11:11:11:11'
+        mac2 = '00:22:22:22:22:22'
+        mac_action = SAI_PACKET_ACTION_FORWARD
+
+        vlan_oid = sai_thrift_create_vlan(self.client, vlan_id)
+        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_oid, port1, SAI_VLAN_TAGGING_MODE_TAGGED)
+        vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan_oid, port2, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+
+        attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
+        attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+        self.client.sai_thrift_set_port_attribute(port1, attr)
+        self.client.sai_thrift_set_port_attribute(port2, attr)
+
+        sai_thrift_create_fdb(self.client, vlan_oid, mac1, port1, mac_action)
+        sai_thrift_create_fdb(self.client, vlan_oid, mac2, port2, mac_action)
+
+        pkt1 = simple_tcp_packet_ext_taglist(pktlen=tagged_packet_size,
+                                             eth_dst=mac2,
+                                             eth_src=mac1,
+                                             dl_taglist_enable=True,
+                                             dl_vlan_pcp_list=pcp_list,
+                                             dl_vlan_cfi_list=cfi_list,
+                                             dl_tpid_list=tpid_list,
+                                             dl_vlanid_list=vlan_list,
+                                             ip_dst='10.0.0.1',
+                                             ip_id=101,
+                                             ip_ttl=64)
+
+        exp1 = simple_tcp_packet_ext_taglist(pktlen=untagged_packet_size,
+                                             eth_dst=mac2,
+                                             eth_src=mac1,
+                                             dl_taglist_enable=True,
+                                             dl_vlan_pcp_list=pcp_list[1:],
+                                             dl_vlan_cfi_list=cfi_list[1:],
+                                             dl_tpid_list=tpid_list[1:],
+                                             dl_vlanid_list=vlan_list[1:],
+                                             ip_dst='10.0.0.1',
+                                             ip_id=101,
+                                             ip_ttl=64)
+
+        pkt2 = simple_tcp_packet_ext_taglist(pktlen=untagged_packet_size,
+                                             eth_dst=mac1,
+                                             eth_src=mac2,
+                                             dl_taglist_enable=True,
+                                             dl_vlan_pcp_list=pcp_list[1:],
+                                             dl_vlan_cfi_list=cfi_list[1:],
+                                             dl_tpid_list=tpid_list[1:],
+                                             dl_vlanid_list=vlan_list[1:],
+                                             ip_dst='10.0.0.1',
+                                             ip_id=101,
+                                             ip_ttl=64)
+
+        exp2 = simple_tcp_packet_ext_taglist(pktlen=tagged_packet_size,
+                                             eth_dst=mac1,
+                                             eth_src=mac2,
+                                             dl_taglist_enable=True,
+                                             dl_vlan_pcp_list=pcp_list,
+                                             dl_vlan_cfi_list=cfi_list,
+                                             dl_tpid_list=tpid_list,
+                                             dl_vlanid_list=vlan_list,
+                                             ip_dst='10.0.0.1',
+                                             ip_id=101,
+                                             ip_ttl=64)
+
+        try:
+            print "Sending tagged(vlan%d) packet port 1 -> port 2)" % vlan_id
+            send_packet(self, 0, str(pkt1))
+            verify_packets(self, exp1, [1])
+            print "Success1"
+
+            print "Sending untaged packet port 2 -> port 1)"
+            send_packet(self, 1, str(pkt2))
+            verify_packets(self, exp2, [0])
+            print "Success2"
+
+        finally:
+            sai_thrift_delete_fdb(self.client, vlan_oid, mac1, port1)
+            sai_thrift_delete_fdb(self.client, vlan_oid, mac2, port2)
+
+            attr_value = sai_thrift_attribute_value_t(u16=1)
+            attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+            self.client.sai_thrift_set_port_attribute(port1, attr)
+            self.client.sai_thrift_set_port_attribute(port2, attr)
+
+            self.client.sai_thrift_remove_vlan_member(vlan_member1)
+            self.client.sai_thrift_remove_vlan_member(vlan_member2)
+            self.client.sai_thrift_remove_vlan(vlan_oid)
+
+@group('l2')
+class L2TripleTaggedTest2(sai_base_test.ThriftInterfaceDataPlane):
+    def runTest(self):
+        print ""
+
+        switch_init(self.client)
+        pcp_list = [0,0,0]
+        cfi_list = [0,0,0]
+        tpid_list = [0x8100, 0x88a8, 0x8100]
+        vlan_list = [1000, 100, 10]
+        vlan_id = vlan_list[0]
+
+        tagged_packet_size = 0x50
+        untagged_packet_size = tagged_packet_size - 4
+
+        port1 = port_list[0]
+        port2 = port_list[1]
+
+        mac1 = '00:11:11:11:11:11'
+        mac2 = '00:22:22:22:22:22'
+        mac_action = SAI_PACKET_ACTION_FORWARD
+
+        vlan_oid = sai_thrift_create_vlan(self.client, vlan_id)
+        vlan_member1 = sai_thrift_create_vlan_member(self.client, vlan_oid, port1, SAI_VLAN_TAGGING_MODE_TAGGED)
+        vlan_member2 = sai_thrift_create_vlan_member(self.client, vlan_oid, port2, SAI_VLAN_TAGGING_MODE_UNTAGGED)
+
+        attr_value = sai_thrift_attribute_value_t(u16=vlan_id)
+        attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+        self.client.sai_thrift_set_port_attribute(port1, attr)
+        self.client.sai_thrift_set_port_attribute(port2, attr)
+
+        sai_thrift_create_fdb(self.client, vlan_oid, mac1, port1, mac_action)
+        sai_thrift_create_fdb(self.client, vlan_oid, mac2, port2, mac_action)
+
+        pkt1 = simple_eth_raw_packet_with_taglist(pktlen=tagged_packet_size,
+                                                  eth_dst=mac2,
+                                                  eth_src=mac1,
+                                                  dl_taglist_enable=True,
+                                                  dl_vlan_pcp_list=pcp_list,
+                                                  dl_vlan_cfi_list=cfi_list,
+                                                  dl_tpid_list=tpid_list,
+                                                  dl_vlanid_list=vlan_list)
+
+        exp1 = simple_eth_raw_packet_with_taglist(pktlen=untagged_packet_size,
+                                                  eth_dst=mac2,
+                                                  eth_src=mac1,
+                                                  dl_taglist_enable=True,
+                                                  dl_vlan_pcp_list=pcp_list[1:],
+                                                  dl_vlan_cfi_list=cfi_list[1:],
+                                                  dl_tpid_list=tpid_list[1:],
+                                                  dl_vlanid_list=vlan_list[1:])
+
+        pkt2 = simple_eth_raw_packet_with_taglist(pktlen=untagged_packet_size,
+                                                  eth_dst=mac1,
+                                                  eth_src=mac2,
+                                                  dl_taglist_enable=True,
+                                                  dl_vlan_pcp_list=pcp_list[1:],
+                                                  dl_vlan_cfi_list=cfi_list[1:],
+                                                  dl_tpid_list=tpid_list[1:],
+                                                  dl_vlanid_list=vlan_list[1:])
+
+        exp2 = simple_eth_raw_packet_with_taglist(pktlen=tagged_packet_size,
+                                                  eth_dst=mac1,
+                                                  eth_src=mac2,
+                                                  dl_taglist_enable=True,
+                                                  dl_vlan_pcp_list=pcp_list,
+                                                  dl_vlan_cfi_list=cfi_list,
+                                                  dl_tpid_list=tpid_list,
+                                                  dl_vlanid_list=vlan_list)
+
+        try:
+            print "Sending tagged(vlan%d) packet port 1 -> port 2)" % vlan_id
+            send_packet(self, 0, str(pkt1))
+            verify_packets(self, exp1, [1])
+            print "Success1"
+
+            print "Sending untaged packet port 2 -> port 1)"
+            send_packet(self, 1, str(pkt2))
+            verify_packets(self, exp2, [0])
+            print "Success2"
+
+        finally:
+            sai_thrift_delete_fdb(self.client, vlan_oid, mac1, port1)
+            sai_thrift_delete_fdb(self.client, vlan_oid, mac2, port2)
+
+            attr_value = sai_thrift_attribute_value_t(u16=1)
+            attr = sai_thrift_attribute_t(id=SAI_PORT_ATTR_PORT_VLAN_ID, value=attr_value)
+            self.client.sai_thrift_set_port_attribute(port1, attr)
+            self.client.sai_thrift_set_port_attribute(port2, attr)
+
+            self.client.sai_thrift_remove_vlan_member(vlan_member1)
+            self.client.sai_thrift_remove_vlan_member(vlan_member2)
+            self.client.sai_thrift_remove_vlan(vlan_oid)
+
