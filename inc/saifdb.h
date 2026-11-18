@@ -71,6 +71,25 @@ typedef struct _sai_fdb_entry_t
 } sai_fdb_entry_t;
 
 /**
+ * @brief FDB entry state
+ */
+typedef enum _sai_fdb_entry_state_t
+{
+    /** FDB entry state is unknown */
+    SAI_FDB_ENTRY_STATE_TYPE_UNKNOWN,
+
+    /** FDB entry took effect and is forwarding packets */
+    SAI_FDB_ENTRY_STATE_TYPE_VALIDATED,
+
+    /** FDB entry did not take effect and packets are still flooded */
+    SAI_FDB_ENTRY_STATE_TYPE_PENDING,
+
+    /** FDB entry was not installed in HW */
+    SAI_FDB_ENTRY_STATE_TYPE_NOT_INSTALLED,
+
+} sai_fdb_entry_state_t;
+
+/**
  * @brief FDB event type
  */
 typedef enum _sai_fdb_event_t
@@ -189,6 +208,15 @@ typedef enum _sai_fdb_entry_attr_t
      * @validonly SAI_FDB_ENTRY_ATTR_TYPE == SAI_FDB_ENTRY_TYPE_STATIC
      */
     SAI_FDB_ENTRY_ATTR_ALLOW_MAC_MOVE,
+
+    /**
+     * @brief Specify FDB entry state
+     *
+     * @type sai_fdb_entry_state_t
+     * @flags CREATE_AND_SET
+     * @default SAI_FDB_ENTRY_STATE_TYPE_UNKNOWN
+     */
+    SAI_FDB_ENTRY_ATTR_STATE,
 
     /**
      * @brief End of attributes
