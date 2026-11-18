@@ -1732,6 +1732,10 @@ sub ProcessDefaultValue
     {
         WriteSource "$val = { .$VALUE_TYPES{$type} = $default };";
     }
+    elsif ($default =~ /^0$/ and $type eq "sai_u16_range_t")
+    {
+        WriteSource "$val = { .u16range = { .min = 0, .max = 0 } };";
+    }
     elsif ($default =~ /^NULL$/ and $type =~ /^(sai_pointer_t) (sai_\w+_fn)$/)
     {
         WriteSource "$val = { .$VALUE_TYPES{$1} = $default };";

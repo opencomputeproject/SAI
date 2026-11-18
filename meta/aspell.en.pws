@@ -104,6 +104,8 @@ LAGs
 libsai
 linklocal
 Linux
+liveness
+Liveness
 lookup
 lookups
 loopback
@@ -216,6 +218,7 @@ ucast
 uint
 UINT
 uN
+unconfigured
 Uncorrectable
 unicast
 Unicast

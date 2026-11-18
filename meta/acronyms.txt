@@ -96,6 +96,7 @@ IP - Internet Protocol
 IP2ME - IP packets to local router IP
 IPFIX - IP Flow Information Export
 IPG - Inter-Packet Gap
+IPM - IP Measurements
 IPMC - Intelligent Platform Management Controller
 ITU - International Telecommunication Union
 L2 - Layer 2
