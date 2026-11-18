@@ -42,7 +42,14 @@ set -e
 
 TAGS=$(git tag --sort=v:refname | grep -P "^v\d+\.\d+.\d+$" | sed -n -e '/'$BASE'/,$p'; echo HEAD)
 
+# A clone usually carries every upstream tag, including releases published
+# after (or on branches newer than) the checked-out commit. Only emit versions
+# for attributes present in the checked-out headers, so that the output does not
+# depend on which tags exist in the clone.
+
 (for tag in $TAGS; do git grep -P "^\s+SAI_\w+_ATTR_" $tag ../inc ../experimental ../custom | cat; done;
  grep -sP "^\s+SAI_\w+_ATTR_" ../inc/sai*h ../experimental/sai*h ../custom/sai*h | perl -npe '$_.="HEAD:"' ) | \
-        perl -ne '/^(\S+):..\/(\S+)\/\S+.h:\s+(SAI_\w+_ATTR_\w+)/;
-        print "#define SAI_METADATA_ATTR_VERSION_$3 \"$1\" /* $2 */\n" if not defined $h{$3};$h{$3}=1' > $OUTPUT
+        perl -ne '/^(\S+):..\/(\S+)\/\S+.h:\s+(SAI_\w+_ATTR_\w+)/ or next;
+        push @attrs, [$1, $2, $3]; $head{$3} = 1 if $1 eq "HEAD";
+        END { for (@attrs) { my ($ver, $dir, $attr) = @$_;
+            print "#define SAI_METADATA_ATTR_VERSION_$attr \"$ver\" /* $dir */\n" if $head{$attr} and not $h{$attr}++ } }' > $OUTPUT
