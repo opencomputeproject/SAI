@@ -2153,7 +2153,7 @@ class PortDropAclAnyTest(BaseDebugCounterClass):
                 field_dst_ip=dst_ip,
                 field_dst_mac=dst_mac)
             self.assertTrue(acl_entry != 0, "Failed to Create ACL entry")
-
+            priority = 0
             acl_table_group = sai_thrift_create_acl_table_group(
                 self.client,
                 acl_stage=stage,
@@ -2162,7 +2162,8 @@ class PortDropAclAnyTest(BaseDebugCounterClass):
             acl_group_member = sai_thrift_create_acl_table_group_member(
                 self.client,
                 acl_table_group_id=acl_table_group,
-                acl_table_id=acl_table_id)
+                acl_table_id=acl_table_id,
+                priority=priority)
 
         finally:
             acl.append({
