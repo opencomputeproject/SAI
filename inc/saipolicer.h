@@ -323,6 +323,78 @@ typedef enum _sai_policer_attr_t
     SAI_POLICER_ATTR_OPER_PIR,
 
     /**
+     * @brief Action to set DSCP for Green color packets (0..63)
+     *
+     * Default of 255 = disabled. When disabled, the DSCP of Green color
+     * packets is not modified by the policer.
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 255
+     */
+    SAI_POLICER_ATTR_GREEN_PACKET_SET_DSCP,
+
+    /**
+     * @brief Action to set DSCP for Yellow color packets (0..63)
+     *
+     * Default of 255 = disabled. When disabled, the DSCP of Yellow color
+     * packets is not modified by the policer.
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 255
+     */
+    SAI_POLICER_ATTR_YELLOW_PACKET_SET_DSCP,
+
+    /**
+     * @brief Action to set DSCP for Red color packets (0..63)
+     *
+     * Default of 255 = disabled. When disabled, the DSCP of Red color
+     * packets is not modified by the policer.
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 255
+     */
+    SAI_POLICER_ATTR_RED_PACKET_SET_DSCP,
+
+    /**
+     * @brief Action to set TC for Green color packets
+     *
+     * Default of 255 = disabled. When disabled, the TC of Green color
+     * packets is not modified by the policer.
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 255
+     */
+    SAI_POLICER_ATTR_GREEN_PACKET_SET_TC,
+
+    /**
+     * @brief Action to set TC for Yellow color packets
+     *
+     * Default of 255 = disabled. When disabled, the TC of Yellow color
+     * packets is not modified by the policer.
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 255
+     */
+    SAI_POLICER_ATTR_YELLOW_PACKET_SET_TC,
+
+    /**
+     * @brief Action to set TC for Red color packets
+     *
+     * Default of 255 = disabled. When disabled, the TC of Red color
+     * packets is not modified by the policer.
+     *
+     * @type sai_uint8_t
+     * @flags CREATE_AND_SET
+     * @default 255
+     */
+    SAI_POLICER_ATTR_RED_PACKET_SET_TC,
+
+    /**
      * @brief End of attributes
      */
     SAI_POLICER_ATTR_END,
