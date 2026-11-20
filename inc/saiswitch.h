@@ -244,6 +244,34 @@ typedef enum _sai_switch_restart_type_t
 } sai_switch_restart_type_t;
 
 /**
+ * @brief Operational status of the persisted warmboot checkpoint
+ */
+typedef enum _sai_warm_boot_checkpoint_status_t
+{
+    /** HA active and HA standby: last committed checkpoint is valid for warm recovery */
+    SAI_WARM_BOOT_CHECKPOINT_STATUS_VALID = 0,
+
+    /** HA active and HA standby: no usable checkpoint on local storage */
+    SAI_WARM_BOOT_CHECKPOINT_STATUS_NOT_FOUND = 1,
+
+    /** HA active: snapshot not trusted; take a new checkpoint and re-query */
+    SAI_WARM_BOOT_CHECKPOINT_STATUS_INVALID = 2,
+
+    /** HA active: asynchronous checkpoint save in progress */
+    SAI_WARM_BOOT_CHECKPOINT_STATUS_IN_PROGRESS = 3,
+
+    /** HA standby: replicated checkpoint failed integrity check (CRC or checksum) */
+    SAI_WARM_BOOT_CHECKPOINT_STATUS_CHECKSUM_MISMATCH = 4,
+
+    /** HA standby: checkpoint schema or version incompatible with this SAI/SDK */
+    SAI_WARM_BOOT_CHECKPOINT_STATUS_VERSION_INCOMPATIBLE = 5,
+
+    /** HA standby: checkpoint does not match hardware or pipeline profile */
+    SAI_WARM_BOOT_CHECKPOINT_STATUS_PROFILE_MISMATCH = 6,
+
+} sai_warm_boot_checkpoint_status_t;
+
+/**
  * @brief Attribute data for #SAI_SWITCH_ATTR_MCAST_SNOOPING_CAPABILITY
  */
 typedef enum _sai_switch_mcast_snooping_capability_t
@@ -3789,6 +3817,23 @@ typedef enum _sai_switch_attr_t
     SAI_SWITCH_ATTR_BRIDGE_PORT_HW_PROTECTION_SWITCHOVER_NOTIFY,
 
     /**
+     * @brief On-demand checkpoint: set ID to save, get last committed ID
+     *
+     * @type sai_uint64_t
+     * @flags CREATE_AND_SET
+     * @default 0
+     */
+    SAI_SWITCH_ATTR_WARM_BOOT_CHECKPOINT,
+
+    /**
+     * @brief Checkpoint persistence status or latched warm-create outcome
+     *
+     * @type sai_warm_boot_checkpoint_status_t
+     * @flags READ_ONLY
+     */
+    SAI_SWITCH_ATTR_WARM_BOOT_CHECKPOINT_STATUS,
+
+    /**
      * @brief End of attributes
      */
     SAI_SWITCH_ATTR_END,
@@ -3957,7 +4002,7 @@ typedef enum _sai_switch_stat_t
  * @note This value needs to be incremented whenever a new switch attribute key
  * is added.
  */
-#define SAI_SWITCH_ATTR_MAX_KEY_COUNT         17
+#define SAI_SWITCH_ATTR_MAX_KEY_COUNT         18
 
 /*
  * List of switch attributes keys that can be set using key=value
@@ -4051,6 +4096,15 @@ typedef enum _sai_switch_stat_t
  * The file to write SAI/NPU state to
  */
 #define SAI_KEY_WARM_BOOT_WRITE_FILE              "SAI_WARM_BOOT_WRITE_FILE"
+
+/**
+ * @def SAI_KEY_WARM_BOOT_ON_INVALID_CHECKPOINT
+ *
+ * Policy when warm create_switch() finds an unusable checkpoint:
+ * "abort" (default) - return #SAI_STATUS_WARM_BOOT_CHECKPOINT_INVALID, no switch object.
+ * "cold" - fall back to cold boot and reprogram hardware.
+ */
+#define SAI_KEY_WARM_BOOT_ON_INVALID_CHECKPOINT    "SAI_WARM_BOOT_ON_INVALID_CHECKPOINT"
 
 /**
  * @def SAI_KEY_HW_PORT_PROFILE_ID_CONFIG_FILE

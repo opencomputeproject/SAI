@@ -179,6 +179,15 @@
 #define SAI_STATUS_STAGE_MISMATCH                   SAI_STATUS_CODE(0x00000018L)
 
 /**
+ * @brief Warm recovery attempted but checkpoint was not usable
+ *
+ * API return code (sai_status_t) from sai_create_switch() when
+ * #SAI_SWITCH_ATTR_WARM_RECOVER is true, checkpoint import is refused, and
+ * profile policy is "abort" (no switch object is created).
+ */
+#define SAI_STATUS_WARM_BOOT_CHECKPOINT_INVALID      SAI_STATUS_CODE(0x00000019L)
+
+/**
  * @brief Attribute is invalid
  *
  * Range from 0x00010000L to 0x0001FFFFL.
