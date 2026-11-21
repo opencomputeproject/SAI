@@ -70,6 +70,17 @@ struct sai_thrift_attr_capability_t {
     2: bool boolset_implemented;
     3: bool get_implemented;
 }
+
+enum sai_thrift_notification_type_t {
+    SAI_THRIFT_NOTIFICATION_TYPE_PORT_STATE_CHANGE = 0;
+    SAI_THRIFT_NOTIFICATION_TYPE_BFD_SESSION_STATE_CHANGE = 1;
+}
+
+struct sai_thrift_notification_event_t {
+    1: sai_thrift_notification_type_t notification_type;
+    2: sai_thrift_object_id_t object_id;
+    3: i32 state;
+}
 [% END -%]
 
 [%- ######################################################################## -%]
